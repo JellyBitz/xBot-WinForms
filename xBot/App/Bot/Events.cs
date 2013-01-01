@@ -1,7 +1,10 @@
-﻿using System;
+﻿using SecurityAPI;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Timers;
 using xBot.Game;
+using xBot.Game.Objects;
 
 namespace xBot
 {
@@ -28,7 +31,28 @@ namespace xBot
 		private void Event_CharacterListing(List<SRObject> CharacterList)
 		{
 			Window w = Window.Get;
-
+			// Select character
+			if (w.Login_cmbxCharacter.Items.Count > 0)
+			{
+				// Try Autologin
+				if (hasAutoLoginMode)
+				{
+					WinAPI.InvokeIfRequired(w, () => {
+						if (w.Login_cmbxCharacter.Text != ""){
+							w.Control_Click(w.Login_btnStart, null);
+							return;
+						}
+					});
+				}
+				else
+				{
+					// Select first one (Just for UX)
+					WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
+						w.Login_cmbxCharacter.SelectedIndex = 0;
+					});
+				}
+			}
+			
 			// Reset value
 			CreatingCharacterName = "";
 			// Delete characters that are not being deleted
@@ -36,13 +60,12 @@ namespace xBot
 			{
 				foreach (SRObject character in CharacterList)
 				{
-					if (!(bool)character[SRAttribute.isDeleting]
-						&& (byte)character[SRAttribute.Level] >= 40
-						&& (byte)character[SRAttribute.Level] <= 50)
+					if (!(bool)character[SRProperty.isDeleting]
+						&& (byte)character[SRProperty.Level] >= 40 && (byte)character[SRProperty.Level] <= 50)
 					{
-						w.Log("Deleting character [" + (string)character[SRAttribute.Name] + "]");
+						w.Log("Deleting character [" + character.Name + "]");
 						w.LogProcess("Deleting...");
-						PacketBuilder.DeleteCharacter((string)character[SRAttribute.Name]);
+						PacketBuilder.DeleteCharacter(character.Name);
 						System.Threading.Thread.Sleep(500);
 					}
 				}
@@ -50,22 +73,24 @@ namespace xBot
 			// Select the first character available
 			if (w.Settings_cbxSelectFirstChar.Checked)
 			{
-				foreach (SRObject character in CharacterList)
+				SRObject character = CharacterList.Find(c => !(bool)c[SRProperty.isDeleting]);
+				if (character != null)
 				{
-					if (!(bool)character[SRAttribute.isDeleting])
-					{
-						w.LogProcess("Selecting...");
-						WinAPI.InvokeIfRequired(w, () => {
-							w.Login_cmbxCharacter.Text = (string)character[SRAttribute.Name];
-							w.Control_Click(w.Login_btnStart, null);
-						});
-						return;
-					}
+					w.LogProcess("Selecting...");
+					WinAPI.InvokeIfRequired(w, () => {
+						w.Login_cmbxCharacter.Text = character.Name;
+						w.Control_Click(w.Login_btnStart, null);
+					});
+					return;
 				}
-				w.Log("No characters availables to select!");
+				else
+				{
+					w.Log("No character available to select!");
+				}
 			}
 			// No characters selected, then create it?
-			if (w.Settings_cbxCreateChar.Checked && CharacterList.Count == 0)
+			if (w.Settings_cbxCreateChar.Checked 
+				&& CharacterList.Count == 0)
 			{
 				w.Log("Empty character list, creating character...");
 				CreateNickname();
@@ -74,24 +99,15 @@ namespace xBot
 			{
 				if (CharacterList.Count < 4)
 				{
-					bool notFound = true;
-					foreach (SRObject character in CharacterList)
+					if( !CharacterList.Exists( c => !(bool)c[SRProperty.isDeleting] && (byte)c[SRProperty.Level] < 40 ) )
 					{
-						if (!(bool)character[SRAttribute.isDeleting]
-							&& (byte)character[SRAttribute.Level] < 40)
-						{
-							notFound = false;
-						}
-					}
-					if (notFound)
-					{
-						w.Log("No characters below Lv.40,..");
+						w.Log("No characters below Lv.40, creating character...");
 						CreateNickname();
 					}
 				}
 				else
 				{
-					w.Log("Character creation is full, cannot create more characters!");
+					w.Log("Character list full, you cannot create more characters!");
 				}
 			}
 		}
@@ -117,37 +133,18 @@ namespace xBot
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
-
 			w.Log("Joined successfully to the game");
 			w.LogChatMessage(w.Chat_rtbxAll, "(Welcome)", i.GetUIFormat("UIIT_STT_STARTING_MSG").Replace("\\n", "\n"));
 
-			if (!Proxy.ClientlessMode && w.Login_cbxGoClientless.Checked)
-			{
-				Timer CloseClient = new Timer();
-				CloseClient.Interval = 1000;
-        byte s = 5;
-				CloseClient.Elapsed += (sender, e) => {
-					try
-					{
-						if (s > 0)
-						{
-							w.LogProcess("Closing client in " + s + " seconds...");
-							s--;
-						}
-						else
-						{
-							w.LogProcess("Closing client...");
-							Proxy.CloseClient();
-							CloseClient.Enabled = false;
-						}
-					}
-					catch { /* Bot closed */ }
-				};
-				CloseClient.AutoReset = true;
-				CloseClient.Start();
-			}
+			// Check login options
+			if (w.Login_cbxGoClientless.Checked)
+				GoClientless();
 
-			CheckAutoParty(null, null);
+			if (w.Login_cbxUseReturnScroll.Checked)
+				UseReturnScroll();
+
+			CheckAutoParty();
+			CheckPartyMatchAutoReform();
 		}
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
@@ -155,8 +152,6 @@ namespace xBot
 		private void Event_Teleported()
 		{
 			Window.Get.LogProcess("Teleported");
-			// Recommended to wait 5 seconds to do some action
-
 		}
 		/// <summary>
 		/// Called only when the maximum level has been increased.
@@ -175,7 +170,7 @@ namespace xBot
 		private void Event_StateUpdated(Types.EntityStateUpdate type)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 				switch (type)
 				{
@@ -201,7 +196,7 @@ namespace xBot
 			else
 			{
 				// Character dead.
-				if((byte)i.Character[SRAttribute.Level] <= 10){
+				if((byte)i.Character[SRProperty.Level] <= 10){
 					PacketBuilder.ResurrectAtPresentPoint();
 				}
 			}
@@ -211,7 +206,10 @@ namespace xBot
 		/// </summary>
 		public void Event_PetStateUpdated(Types.EntityStateUpdate type)
 		{
-			switch (type){
+			switch (type)
+			{
+				case Types.EntityStateUpdate.HP:
+				case Types.EntityStateUpdate.HPMP:
 				case Types.EntityStateUpdate.EntityHPMP:
 					CheckUsingRecoveryKit();
 					break;
@@ -239,15 +237,75 @@ namespace xBot
 			}
 		}
 		/// <summary>
-		/// Called everytime a party invitation is detected
+		/// Called when a message is received.
 		/// </summary>
-		/// <param name="uniqueID">How send the invitation</param>
-		public void Event_PartyInvitation(uint uniqueID,Types.PartySetup PartySetup)
+		private void Event_Chat(Types.Chat type, string playerName, string message)
 		{
-			// Get entity
-			Info i = Info.Get;
-			SRObject player = i.GetEntity(uniqueID);
-
+			Window w = Window.Get;
+			if (w.Party_cbxActivateLeaderCommands.Checked && playerName != "")
+			{
+				bool isLeader = false;
+				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList,() => {
+					isLeader = w.Party_lstvLeaderList.Items.ContainsKey(playerName.ToUpper());
+				});
+				if (isLeader)
+				{
+					if (message.StartsWith("INJECT ")){
+						string[] data = message.Substring(7).ToUpper().Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+						if (data.Length >= 1)
+						{
+							ushort opcode;
+							if (ushort.TryParse(data[0], NumberStyles.HexNumber, null, out opcode))
+							{
+								bool encrypted = false;
+								int dataIndex = 1;
+								if (data.Length > 1 && (data[dataIndex] == "FALSE" || data[dataIndex] == "TRUE"))
+								{
+									encrypted = bool.Parse(data[dataIndex++]);
+								}
+								List<byte> bytes = new List<byte>();
+								for (int j = dataIndex; j < data.Length; j++)
+								{
+									byte temp;
+									if (byte.TryParse(data[j], NumberStyles.HexNumber, null, out temp)){
+										bytes.Add(temp);
+									}
+								}
+								Proxy.Agent.InjectToServer(new Packet(opcode, encrypted,false, bytes.ToArray()));
+							}
+						}
+					}
+					else if (message.StartsWith("TRACE"))
+					{
+						if (message == "TRACE"){
+							StartTrace(playerName);
+							return;
+						}
+						else
+						{
+							string[] data = message.Substring(5).Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+							if (data.Length == 1){
+								StartTrace(data[0]);
+							}
+						}
+						
+					}
+					else if (message == "NOTRACE")
+					{
+						StopTrace();
+					}
+					else if (message == "RETURN")
+					{
+						UseReturnScroll();
+					}
+				}
+			}
+		}
+		/// <summary>
+		/// Called everytime a party invitation is detected.
+		/// </summary>
+		private void Event_PartyInvitation(string playerName, Types.PartySetup PartySetup)
+		{
 			// Check GUI
 			Window w = Window.Get;
 
@@ -259,7 +317,7 @@ namespace xBot
 					// Exactly same party setup?
 					if (GetPartySetup() == PartySetup)
 						PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.PartyInvitation);
-					else if (w.Party_cbxRefusePartys.Checked)
+					else if (w.Party_cbxRefuseInvitations.Checked)
 						PacketBuilder.PlayerPetitionResponse(false, Types.PlayerPetition.PartyInvitation);
 				}
 				else
@@ -273,11 +331,10 @@ namespace xBot
 			if (w.Party_cbxAcceptPartyList.Checked)
 			{
 				bool found = false;
-				string name = (string)player[SRAttribute.Name];
 				WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
 					for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
 					{
-						if (w.Party_lstvPartyList.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
+						if (w.Party_lstvPartyList.Items[j].Text.Equals(playerName, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							break;
@@ -305,11 +362,10 @@ namespace xBot
 			if (w.Party_cbxAcceptLeaderList.Checked)
 			{
 				bool found = false;
-				string name = (string)player[SRAttribute.Name];
 				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
 					for (int j = 0; j < w.Party_lstvLeaderList.Items.Count; j++)
 					{
-						if (w.Party_lstvLeaderList.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
+						if (w.Party_lstvLeaderList.Items[j].Text.Equals(playerName, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							break;
@@ -333,7 +389,7 @@ namespace xBot
 					}
 				}
 			}
-			if (w.Party_cbxRefusePartys.Checked)
+			if (w.Party_cbxRefuseInvitations.Checked)
 				PacketBuilder.PlayerPetitionResponse(false, Types.PlayerPetition.PartyInvitation);
 		}
 		/// <summary>
@@ -348,24 +404,158 @@ namespace xBot
 		/// </summary>
 		private void Event_PartyLeaved()
 		{
-			CheckAutoParty(null, null);
-
-			// Create again pt match, etc..
+			CheckPartyMatchAutoReform();
+			CheckAutoParty();
 		}
 		/// <summary>
 		/// Called when a member has left the party.
 		/// </summary>
 		private void Event_MemberLeaved()
 		{
-			if (!CheckPartyLeaving())
-				CheckAutoParty(null, null);
+			if (!CheckPartyLeaving()){
+				CheckPartyMatchAutoReform();
+			}
+		}
+		/// <summary>
+		/// Called when a player wants to join to our party match.
+		/// </summary>
+		public void Event_PartyMatchJoinRequest(uint requestID, uint playerJoinID, string playerName)
+		{
+			Window w = Window.Get;
+			if (w.Party_cbxMatchAutoReform.Checked)
+			{
+				if (w.Party_cbxMatchAcceptAll.Checked)
+				{
+					PacketBuilder.PartyMatchJoinResponse(requestID, playerJoinID, accept: true);
+					return;
+				}
+				if (w.Party_cbxMatchAcceptPartyList.Checked)
+				{
+					bool found = false;
+					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, delegate
+					{
+						found = w.Party_lstvPartyList.Items.ContainsKey(playerName.ToUpper());
+					});
+					if (found)
+					{
+						PacketBuilder.PartyMatchJoinResponse(requestID, playerJoinID, accept: true);
+						return;
+					}
+				}
+				if (w.Party_cbxMatchAcceptLeaderList.Checked)
+				{
+					bool found = false;
+					WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, delegate
+					{
+						found = w.Party_lstvLeaderList.Items.ContainsKey(playerName.ToUpper());
+					});
+					if (found)
+					{
+						PacketBuilder.PartyMatchJoinResponse(requestID, playerJoinID, accept: true);
+						return;
+					}
+				}
+				if (w.Party_cbxMatchRefuse.Checked)
+				{
+					PacketBuilder.PartyMatchJoinResponse(requestID, playerJoinID, accept: false);
+				}
+			}
+		}
+		/// <summary>
+		/// Called when the party match has been updated.
+		/// </summary>
+		public void Event_PartyMatchListing(SRPartyMatch myMatch)
+		{
+			Window w = Window.Get;
+			if (myMatch == null)
+			{
+				if (w.Party_cbxMatchAutoReform.Checked)
+				{
+					Info i = Info.Get;
+					if (!inParty
+						|| i.PartyList[0].Name == i.Charname)
+					{
+						PacketBuilder.CreatePartyMatch(GetPartyMatchSetup());
+					}
+				}
+			}
+			else if (!w.Party_cbxMatchAutoReform.Checked)
+			{
+				Info i = Info.Get;
+				SRPartyMatch GUIMatch = GetPartyMatchSetup();
+				// Check if the party match is barely identical GUI
+				if (myMatch.Owner == i.Charname 
+					&& myMatch.Title == GUIMatch.Title 
+					&& myMatch.LevelMin == GUIMatch.LevelMin 
+					&& myMatch.LevelMax == GUIMatch.LevelMax)
+				{
+					PacketBuilder.RemovePartyMatch(myMatch.Number);
+				}
+			}
 		}
 		/// <summary>
 		/// Called when a (new) entity appears.
 		/// </summary>
-		private void Event_Spawn(SRObject entity)
+		private void Event_Spawn(ref SRObject entity)
 		{
 
+		}
+		/// <summary>
+		/// Called right after a player makes a destination movement.
+		/// </summary>
+		/// <param name="player"></param>
+		private void Event_PlayerMovement(ref SRObject player)
+		{
+			if (inTrace)
+			{
+				Info i = Info.Get;
+				Window w = Window.Get;
+
+				if ( TracePlayerName.Equals(player.Name, StringComparison.OrdinalIgnoreCase)
+					|| 
+					inParty
+					&& w.Training_cbxTraceMaster.Checked
+					&& i.PartyList[0].Name == player.Name
+					&& !i.PlayersNear.ContainsKey(TracePlayerName))
+				{
+					byte distance = 0;
+					if (w.Training_cbxTraceDistance.Checked)
+					{
+						WinAPI.InvokeIfRequired(w.Training_tbxTraceDistance, () => {
+							distance = byte.Parse(w.Training_tbxTraceDistance.Text);
+						});
+					}
+					
+					SRCoord P = i.Character.GetPosition();
+					SRCoord Q = player.GetPosition();
+					if (distance > 0)
+					{
+						double PQMod = P.DistanceTo(Q);
+						if (distance < PQMod)
+						{
+							SRCoord PQUnit = new SRCoord((Q.PosX - P.PosX) / PQMod, (Q.PosY - P.PosY) / PQMod);
+
+							SRCoord NewPositon;
+							if (P.inDungeon())
+							{
+								NewPositon = new SRCoord((PQMod - distance) * PQUnit.PosX + P.PosX, (PQMod - distance) * PQUnit.PosY + P.PosY, P.Region, P.Z);
+							}
+							else
+							{
+								NewPositon = new SRCoord((PQMod - distance) * PQUnit.PosX + P.PosX, (PQMod - distance) * PQUnit.PosY + P.PosY);
+							}
+							 
+							MoveTo(NewPositon);
+							w.LogProcess("Tracing to [" + player.Name + "] ...");
+						}
+					}
+					else
+					{
+						MoveTo(Q);
+						w.LogProcess("Tracing to [" + player.Name + "] ...");
+					}
+				}
+			}
 		}
 		/// <summary>
 		/// Called when a player is giving you resurrection request
@@ -386,7 +576,7 @@ namespace xBot
 					SRObject player = i.GetEntity(uniqueID);
 					if(player != null)
 					{
-						if (i.GetPartyMember((string)player[SRAttribute.Name]) != null)
+						if (i.GetPartyMember(player.Name) != null)
 						{
 							PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.Resurrection);
 						}

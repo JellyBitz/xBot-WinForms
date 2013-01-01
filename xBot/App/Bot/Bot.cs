@@ -4,6 +4,7 @@ using SecurityAPI;
 using System.Collections.Generic;
 using System.IO;
 using xBot.Game;
+using xBot.Game.Objects;
 
 namespace xBot
 {
@@ -29,24 +30,21 @@ namespace xBot
 		/// <summary>
 		/// Check if the character is on creation process.
 		/// </summary>
-		public bool isCreatingCharacter { get { return CreatingCharacterName != ""; } }
+		public bool isCreatingCharacter { get { return !string.IsNullOrEmpty(CreatingCharacterName); } }
 		private string CreatingCharacterName;
 		private bool CreatingCharacterMale;
 		/// <summary>
 		/// Check if the character is in game.
 		/// </summary>
-		public bool inGame { get { return _inGame; } }
-		private bool _inGame;
+		public bool inGame { get; private set; }
 		/// <summary>
 		/// Check if the character is in game.
 		/// </summary>
-		public bool inTeleport { get { return _inTeleport; } }
-		private bool _inTeleport;
+		public bool inTeleport { get;  private set; }
 		/// <summary>
 		/// Check if the character is in party.
 		/// </summary>
-		public bool inParty { get { return _inParty; } }
-		private bool _inParty;
+		public bool inParty { get; private set; }
 		/// <summary>
 		/// Keep the current party setup. 
 		/// </summary>
@@ -62,13 +60,16 @@ namespace xBot
 		/// <summary>
 		/// Check if the character has his own stall opened.
 		/// </summary>
-		public bool hasStall { get { return _hasStall; } }
-		private bool _hasStall;
+		public bool hasStall { get; private set; }
 		/// <summary>
 		/// Check if the character is inside of stall, including his own.
 		/// </summary>
-		public bool inStall { get { return _inStall; } }
-		private bool _inStall;
+		public bool inStall { get; private set; }
+		/// <summary>
+		/// Check if the character is inside of stall, including his own.
+		/// </summary>
+		public bool inTrace { get; private set; }
+		private string TracePlayerName;
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -240,38 +241,75 @@ namespace xBot
 			}
 		}
 		/// <summary>
-		/// Returns the current party setup used by the GUI.
-		/// </summary>
-		public Types.PartySetup GetPartySetup()
-		{
-			Window w = Window.Get;
-			return ( (w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
-				| (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
-				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite) );
-		}
-		/// <summary>
 		/// Get's the last uniqueID selected.
 		/// </summary>
 		public uint GetEntitySelected() {
 			return EntitySelected;
 		}
 		/// <summary>
+		/// Returns the current party setup used by the GUI.
+		/// </summary>
+		public Types.PartySetup GetPartySetup()
+		{
+			Window w = Window.Get;
+			return ((w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
+				| (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
+				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
+		}
+		/// <summary>
+		/// Returns the current party match setup used by the GUI.
+		/// </summary>
+		public SRPartyMatch GetPartyMatchSetup()
+		{
+			Window w = Window.Get;
+			SRPartyMatch match = new SRPartyMatch(0);
+
+			WinAPI.InvokeIfRequired(w.Party_tbxMatchTitle, ()=>{
+				match.Title = w.Party_tbxMatchTitle.Text;
+			});
+			WinAPI.InvokeIfRequired(w.Party_tbxMatchFrom, () => {
+				match.LevelMin = byte.Parse(w.Party_tbxMatchFrom.Text);
+			});
+			WinAPI.InvokeIfRequired(w.Party_tbxMatchTo, () => {
+				match.LevelMax = byte.Parse(w.Party_tbxMatchTo.Text);
+			});
+
+			if (inParty)
+				match.Setup = PartySetupFlags;
+			else
+				match.Setup = GetPartySetup();
+
+			Info i = Info.Get;
+			if (i.Character.hasJobMode())
+			{
+				if ((Types.Job)i.Character[SRProperty.JobType] == Types.Job.Thief)
+					match.Purpose = Types.PartyPurpose.Thief;
+				else
+					match.Purpose = Types.PartyPurpose.Trader;
+			}
+			else
+			{
+				match.Purpose = Types.PartyPurpose.Hunting;
+			}
+			return match;
+		}
+		/// <summary>
 		/// Search for specific type ID's item in the inventory. Return success.
 		/// </summary>
-		/// <param name="tid2">type id #2</param>
-		/// <param name="tid3">type id #3</param>
-		/// <param name="tid4">type id #4</param>
+		/// <param name="ID2">type id #2</param>
+		/// <param name="ID3">type id #3</param>
+		/// <param name="ID4">type id #4</param>
 		/// <param name="slot">Invenory slot found</param>
 		/// <param name="servername">Rule the search to contains string specified</param>
-		public bool FindItem(byte tid2, byte tid3, byte tid4, ref byte slot, string servername = "")
+		public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
 		{
-			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRAttribute.Inventory]).Clone();
+			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]).Clone();
 			for (byte i = 13; i < inventory.Capacity; i++)
 			{
 				if (inventory[i] != null)
 				{
-					// tid1 = item (3)
-					if (inventory[i].Equals(3, tid2, tid3, tid4) && ((string)inventory[i][SRAttribute.Servername]).Contains(servername))
+					// ID1 = Item (3)
+					if (inventory[i].isType(3, ID2, ID3, ID4) && inventory[i].ServerName.Contains(servername))
 					{
 						slot = i;
 						return true;
@@ -279,6 +317,121 @@ namespace xBot
 				}
 			}
 			return false;
+		}
+		/// <summary>
+		/// Try to change to clientless mode.
+		/// </summary>
+		public void GoClientless()
+		{
+			if (!Proxy.ClientlessMode)
+			{
+				Window w = Window.Get;
+				System.Timers.Timer CloseClient = new System.Timers.Timer();
+				CloseClient.Interval = 1000;
+
+				byte s = 5;
+				CloseClient.Elapsed += delegate	{
+					try{
+						if (s > 0){
+							w.LogProcess("Closing client in " + s + " seconds...");
+							s = (byte)(s - 1);
+						}
+						else
+						{
+							w.LogProcess("Closing client...");
+							Proxy.CloseClient();
+							CloseClient.Stop();
+						}
+					}
+					catch{ }
+				};
+				CloseClient.AutoReset = true;
+				CloseClient.Start();
+			}
+		}
+		/// <summary>
+		/// Try to use a return scroll from inventory.
+		/// </summary>
+		public bool UseReturnScroll()
+		{
+			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]).Clone();
+			for (byte j = 13; j < inventory.Capacity; j++)
+			{
+				if (inventory[j] != null && inventory[j].isType(3, 3, 3, 1))
+				{
+					switch (inventory[j].ServerName)
+					{
+						case "ITEM_ETC_SCROLL_RETURN_01":
+						case "ITEM_ETC_SCROLL_RETURN_02":
+						case "ITEM_ETC_SCROLL_RETURN_03":
+						case "ITEM_ETC_SCROLL_RETURN_NEWBIE_01":
+						case "ITEM_ETC_E041225_SANTA_WINGS":
+						case "ITEM_MALL_RETURN_SCROLL_HIGH_SPEED":
+						case "ITEM_EVENT_RETURN_SCROLL_HIGH_SPEED":
+							PacketBuilder.UseItem(inventory[j], j);
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+		/// <summary>
+		/// Starts tracing a player.
+		/// </summary>
+		public bool StartTrace(string PlayerName)
+		{
+			if (inGame)
+			{
+				inTrace = true;
+				SetTraceName(PlayerName);
+				Window w = Window.Get;
+				WinAPI.InvokeIfRequired(w.Training_btnTraceStart, () =>
+				{
+					w.Training_btnTraceStart.Text = "STOP";
+				});
+				return true;
+			}
+			return false;
+		}
+		public void SetTraceName(string PlayerName)
+		{
+			TracePlayerName = PlayerName.Trim().ToUpper();
+
+			SRObject player;
+      if (Info.Get.PlayersNear.TryGetValue(TracePlayerName, out player)){
+				MoveTo(player.GetPosition());
+			}
+		}
+		/// <summary>
+		/// Try to stop the trace.
+		/// </summary>
+		public bool StopTrace()
+		{
+			if (inTrace)
+			{
+				inTrace = false;
+				Window w = Window.Get;
+				WinAPI.InvokeIfRequired(w.Training_btnTraceStart, ()=>{
+					w.Training_btnTraceStart.Text = "START";
+				});
+				return true;
+			}
+			return false;
+		}
+		/// <summary>
+		/// Move the character to the position specified.
+		/// </summary>
+		public void MoveTo(SRCoord position)
+		{
+			Info i = Info.Get;
+			if ((bool)i.Character[SRProperty.isRiding])
+			{
+				PacketBuilder.MoveTo(position, (uint)i.Character[SRProperty.RidingUniqueID]);
+			}
+			else
+			{
+				PacketBuilder.MoveTo(position);
+			}
 		}
 		#endregion
 	}

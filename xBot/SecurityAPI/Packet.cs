@@ -181,18 +181,7 @@ namespace SecurityAPI
 				return m_reader.ReadByte();
 			}
 		}
-		public byte ReadUInt8()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadByte();
-			}
-		}
-		public sbyte ReadInt8()
+		public sbyte ReadSByte()
 		{
 			lock (m_lock)
 			{
@@ -212,28 +201,6 @@ namespace SecurityAPI
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
 				return m_reader.ReadUInt16();
-			}
-		}
-		public UInt16 ReadUInt16()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadUInt16();
-			}
-		}
-		public Int16 ReadInt16()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadInt16();
 			}
 		}
 		public short ReadShort()
@@ -258,28 +225,6 @@ namespace SecurityAPI
 				return m_reader.ReadUInt32();
 			}
 		}
-		public UInt32 ReadUInt32()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadUInt32();
-			}
-		}
-		public Int32 ReadInt32()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadInt32();
-			}
-		}
 		public int ReadInt()
 		{
 			lock (m_lock)
@@ -302,28 +247,6 @@ namespace SecurityAPI
 				return m_reader.ReadUInt64();
 			}
 		}
-		public UInt64 ReadUInt65()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadUInt64();
-			}
-		}
-		public Int64 ReadInt64()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadInt64();
-			}
-		}
 		public long ReadLong()
 		{
 			lock (m_lock)
@@ -333,17 +256,6 @@ namespace SecurityAPI
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
 				return m_reader.ReadInt64();
-			}
-		}
-		public Single ReadSingle()
-		{
-			lock (m_lock)
-			{
-				if (!m_locked)
-				{
-					throw new Exception("Cannot Read from an unlocked Packet.");
-				}
-				return m_reader.ReadSingle();
 			}
 		}
 		public float ReadFloat()
@@ -381,13 +293,13 @@ namespace SecurityAPI
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
 
-				UInt16 length = m_reader.ReadUInt16();
+				ushort length = m_reader.ReadUInt16();
 				byte[] bytes = m_reader.ReadBytes(length);
 
 				return Encoding.GetEncoding(codepage).GetString(bytes);
 			}
 		}
-		public String ReadUnicode()
+		public string ReadUnicode()
 		{
 			lock (m_lock)
 			{
@@ -396,14 +308,13 @@ namespace SecurityAPI
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
 
-				UInt16 length = m_reader.ReadUInt16();
+				ushort length = m_reader.ReadUInt16();
 				byte[] bytes = m_reader.ReadBytes(length * 2);
 
 				return Encoding.Unicode.GetString(bytes);
 			}
 		}
-
-		public byte[] ReadUInt8Array(int count)
+		public byte[] ReadByteArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -419,7 +330,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public sbyte[] ReadInt8Array(int count)
+		public sbyte[] ReadSByteArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -435,7 +346,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public UInt16[] ReadUInt16Array(int count)
+		public ushort[] ReadUShortArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -443,7 +354,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				UInt16[] values = new UInt16[count];
+				ushort[] values = new ushort[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadUInt16();
@@ -451,7 +362,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public Int16[] ReadInt16Array(int count)
+		public short[] ReadShortArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -459,7 +370,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				Int16[] values = new Int16[count];
+				short[] values = new short[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadInt16();
@@ -467,7 +378,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public UInt32[] ReadUInt32Array(int count)
+		public uint[] ReadUIntArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -475,7 +386,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				UInt32[] values = new UInt32[count];
+				uint[] values = new uint[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadUInt32();
@@ -483,7 +394,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public Int32[] ReadInt32Array(int count)
+		public int[] ReadIntArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -491,7 +402,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				Int32[] values = new Int32[count];
+				int[] values = new int[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadInt32();
@@ -499,7 +410,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public UInt64[] ReadUInt64Array(int count)
+		public ulong[] ReadULongArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -507,7 +418,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				UInt64[] values = new UInt64[count];
+				ulong[] values = new ulong[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadUInt64();
@@ -515,7 +426,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public Int64[] ReadInt64Array(int count)
+		public long[] ReadLongArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -523,7 +434,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				Int64[] values = new Int64[count];
+				long[] values = new long[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadInt64();
@@ -531,7 +442,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public Single[] ReadSingleArray(int count)
+		public float[] ReadFloatArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -539,7 +450,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				Single[] values = new Single[count];
+				float[] values = new float[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadSingle();
@@ -547,7 +458,7 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public Double[] ReadDoubleArray(int count)
+		public double[] ReadDoubleArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -555,7 +466,7 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				Double[] values = new Double[count];
+				double[] values = new double[count];
 				for (int x = 0; x < count; ++x)
 				{
 					values[x] = m_reader.ReadDouble();
@@ -563,11 +474,11 @@ namespace SecurityAPI
 				return values;
 			}
 		}
-		public String[] ReadAsciiArray(int count)
+		public string[] ReadAsciiArray(int count)
 		{
 			return ReadAsciiArray(1252);
 		}
-		public String[] ReadAsciiArray(int codepage, int count)
+		public string[] ReadAsciiArray(int codepage, int count)
 		{
 			lock (m_lock)
 			{
@@ -575,17 +486,17 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				String[] values = new String[count];
+				string[] values = new string[count];
 				for (int x = 0; x < count; ++x)
 				{
-					UInt16 length = m_reader.ReadUInt16();
+					ushort length = m_reader.ReadUInt16();
 					byte[] bytes = m_reader.ReadBytes(length);
 					values[x] = Encoding.UTF7.GetString(bytes);
 				}
 				return values;
 			}
 		}
-		public String[] ReadUnicodeArray(int count)
+		public string[] ReadUnicodeArray(int count)
 		{
 			lock (m_lock)
 			{
@@ -593,17 +504,16 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Read from an unlocked Packet.");
 				}
-				String[] values = new String[count];
+				string[] values = new string[count];
 				for (int x = 0; x < count; ++x)
 				{
-					UInt16 length = m_reader.ReadUInt16();
+					ushort length = m_reader.ReadUInt16();
 					byte[] bytes = m_reader.ReadBytes(length * 2);
 					values[x] = Encoding.Unicode.GetString(bytes);
 				}
 				return values;
 			}
 		}
-
 		public long SeekWrite(long offset, SeekOrigin orgin)
 		{
 			lock (m_lock)
@@ -613,17 +523,6 @@ namespace SecurityAPI
 					throw new Exception("Cannot SeekWrite on a locked Packet.");
 				}
 				return m_writer.BaseStream.Seek(offset, orgin);
-			}
-		}
-		public void WriteUInt8(byte value)
-		{
-			lock (m_lock)
-			{
-				if (m_locked)
-				{
-					throw new Exception("Cannot Write to a locked Packet.");
-				}
-				m_writer.Write(value);
 			}
 		}
 		public void WriteByte(byte value)
@@ -637,18 +536,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteInt8(sbyte value)
-		{
-			lock (m_lock)
-			{
-				if (m_locked)
-				{
-					throw new Exception("Cannot Write to a locked Packet.");
-				}
-				m_writer.Write(value);
-			}
-		}
-		public void WriteUInt16(UInt16 value)
+		public void WriteSByte(sbyte value)
 		{
 			lock (m_lock)
 			{
@@ -670,18 +558,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteInt16(Int16 value)
-		{
-			lock (m_lock)
-			{
-				if (m_locked)
-				{
-					throw new Exception("Cannot Write to a locked Packet.");
-				}
-				m_writer.Write(value);
-			}
-		}
-		public void WriteUInt32(UInt32 value)
+		public void WriteShort(short value)
 		{
 			lock (m_lock)
 			{
@@ -703,18 +580,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteInt32(Int32 value)
-		{
-			lock (m_lock)
-			{
-				if (m_locked)
-				{
-					throw new Exception("Cannot Write to a locked Packet.");
-				}
-				m_writer.Write(value);
-			}
-		}
-		public void WriteUInt64(UInt64 value)
+		public void WriteInt(int value)
 		{
 			lock (m_lock)
 			{
@@ -736,7 +602,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteInt64(Int64 value)
+		public void WriteLong(long value)
 		{
 			lock (m_lock)
 			{
@@ -747,7 +613,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteSingle(Single value)
+		public void WriteSingle(float value)
 		{
 			lock (m_lock)
 			{
@@ -964,7 +830,7 @@ namespace SecurityAPI
 			}
 		}
 
-		public void WriteUInt8Array(byte[] values)
+		public void WriteByteArray(byte[] values)
 		{
 			if (m_locked)
 			{

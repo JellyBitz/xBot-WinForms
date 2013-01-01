@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 using xBot.Game;
+using xBot.Game.Objects;
 
 namespace xBot
 {
@@ -15,7 +17,7 @@ namespace xBot
 		private void CheckUsingHP(object sender, ElapsedEventArgs e)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUseHP.Checked || w.Character_cbxUseHPGrain.Checked)
@@ -24,13 +26,13 @@ namespace xBot
 					WinAPI.InvokeIfRequired(w.Character_tbxUseHP, () => {
 						useHP = byte.Parse(w.Character_tbxUseHP.Text);
 					});
-					if ((int)i.Character.GetHPPercent() <= useHP)
+					if (i.Character.GetHPPercent() <= useHP)
 					{
 						byte slot = 0;
 						if (w.Character_cbxUseHPGrain.Checked && FindItem(3, 1, 1, ref slot, "_SPOTION_")
 							|| w.Character_cbxUseHP.Checked && FindItem(3, 1, 1, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 							tUsingHP.Start();
 						}
 					}
@@ -45,7 +47,7 @@ namespace xBot
 		private void CheckUsingMP(object sender, ElapsedEventArgs e)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 
 				Window w = Window.Get;
@@ -56,13 +58,13 @@ namespace xBot
 					{
 						useMP = byte.Parse(w.Character_tbxUseMP.Text);
 					});
-					if ((int)i.Character.GetMPPercent() <= useMP)
+					if (i.Character.GetMPPercent() <= useMP)
 					{
 						byte slot = 0;
 						if (w.Character_cbxUseMPGrain.Checked && FindItem(3, 1, 2, ref slot, "_SPOTION_")
 							|| w.Character_cbxUseMP.Checked && FindItem(3, 1, 2, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 							tUsingMP.Start();
 						}
 					}
@@ -77,7 +79,7 @@ namespace xBot
 		private void CheckUsingVigor(object sender, ElapsedEventArgs e)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 
 				Window w = Window.Get;
@@ -88,12 +90,12 @@ namespace xBot
 						usePercent = byte.Parse(w.Character_tbxUseHPVigor.Text);
 					});
 					// Check hp %
-					if ((int)i.Character.GetHPPercent() <= usePercent)
+					if (i.Character.GetHPPercent() <= usePercent)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 3, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 							tUsingVigor.Start();
 						}
 					}
@@ -103,12 +105,12 @@ namespace xBot
 						WinAPI.InvokeIfRequired(w.Character_tbxUseMPVigor, () => {
 							usePercent = byte.Parse(w.Character_tbxUseMPVigor.Text);
 						});
-						if ((int)i.Character.GetMPPercent() <= usePercent)
+						if (i.Character.GetMPPercent() <= usePercent)
 						{
 							byte slot = 0;
 							if (FindItem(3, 1, 3, ref slot))
 							{
-								PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+								PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 								tUsingVigor.Start();
 							}
 						}
@@ -124,23 +126,23 @@ namespace xBot
 		public void CheckUsingUniversal(object sender, ElapsedEventArgs e)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillUniversal.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusFlags];
+					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
 					if (status.HasFlag(Types.BadStatus.Freezing
-						| Types.BadStatus.Frostbite
-						| Types.BadStatus.ElectricShock
-						| Types.BadStatus.Burn
-						| Types.BadStatus.Poisoning
+						| Types.BadStatus.Frostbite 
+						| Types.BadStatus.ElectricShock 
+						| Types.BadStatus.Burn 
+						| Types.BadStatus.Poisoning 
 						| Types.BadStatus.Zombie))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 6, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 							tUsingUniversal.Start();
 						}
 					}
@@ -155,28 +157,28 @@ namespace xBot
 		private void CheckUsingPurification(object sender, ElapsedEventArgs e)
 		{
 			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillPurification.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusFlags];
-					if (status.HasFlag(Types.BadStatus.Bind
-						| Types.BadStatus.Dull
-						| Types.BadStatus.Fear
+					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
+					if (status.HasFlag(Types.BadStatus.Bind 
+						| Types.BadStatus.Dull 
+						| Types.BadStatus.Fear 
 						| Types.BadStatus.Bleed
-						| Types.BadStatus.Disease
-						| Types.BadStatus.Decay
-						| Types.BadStatus.Weaken
-						| Types.BadStatus.Impotent
-						| Types.BadStatus.Division
-						| Types.BadStatus.Combustion
+						| Types.BadStatus.Disease 
+						| Types.BadStatus.Decay 
+						| Types.BadStatus.Weaken 
+						| Types.BadStatus.Impotent 
+						| Types.BadStatus.Division 
+						| Types.BadStatus.Combustion 
 						| Types.BadStatus.Hidden))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 1, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
 							tUsingPurification.Start();
 						}
 					}
@@ -195,119 +197,113 @@ namespace xBot
 
 			if (w.Party_cbxInviteAll.Checked)
 			{
-				List<SRObject> nearPlayers = i.GetPlayers();
-				if (nearPlayers.Count > 0)
+				if (i.PlayersNear.Count > 0)
 				{
 					if (inParty)
 					{
-						// Remove party members (not trying invite them again)
-						SRObject[] partyPlayers = i.PartyList.ToArray();
-						foreach (SRObject member in partyPlayers)
+						Dictionary<string, SRObject> PlayersNearWithNoParty = new Dictionary<string, SRObject>(i.PlayersNear);
+						// Remove players nears with party
+						for (byte j = 0; j < i.PartyList.Count; j++)
 						{
-							SRObject playerFound = nearPlayers.Find(p => (string)p[SRAttribute.Name] == (string)member[SRAttribute.Name]);
-							if (playerFound != null)
-								nearPlayers.Remove(playerFound);
+							string PlayerName = i.PartyList[j].Name.ToUpper();
+							if (PlayersNearWithNoParty.ContainsKey(PlayerName)){
+								PlayersNearWithNoParty.Remove(PlayerName);
+							}
 						}
-						// Invite players
+						if (PlayersNearWithNoParty.Count == 0)
+							return;
+
+						// Check invitations setup
 						if (!w.Party_cbxInviteOnlyPartySetup.Checked
-							|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupFlags == GetPartySetup())
+							|| PartySetupFlags == GetPartySetup())
 						{
-							int maxMembers = ((Types.PartySetup)PartySetupFlags).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
-							if (i.PartyList.Count < maxMembers)
+							int memberMax = PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
+							if (i.PartyList.Count < memberMax)
 							{
-								if (nearPlayers.Count != 0)
-									// Randomize the character invitation to avoid stuck at only one
-									PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID], (byte)PartySetupFlags);
-								// If no players to invite, try later
+								List<SRObject> randomizePlayers = new List<SRObject>(PlayersNearWithNoParty.Values);
+								PacketBuilder.InviteToParty((uint)randomizePlayers[rand.Next(randomizePlayers.Count)][SRProperty.UniqueID]);
 								tCycleAutoParty.Start();
 							}
 						}
 					}
 					else
 					{
-						PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID],(byte)GetPartySetup());
+						List<SRObject> randomizePlayers = new List<SRObject>(i.PlayersNear.Values);
+						PacketBuilder.CreateParty((uint)randomizePlayers[rand.Next(randomizePlayers.Count)][SRProperty.UniqueID], GetPartySetup());
 						tCycleAutoParty.Start();
 					}
 				}
 				else
 				{
-					// If no players to invite, try later
 					tCycleAutoParty.Start();
 				}
-				// Has no sense continue checking
-				return;
 			}
-			if (w.Party_cbxInvitePartyList.Checked)
+			else if(w.Party_cbxInvitePartyList.Checked)
 			{
-				// Copy the current party list to invite players
-				List<string> invitePlayers = new List<string>();
-				WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
-					for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
-						invitePlayers.Add(w.Party_lstvPartyList.Items[j].Name);
-				});
-				if(invitePlayers.Count> 0)
+				if (i.PlayersNear.Count > 0)
 				{
-					List<SRObject> nearPlayers = i.GetPlayers();
-					if (nearPlayers.Count > 0)
-					{
-						// Randomized to avoid invite the same player always
-						invitePlayers = WinAPI.GetShuffle(invitePlayers, rand);
-
-						// Remove party members (not trying invite them again)
-						List<SRObject> partyPlayers = new List<SRObject>(i.PartyList.ToArray());
-						int k = 0;
-						while (k < invitePlayers.Count)
+					List<string> PlayersToInvite = new List<string>();
+					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
+						for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
 						{
-							// Look for same nick at the same party
-							SRObject playerFound = partyPlayers.Find(p => invitePlayers[k].Equals((string)p[SRAttribute.Name], System.StringComparison.OrdinalIgnoreCase));
-							if (playerFound != null)
+							PlayersToInvite.Add(w.Party_lstvPartyList.Items[j].Name);
+						}
+					});
+					// Remove if are in party already
+					for (int j = 0; j < PlayersToInvite.Count; j++)
+					{
+						for (int k = 0; k < i.PartyList.Count; k++)
+						{
+							if (PlayersToInvite[j].Equals(i.PartyList[k].Name, StringComparison.OrdinalIgnoreCase))
 							{
-								partyPlayers.Remove(playerFound);
-								invitePlayers.RemoveAt(k);
+								PlayersToInvite.RemoveAt(j--);
+								break;
+							}
+						}
+					}
+					if(PlayersToInvite.Count > 0)
+					{
+						// Shuffle and check the party list with near players
+						PlayersToInvite = WinAPI.GetShuffle(PlayersToInvite, rand);
+						SRObject PlayerToInvite = null;
+						for (int j = 0; j < PlayersToInvite.Count; j++)
+						{
+							if (i.PlayersNear.TryGetValue(PlayersToInvite[j],out PlayerToInvite)){
+								break;
+							}
+						}
+						if (PlayerToInvite != null)
+						{
+							if (inParty)
+							{
+								if (!w.Party_cbxInviteOnlyPartySetup.Checked
+									|| PartySetupFlags == GetPartySetup())
+								{
+									int maxMembers = PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
+									if (i.PartyList.Count < maxMembers)
+									{
+										PacketBuilder.InviteToParty((uint)PlayerToInvite[SRProperty.UniqueID]);
+										tCycleAutoParty.Start();
+									}
+								}
 							}
 							else
 							{
-								k++;
-							}
-						}
-						// Check if the player from party list is near to invite him 
-						SRObject invitePlayer = null;
-						foreach (string player in invitePlayers)
-						{
-							invitePlayer = nearPlayers.Find(p => player.Equals((string)p[SRAttribute.Name], System.StringComparison.OrdinalIgnoreCase));
-							if (invitePlayer != null)
-								break;
-						}
-
-						if (inParty)
-						{
-							// Invite players
-							if (!w.Party_cbxInviteOnlyPartySetup.Checked
-								|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupFlags == GetPartySetup())
-							{
-								int maxMembers = ((Types.PartySetup)PartySetupFlags).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
-								if (i.PartyList.Count < maxMembers)
-								{
-									if (invitePlayer != null)
-										PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], (byte)PartySetupFlags);
-									// If none player to invite, try later
-									tCycleAutoParty.Start();
-								}
+								PacketBuilder.CreateParty((uint)PlayerToInvite[SRProperty.UniqueID], GetPartySetup());
+								tCycleAutoParty.Start();
 							}
 						}
 						else
 						{
-							if (invitePlayer != null)
-								PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], (byte)GetPartySetup());
-							// If no player to invite, try later
+							// No players to invite, try later
 							tCycleAutoParty.Start();
 						}
 					}
-					else
-					{
-						// If no players to invite, try later
-						tCycleAutoParty.Start();
-					}
+				}
+				else
+				{
+					// No players near to invite, try later
+					tCycleAutoParty.Start();
 				}
 			}
 		}
@@ -317,21 +313,19 @@ namespace xBot
 			if (w.Party_cbxLeavePartyNoneLeader.Checked)
 			{
 				Info i = Info.Get;
+				SRObject[] members = i.PartyList.ToArray();
 
-				bool NotFound = true;
-				SRObject[] players = i.PartyList.ToArray();
-
+				bool found = false;
 				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
-					foreach (SRObject member in players)
-					{
-						if (w.Party_lstvLeaderList.Items.ContainsKey(((string)member[SRAttribute.Name]).ToLower()))
+					for (byte j = 0; j < i.PartyList.Count; j++){
+						if (w.Party_lstvLeaderList.Items.ContainsKey(i.PartyList[j].Name.ToUpper()))
 						{
-							NotFound = false;
+							found = true;
 							break;
-						}
+            }
 					}
 				});
-				if (NotFound)
+				if (!found)
 				{
 					PacketBuilder.LeaveParty();
 					return true;
@@ -339,10 +333,16 @@ namespace xBot
 			}
 			return false;
 		}
+		public void CheckPartyMatchAutoReform()
+		{
+			PacketBuilder.RequestPartyMatch();
+		}
 		public void CheckUsingRecoveryKit()
 		{
 			if (!tUsingRecoveryKit.Enabled)
+			{
 				CheckUsingRecoveryKit(tUsingRecoveryKit, null);
+			}
 		}
 		private void CheckUsingRecoveryKit(object sender, ElapsedEventArgs e)
 		{
@@ -362,12 +362,12 @@ namespace xBot
 					WinAPI.InvokeIfRequired(w.Character_tbxUseTransportHP, () => {
 						useHP = byte.Parse(w.Character_tbxUseTransportHP.Text);
 					});
-					if ((int)pet.GetHPPercent() <= useHP)
+					if (pet.GetHPPercent() <= useHP)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 4, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot,(uint)pet[SRAttribute.UniqueID]);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot,(uint)pet[SRProperty.UniqueID]);
 							tUsingRecoveryKit.Start();
 						}
 						return; // Avoid checking other pets
@@ -385,12 +385,12 @@ namespace xBot
 					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHP, () => {
 						useHP = byte.Parse(w.Character_tbxUsePetHP.Text);
 					});
-					if ((int)pet.GetHPPercent() <= useHP)
+					if (pet.GetHPPercent() <= useHP)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 4, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot,(uint)pet[SRAttribute.UniqueID]);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot,(uint)pet[SRProperty.UniqueID]);
 							tUsingRecoveryKit.Start();
 						}
 						return; // Avoid checking other pets
@@ -415,15 +415,15 @@ namespace xBot
 				// As priority pet transport
 				pet = i.GetPets().Find(p =>
 					(p.ID4 == 1 || p.ID4 == 2)
-					&& p.Contains(SRAttribute.BadStatusFlags)
-					&& !((Types.BadStatus)p[SRAttribute.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+					&& p.Contains(SRProperty.BadStatusFlags)
+					&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
 				);
 				if (pet == null)
 				{
 					pet = i.GetPets().Find(p =>
 						p.ID4 == 3
-						&& p.Contains(SRAttribute.BadStatusFlags)
-						&& !((Types.BadStatus)p[SRAttribute.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+						&& p.Contains(SRProperty.BadStatusFlags)
+						&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
 					);
 				}
 				// At least one pet has bad status
@@ -432,7 +432,7 @@ namespace xBot
 					byte slot = 0; // dummy
 					if (FindItem(3, 2, 7, ref slot))
 					{
-						PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot, (uint)pet[SRAttribute.UniqueID]);
+						PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot, (uint)pet[SRProperty.UniqueID]);
 						tUsingAbnormalPill.Start();
 					}
 				}
@@ -458,14 +458,14 @@ namespace xBot
 					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHGP, () => {
 						usePercent = byte.Parse(w.Character_tbxUsePetHGP.Text);
 					});
-					// Check hp %
-					int HGPPercent = (int)(((ushort)pet[SRAttribute.HGP])*0.01); // 10000 = 100%
+					// Check hgp %
+					int HGPPercent = (int)(((ushort)pet[SRProperty.HGP])*0.01); // 10000 = 100%
           if (HGPPercent <= usePercent)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 9, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot, (uint)pet[SRAttribute.UniqueID]);
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot, (uint)pet[SRProperty.UniqueID]);
 							WinAPI.ResetTimer(ref tUsingHGP, 1000);
 							return;
 						}

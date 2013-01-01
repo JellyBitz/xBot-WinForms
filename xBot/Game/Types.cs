@@ -39,6 +39,11 @@ namespace xBot.Game
 			Unsummoned = 3,
 			Dead = 4
 		}
+		public enum MovementSpeed : byte
+		{
+			Walking,
+			Running
+		}
 		public enum MovementAction : byte
 		{
 			Spinning = 0,
@@ -47,7 +52,7 @@ namespace xBot.Game
 		public enum LifeState : byte
 		{
 			/// <summary>
-			/// The character never has been connected.
+			/// The character is not connected to the game.
 			/// </summary>
 			Unborn = 0,
 			Alive = 1,
@@ -55,7 +60,7 @@ namespace xBot.Game
 		}
 		public enum MotionState : byte
 		{
-			None = 0,
+			StandUp = 0,
 			Walking = 2,
 			Running = 3,
 			Sitting = 4
@@ -261,6 +266,9 @@ namespace xBot.Game
 			PetToInventory = 11,
 			InventoryToPet = 12,
 
+			QuestToInventory = 14,
+			InventoryToQuest = 15,
+
 			TransportToTransport = 16,
 			GroundToTransport = 17,
 			ShopToTransport = 19,
@@ -323,7 +331,7 @@ namespace xBot.Game
 		/// </summary>
 		public enum Weapons : byte
 		{
-			None = 255
+			None = byte.MaxValue
 		}
 	}
 }

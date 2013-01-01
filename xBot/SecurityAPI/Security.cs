@@ -404,7 +404,7 @@ namespace SecurityAPI
 
             Packet response = new Packet(0x5000);
 
-            response.WriteUInt8(m_security_flag);
+            response.WriteByte(m_security_flag);
 
             if (m_security_flags.blowfish == 1)
             {
@@ -412,7 +412,7 @@ namespace SecurityAPI
 
                 m_blowfish.Initialize(BitConverter.GetBytes(m_initial_blowfish_key));
 
-                response.WriteUInt64(m_initial_blowfish_key);
+                response.WriteULong(m_initial_blowfish_key);
             }
             if (m_security_flags.security_bytes == 1)
             {
@@ -420,8 +420,8 @@ namespace SecurityAPI
                 SetupCountByte(m_seed_count);
                 m_crc_seed = NextUInt8();
 
-                response.WriteUInt32(m_seed_count);
-                response.WriteUInt32(m_crc_seed);
+                response.WriteUInt(m_seed_count);
+                response.WriteUInt(m_crc_seed);
             }
             if (m_security_flags.handshake == 1)
             {
@@ -431,10 +431,10 @@ namespace SecurityAPI
                 m_value_p = NextUInt32() & 0x7FFFFFFF;
                 m_value_A = G_pow_X_mod_P(m_value_p, m_value_x, m_value_g);
 
-                response.WriteUInt64(m_handshake_blowfish_key);
-                response.WriteUInt32(m_value_g);
-                response.WriteUInt32(m_value_p);
-                response.WriteUInt32(m_value_A);
+                response.WriteULong(m_handshake_blowfish_key);
+                response.WriteUInt(m_value_g);
+                response.WriteUInt(m_value_p);
+                response.WriteUInt(m_value_A);
             }
 
             m_outgoing_packets.Add(response);
@@ -545,8 +545,8 @@ namespace SecurityAPI
                 byte tmp_flag = FromSecurityFlags(tmp_flags);
 
                 Packet response = new Packet(0x5000);
-                response.WriteUInt8(tmp_flag);
-                response.WriteUInt64(m_challenge_key);
+                response.WriteByte(tmp_flag);
+                response.WriteULong(m_challenge_key);
                 m_outgoing_packets.Add(response);
             }
             else
@@ -630,8 +630,8 @@ namespace SecurityAPI
 
                     // Handshake challenge
                     Packet response = new Packet(0x5000);
-                    response.WriteUInt32(m_value_B);
-                    response.WriteUInt64(m_client_key);
+                    response.WriteUInt(m_value_B);
+                    response.WriteULong(m_client_key);
                     m_outgoing_packets.Insert(0, response);
 
                     // The handshake has started
@@ -651,7 +651,7 @@ namespace SecurityAPI
                     // Identify
                     Packet response2 = new Packet(0x2001, true, false);
                     response2.WriteAscii(m_identity_name);
-                    response2.WriteUInt8(m_identity_flag);
+                    response2.WriteByte(m_identity_flag);
 
                     // Insert at the front, we want 0x9000 first, then 0x2001
                     m_outgoing_packets.Insert(0, response2);
@@ -1190,7 +1190,7 @@ namespace SecurityAPI
                                     {
                                         throw (new Exception("[SecurityAPI::Recv] A malformed 0x600D packet was received."));
                                     }
-                                    m_massive_packet.WriteUInt8Array(packet_data.ReadBytes(packet_size - 1));
+                                    m_massive_packet.WriteByteArray(packet_data.ReadBytes(packet_size - 1));
                                     m_massive_count--;
                                     if (m_massive_count == 0)
                                     {

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("xBot")]
 [assembly: AssemblyDescription("xBot - Private Silkroad Bot")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ProjexNET")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xBot")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 // Puede especificar todos los valores o usar los valores predeterminados de número de compilación y de revisión 
 // mediante el carácter '*', como se muestra a continuación:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1")]
-[assembly: AssemblyFileVersion("0.0.1")]
+[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyFileVersion("0.0.2")]
 [assembly: NeutralResourcesLanguage("en-US")]
 

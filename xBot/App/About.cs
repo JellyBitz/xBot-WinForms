@@ -15,13 +15,12 @@ namespace xBot
     }
 		private void InitializeFonts(Control c)
 		{
-			for (int i = 0; i < c.Controls.Count; i++)
-			{
-				// Using fontName as TAG to be selected from WinForms
-				c.Controls[i].Font = Fonts.Get.Load(c.Controls[i].Font, (string)c.Controls[i].Tag);
-				InitializeFonts(c.Controls[i]);
-				c.Controls[i].Tag = null;
-			}
+			Fonts f = Fonts.Get;
+			// Using fontName as TAG to be selected from WinForms
+			c.Font = f.Load(c.Font, (string)c.Tag);
+			c.Tag = null;
+			for (int j = 0; j < c.Controls.Count; j++)
+        InitializeFonts(c.Controls[j]);
 		}
 		#region (GUI Design)
 		private void Window_Drag_MouseDown(object sender, MouseEventArgs e)

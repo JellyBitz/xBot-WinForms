@@ -325,7 +325,6 @@ namespace xBot
 
 					JObject Options = new JObject();
 					Party["Options"] = Options;
-
 					Options["ExpFree"] = w.Party_rbnSetupExpFree.Checked;
 					Options["ItemFree"] = w.Party_rbnSetupItemFree.Checked;
 					Options["OnlyMasterInvite"] = w.Party_cbxSetupMasterInvite.Checked;
@@ -334,11 +333,11 @@ namespace xBot
 					Options["AcceptPartyList"] = w.Party_cbxAcceptPartyList.Checked;
 					Options["AcceptLeaderList"] = w.Party_cbxAcceptLeaderList.Checked;
 					Options["LeavePartyLeaderNotFound"] = w.Party_cbxLeavePartyNoneLeader.Checked;
-					Options["RefusePartys"] = w.Party_cbxRefusePartys.Checked;
+					Options["RefuseInvitations"] = w.Party_cbxRefuseInvitations.Checked;
+					Options["ActivateLeaderCommands"] = w.Party_cbxActivateLeaderCommands.Checked;
 					Options["InviteOnlyPartySetup"] = w.Party_cbxInviteOnlyPartySetup.Checked;
 					Options["InviteAll"] = w.Party_cbxInviteAll.Checked;
 					Options["InvitePartyList"] = w.Party_cbxInvitePartyList.Checked;
-
 					JArray players = new JArray();
 					foreach (ListViewItem item in w.Party_lstvPartyList.Items)
 						players.Add(item.Text);
@@ -347,6 +346,26 @@ namespace xBot
 					foreach (ListViewItem item in w.Party_lstvLeaderList.Items)
 						leaders.Add(item.Text);
 					Options["LeaderList"] = leaders;
+					
+					JObject Match = new JObject();
+					Party["Match"] = Match;
+					Match["Title"] = w.Party_tbxMatchTitle.Text;
+					Match["From"] = w.Party_tbxMatchFrom.Text;
+					Match["To"] = w.Party_tbxMatchTo.Text;
+					Match["AutoReform"] = w.Party_cbxMatchAutoReform.Checked;
+					Match["AcceptAll"] = w.Party_cbxMatchAcceptAll.Checked;
+					Match["AcceptPartyList"] = w.Party_cbxMatchAcceptPartyList.Checked;
+					Match["AcceptLeaderList"] = w.Party_cbxMatchAcceptLeaderList.Checked;
+					Match["Refuse"] = w.Party_cbxMatchRefuse.Checked;
+
+					JObject Training = new JObject();
+					Party["Training"] = Training;
+
+					JObject Area = new JObject();
+					Party["Area"] = Area;
+					Area["TracePartyMaster"] = w.Training_cbxTraceMaster.Checked;
+					Area["UseTraceDistance"] = w.Training_cbxTraceDistance.Checked;
+					Area["TraceDistance"] = w.Training_tbxTraceDistance.Text;
 					#endregion
 
 					// Saving
@@ -370,22 +389,27 @@ namespace xBot
 			string cfgPath = "Config\\"+i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json";
 			WinAPI.InvokeIfRequired(w,()=> {
 				try {
-					LoadingCharacterSettings = true;
-          if (File.Exists(cfgPath))
+					if (File.Exists(cfgPath))
 					{
 						LoadCharacterSettings(cfgPath);
+						w.Log("Configs loaded successfully");
 					}
 					else if (w.Settings_cbxLoadDefaultConfigs.Checked && File.Exists("Config\\Default.json"))
 					{
 						LoadCharacterSettings("Config\\Default.json");
+						w.Log("Configs by default loaded successfully");
 					}
-					LoadingCharacterSettings = false;
+					else
+					{
+						LoadCharacterSettings("");
+						w.Log("Configs created successfully");
+					}
 				}
 				catch
 				{
 					LoadingCharacterSettings = false;
-					w.Log("Error loading bot settings.. using the settings partially loaded");
 					File.Move(cfgPath, cfgPath + ".bkp");
+					w.Log("Error loading character configs... Using the configs partially loaded");
 					SaveCharacterSettings();
 				}
 			});
@@ -395,13 +419,17 @@ namespace xBot
 			lock (CharacterSettingsLock)
 			{
 				LoadingCharacterSettings = true;
-				JObject root = JObject.Parse(File.ReadAllText(path));
+				JObject root;
+				if(path == "")
+					root = new JObject();
+				else
+					root = JObject.Parse(File.ReadAllText(path));
 
 				Window w = Window.Get;
 				#region (Character Tab)
-				JObject Character = (JObject)root["Character"];
+				JObject Character = root.ContainsKey("Character") ? (JObject)root["Character"] : new JObject();
 
-				JObject Inf = (JObject)Character["Info"];
+				JObject Inf = Character.ContainsKey("Info") ? (JObject)Character["Info"] : new JObject();
 				if (Inf.ContainsKey("ShowExp"))
 					w.Character_cbxMessageExp.Checked = (bool)Inf["ShowExp"];
 				else
@@ -419,7 +447,7 @@ namespace xBot
 				else
 					w.Character_cbxMessagePicks.Checked = false;
 
-				JObject Potions = (JObject)Character["Potions"];
+				JObject Potions = Character.ContainsKey("Potions") ? (JObject)Character["Potions"] : new JObject();
 				if (Potions.ContainsKey("UseHP"))
 					w.Character_cbxUseHP.Checked = (bool)Potions["UseHP"];
 				else
@@ -489,7 +517,7 @@ namespace xBot
 				else
 					w.Character_tbxUsePetHGP.Text = "50";
 
-				JObject Misc = (JObject)Character["Misc"];
+				JObject Misc = Character.ContainsKey("Misc") ? (JObject)Character["Misc"] : new JObject();
 				if (Misc.ContainsKey("AcceptRess"))
 					w.Character_cbxAcceptRess.Checked = (bool)Misc["AcceptRess"];
 				else
@@ -501,9 +529,9 @@ namespace xBot
 				#endregion
 
 				#region (Party Tab)
-				JObject Party = (JObject)root["Party"];
+				JObject Party = root.ContainsKey("Party") ? (JObject)root["Party"] : new JObject();
 
-				JObject Options = (JObject)Party["Options"];
+				JObject Options = Party.ContainsKey("Options") ? (JObject)Party["Options"] : new JObject();
 				if (Options.ContainsKey("ExpFree"))
 					w.Party_rbnSetupExpFree.Checked = (bool)Options["ExpFree"];
 				else
@@ -540,10 +568,14 @@ namespace xBot
 					w.Party_cbxLeavePartyNoneLeader.Checked = (bool)Options["LeavePartyLeaderNotFound"];
 				else
 					w.Party_cbxLeavePartyNoneLeader.Checked = false;
-				if (Options.ContainsKey("RefusePartys"))
-					w.Party_cbxRefusePartys.Checked = (bool)Options["RefusePartys"];
+				if (Options.ContainsKey("RefuseInvitations"))
+					w.Party_cbxRefuseInvitations.Checked = (bool)Options["RefuseInvitations"];
 				else
-					w.Party_cbxRefusePartys.Checked = false;
+					w.Party_cbxRefuseInvitations.Checked = false;
+				if (Options.ContainsKey("ActivateLeaderCommands"))
+					w.Party_cbxActivateLeaderCommands.Checked = (bool)Options["ActivateLeaderCommands"];
+				else
+					w.Party_cbxActivateLeaderCommands.Checked = false;
 				if (Options.ContainsKey("InviteOnlyPartySetup"))
 					w.Party_cbxInviteOnlyPartySetup.Checked = (bool)Options["InviteOnlyPartySetup"];
 				else
@@ -556,28 +588,78 @@ namespace xBot
 					w.Party_cbxInvitePartyList.Checked = (bool)Options["InvitePartyList"];
 				else
 					w.Party_cbxInvitePartyList.Checked = false;
-
 				w.Party_lstvPartyList.Items.Clear();
 				if (Options.ContainsKey("PartyList"))
 				{
 					foreach (JToken player in (JArray)Options["PartyList"])
 					{
 						ListViewItem item = new ListViewItem((string)player);
-						item.Name = item.Text.ToLower();
+						item.Name = item.Text.ToUpper();
 						w.Party_lstvPartyList.Items.Add(item);
 					}
 				}
-
 				w.Party_lstvLeaderList.Items.Clear();
         if (Options.ContainsKey("LeaderList"))
 				{
 					foreach (JToken leader in (JArray)Options["LeaderList"])
 					{
 						ListViewItem item = new ListViewItem((string)leader);
-						item.Name = item.Text.ToLower();
+						item.Name = item.Text.ToUpper();
 						w.Party_lstvLeaderList.Items.Add(item);
 					}
 				}
+
+				JObject Match = Party.ContainsKey("Match") ? (JObject)Party["Match"] : new JObject();
+				if (Match.ContainsKey("Title"))
+					w.Party_tbxMatchTitle.Text = (string)Match["Title"];
+				else
+					w.Party_tbxMatchTitle.Text = "xBot | Fear cuts deeper than swords...";
+				if (Match.ContainsKey("From"))
+					w.Party_tbxMatchFrom.Text = (string)Match["From"];
+				else
+					w.Party_tbxMatchFrom.Text = "1";
+				if (Match.ContainsKey("To"))
+					w.Party_tbxMatchTo.Text = (string)Match["To"];
+				else
+					w.Party_tbxMatchTo.Text = "135";
+				if (Match.ContainsKey("AutoReform"))
+					w.Party_cbxMatchAutoReform.Checked = (bool)Match["AutoReform"];
+				else
+					w.Party_cbxMatchAutoReform.Checked = false;
+				if (Match.ContainsKey("AcceptAll"))
+					w.Party_cbxMatchAcceptAll.Checked = (bool)Match["AcceptAll"];
+				else
+					w.Party_cbxMatchAcceptAll.Checked = true;
+				if (Match.ContainsKey("AcceptPartyList"))
+					w.Party_cbxMatchAcceptPartyList.Checked = (bool)Match["AcceptPartyList"];
+				else
+					w.Party_cbxMatchAcceptPartyList.Checked = false;
+				if (Match.ContainsKey("AcceptLeaderList"))
+					w.Party_cbxMatchAcceptLeaderList.Checked = (bool)Match["AcceptLeaderList"];
+				else
+					w.Party_cbxMatchAcceptLeaderList.Checked = false;
+				if (Match.ContainsKey("Refuse"))
+					w.Party_cbxMatchRefuse.Checked = (bool)Match["Refuse"];
+				else
+					w.Party_cbxMatchRefuse.Checked = false;
+				#endregion
+
+				#region (Training Tab)
+				JObject Training = root.ContainsKey("Training") ? (JObject)root["Training"] : new JObject();
+
+				JObject Area = Training.ContainsKey("Area") ? (JObject)Training["Area"] : new JObject();
+				if (Area.ContainsKey("TracePartyMaster"))
+					w.Training_cbxTraceMaster.Checked = (bool)Area["TracePartyMaster"];
+				else
+					w.Training_cbxTraceMaster.Checked = false;
+				if (Area.ContainsKey("UseTraceDistance"))
+					w.Training_cbxTraceDistance.Checked = (bool)Area["UseTraceDistance"];
+				else
+					w.Training_cbxTraceDistance.Checked = false;
+				if (Area.ContainsKey("TraceDistance"))
+					w.Training_tbxTraceDistance.Text = (string)Area["TraceDistance"];
+				else
+					w.Training_tbxTraceDistance.Text = "5";
 				#endregion
 
 				LoadingCharacterSettings = false;

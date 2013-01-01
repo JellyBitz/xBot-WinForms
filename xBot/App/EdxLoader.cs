@@ -126,12 +126,11 @@ namespace xBot
 			cfg.AppendLine("KSRO_750=no");
 
 			// Getting a private temporal app space
-			string cfgPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\ProjexNET";
+			string cfgPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\xBot";
 			if (!Directory.Exists(cfgPath))
+			{
 				Directory.CreateDirectory(cfgPath);
-			cfgPath += "\\xBot";
-			if (!Directory.Exists(cfgPath))
-				Directory.CreateDirectory(cfgPath);
+			}
 			cfgPath += "\\xBotLoader.ini";
 			File.WriteAllText(cfgPath, cfg.ToString());
 		}

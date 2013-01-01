@@ -15,8 +15,7 @@ namespace xBot
 	{
 		#region (DLL Imports)
 		[DllImport("gdi32.dll")]
-		public static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,
-						IntPtr pdv, [In] ref uint pcFonts);
+		public static extern IntPtr AddFontMemResourceEx(IntPtr pbFont, uint cbFont,IntPtr pdv, [In] ref uint pcFonts);
 		[DllImport("user32.dll")]
 		public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 		public const int WM_VSCROLL = 277;

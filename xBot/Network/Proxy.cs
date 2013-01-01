@@ -85,6 +85,12 @@ namespace xBot.Network
 		public void Start()
 		{
 			_running = true;
+			Window w = Window.Get;
+			WinAPI.InvokeIfRequired(w.Login_btnStart, ()=> {
+				w.Login_btnStart.Text = "STOP";
+				w.EnableControl(w.Login_btnStart, true);
+			});
+
 			Thread gwThread = (new Thread(ThreadGateway));
 			gwThread.Priority = ThreadPriority.AboveNormal;
 			gwThread.Start();
@@ -111,7 +117,7 @@ namespace xBot.Network
 			_gateway = new Gateway(this.SelectHost(), this.SelectPort());
 
 			Window w = Window.Get;
-			Socket SocketBinded = bindSocket("127.0.0.1", 20190);
+			Socket SocketBinded = BindSocket("127.0.0.1", 20190);
 			if (!LoginClientlessMode)
 			{
 				Gateway.Local.Socket = SocketBinded;
@@ -124,6 +130,8 @@ namespace xBot.Network
 					sro_client = loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
 					if (sro_client == null)
 						Stop();
+					else
+						sro_client.PriorityClass = ProcessPriorityClass.AboveNormal;
 
 					int dummy = 0;
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
@@ -196,10 +204,8 @@ namespace xBot.Network
 								if (context == Gateway.Remote && w.Settings_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
-									{
-										if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
-											opcodeFound = true;
+									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -228,8 +234,8 @@ namespace xBot.Network
 										
 										// Send packet about client listeninig
 										Packet agPacket = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
-										agPacket.WriteUInt8(result);
-										agPacket.WriteUInt32(Agent.id);
+										agPacket.WriteByte(result);
+										agPacket.WriteUInt(Agent.id);
 										agPacket.WriteAscii(((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString());
 										agPacket.WriteUInt16(((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1);
 										context.RelaySecurity.Send(agPacket);
@@ -245,7 +251,6 @@ namespace xBot.Network
 													uint attempts = packet.ReadUInt();
 													w.Log("Password entry has failed (" + attempts + " / " + maxAttempts + " attempts)");
 													w.LogProcess("Password failed", Window.ProcessState.Warning);
-													w.EnableControl(w.Login_btnStart, true);
 													break;
 												}
 											case 2:
@@ -261,7 +266,6 @@ namespace xBot.Network
 													ushort endSecond = packet.ReadUShort();
 													w.Log("Account banned till [" + endDay + "/" + endMonth + "/" + endYear + " " + endHour + "/" + endMinute + "/" + endSecond + "]. Reason: " + blockedReason);
 													w.LogProcess("Account banned", Window.ProcessState.Error);
-													w.EnableControl(w.Login_btnStart, true);
 												}
 												break;
 											case 3:
@@ -273,6 +277,7 @@ namespace xBot.Network
 										}
 										// Client bugfix reset
 										Bot.Get.LoggedFromBot = false;
+										w.EnableControl(w.Login_btnStart, true);
 
 										context.RelaySecurity.Send(packet);
 									}
@@ -306,8 +311,7 @@ namespace xBot.Network
 										bool opcodeFound = false;
 										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
-												opcodeFound = true;
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -367,7 +371,7 @@ namespace xBot.Network
 			// Connect AgentClient to Proxy
 			if (!ClientlessMode)
 			{
-				Agent.Local.Socket = bindSocket(Host, Port);
+				Agent.Local.Socket = BindSocket(Host, Port);
 				try
 				{
 					int dummy = 0;
@@ -449,8 +453,7 @@ namespace xBot.Network
 									bool opcodeFound = false;
 									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 									{
-										if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
-											opcodeFound = true;
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -486,8 +489,7 @@ namespace xBot.Network
 										bool opcodeFound = false;
 										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
-												opcodeFound = true;
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -532,7 +534,7 @@ namespace xBot.Network
 				Stop();
 			}
 		}
-		private Socket bindSocket(string ip, int port)
+		private Socket BindSocket(string ip, int port)
 		{
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			for (int i = port; i < ushort.MaxValue; i += 2)
@@ -587,7 +589,7 @@ namespace xBot.Network
 			{
 				Thread.Sleep(6666);
 				// Keep only one connection alive at clientless mode
-				if (Agent != null && Agent.Remote.Socket.Connected)
+				if (Agent != null)
 				{
 					try
 					{
@@ -596,7 +598,7 @@ namespace xBot.Network
 					}
 					catch { /*Connection closed*/}
 				}
-			  else if (Gateway != null && Gateway.Remote.Socket.Connected)
+			  else if (Gateway != null)
 				{
 					try
 					{
@@ -691,11 +693,17 @@ namespace xBot.Network
 			}
 
 			// Relogin
-			if (w.Login_cbxAutoRelog.Checked)
+			if (w.Login_cbxRelogin.Checked)
 			{
-				(new Thread((ThreadStart)delegate{
+				(new Thread((ThreadStart)delegate
+				{
 					Thread.Sleep(10000);
-					w.Control_Click(w.Login_btnStart, null);
+					try{
+						if (w.Login_cbxRelogin.Checked){
+							w.Control_Click(w.Login_btnStart, null);
+						}
+					}
+					catch	{	}
 				})).Start();
 			}
 		}

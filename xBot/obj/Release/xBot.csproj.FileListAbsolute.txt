@@ -175,7 +175,8 @@ C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.About.resources
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.PK2Extractor.resources
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.Window.resources
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.Properties.Resources.resources
-C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xGraphics.ExampleControls.resources
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.csproj.GenerateResource.Cache
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.exe
 C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.pdb
+C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.csprojResolveAssemblyReference.cache
+C:\Users\Luisana\Documents\GitHub\xBot\xBot\obj\Release\xBot.Ads.resources

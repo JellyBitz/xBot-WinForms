@@ -54,20 +54,19 @@ namespace xBot
 		}
 		private void InitializeFonts(Control c)
 		{
-			for (int i = 0; i < c.Controls.Count; i++)
-			{
-				// Using fontName as TAG to be selected from WinForms
-				c.Controls[i].Font = Fonts.Get.Load(c.Controls[i].Font, (string)c.Controls[i].Tag);
-				InitializeFonts(c.Controls[i]);
-			}
+			Fonts f = Fonts.Get;
+			// Using fontName as TAG to be selected from WinForms
+			c.Font = f.Load(c.Font, (string)c.Tag);
+			c.Tag = null;
+			for (int j = 0; j < c.Controls.Count; j++)
+				InitializeFonts(c.Controls[j]);
 		}
 		/// <summary>
 		/// Log a message to historial.
 		/// </summary>
 		public void Log(string Message)
 		{
-			try
-			{
+			try {
 				WinAPI.InvokeIfRequired(rtbxLogs, () => {
 					rtbxLogs.Text += "\n" + WinAPI.GetDate() + " " + Message;
 				});
@@ -1074,9 +1073,6 @@ namespace xBot
 							tab.Name = refShopTab[j][0];
 							tab.Title = GetUIText(refShopTab[j][2]);
 							group.Tabs.Add(tab);
-
-							// Remove line inmediatly to speed up the process
-							refShopTab.RemoveAt(j--);
 						}
 					}
 				}
@@ -1153,9 +1149,6 @@ namespace xBot
 									item.Durability = refScrapOfPackageItem[itemPackageName][2];
 									item.MagicParams = refScrapOfPackageItem[itemPackageName][3];
 									tab.Items.Add(item);
-
-									// Remove line inmediatly to speed up the process
-									refShopGoods.RemoveAt(j--);
 
 									// CPU break
 									Thread.Sleep(1);
@@ -1388,7 +1381,6 @@ namespace xBot
 			string line, name, destination, tid1, tid2, tid3, tid4;
 			char[] split = new char[] { '\t' };
 			string[] data;
-			SRObject tp = new SRObject();
 
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportLink.txt", "server_dep/silkroad/textdata")))
 			{

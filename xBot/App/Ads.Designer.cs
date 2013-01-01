@@ -28,12 +28,14 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.lblHeader = new System.Windows.Forms.Label();
 			this.lblHeaderIcon = new System.Windows.Forms.Label();
 			this.panelAdvertising = new System.Windows.Forms.Panel();
+			this.pbxBanner = new System.Windows.Forms.PictureBox();
 			this.btnWinExit = new System.Windows.Forms.Button();
 			this.lblServerName = new System.Windows.Forms.Label();
-			this.pbxBanner = new System.Windows.Forms.PictureBox();
+			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.panelAdvertising.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbxBanner)).BeginInit();
 			this.SuspendLayout();
@@ -48,7 +50,7 @@
 			this.lblHeader.Name = "lblHeader";
 			this.lblHeader.Padding = new System.Windows.Forms.Padding(44, 0, 0, 0);
 			this.lblHeader.Size = new System.Drawing.Size(598, 42);
-			this.lblHeader.TabIndex = 20;
+			this.lblHeader.TabIndex = 0;
 			this.lblHeader.Tag = "Source Sans Pro";
 			this.lblHeader.Text = "xBot | Advertising xx ...";
 			this.lblHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -61,7 +63,7 @@
 			this.lblHeaderIcon.Location = new System.Drawing.Point(5, 2);
 			this.lblHeaderIcon.Name = "lblHeaderIcon";
 			this.lblHeaderIcon.Size = new System.Drawing.Size(40, 40);
-			this.lblHeaderIcon.TabIndex = 21;
+			this.lblHeaderIcon.TabIndex = 0;
 			// 
 			// panelAdvertising
 			// 
@@ -73,8 +75,18 @@
 			this.panelAdvertising.Name = "panelAdvertising";
 			this.panelAdvertising.Padding = new System.Windows.Forms.Padding(9, 7, 9, 9);
 			this.panelAdvertising.Size = new System.Drawing.Size(598, 356);
-			this.panelAdvertising.TabIndex = 22;
+			this.panelAdvertising.TabIndex = 0;
 			this.panelAdvertising.Tag = "Source Sans Pro";
+			// 
+			// pbxBanner
+			// 
+			this.pbxBanner.Location = new System.Drawing.Point(9, 7);
+			this.pbxBanner.Name = "pbxBanner";
+			this.pbxBanner.Size = new System.Drawing.Size(580, 340);
+			this.pbxBanner.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pbxBanner.TabIndex = 0;
+			this.pbxBanner.TabStop = false;
+			this.pbxBanner.Click += new System.EventHandler(this.Control_Click);
 			// 
 			// btnWinExit
 			// 
@@ -91,8 +103,7 @@
 			this.btnWinExit.Margin = new System.Windows.Forms.Padding(0);
 			this.btnWinExit.Name = "btnWinExit";
 			this.btnWinExit.Size = new System.Drawing.Size(24, 24);
-			this.btnWinExit.TabIndex = 23;
-			this.btnWinExit.TabStop = false;
+			this.btnWinExit.TabIndex = 0;
 			this.btnWinExit.Tag = "Font Awesome 5 Pro Regular";
 			this.btnWinExit.Text = "";
 			this.btnWinExit.UseCompatibleTextRendering = true;
@@ -112,20 +123,17 @@
 			this.lblServerName.Tag = "Source Sans Pro";
 			this.lblServerName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// pbxBanner
+			// ToolTips
 			// 
-			this.pbxBanner.Location = new System.Drawing.Point(9, 7);
-			this.pbxBanner.Name = "pbxBanner";
-			this.pbxBanner.Size = new System.Drawing.Size(580, 340);
-			this.pbxBanner.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-			this.pbxBanner.TabIndex = 0;
-			this.pbxBanner.TabStop = false;
-			this.pbxBanner.Click += new System.EventHandler(this.Control_Click);
+			this.ToolTips.AutoPopDelay = 5000;
+			this.ToolTips.InitialDelay = 250;
+			this.ToolTips.ReshowDelay = 100;
+			this.ToolTips.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+			this.ToolTips.ToolTipTitle = "Go to website";
 			// 
 			// Ads
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
 			this.ClientSize = new System.Drawing.Size(600, 400);
 			this.Controls.Add(this.lblServerName);
@@ -137,6 +145,7 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Ads";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Tag = "Font Awesome 5 Pro Regular";
 			this.Text = "Ads";
@@ -149,12 +158,12 @@
 		}
 
 		#endregion
-
 		private System.Windows.Forms.Label lblHeader;
 		private System.Windows.Forms.Label lblHeaderIcon;
 		private System.Windows.Forms.Panel panelAdvertising;
 		private System.Windows.Forms.Button btnWinExit;
 		private System.Windows.Forms.Label lblServerName;
 		private System.Windows.Forms.PictureBox pbxBanner;
+		private System.Windows.Forms.ToolTip ToolTips;
 	}
 }

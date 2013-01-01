@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using xBot.Game.Objects;
 
 namespace xBot.Game
 {
@@ -37,6 +38,10 @@ namespace xBot.Game
 		/// </summary>
 		public byte Locale { get; set; }
 		/// <summary>
+		/// SR_Client name
+		/// </summary>
+		public string SR_Client { get; set; }
+		/// <summary>
 		/// Silkroad Version
 		/// </summary>
 		public uint Version { get; set; }
@@ -58,6 +63,10 @@ namespace xBot.Game
 		/// </summary>
 		public Dictionary<uint, SRObject> Pets { get; }
 		/// <summary>
+		/// Gets all pets from character.
+		/// </summary>
+		public Dictionary<string, SRObject> PlayersNear { get; }
+		/// <summary>
 		/// Gets all entity that spawn closer.
 		/// </summary>
 		public Dictionary<uint,SRObject> EntityList { get; }
@@ -73,7 +82,7 @@ namespace xBot.Game
 				return _ServerTime;
       }
 			set {
-				_ServerTimeDate = DateTime.Now;
+				_ServerTimeDate = DateTime.UtcNow;
 				_ServerTime = value;
       }
 		}
@@ -103,6 +112,7 @@ namespace xBot.Game
 		{
 			Character = null;
 			Pets = new Dictionary<uint, SRObject>();
+			PlayersNear = new Dictionary<string, SRObject>();
 			EntityList = new Dictionary<uint, SRObject>();
 			PartyList = new List<SRObject>();
 			db = null;
@@ -129,32 +139,9 @@ namespace xBot.Game
 		/// <summary>
 		/// Moonphase to display graphics.
 		/// </summary>
-		public string GetMoonphase()
+		public string GetDayTime()
 		{
-			if(Moonphase == 0)
-			{
-				return "New Moon";
-			}
-			else if (Moonphase > 0 && Moonphase <= 5)
-			{
-				return "Waxing Crescent";
-			}
-			else if (Moonphase >= 6 && Moonphase <= 8)
-			{
-				return "Firts Quarter";
-			}
-			else if (Moonphase >= 9 && Moonphase <= 14)
-			{
-				return "Waxing Gibbous";
-			}
-			else if (Moonphase >= 15 && Moonphase <= 17)
-			{
-				return "Full Moon";
-			}
-			else
-			{
-				return Moonphase.ToString();
-			}
+			return Moonphase.ToString();
 		}
 		/// <summary>
 		/// Wheater to display graphics.
@@ -180,7 +167,7 @@ namespace xBot.Game
 				int second = (int)(ServerTime >> 26) & 63;
 				DateTime time = new DateTime(year, month, day,hour,minute,second);
 				// Sync time lapsed from last time saved
-				time = time.Add(DateTime.Now.Subtract(_ServerTimeDate));
+				time = time.Add(DateTime.UtcNow.Subtract(_ServerTimeDate));
 				return time.ToString("HH:mm:ss | dd/MM/yyyy");
 			}
 			return "??:??:?? | ??/??/????";
@@ -209,6 +196,18 @@ namespace xBot.Game
 			List<NameValueCollection> result = Database.GetResult();
 			if(result.Count > 0)
 				return ulong.Parse(result[0]["player"]);
+			return 0;
+		}
+		/// <summary>
+		/// Gets the maximum exp required for the level specified.
+		/// </summary>
+		public ulong GetPetExpMax(byte level)
+		{
+			string sql = "SELECT pet FROM leveldata WHERE level=" + level;
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+				return ulong.Parse(result[0]["pet"]);
 			return 0;
 		}
 		/// <summary>
@@ -390,11 +389,11 @@ namespace xBot.Game
 		/// <returns><see cref="null"/> if cannot be found</returns>
 		public SRObject GetEntity(uint uniqueID)
 		{
-			if ((uint)Character[SRAttribute.UniqueID] == uniqueID)
+			if ((uint)Character[SRProperty.UniqueID] == uniqueID)
 				return Character;
 			SRObject entity = null;
 			if (EntityList.TryGetValue(uniqueID, out entity) // Entity near
-				|| Pets.TryGetValue(uniqueID,out entity)) // Pet not near
+				|| Pets.TryGetValue(uniqueID,out entity)) // Pet near
 				return entity;
 			return null;
 		}
@@ -403,14 +402,8 @@ namespace xBot.Game
 		/// </summary>
 		public List<SRObject> GetPlayers()
 		{
-			List<SRObject> result = new List<SRObject>();
-			foreach (uint uniqueID in EntityList.Keys)
-			{
-				if (EntityList[uniqueID].ID2 == 1)
-					result.Add(EntityList[uniqueID]);
-      }
-			return result;
-    }
+			return new List<SRObject>(PlayersNear.Values);
+		}
 		/// <summary>
 		/// Returns all summoned pets players.
 		/// </summary>
@@ -419,18 +412,18 @@ namespace xBot.Game
 			return new List<SRObject>(Pets.Values);
 		}
 		/// <summary>
-		/// Find a party member using his member identifier number. Returns null if is not found.
+		/// Get's a party member by his joinID. Returns null if is not found.
 		/// </summary>
-		public SRObject GetPartyMember(uint memberID)
+		public SRObject GetPartyMember(uint joinID)
 		{
-			return PartyList.Find(member => ((uint)member[SRAttribute.ID] == memberID));
+			return PartyList.Find(member => (uint)member[SRProperty.JoinID] == joinID);
 		}
 		/// <summary>
-		/// Find a party member using his nickname. Returns null if is not found.
+		/// Find a party member by his nickname. Returns null if is not found.
 		/// </summary>
 		public SRObject GetPartyMember(string name)
 		{
-			return PartyList.Find(member => (name.Equals((string)member[SRAttribute.Name],StringComparison.OrdinalIgnoreCase)));
+			return PartyList.Find(member => (name.Equals(member.Name,StringComparison.OrdinalIgnoreCase)));
 		}
 		/// <summary>
 		/// Get's an item object from the shop at slot specified.
@@ -442,11 +435,11 @@ namespace xBot.Game
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 			{
-				SRObject item = new SRObject(result[0]["item_servername"], SRObject.Type.Item);
-				if (item.ID1 == 3 && item.ID2 == 1)
+				SRObject item = new SRObject(result[0]["item_servername"],SRType.Item);
+        if (item.ID1 == 3 && item.ID2 == 1)
 				{
-					item[SRAttribute.Plus] = byte.Parse(result[0]["plus"]);
-					item[SRAttribute.Durability] = uint.Parse(result[0]["durability"]);
+					item[SRProperty.Plus] = byte.Parse(result[0]["plus"]);
+					item[SRProperty.Durability] = uint.Parse(result[0]["durability"]);
 				}
 				if(result[0]["magic_params"] != "0")
 				{
@@ -455,11 +448,10 @@ namespace xBot.Game
 					for (byte j = 0; j < mParams.Length; j++)
 					{
 						ulong param = ulong.Parse(mParams[j]);
-						MagicParams[j] = new SRObject();
-						MagicParams[j][SRAttribute.Type] = (uint)(param & uint.MaxValue);
-						MagicParams[j][SRAttribute.Value] = (uint)(param >> 32);
+						MagicParams[j] = new SRObject((uint)(param & uint.MaxValue), SRType.Param);
+						MagicParams[j][SRProperty.Value] = (uint)(param >> 32);
 					}
-					item[SRAttribute.MagicParams] = MagicParams;
+					item[SRProperty.MagicParams] = MagicParams;
 				}
 				return item;
 			}
@@ -470,7 +462,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetLastSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRAttribute.Groupname] + "' AND level<" + skill[SRAttribute.Level]+" ORDER BY level DESC LIMIT 1";
+			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRProperty.GroupName] + "' AND level<" + skill[SRProperty.Level]+" ORDER BY level DESC LIMIT 1";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0){
@@ -483,7 +475,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetNextSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRAttribute.Groupname] + "' AND level>" + skill[SRAttribute.Level] + " ORDER BY level LIMIT 1";
+			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRProperty.GroupName] + "' AND level>" + skill[SRProperty.Level] + " ORDER BY level LIMIT 1";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)

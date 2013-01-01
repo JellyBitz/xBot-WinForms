@@ -592,7 +592,7 @@ var SilkroadMap = function(){
 			FlyTo(x,y,z,r);
 		},
 		// Move/Remove the main pointer/character
-		MovePointer:function(x,y,z=0,r=0){
+		MovePointer:function(r,x,y,z){
 			// update the position
 			map_marker_char_pos = [x,y,z,r];
 			FlyTo(x,y,z,r);
@@ -602,7 +602,7 @@ var SilkroadMap = function(){
 			map_marker_char_pos = null;
 			updateMapLayer(map_layer);
 		},
-		AddExtraPointer(uniqueKey,servername,html,x,y,z=0,r=0){
+		AddExtraPointer(uniqueKey,servername,html,r,x,y,z){
 			if(!map_pointers[uniqueKey]){
 				map_pointers[uniqueKey] = [];
 			}
@@ -657,7 +657,7 @@ var SilkroadMap = function(){
 			// force marker update
 			updateMapLayer(map_layer);
 		},
-		MoveExtraPointer(uniqueKey,x,y,z=0,r=0){
+		MoveExtraPointer(uniqueKey,r,x,y,z){
 			if(map_pointers[uniqueKey]){
 				map_pointers[uniqueKey]["x"] = x;
 				map_pointers[uniqueKey]["y"] = y;

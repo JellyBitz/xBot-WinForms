@@ -94,7 +94,7 @@ namespace xBot.Game
 		{
 			q.Parameters.Add(new SQLiteParameter(column, value));
 		}
-    public List<NameValueCollection> GetResult()
+		public List<NameValueCollection> GetResult()
 		{
 			List<NameValueCollection> result = new List<NameValueCollection>();
 			using (SQLiteDataReader reader = q.ExecuteReader())
@@ -121,7 +121,7 @@ namespace xBot.Game
 				q.Dispose();
 				db.Close();
 				db = null;
-      }
+			}
 		}
 		public static bool Exists(string Name)
 		{

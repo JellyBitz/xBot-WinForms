@@ -95,7 +95,11 @@
     <Compile Include="App\EdxLoader.cs" />
     <Compile Include="Game\Database.cs" />
     <Compile Include="Game\Info.cs" />
-    <Compile Include="Game\Objects.cs" />
+    <Compile Include="Game\Objects\SRCoord.cs" />
+    <Compile Include="Game\Objects\SRObject.cs" />
+    <Compile Include="Game\Objects\SRObjectCollection.cs" />
+    <Compile Include="Game\Objects\SRPartyMatch.cs" />
+    <Compile Include="Game\Objects\SRProperty.cs" />
     <Compile Include="Network\Agent.cs" />
     <Compile Include="Network\Context.cs" />
     <Compile Include="Network\Gateway.cs" />
@@ -124,13 +128,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="xGraphics\ExampleControls.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="xGraphics\ExampleControls.Designer.cs">
-      <DependentUpon>ExampleControls.cs</DependentUpon>
-    </Compile>
     <Compile Include="xGraphics\xProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="xGraphics\xRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <EmbeddedResource Include="App\About.resx">
@@ -155,9 +156,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="xGraphics\ExampleControls.resx">
-      <DependentUpon>ExampleControls.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -180,6 +178,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\banner_example.jpg" />
     <None Include="Resources\About.png" />
     <None Include="Resources\ProjexNET_40x40.png" />
   </ItemGroup>

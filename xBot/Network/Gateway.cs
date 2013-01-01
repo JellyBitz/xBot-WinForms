@@ -109,13 +109,22 @@ namespace xBot.Network
 				string service = packet.ReadAscii();
 				if (service == "GatewayServer")
 				{
-					byte locale = packet.ReadByte();
-					packet.ReadAscii(); // SR_CLIENT
-					uint version = packet.ReadUInt();
-					
 					Info i = Info.Get;
+
+					byte locale = packet.ReadByte();
+					i.SR_Client = packet.ReadAscii(); // SR_CLIENT
+				  uint version = packet.ReadUInt();
+					
+					
 					if (i.Version != version)
-						Window.Get.Log("Warning: The bot database is outdate, try to update to avoid future errors");
+					{
+						Window.Get.Log("Warning: The bot database is outdate, try to update it at first to avoid parsing errors");
+					}
+					else if (i.Locale != locale)
+					{
+						Window.Get.Log("A new Locale has been found [" + locale + "]");
+					}
+					i.Locale = locale;
 					i.Version = version;
 				}
 			}
@@ -130,8 +139,8 @@ namespace xBot.Network
 
 				Window w = Window.Get;
 				WinAPI.InvokeIfRequired(w.Login_lstvServers, ()=> {
-					i.Server = w.Login_lstvServers.Items.Find(i.ServerID, false)[0].Text;
-        });
+					i.Server = w.Login_lstvServers.Items[i.ServerID].Text;
+				});
 			}
 			return false;
 		}
@@ -147,10 +156,12 @@ namespace xBot.Network
 				string service = packet.ReadAscii();
 				if (service == "GatewayServer")
 				{
+					Info i = Info.Get;
+
 					Packet p = new Packet(Opcode.CLIENT_PATCH_REQUEST, true);
-					p.WriteUInt8(Info.Get.Locale);
-					p.WriteAscii("SR_Client");
-          p.WriteUInt32(Info.Get.Version);
+					p.WriteByte(i.Locale);
+					p.WriteAscii(i.SR_Client);
+					p.WriteUInt(i.Version);
 					this.InjectToServer(p);
 				}
 			}
@@ -162,7 +173,18 @@ namespace xBot.Network
 						this.InjectToServer(p);
 						break;
 					case 2:
-						Window.Get.Log("Client Version incorrect (outdated) or the server is down");
+						byte errorCode = packet.ReadByte();
+						if (errorCode == 2)
+						{
+							string DownloadServerIP = packet.ReadAscii();
+							ushort DownloadServerPort = packet.ReadUShort();
+							uint DownloadServerCurVersion = packet.ReadUInt();
+							Window.Get.Log("Version outdate. Please, check the client and database it's up to date (v" + DownloadServerCurVersion + ")");
+						}
+						else
+						{
+							Window.Get.Log("Patch error: [" + errorCode + "]");
+						}
 						Bot.Get.Proxy.Stop();
 						break;
 				}

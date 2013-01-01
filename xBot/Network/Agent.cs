@@ -19,31 +19,41 @@ namespace xBot.Network
 				CLIENT_CHARACTER_SELECTION_JOIN_REQUEST = 0x7001,
 				CLIENT_CHARACTER_SELECTION_ACTION_REQUEST = 0x7007,
 				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
-				CLIENT_ENVIROMENT_WEATHER_REQUEST = 0x750E,
 				CLIENT_CHARACTER_MOVEMENT = 0x7021,
 				CLIENT_CHARACTER_TRANSPORT_MOVEMENT = 0x70C5,
 				CLIENT_CHARACTER_ADD_STR_REQUEST = 0x7050,
 				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
-				CLIENT_CHAT_REQUEST = 0x7025,
-				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
-				CLIENT_PARTY_INVITATION_REQUEST = 0x7060,
-				CLIENT_PARTY_LEAVE = 0x7061,
-				CLIENT_PARTY_MATCH_REQUEST = 0x706C,
-				CLIENT_PARTY_MATCH_JOIN = 0x706D,
-				CLIENT_ENTITY_SELECTION = 0x7045,
+				CLIENT_CHARACTER_EMOTE_USE = 0x3091,
+				CLIENT_CHARACTER_AUTORESURRECTION = 0x3053,
 				CLIENT_INVENTORY_ITEM_USE = 0x704C,
 				CLIENT_INVENTORY_ITEM_MOVEMENT = 0x7034,
-				CLIENT_STALL_OPEN_REQUEST = 0x70B1,
-				CLIENT_STALL_CLOSE_REQUEST = 0x70B2,
-				CLIENT_STALL_ANOTATION_REQUEST = 0x70BA,
 				CLIENT_STORAGE_DATA_REQUEST = 0x703C,
-				CLIENT_CHARACTER_EMOTE_USE = 0x3091,
+				CLIENT_ENTITY_SELECTION = 0x7045,
+				CLIENT_CHAT_REQUEST = 0x7025,
+				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
+				CLIENT_PARTY_CREATION_REQUEST = 0x7060,
+        CLIENT_PARTY_LEAVE = 0x7061,
+				CLIENT_PARTY_INVITATION_REQUEST = 0x7062,
+				CLIENT_PARTY_BANISH_REQUEST = 0x7063,
+				CLIENT_PARTY_MATCH_CREATION_REQUEST = 0x7069,
+				CLIENT_PARTY_MATCH_EDITED_REQUEST = 0x706A,
+				CLIENT_PARTY_MATCH_DELETE_REQUEST = 0x706B,
+				CLIENT_PARTY_MATCH_LIST_REQUEST = 0x706C,
+				CLIENT_PARTY_MATCH_JOIN_REQUEST = 0x706D,
+				CLIENT_PARTY_MATCH_JOIN_RESPONSE = 0x306E,
+				CLIENT_ACADEMY_NOTICE_EDITED_REQUEST = 0x7477,
 				CLIENT_PET_UNSUMMON_REQUEST = 0x7116,
 				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
 				CLIENT_PET_MOUNTED = 0x70CB,
 				CLIENT_PET_DESTROY = 0x706C,
-				CLIENT_SKILL_LEVELUP_REQUEST = 0x70A1,
+				CLIENT_STALL_OPEN_REQUEST = 0x70B1,
+				CLIENT_STALL_CLOSE_REQUEST = 0x70B2,
+				CLIENT_STALL_ANOTATION_REQUEST = 0x70BA,
+				CLIENT_MASTERY_SKILL_LEVELUP_REQUEST = 0x70A1,
 				CLIENT_MASTERY_LEVELUP_REQUEST = 0x70A2,
+				CLIENT_TELEPORT_USE_REQUEST = 0x705A,
+				CLIENT_TELEPORT_READY_RESPONSE = 0x34B6,
+				CLIENT_CONSIGNMENT_LIST_REQUEST = 0x750E,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -57,48 +67,57 @@ namespace xBot.Network
 				SERVER_CHARACTER_ADD_INT_RESPONSE = 0xB051,
 				SERVER_CHARACTER_INFO_UPDATE = 0x304E,
 				SERVER_CHARACTER_DIED = 0x3011,
+				SERVER_INVENTORY_ITEM_USE = 0xB04C,
+				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
+				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
+				SERVER_INVENTORY_ITEM_STATE_UPDATE = 0x3040,
+				SERVER_STORAGE_DATA_BEGIN = 0x3047,
+				SERVER_STORAGE_DATA = 0x3049,
+				SERVER_STORAGE_DATA_END = 0x3048,
+				SERVER_ENTITY_SELECTION = 0xB045,
 				SERVER_ENTITY_SPAWN = 0x3015,
 				SERVER_ENTITY_DESPAWN = 0x3016,
 				SERVER_ENTITY_GROUPSPAWN_BEGIN = 0x3017,
 				SERVER_ENTITY_GROUPSPAWN_END = 0x3018,
 				SERVER_ENTITY_GROUPSPAWN_DATA = 0x3019,
 				SERVER_ENTITY_MOVEMENT = 0xB021,
-				SERVER_ENTITY_LEVEL_UP = 0x3054,
+				SERVER_ENTITY_MOVEMENT_STUCK = 0xB023,
+        SERVER_ENTITY_LEVEL_UP = 0x3054,
 				SERVER_ENTITY_STATE_UPDATE = 0x3057,
+				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
+				SERVER_ENTITY_SPEED_UPDATE = 0x30D0,
+				SERVER_ENTITY_MOTION_UPDATE = 0x30BF,
+				SERVER_ENTITY_STALL_CREATED = 0x30B8,
+				SERVER_ENTITY_STALL_CLOSED = 0x30B9,
+				SERVER_ENTITY_EMOTE_USE = 0x3091,
+				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
+				SERVER_CHAT_UPDATE = 0x3026,
+				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
 				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
 				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
 				SERVER_ENVIROMENT_WHEATER_UPDATE = 0x3809,
-				SERVER_CHAT_UPDATE = 0x3026,
-				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
-				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
 				SERVER_PARTY_INVITATION_RESPONSE = 0xB060,
 				SERVER_PARTY_DATA = 0x3065,
 				SERVER_PARTY_UPDATE = 0x3864,
-				SERVER_ENTITY_SELECTION = 0xB045,
-				SERVER_PARTY_MATCH_RESPONSE = 0xB06C,
-				SERVER_INVENTORY_ITEM_USE = 0xB04C,
-				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
-				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
-				SERVER_INVENTORY_ITEM_STATE_UPDATE = 0x3040,
-				SERVER_STALL_OPEN_RESPONSE = 0xB0B1,
-				SERVER_STALL_CLOSE_RESPONSE = 0xB0B2,
-				SERVER_STALL_OTHER_OPENED = 0xB0B3,
-				SERVER_STALL_OTHER_CLOSED = 0xB0B5,
-				SERVER_STALL_ANOTATION_RESPONSE = 0xB0BA,
-				SERVER_STALL_PLAYER_CREATED = 0x30B8,
-				SERVER_STALL_PLAYER_CLOSED = 0x30B9,
-				SERVER_STALL_CLOSED = 0x30B9,
-				SERVER_STORAGE_DATA_BEGIN = 0x3047,
-				SERVER_STORAGE_DATA = 0x3049,
-				SERVER_STORAGE_DATA_END = 0x3048,
-				SERVER_ENTITY_EMOTE_USE = 0x3091,
+				SERVER_PARTY_MATCH_LIST_RESPONSE = 0xB06C,
+				SERVER_PARTY_MATCH_CREATION_RESPONSE = 0xB069,
+				SERVER_PARTY_MATCH_EDITED_RESPONSE = 0xB06A,
+				SERVER_PARTY_MATCH_DELETE_RESPONSE = 0xB06B,
+				SERVER_PARTY_MATCH_JOIN_REQUEST = 0x706D,
 				SERVER_PET_DATA = 0x30C8,
 				SERVER_PET_UPDATE = 0x30C9,
 				SERVER_PET_SETTINGS_CHANGE_RESPONSE = 0xB420,
 				SERVER_PET_PLAYER_MOUNTED = 0xB0CB,
-				SERVER_SKILL_LEVELUP_RESPONSE = 0xB0A1,
+				SERVER_STALL_OPEN_RESPONSE = 0xB0B1,
+				SERVER_STALL_CLOSE_RESPONSE = 0xB0B2,
+				SERVER_STALL_PLAYER_OPEN_RESPONSE = 0xB0B3,
+				SERVER_STALL_PLAYER_CLOSE_RESPONSE = 0xB0B5,
+				SERVER_STALL_ANOTATION_RESPONSE = 0xB0BA,
+				SERVER_STALL_CLOSED = 0x30B9,
+				SERVER_MASTERY_SKILL_LEVELUP_RESPONSE = 0xB0A1,
 				SERVER_MASTERY_LEVELUP_RESPONSE = 0xB0A2,
-				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
+				SERVER_TELEPORT_USE_RESPONSE = 0xB05A,
+				SERVER_TELEPORT_READY_REQUEST = 0x34B5,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -153,16 +172,64 @@ namespace xBot.Network
 		{
 			if (context == Local)
 			{
-				// HWID setup (saving/updating data from client)
-				if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
-				{
-					if (Bot.Get.HWIDSaveFrom == "Agent" || Bot.Get.HWIDSaveFrom == "Both")
-					{
-						Bot.Get.SaveHWID(packet.GetBytes());
-					}
-				}
 				return Local_PacketHandler(packet);
 			}
+			return Remote_PacketHandler(packet);
+		}
+		/// <summary>
+		/// Analyze client packets.
+		/// </summary>
+		/// <param name="packet">Client packet</param>
+		/// <returns>True if the packet won't be sent to the server</returns>
+		private bool Local_PacketHandler(Packet packet)
+		{
+			// HWID setup (saving/updating data from client)
+			if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
+			{
+				if (Bot.Get.HWIDSaveFrom == "Agent" || Bot.Get.HWIDSaveFrom == "Both"){
+					Bot.Get.SaveHWID(packet.GetBytes());
+				}
+			}
+			// Opcode filter
+			switch (packet.Opcode)
+			{
+				case Opcode.CLIENT_AUTH_REQUEST:
+					if(Bot.Get.LoggedFromBot)
+						return true;
+					break;
+				case Opcode.CLIENT_CHARACTER_SELECTION_JOIN_REQUEST:
+					{
+						Info.Get.Charname = packet.ReadAscii();
+						Window w = Window.Get;
+						w.EnableControl(w.Login_btnStart, false);
+					}
+					break;
+				case Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN:
+					if(!ClientlessMode)
+						Bot.Get._Event_Teleported();
+					break;
+				case Opcode.CLIENT_CHAT_REQUEST:
+					{
+						// Keep on track all private messages sent
+						Types.Chat t = (Types.Chat)packet.ReadByte();
+						byte chatIndex = packet.ReadByte();
+						if (t == Types.Chat.Private)
+						{
+							Window w = Window.Get;
+							w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
+						}
+					}
+					break;
+      }
+			return false;
+		}
+		/// <summary>
+		/// Analyze server packets.
+		/// </summary>
+		/// <param name="packet">Server packet</param>
+		/// <returns>True if the packet will be ignored by the client</returns>
+		private bool Remote_PacketHandler(Packet packet)
+		{
 			// HWID setup (sending data to server)
 			if (packet.Opcode == Opcode.SERVER_HWID_REQUEST && ClientlessMode)
 			{
@@ -177,327 +244,234 @@ namespace xBot.Network
 					}
 				}
 			}
-			return Remote_PacketHandler(packet);
-		}
-		/// <summary>
-		/// Analyze client packets.
-		/// </summary>
-		/// <param name="packet">Client packet</param>
-		/// <returns>True if the packet won't be sent to the server</returns>
-		private bool Local_PacketHandler(Packet packet)
-		{
-			if (packet.Opcode == Opcode.CLIENT_AUTH_REQUEST && Bot.Get.LoggedFromBot)
+			// Opcode filter
+			switch (packet.Opcode)
 			{
-				return true;
-			}
-			else if (packet.Opcode == Opcode.CLIENT_CHARACTER_SELECTION_JOIN_REQUEST)
-			{
-				Info.Get.Charname = packet.ReadAscii();
-				Window w = Window.Get;
-				w.EnableControl(w.Login_btnStart, false);
-			}
-			else if (packet.Opcode == Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN && !ClientlessMode)
-			{
-				Bot.Get._Event_Teleported();
-			}
-			else if (packet.Opcode == Opcode.CLIENT_CHAT_REQUEST)
-			{
-				// Keep on track all private messages sent
-				Types.Chat t = (Types.Chat)packet.ReadByte();
-				byte chatIndex = packet.ReadByte();
-				if (t == Types.Chat.Private)
-				{
-					Window w = Window.Get;
-					w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
-				}
-				else if (t == Types.Chat.All)
-				{
-					// JUST FOR FUN
-					string message = packet.ReadAscii().ToLower();
-					if (message == ".")
+				case Opcode.GLOBAL_IDENTIFICATION:
+					if (Bot.Get.LoggedFromBot)
 					{
-						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
-						p.WriteByte(12);
-						InjectToServer(p);
-						return true;
+						string service = packet.ReadAscii();
+						if (service == "AgentServer")
+						{
+							Packet protocol = new Packet(Opcode.CLIENT_AUTH_REQUEST, true);
+							protocol.WriteUInt(id);
+							protocol.WriteAscii(Window.Get.Login_tbxUsername.Text);
+							protocol.WriteAscii(Window.Get.Login_tbxPassword.Text);
+							protocol.WriteUShort(Info.Get.Locale);
+							// "MAC"
+							protocol.WriteUInt(0u);
+							protocol.WriteUShort(0);
+							this.InjectToServer(protocol);
+						}
 					}
-					else if (message == "..")
+          break;
+				case Opcode.SERVER_AUTH_RESPONSE:
 					{
-						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
-						p.WriteByte(71);
-						InjectToServer(p);
-						return true;
+						Window w = Window.Get;
+						byte success = packet.ReadByte();
+						if (success == 1)
+						{
+							w.LogProcess("Logged successfully!");
+							w.EnableControl(w.Login_btnStart, false);
+
+							// Protocol
+							if (ClientlessMode)
+								PacketBuilder.RequestCharacterList();
+
+							// Generating Bot Event to keep this method clean
+							Bot.Get._Event_Connected();
+						}
+						else
+						{
+							byte error = packet.ReadByte();
+							w.Log("Login error [" + error + "]");
+						}
 					}
-					else if (message == "...")
-					{
-						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
-						p.WriteByte(29);
-						InjectToServer(p);
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		/// <summary>
-		/// Analyze server packets.
-		/// </summary>
-		/// <param name="packet">Server packet</param>
-		/// <returns>True if the packet will be ignored by the client</returns>
-		private bool Remote_PacketHandler(Packet packet)
-		{
-			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && Bot.Get.LoggedFromBot)
-			{
-				string service = packet.ReadAscii();
-				if (service == "AgentServer")
-				{
-					Packet p = new Packet(Opcode.CLIENT_AUTH_REQUEST, true);
-					p.WriteUInt32(id);
-					p.WriteAscii(Window.Get.Login_tbxUsername.Text);
-					p.WriteAscii(Window.Get.Login_tbxPassword.Text);
-					p.WriteUInt16(Info.Get.Locale);
-					// MAC
-					p.WriteUInt32(0);
-					p.WriteUInt16(0);
-					this.InjectToServer(p);
-				}
-			}
-			else if (packet.Opcode == Opcode.SERVER_AUTH_RESPONSE)
-			{
-				Window w = Window.Get;
-				byte success = packet.ReadByte();
-				if (success == 1)
-				{
-					w.LogProcess("Logged successfully!");
-					w.EnableControl(w.Login_btnStart, false);
+					break;
+				case Opcode.SERVER_CHARACTER_SELECTION_ACTION_RESPONSE:
+					PacketParser.CharacterSelectionActionResponse(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_SELECTION_JOIN_RESPONSE:
+					PacketParser.CharacterSelectionJoinResponse(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_DATA_BEGIN:
+					PacketParser.CharacterDataBegin(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_DATA:
+					PacketParser.CharacterData(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_DATA_END:
+					PacketParser.CharacterDataEnd(packet);
 					if (ClientlessMode)
-						PacketBuilder.RequestCharacterList();
+					{
+						// Confirm spawn after loading with some delay
+						Packet protocol = new Packet(Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN);
+						InjectToServer(protocol);
 
-					// Generating Bot Event to keep this method clean
-					Bot.Get._Event_Connected();
-				}
-				else
-				{
-					byte error = packet.ReadByte();
-					w.Log("Login error [" + error + "]");
-				}
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_SELECTION_ACTION_RESPONSE)
-			{
-				PacketParser.CharacterSelectionActionResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_SELECTION_JOIN_RESPONSE)
-			{
-				PacketParser.CharacterSelectionJoinResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_BEGIN)
-			{
-				PacketParser.CharacterDataBegin(packet);
-				Bot.Get._Event_Teleporting();
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA)
-			{
-				PacketParser.CharacterData(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_END)
-			{
-				PacketParser.CharacterDataEnd(packet);
-				if (ClientlessMode)
-				{
-					// Confirm spawn after loading with some delay
-					Packet protocol = new Packet(Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN);
-					InjectToServer(protocol);
+						// Generating Bot Events to keep methods clean
+						Bot.Get._Event_Teleported();
 
-					// Generating Bot Events to keep methods clean
-					Bot.Get._Event_Teleported();
-
-					protocol = new Packet(Opcode.CLIENT_ENVIROMENT_WEATHER_REQUEST);
-					InjectToServer(protocol);
-				}
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_STATS_UPDATE)
-			{
-				PacketParser.CharacterStatsUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_EXPERIENCE_UPDATE)
-			{
-				PacketParser.CharacterExperienceUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_INFO_UPDATE)
-			{
-				PacketParser.CharacterInfoUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DIED)
-			{
-				PacketParser.CharacterDied(packet);
-			}
-			else if (packet.Opcode == Opcode.GLOBAL_XTRAP_IDENTIFICATION && ClientlessMode)
-			{
-				Packet protocol = new Packet(Opcode.GLOBAL_XTRAP_IDENTIFICATION);
-				protocol.WriteUInt8(2);
-				protocol.WriteUInt8(2);
-				//p.WriteUInt8Array(new byte[1024]);
-				protocol.WriteUInt64Array(new ulong[128]);
-				InjectToServer(protocol);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_SPAWN)
-			{
-				PacketParser.EntitySpawn(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_DESPAWN)
-			{
-				PacketParser.EntityDespawn(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_GROUPSPAWN_BEGIN)
-			{
-				PacketParser.EntityGroupSpawnBegin(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_GROUPSPAWN_DATA)
-			{
-				PacketParser.EntityGroupSpawnData(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_GROUPSPAWN_END)
-			{
-				PacketParser.EntityGroupSpawnEnd(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENVIROMENT_CELESTIAL_POSITION)
-			{
-				PacketParser.EnviromentCelestialPosition(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHAT_UPDATE)
-			{
-				PacketParser.ChatUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENVIROMENT_CELESTIAL_UPDATE)
-			{
-				PacketParser.EnviromentCelestialUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_MOVEMENT)
-			{
-				PacketParser.EntityMovement(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_LEVEL_UP)
-			{
-				PacketParser.EntityLevelUp(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_STATE_UPDATE)
-			{
-				PacketParser.EntityStateUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENVIROMENT_WHEATER_UPDATE)
-			{
-				PacketParser.EnviromentWheaterUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_NOTICE_UNIQUE_UPDATE)
-			{
-				PacketParser.NoticeUniqueUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PLAYER_PETITION_REQUEST)
-			{
-				PacketParser.PlayerPetitionRequest(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PARTY_DATA)
-			{
-				PacketParser.PartyData(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PARTY_UPDATE)
-			{
-				PacketParser.PartyUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PARTY_MATCH_RESPONSE)
-			{
-				PacketParser.PartyMatchResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_SELECTION)
-			{
-				PacketParser.EntitySelection(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_ADD_INT_RESPONSE)
-			{
-				PacketParser.CharacterAddStatPointResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_ADD_STR_RESPONSE)
-			{
-				PacketParser.CharacterAddStatPointResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_USE)
-			{
-				PacketParser.InventoryItemUse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_MOVEMENT)
-			{
-				return PacketParser.InventoryItemMovement(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_DURABILITY_UPDATE)
-			{
-				PacketParser.InventoryItemDurabilityUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE)
-			{
-				PacketParser.InventoryItemStateUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_OPEN_RESPONSE)
-			{
-				PacketParser.StallOpenResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_OPEN_RESPONSE)
-			{
-				PacketParser.StallOpenResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_CLOSE_RESPONSE)
-			{
-				PacketParser.StallCloseResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_OTHER_OPENED)
-			{
-				PacketParser.StallOtherOpened(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_OTHER_CLOSED)
-			{
-				PacketParser.StallOtherClosed(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_CREATED)
-			{
-				PacketParser.StallPlayerCreated(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_CLOSED)
-			{
-				PacketParser.StallPlayerClosed(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA_BEGIN)
-			{
-				PacketParser.StorageDataBegin(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA)
-			{
-				PacketParser.StorageData(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA_END)
-			{
-				PacketParser.StorageDataEnd(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PET_DATA)
-			{
-				PacketParser.PetData(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PET_UPDATE)
-			{
-				PacketParser.PetUpdate(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_PET_SETTINGS_CHANGE_RESPONSE)
-			{
-				PacketParser.PetSettingsChangeResponse(packet);
-			}
-			else if(packet.Opcode == Opcode.SERVER_PET_PLAYER_MOUNTED){
-				PacketParser.PetPlayerMounted(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_SKILL_LEVELUP_RESPONSE)
-			{
-				PacketParser.SkillLevelUpResponse(packet);
-			}
-			else if (packet.Opcode == Opcode.SERVER_MASTERY_LEVELUP_RESPONSE)
-			{
-				PacketParser.MasteryLevelUpResponse(packet);
+						protocol = new Packet(Opcode.CLIENT_CONSIGNMENT_LIST_REQUEST);
+						InjectToServer(protocol);
+					}
+					break;
+				case Opcode.SERVER_CHARACTER_STATS_UPDATE:
+					PacketParser.CharacterStatsUpdate(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_EXPERIENCE_UPDATE:
+					PacketParser.CharacterExperienceUpdate(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_INFO_UPDATE:
+					PacketParser.CharacterInfoUpdate(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_DIED:
+					PacketParser.CharacterDied(packet);
+					break;
+				case Opcode.GLOBAL_XTRAP_IDENTIFICATION:
+					if (ClientlessMode)
+					{
+						Packet protocol = new Packet(Opcode.GLOBAL_XTRAP_IDENTIFICATION);
+						protocol.WriteByte(2);
+						protocol.WriteByte(2);
+						//p.WriteUInt8Array(new byte[1024]);
+						protocol.WriteUInt64Array(new ulong[128]);
+						InjectToServer(protocol);
+					}
+					break;
+				case Opcode.SERVER_ENTITY_SPAWN:
+					PacketParser.EntitySpawn(packet);
+					break;
+				case Opcode.SERVER_ENTITY_DESPAWN:
+					PacketParser.EntityDespawn(packet);
+					break;
+				case Opcode.SERVER_ENTITY_GROUPSPAWN_BEGIN:
+					PacketParser.EntityGroupSpawnBegin(packet);
+					break;
+				case Opcode.SERVER_ENTITY_GROUPSPAWN_DATA:
+					PacketParser.EntityGroupSpawnData(packet);
+					break;
+				case Opcode.SERVER_ENTITY_GROUPSPAWN_END:
+					PacketParser.EntityGroupSpawnEnd(packet);
+					break;
+				case Opcode.SERVER_ENTITY_LEVEL_UP:
+					PacketParser.EntityLevelUp(packet);
+					break;
+				case Opcode.SERVER_ENTITY_STATE_UPDATE:
+					PacketParser.EntityStateUpdate(packet);
+					break;
+				case Opcode.SERVER_ENTITY_MOVEMENT:
+					PacketParser.EntityMovement(packet);
+					break;
+				case Opcode.SERVER_ENTITY_MOVEMENT_STUCK:
+					PacketParser.EntityMovementStuck(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SPEED_UPDATE:
+					PacketParser.EntitySpeedUpdate(packet);
+					break;
+				case Opcode.SERVER_ENTITY_MOTION_UPDATE:
+					PacketParser.EntityMotionUpdate(packet);
+					break;
+				case Opcode.SERVER_ENTITY_STALL_CREATED:
+					PacketParser.EntityStallCreated(packet);
+					break;
+				case Opcode.SERVER_ENTITY_STALL_CLOSED:
+					PacketParser.EntityStallClosed(packet);
+					break;
+				case Opcode.SERVER_ENVIROMENT_CELESTIAL_POSITION:
+					PacketParser.EnviromentCelestialPosition(packet);
+					break;
+				case Opcode.SERVER_ENVIROMENT_CELESTIAL_UPDATE:
+					PacketParser.EnviromentCelestialUpdate(packet);
+					break;
+				case Opcode.SERVER_ENVIROMENT_WHEATER_UPDATE:
+					PacketParser.EnviromentWheaterUpdate(packet);
+					break;
+				case Opcode.SERVER_CHAT_UPDATE:
+					PacketParser.ChatUpdate(packet);
+					break;
+				case Opcode.SERVER_NOTICE_UNIQUE_UPDATE:
+					PacketParser.NoticeUniqueUpdate(packet);
+					break;
+				case Opcode.SERVER_PLAYER_PETITION_REQUEST:
+					PacketParser.PlayerPetitionRequest(packet);
+					break;
+				case Opcode.SERVER_PARTY_DATA:
+					PacketParser.PartyData(packet);
+					break;
+				case Opcode.SERVER_PARTY_UPDATE:
+					PacketParser.PartyUpdate(packet);
+					break;
+				case Opcode.SERVER_PARTY_MATCH_LIST_RESPONSE:
+					PacketParser.PartyMatchListResponse(packet);
+					break;
+				case Opcode.SERVER_PARTY_MATCH_CREATION_RESPONSE:
+					PacketParser.PartyMatchCreationResponse(packet);
+					break;
+				case Opcode.SERVER_PARTY_MATCH_DELETE_RESPONSE:
+					PacketParser.PartyMatchDeleteResponse(packet);
+					break;
+				case Opcode.SERVER_PARTY_MATCH_JOIN_REQUEST:
+					PacketParser.PartyMatchJoinRequest(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SELECTION:
+					PacketParser.EntitySelection(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_ADD_INT_RESPONSE:
+					PacketParser.CharacterAddStatPointResponse(packet);
+					break;
+				case Opcode.SERVER_CHARACTER_ADD_STR_RESPONSE:
+					PacketParser.CharacterAddStatPointResponse(packet);
+					break;
+				case Opcode.SERVER_INVENTORY_ITEM_USE:
+					PacketParser.InventoryItemUse(packet);
+					break;
+				case Opcode.SERVER_INVENTORY_ITEM_MOVEMENT:
+					return PacketParser.InventoryItemMovement(packet);
+				case Opcode.SERVER_INVENTORY_ITEM_DURABILITY_UPDATE:
+					PacketParser.InventoryItemDurabilityUpdate(packet);
+					break;
+				case Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE:
+					PacketParser.InventoryItemStateUpdate(packet);
+					break;
+				case Opcode.SERVER_STALL_OPEN_RESPONSE:
+					PacketParser.StallOpenResponse(packet);
+					break;
+				case Opcode.SERVER_STALL_CLOSE_RESPONSE:
+					PacketParser.StallCloseResponse(packet);
+					break;
+				case Opcode.SERVER_STALL_PLAYER_OPEN_RESPONSE:
+					PacketParser.StallPlayerOpenResponse(packet);
+					break;
+				case Opcode.SERVER_STALL_PLAYER_CLOSE_RESPONSE:
+					PacketParser.StallPlayerCloseResponse(packet);
+					break;
+				case Opcode.SERVER_STORAGE_DATA_BEGIN:
+					PacketParser.StorageDataBegin(packet);
+					break;
+				case Opcode.SERVER_STORAGE_DATA:
+					PacketParser.StorageData(packet);
+					break;
+				case Opcode.SERVER_STORAGE_DATA_END:
+					PacketParser.StorageDataEnd(packet);
+					break;
+				case Opcode.SERVER_PET_DATA:
+					PacketParser.PetData(packet);
+					break;
+				case Opcode.SERVER_PET_UPDATE:
+					PacketParser.PetUpdate(packet);
+					break;
+				case Opcode.SERVER_PET_SETTINGS_CHANGE_RESPONSE:
+					PacketParser.PetSettingsChangeResponse(packet);
+					break;
+				case Opcode.SERVER_PET_PLAYER_MOUNTED:
+					PacketParser.PetPlayerMounted(packet);
+					break;
+				case Opcode.SERVER_MASTERY_SKILL_LEVELUP_RESPONSE:
+					PacketParser.MasterySkillLevelUpResponse(packet);
+					break;
+				case Opcode.SERVER_MASTERY_LEVELUP_RESPONSE:
+					PacketParser.MasteryLevelUpResponse(packet);
+					break;
 			}
 			return false;
 		}
