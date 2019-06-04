@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--- Responsive design --->
+	<meta charset="UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--- Icon & Normalize --->
+	<link rel="stylesheet" type="text/css" href="css/normalize.min.css">
+	<!-- Everything else.. -->
+	<link rel="stylesheet" type="text/css" href="js/leaflet/Leaflet.css">
+	<link rel="stylesheet" type="text/css" href="js/leaflet/Leaflet.PM.css">
+	<link rel="stylesheet" type="text/css" href="js/leaflet/Leaflet.Easy-Button.css">
+	<style type="text/css">
+		#screen{
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+		}
+		#map{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="screen">
+		<div id="map"></div>
+	</div>
+	<script type="text/javascript" src="js/leaflet/Leaflet.min.js"></script>
+	<script type="text/javascript" src="js/leaflet/Leaflet.PM.min.js"></script>
+	<script type="text/javascript" src="js/leaflet/Leaflet.Easy-Button.js"></script>
+	<script type="text/javascript" src="js/map.js"></script>
+	<script type="text/javascript">
+		SilkroadMap.init('map');
+	</script>
+</body>
+</html>

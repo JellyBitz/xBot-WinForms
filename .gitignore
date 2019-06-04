@@ -1,0 +1,26 @@
+# Debug DLL/files can be generated and added to the releases
+xBot/bin/Debug/*.config
+xBot/bin/Debug/*.manifest
+xBot/bin/Debug/*.json
+xBot/bin/Debug/*.xml
+
+# Minimap feature
+xBot/bin/Debug/Minimap/images/
+xBot/bin/Debug/Minimap/js/leaflet/
+xBot/bin/Debug/Minimap/css/
+!xBot/bin/Debug/Minimap/index.html
+!xBot/bin/Debug/Minimap/js/map.js
+
+# Browser files
+xBot/bin/Debug/x86/
+xBot/bin/Debug/x64/
+xBot/bin/Debug/Firefox64/
+xBot/bin/Debug/GPUCache/
+
+# Extractor required
+xBot/bin/Debug/Data/
+!xBot/bin/Debug/Data/README.txt
+
+# Packages can be restored via NuGet
+packages/
+xBot/obj/Debug/
