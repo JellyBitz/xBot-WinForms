@@ -34,10 +34,8 @@ namespace xBot
 					foreach (TreeNode host in node.Nodes["Hosts"].Nodes)
 						hosts.Add(host.Text);
 					server["Hosts"] = hosts;
-					JArray ports = new JArray();
-					foreach (TreeNode port in node.Nodes["Ports"].Nodes)
-						ports.Add((ushort)port.Tag);
-					server["Ports"] = ports;
+					server["RandomHost"] = (bool)node.Nodes["RandomHost"].Tag;
+					server["Port"] = (ushort)node.Nodes["Port"].Tag;
 					server["Version"] = (uint)node.Nodes["Version"].Tag;
 					server["Locale"] = (byte)node.Nodes["Locale"].Tag;
 
@@ -72,7 +70,7 @@ namespace xBot
 				root["PacketAnalyzer"] = packetAnalyzer;
 
 				JArray opcodes = new JArray();
-				Window.InvokeIfRequired(w.General_lstvOpcodes, ()=> {
+				WinAPI.InvokeIfRequired(w.General_lstvOpcodes, ()=> {
 					foreach (ListViewItem opcode in w.General_lstvOpcodes.Items)
 						opcodes.Add(opcode.Text);
 				});
@@ -107,15 +105,14 @@ namespace xBot
 							node.Nodes.Add(host.ToString());
             }
 						s.Nodes.Add(node);
+						node = new TreeNode("Use random host: " + ((bool)silkroad["Port"]?"Yes":"No"));
+            node.Name = "RandomHost";
+						node.Tag = (bool)silkroad["Port"];
+            s.Nodes.Add(node);
 
-						node = new TreeNode("Ports");
-						node.Name = "Ports";
-						foreach (JToken host in (JArray)silkroad["Ports"])
-						{
-							TreeNode p = new TreeNode(host.ToString());
-							p.Tag = (ushort)host;
-              node.Nodes.Add(p);
-						}
+						node = new TreeNode("Port : " + silkroad["Port"]);
+						node.Name = "Port";
+						node.Tag = (ushort)silkroad["Port"];
 						s.Nodes.Add(node);
 
 						node = new TreeNode("Locale : "+ silkroad["Locale"]);

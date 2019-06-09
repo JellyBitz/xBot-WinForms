@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using xBot.Network;
 
 namespace xBot
@@ -13,7 +14,7 @@ namespace xBot
 	/// <summary>
 	/// API static class to handle windows methods and utility extensions.
 	/// </summary>
-	public static class WindowsAPI
+	public static class WinAPI
 	{
 		#region (DLL Imports)
 		[DllImport("gdi32.dll")]
@@ -21,6 +22,10 @@ namespace xBot
 						IntPtr pdv, [In] ref uint pcFonts);
 		[DllImport("user32.dll")]
 		public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+		public const int WM_VSCROLL = 277;
+		public const int SB_PAGEBOTTOM = 7;
+		public const int WM_NCLBUTTONDOWN = 0xA1;
+		public const int HT_CAPTION = 2;
 		[DllImport("user32.dll")]
 		public static extern bool ReleaseCapture();
 		[DllImport("user32.dll")]
@@ -33,15 +38,21 @@ namespace xBot
 		private static extern IntPtr FindWindowEx(IntPtr parentWindow, IntPtr previousChildWindow, string windowClass, string windowTitle);
 		[DllImport("user32.dll")]
 		private static extern IntPtr GetWindowThreadProcessId(IntPtr window, out int process);
+		#endregion
 		/// <summary>
-		/// 
+		/// Gets the current date in constant format like "[hh:mm:ss]".
 		/// </summary>
-		/// <returns></returns>
 		public static string getDate()
 		{
 			return "[" + (DateTime.Now.Hour < 10 ? "0" : "") + DateTime.Now.Hour + ":" + (DateTime.Now.Minute < 10 ? "0" : "") + DateTime.Now.Minute + ":" + (DateTime.Now.Second < 10 ? "0" : "") + DateTime.Now.Second + "]";
 		}
-		#endregion
+		public static void InvokeIfRequired(Control control, MethodInvoker action)
+		{
+			if (control.InvokeRequired)
+				control.Invoke(action);
+			else
+				action();
+		}
 		/// <summary>
 		/// Returns SRO_Client process that is using the current agent/gateway port.
 		/// </summary>

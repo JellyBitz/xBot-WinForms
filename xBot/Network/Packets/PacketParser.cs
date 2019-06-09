@@ -13,18 +13,18 @@ namespace xBot.Network.Packets
 		public static void ShardListResponse(Packet packet)
 		{
 			Window w = Window.Get;
-			Window.InvokeIfRequired(w.Login_lstvServers, () => {
+			WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
 				w.Login_lstvServers.Items.Clear();
 				//Window.get.Login_lstvServers.Groups.Clear();
 			});
-			Window.InvokeIfRequired(w.Login_cmbxServer, () => {
+			WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
 				w.Login_cmbxServer.Items.Clear();
 			});
 			while (packet.ReadByte() == 1)
 			{
 				int farmID = packet.ReadByte();
 				string farmName = packet.ReadAscii();
-				//Window.InvokeIfRequired(w.Login_lstvServers, () =>{
+				//WinAPI.InvokeIfRequired(w.Login_lstvServers, () =>{
 				//	Window.get.Login_lstvServers.Groups.Add(farmID.ToString(), farmName);
 				//});
 			}
@@ -42,11 +42,11 @@ namespace xBot.Network.Packets
 				i.SubItems.Add(onlineCount + " / " + maxCapacity);
 				i.SubItems.Add((isAvailable == 1 ? "Available" : "Not available"));
 				i.SubItems.Add(serverID.ToString());
-				Window.InvokeIfRequired(w.Login_lstvServers, () => {
+				WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
 					//i.Group = Window.get().Login_lstvServers.Groups[serverID_farmID.ToString()];
 					w.Login_lstvServers.Items.Add(i);
 				});
-				Window.InvokeIfRequired(w.Login_cmbxServer, () => {
+				WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
 					w.Login_cmbxServer.Items.Add(serverName);
 					w.Login_cmbxServer.SelectedIndex = w.Login_cmbxServer.Items.Count - 1;
 				});
@@ -54,7 +54,7 @@ namespace xBot.Network.Packets
 			// Check first one as default
 			if (!Bot.Get.isAutoLogin)
 			{
-				Window.InvokeIfRequired(w.Login_cmbxServer, () => {
+				WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
 					if (w.Login_cmbxServer.SelectedText == "")
 					{
 						w.Login_cmbxServer.SelectedIndex = 0;
@@ -64,13 +64,13 @@ namespace xBot.Network.Packets
 			// AutoLogin
 			if (Bot.Get.isAutoLogin)
 			{
-				Window.InvokeIfRequired(w.Login_gbxAccount, () => {
+				WinAPI.InvokeIfRequired(w.Login_gbxAccount, () => {
 					PacketBuilder.Login(w.Login_tbxUsername.Text, w.Login_tbxPassword.Text, (int)w.Login_cmbxServer.Tag);
 				});
 			}
 			if (w.Login_btnStart.Text == "STOP" && Bot.Get.Proxy.ClientlessMode)
 			{
-				Window.InvokeIfRequired(w.Login_btnStart, () => {
+				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 					w.Login_btnStart.Text = "LOGIN";
 					if (!Bot.Get.isAutoLogin)
 					{
@@ -91,15 +91,18 @@ namespace xBot.Network.Packets
 					{
 						Window.Get.Log("Character created successfully");
 					}
-					else { 
+					else
+					{
 						Window.Get.Log("Character creation failed!");
 					}
 					break;
 				case Types.CharacterSelectionAction.CheckName:
-					if (result == 1) { 
+					if (result == 1)
+					{
 						Window.Get.Log("Nickname available..");
 					}
-					else { 
+					else
+					{
 						Window.Get.Log("Nickname has been already taken!");
 					}
 					break;
@@ -111,11 +114,11 @@ namespace xBot.Network.Packets
 					{
 						Window w = Window.Get;
 						// Reset values
-						Window.InvokeIfRequired(w.Login_lstvCharacters, () =>
+						WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
 						{
 							w.Login_lstvCharacters.Items.Clear();
 						});
-						Window.InvokeIfRequired(w.Login_cmbxCharacter, () =>
+						WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
 						{
 							w.Login_cmbxCharacter.Items.Clear();
 						});
@@ -129,7 +132,7 @@ namespace xBot.Network.Packets
 							character[SRAttribute.Scale] = packet.ReadByte();
 							character[SRAttribute.Level] = packet.ReadByte();
 							character[SRAttribute.Exp] = packet.ReadULong();
-							character[SRAttribute.ExpMax] = Data.Get.getExpMax((byte)character[SRAttribute.Level]);
+							character[SRAttribute.ExpMax] = Info.Get.getMaxExp((byte)character[SRAttribute.Level]);
 							character[SRAttribute.STR] = packet.ReadUShort();
 							character[SRAttribute.INT] = packet.ReadUShort();
 							character[SRAttribute.StatPoints] = packet.ReadUShort();
@@ -147,14 +150,14 @@ namespace xBot.Network.Packets
 								character[SRAttribute.GuildName] = packet.ReadAscii();
 							}
 							character[SRAttribute.AcademyMemberType] = packet.ReadByte();
-							SRList inventory = new SRList(packet.ReadByte());
+							SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
 							for (int j = 0; j < inventory.Capacity; j++)
 							{
 								inventory[j] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
 								inventory[j][SRAttribute.Plus] = packet.ReadByte();
 							}
 							character[SRAttribute.Inventory] = inventory;
-							SRList inventoryAvatar = new SRList(packet.ReadByte());
+							SRObjectCollection inventoryAvatar = new SRObjectCollection(packet.ReadByte());
 							for (int j = 0; j < inventoryAvatar.Capacity; j++)
 							{
 								inventoryAvatar[j] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
@@ -173,11 +176,11 @@ namespace xBot.Network.Packets
 							l.SubItems.Add(character[SRAttribute.Level].ToString());
 							l.SubItems.Add(Math.Round((double)character.getExpPercent(), 2) + " %");
 							l.SubItems.Add(character.ID.ToString());
-							Window.InvokeIfRequired(w.Login_lstvCharacters, () =>
+							WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
 							{
 								w.Login_lstvCharacters.Items.Add(l);
 							});
-							Window.InvokeIfRequired(w.Login_cmbxCharacter, () =>
+							WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
 							{
 								w.Login_cmbxCharacter.Items.Add(l.Name);
 							});
@@ -185,22 +188,22 @@ namespace xBot.Network.Packets
 						// Auto select first character as default
 						if (w.Login_cmbxCharacter.Items.Count > 0)
 						{
-							Window.InvokeIfRequired(w.Login_cmbxCharacter, () =>
+							WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
 							{
 								w.Login_cmbxCharacter.SelectedIndex = 0;
 							});
 						}
 						// Switch Listview's [Servers to Characters] selection 
-						Window.InvokeIfRequired(w.Login_gbxServers, () =>
+						WinAPI.InvokeIfRequired(w.Login_gbxServers, () =>
 						{
 							w.Login_gbxServers.Visible = false;
 						});
-						Window.InvokeIfRequired(w.Login_gbxCharacters, () =>
+						WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () =>
 						{
 							w.Login_gbxCharacters.Visible = true;
 						});
 						// Switch and restaure [Login to Select] button
-						Window.InvokeIfRequired(w.Login_btnStart, () =>
+						WinAPI.InvokeIfRequired(w.Login_btnStart, () =>
 						{
 							w.Login_btnStart.Text = "SELECT";
 							w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
@@ -225,9 +228,10 @@ namespace xBot.Network.Packets
 		{
 			characterDataPacket.WriteUInt8Array(packet.GetBytes());
 		}
-    public static void CharacterDataEnd(Packet packet) {
+		public static void CharacterDataEnd(Packet packet)
+		{
 			Packet p = characterDataPacket;
-      p.Lock();
+			p.Lock();
 
 			p.ReadUInt(); // ServerTime (SROTimeStamp)
 			SRObject character = new SRObject(p.ReadUInt(), SRObject.Type.Model);
@@ -250,7 +254,7 @@ namespace xBot.Network.Packets
 			character[SRAttribute.BerserkLevel] = p.ReadByte();
 			character[SRAttribute.PVPCapeType] = p.ReadByte();
 			#region (Inventory)
-			SRList Inventory = new SRList(p.ReadByte());
+			SRObjectCollection Inventory = new SRObjectCollection(p.ReadByte());
 			character[SRAttribute.Inventory] = Inventory;
 
 			byte itemsCount = p.ReadByte();
@@ -294,7 +298,7 @@ namespace xBot.Network.Packets
 						item[SRAttribute.Variance] = p.ReadULong();
 						item[SRAttribute.Durability] = p.ReadUInt();
 
-						SRList MagicParams = new SRList(p.ReadByte());
+						SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
 						for (int j = 0; j < MagicParams.Capacity; j++)
 						{
 							MagicParams[j] = new SRObject();
@@ -304,7 +308,7 @@ namespace xBot.Network.Packets
 						item[SRAttribute.MagicParams] = MagicParams;
 						// 1 = Socket
 						p.ReadByte();
-						SRList SocketParams = new SRList(p.ReadByte());
+						SRObjectCollection SocketParams = new SRObjectCollection(p.ReadByte());
 						for (int j = 0; j < MagicParams.Capacity; j++)
 						{
 							SocketParams[j] = new SRObject();
@@ -315,7 +319,7 @@ namespace xBot.Network.Packets
 						item[SRAttribute.SocketParams] = SocketParams;
 						// 2 = Advanced elixir
 						p.ReadByte();
-						SRList AdvanceElixirParams = new SRList(p.ReadByte());
+						SRObjectCollection AdvanceElixirParams = new SRObjectCollection(p.ReadByte());
 						for (int j = 0; j < MagicParams.Capacity; j++)
 						{
 							AdvanceElixirParams[j] = new SRObject();
@@ -375,7 +379,7 @@ namespace xBot.Network.Packets
 						{
 							// ITEM_MALL_GACHA_CARD_WIN
 							// ITEM_MALL_GACHA_CARD_LOSE
-							SRList MagicParams = new SRList(p.ReadByte());
+							SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
 							for (int j = 0; j < MagicParams.Capacity; j++)
 							{
 								MagicParams[j] = new SRObject();
@@ -389,7 +393,7 @@ namespace xBot.Network.Packets
 			}
 			#endregion
 			#region (Inventory Avatar)
-			SRList InventoryAvatar = new SRList(p.ReadByte());
+			SRObjectCollection InventoryAvatar = new SRObjectCollection(p.ReadByte());
 			character[SRAttribute.InventoryAvatar] = InventoryAvatar;
 
 			itemsCount = p.ReadByte();
@@ -431,7 +435,7 @@ namespace xBot.Network.Packets
 					item[SRAttribute.Variance] = p.ReadULong();
 					item[SRAttribute.Durability] = p.ReadUInt();
 
-					SRList MagicParams = new SRList(p.ReadByte());
+					SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
 					for (int j = 0; j < MagicParams.Capacity; j++)
 					{
 						MagicParams[j] = new SRObject();
@@ -441,7 +445,7 @@ namespace xBot.Network.Packets
 					item[SRAttribute.MagicParams] = MagicParams;
 					// 1 = Socket
 					p.ReadByte();
-					SRList SocketParams = new SRList(p.ReadByte());
+					SRObjectCollection SocketParams = new SRObjectCollection(p.ReadByte());
 					for (int j = 0; j < MagicParams.Capacity; j++)
 					{
 						SocketParams[j] = new SRObject();
@@ -452,7 +456,7 @@ namespace xBot.Network.Packets
 					item[SRAttribute.SocketParams] = SocketParams;
 					// 2 = Advanced elixir
 					p.ReadByte();
-					SRList AdvanceElixirParams = new SRList(p.ReadByte());
+					SRObjectCollection AdvanceElixirParams = new SRObjectCollection(p.ReadByte());
 					for (int j = 0; j < MagicParams.Capacity; j++)
 					{
 						AdvanceElixirParams[j] = new SRObject();
@@ -466,7 +470,7 @@ namespace xBot.Network.Packets
 			#endregion
 			character[SRAttribute.unkByte02] = p.ReadByte();
 			#region (Masteries)
-			SRList Masteries = new SRList();
+			SRObjectCollection Masteries = new SRObjectCollection();
 			character[SRAttribute.Masteries] = Masteries;
 
 			while (p.ReadByte() == 1)
@@ -479,7 +483,7 @@ namespace xBot.Network.Packets
 			#endregion
 			character[SRAttribute.unkByte03] = p.ReadByte();
 			#region (Skills)
-			SRList Skills = new SRList();
+			SRObjectCollection Skills = new SRObjectCollection();
 			character[SRAttribute.Skills] = Skills;
 
 			while (p.ReadByte() == 1)
@@ -493,7 +497,7 @@ namespace xBot.Network.Packets
 			#region (Quest)
 			character[SRAttribute.QuestsCompletedID] = p.ReadUInt32Array(p.ReadUShort());
 
-			SRList Quests = new SRList(p.ReadByte());
+			SRObjectCollection Quests = new SRObjectCollection(p.ReadByte());
 			character[SRAttribute.Quests] = Quests;
 			for (byte i = 0; i < Quests.Capacity; i++)
 			{
@@ -510,7 +514,7 @@ namespace xBot.Network.Packets
 				quest[SRAttribute.isActive] = p.ReadByte() == 1;
 				if ((byte)quest[SRAttribute.QuestType] != 8)
 				{
-					SRList Objectives = new SRList(p.ReadByte());
+					SRObjectCollection Objectives = new SRObjectCollection(p.ReadByte());
 					quest[SRAttribute.Objectives] = Objectives;
 
 					for (int j = 0; j < Objectives.Capacity; j++)
@@ -531,7 +535,7 @@ namespace xBot.Network.Packets
 			character[SRAttribute.unkByte04] = p.ReadByte();
 			#region (Collection Books)
 
-			SRList CollectionBooks = new SRList(p.ReadUInt());
+			SRObjectCollection CollectionBooks = new SRObjectCollection(p.ReadUInt());
 			character[SRAttribute.CollectionBooks] = CollectionBooks;
 			for (int j = 0; j < CollectionBooks.Capacity; j++)
 			{
@@ -586,7 +590,7 @@ namespace xBot.Network.Packets
 			character[SRAttribute.SpeedRunning] = p.ReadSingle();
 			character[SRAttribute.SpeedBerserk] = p.ReadSingle();
 			#region (Buffs)
-			SRList Buffs = new SRList(p.ReadByte());
+			SRObjectCollection Buffs = new SRObjectCollection(p.ReadByte());
 			character[SRAttribute.Buffs] = Buffs;
 
 			for (int i = 0; i < Buffs.Capacity; i++)
@@ -647,8 +651,8 @@ namespace xBot.Network.Packets
 			// End of Packet
 
 			// Set the current character selected
-			Game.Info.Get.Character = character;
-			foreach (SRObject charList in Game.Info.Get.CharacterList)
+			Info.Get.Character = character;
+			foreach (SRObject charList in Info.Get.CharacterList)
 			{
 				// Copy all previous data saved on character selection
 				if ((string)character[SRAttribute.Name] == (string)charList[SRAttribute.Name])
@@ -657,17 +661,18 @@ namespace xBot.Network.Packets
 				}
 			}
 
-			// Update all GUI elements
+			// Updating GUI elements
 			Window w = Window.Get;
-			Window.InvokeIfRequired(w.Minimap_panelCoords, () => {
+			WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
 				w.Minimap_tbxX.Text = "" + (int)((float)character[SRAttribute.X]);
 				w.Minimap_tbxY.Text = "" + (int)((float)character[SRAttribute.Y]);
 				w.Minimap_tbxZ.Text = "" + (int)((float)character[SRAttribute.Z]);
 				w.Minimap_tbxRegion.Text = "" + (int)((ushort)character[SRAttribute.Region]);
-				w.TEST_ADD_SPAWN(character);
+				w.TESTING_AddSpawn(character);
 			});
 			Point coord = character.getPosition();
 			w.Minimap_CharacterPointer_Move(coord.X, coord.Y, (float)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
+
 		}
 		private static byte groupSpawnType;
 		private static ushort groupSpawnCount;
@@ -700,8 +705,9 @@ namespace xBot.Network.Packets
 		public static void EntitySpawn(Packet packet)
 		{
 			SRObject entity = null;
-			try {
-				entity = new SRObject(packet.ReadUInt(), SRObject.Type.Model);
+			try
+			{
+				entity = new SRObject(packet.ReadUInt(), SRObject.Type.Entity);
 				if (entity.ID1 == 1)
 				{
 					// BIONIC:
@@ -719,7 +725,7 @@ namespace xBot.Network.Packets
 						entity[SRAttribute.PVPCape] = packet.ReadByte();
 						entity[SRAttribute.ExpType] = packet.ReadByte();
 						// Inventory
-						SRList inventory = new SRList(packet.ReadByte());
+						SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
 						byte inventoryCount = packet.ReadByte();
 						for (byte i = 0; i < inventoryCount; i++)
 						{
@@ -731,7 +737,7 @@ namespace xBot.Network.Packets
 						}
 						entity[SRAttribute.Inventory] = inventory;
 						// AvatarInventory
-						SRList inventoryAvatar = new SRList(packet.ReadByte());
+						SRObjectCollection inventoryAvatar = new SRObjectCollection(packet.ReadByte());
 						byte inventoryAvatarCount = packet.ReadByte();
 						for (byte i = 0; i < inventoryAvatarCount; i++)
 						{
@@ -752,7 +758,7 @@ namespace xBot.Network.Packets
 							{
 								// Clone
 								mask[SRAttribute.Scale] = packet.ReadByte();
-								SRList maskItems = new SRList(packet.ReadByte());
+								SRObjectCollection maskItems = new SRObjectCollection(packet.ReadByte());
 								for (int i = 0; i < maskItems.Capacity; i++)
 								{
 									maskItems[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
@@ -816,7 +822,7 @@ namespace xBot.Network.Packets
 					entity[SRAttribute.RunSpeed] = packet.ReadSingle();
 					entity[SRAttribute.BerserkSpeed] = packet.ReadSingle();
 					// Buffs
-					SRList buffs = new SRList(packet.ReadByte());
+					SRObjectCollection buffs = new SRObjectCollection(packet.ReadByte());
 					for (int i = 0; i < buffs.Capacity; i++)
 					{
 						buffs[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Skill);
@@ -854,7 +860,7 @@ namespace xBot.Network.Packets
 						entity[SRAttribute.unkByte4] = packet.ReadByte();
 						// Guild
 						entity[SRAttribute.GuildName] = packet.ReadAscii();
-						if (!((SRList)entity[SRAttribute.Inventory]).ContainsJobEquipment())
+						if (!((SRObjectCollection)entity[SRAttribute.Inventory]).ContainsJobEquipment())
 						{
 							entity[SRAttribute.GuildID] = packet.ReadUInt();
 							entity[SRAttribute.GuildMemberName] = packet.ReadAscii();
@@ -1041,35 +1047,26 @@ namespace xBot.Network.Packets
 				}
 				// End of Packet
 			}
-			catch (Exception ex){
-				Bot.Get.LogError(ex.ToString()+Environment.NewLine+"["+packet.Opcode.ToString("X2")+"]["+WindowsAPI.BytesToHexString(packet.GetBytes())+"]");
+			catch (Exception ex)
+			{
+				Bot.Get.LogError(ex.ToString() + Environment.NewLine + "[" + packet.Opcode.ToString("X2") + "][" + WinAPI.BytesToHexString(packet.GetBytes()) + "]");
 				throw new Exception("Packet parsing error");
 			}
-
-			// Keep the track of any entity
-			Game.Info.Get.EntityList.Add(entity);
+			// Keep the track of the entity
+			Info.Get.EntityList.Add(entity);
 
 			// Update GUI
 			Window w = Window.Get;
-
-			w.TEST_ADD_SPAWN(entity);
-
-			Point map = entity.getPosition();
-			w.Minimap_ObjectPointer_Add((uint)entity[SRAttribute.UniqueID],entity.data[2],entity.data[2], map.X,map.Y,(float)entity[SRAttribute.Z], (ushort)entity[SRAttribute.Region]);
+			w.TESTING_AddSpawn(entity);
 		}
 		public static void EntityDespawn(Packet packet)
 		{
 			uint uniqueID = packet.ReadUInt();
 			// End of Packet
-
-			// Remove entity
+			// Keep the track of the entity
 			SRObject entity = Info.Get.getEntity(uniqueID);
 			if (entity != null)
-			{
 				Info.Get.EntityList.Remove(entity);
-				Window.Get.TEST_REM_SPAWN(uniqueID);
-				Window.Get.Minimap_ObjectPointer_Remove((uint)entity[SRAttribute.UniqueID]);
-			}
 		}
 		public static void EntityMovement(Packet packet)
 		{
@@ -1081,36 +1078,20 @@ namespace xBot.Network.Packets
 				entity[SRAttribute.DestinationRegion] = packet.ReadUShort();
 				if (entity.inDungeon((ushort)entity[SRAttribute.DestinationRegion]))
 				{
-					// Dungeon offsets
 					entity[SRAttribute.DestinationOffsetX] = packet.ReadUInt();
 					entity[SRAttribute.DestinationOffsetY] = packet.ReadUInt();
 					entity[SRAttribute.DestinationOffsetZ] = packet.ReadUInt();
-
-					Point map = entity.getPosition();
-					Window.Get.Minimap_ObjectPointer_Move((uint)entity[SRAttribute.UniqueID], map.X, map.Y, (uint)entity[SRAttribute.DestinationOffsetZ], (ushort)entity[SRAttribute.DestinationRegion]);
 				}
 				else
 				{
-					// World offsets
 					entity[SRAttribute.DestinationOffsetX] = packet.ReadUShort();
 					entity[SRAttribute.DestinationOffsetY] = packet.ReadUShort();
 					entity[SRAttribute.DestinationOffsetZ] = packet.ReadUShort();
-
-					Point map = entity.getDestinationPosition();
-					Window.Get.Minimap_ObjectPointer_Move((uint)entity[SRAttribute.UniqueID], map.X, map.Y, (ushort)entity[SRAttribute.DestinationOffsetZ], (ushort)entity[SRAttribute.DestinationRegion]);
-				}
-
-				SRObject entityFound = Info.Get.getEntity((uint)entity[SRAttribute.UniqueID]);
-				if (entityFound != null)
-				{
-					entityFound.CopyAttributes(entity);
-					Window w = Window.Get;
-          w.TEST_EDIT_SPAWN(entityFound, SRAttribute.DestinationRegion);
-					w.TEST_EDIT_SPAWN(entityFound, SRAttribute.DestinationOffsetX);
-					w.TEST_EDIT_SPAWN(entityFound, SRAttribute.DestinationOffsetY);
-					w.TEST_EDIT_SPAWN(entityFound, SRAttribute.DestinationOffsetZ);
 				}
 			}
+			// End of Packet
+
+
 		}
 		public static void EnviromentCelestialPosition(Packet packet)
 		{
@@ -1129,7 +1110,7 @@ namespace xBot.Network.Packets
 				case Types.Chat.All:
 				case Types.Chat.GM:
 				case Types.Chat.NPC:
-          uint playerID = packet.ReadUInt();
+					uint playerID = packet.ReadUInt();
 					SRObject p = Info.Get.getEntity(playerID);
 					if (p != null && p.Contains(SRAttribute.Name))
 					{

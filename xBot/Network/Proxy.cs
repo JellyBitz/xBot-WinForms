@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -31,12 +30,31 @@ namespace xBot.Network
 		private int lastHostIndexSelected;
 		public List<ushort> GatewayPorts { get; }
 		public List<string> GatewayHosts { get; }
-		public Proxy(bool ClientlessMode, List<string> Hosts, List<ushort> Ports)
+		public Proxy(bool ClientlessMode, List<string> Hosts,List<ushort> Ports)
 		{
 			this.ClientlessMode = ClientlessMode;
 			GatewayHosts = Hosts;
+			RandomHost = false;
 			GatewayPorts = Ports;
 			lastPortIndexSelected = lastHostIndexSelected = -1;
+		}
+		private Random rand;
+		/// <summary>
+		/// Gets o sets the host selection to random or sequence.
+		/// </summary>
+		public bool RandomHost {
+			get {
+				return (rand != null);
+			} set {
+				if (value && rand == null)
+				{
+					rand = new Random();
+				}
+				else if(!value && rand != null)
+				{
+					rand = null;
+        }
+			}
 		}
 		/// <summary>
 		/// Start the connection.
@@ -50,6 +68,8 @@ namespace xBot.Network
 		}
 		private string SelectHost()
 		{
+			if (RandomHost)
+				return GatewayHosts[rand.Next(GatewayHosts.Count)];
 			lastHostIndexSelected++;
 			if (lastHostIndexSelected == GatewayHosts.Count)
 				lastHostIndexSelected = 0;
@@ -71,7 +91,7 @@ namespace xBot.Network
 			{
 				Gateway.Local.Socket = _socketBinded;
 				w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
-				w.setState("Waiting client connection...", Window.BotState.Warning);
+				w.setState("Waiting client connection...", Window.ProcessState.Warning);
 				try
 				{
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
@@ -88,8 +108,8 @@ namespace xBot.Network
 			else
 			{
 				w.Log("Reconnecting to gateway server [" + Gateway.Host + ":" + Gateway.Port + "] (" + _reconnections + "/10)");
-				w.setState("Waiting server connection...", Window.BotState.Warning);
-				Window.InvokeIfRequired(w.Login_btnStart, () => {
+				w.setState("Waiting server connection...", Window.ProcessState.Warning);
+				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 					w.Login_btnStart.Text = "STOP";
 				});
 			}
@@ -163,7 +183,7 @@ namespace xBot.Network
 								if (context == Gateway.Remote && w.General_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									Window.InvokeIfRequired(w.General_lstvOpcodes, () =>
+									WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
 									{
 										if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 											opcodeFound = true;
@@ -205,14 +225,15 @@ namespace xBot.Network
 													uint maxAttempts = packet.ReadUInt();
 													uint attempts = packet.ReadUInt();
 													w.Log("Password entry has failed (" + attempts + " / " + maxAttempts + " attempts)");
-													w.setState("Password failed", Window.BotState.Warning);
-													Window.InvokeIfRequired(w.Login_btnStart, () => {
+													w.setState("Password failed", Window.ProcessState.Warning);
+													WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 														w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
 													});
 													break;
 												}
 											case 2:
-												if (packet.ReadByte() == 1)
+												byte blockType = packet.ReadByte();
+                        if (blockType == 1)
 												{
 													string blockedReason = packet.ReadAscii();
 													ushort endYear = packet.ReadUShort();
@@ -222,22 +243,13 @@ namespace xBot.Network
 													ushort endMinute = packet.ReadUShort();
 													ushort endSecond = packet.ReadUShort();
 													w.Log("Account banned till [" + endDay + "/" + endMonth + "/" + endYear + " " + endHour + "/" + endMinute + "/" + endSecond + "]. Reason: " + blockedReason);
+													WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
+														w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
+													});
 												}
 												break;
-											case 3:
-												w.Log("This user is already connected");
-												break;
-											case 4:
-												w.Log("This user is already connected, try again later");
-												break;
-											case 5:
-												w.Log("The server is full, try again later");
-												break;
-											case 11:
-												w.Log("Cannot connect because the current IP has exceeded its limit");
-												break;
 											default:
-												w.Log("Error [" + error + "]");
+												w.Log("Login error C" + error);
 												break;
 										}
 									}
@@ -269,7 +281,7 @@ namespace xBot.Network
 									if (context == Gateway.Remote && w.General_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										Window.InvokeIfRequired(w.General_lstvOpcodes, () =>
+										WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
 										{
 											if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 												opcodeFound = true;
@@ -317,7 +329,7 @@ namespace xBot.Network
 			{
 				string[] localAgent = _socketBinded.LocalEndPoint.ToString().Split(':');
 				Agent.Local.Socket = bindSocket(localAgent[0], int.Parse(localAgent[1]) + 1);
-				w.setState("Waiting client connection...", Window.BotState.Warning);
+				w.setState("Waiting client connection...", Window.ProcessState.Warning);
 				try
 				{
 					Agent.Local.Socket = Agent.Local.Socket.Accept();
@@ -373,7 +385,7 @@ namespace xBot.Network
 								if (context == Agent.Remote && w.General_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									Window.InvokeIfRequired(w.General_lstvOpcodes, () =>
+									WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
 									{
 										if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 											opcodeFound = true;
@@ -410,7 +422,7 @@ namespace xBot.Network
 									if (context == Agent.Remote && w.General_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										Window.InvokeIfRequired(w.General_lstvOpcodes, () =>
+										WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
 										{
 											if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 												opcodeFound = true;
@@ -543,22 +555,22 @@ namespace xBot.Network
 			_reconnections = 0;
 			Window w = Window.Get;
 			w.setState();
-			Window.InvokeIfRequired(w.Login_btnStart, () => {
+			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 				w.Login_btnStart.Text = "START";
 				w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
 			});
 
-			Window.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
+			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
 				w.Login_cmbxSilkroad.Enabled = true;
 			});
-			Window.InvokeIfRequired(w.General_btnAddSilkroad, () => {
+			WinAPI.InvokeIfRequired(w.General_btnAddSilkroad, () => {
 				w.General_btnAddSilkroad.Font = new Font(w.General_btnAddSilkroad.Font, FontStyle.Regular);
 			});
 
-			Window.InvokeIfRequired(w.Login_gbxCharacters, () => {
+			WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () => {
 				w.Login_gbxCharacters.Visible = false;
 			});
-			Window.InvokeIfRequired(w.Login_gbxServers, () => {
+			WinAPI.InvokeIfRequired(w.Login_gbxServers, () => {
 				w.Login_gbxServers.Visible = true;
 			});
 		}

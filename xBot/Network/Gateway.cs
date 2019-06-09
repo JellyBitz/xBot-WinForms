@@ -1,5 +1,6 @@
 ﻿using SecurityAPI;
 using System.Collections.Generic;
+using xBot.Game;
 using xBot.Network.Packets;
 
 namespace xBot.Network
@@ -87,7 +88,7 @@ namespace xBot.Network
 						Bot.Get.Proxy.Agent.InjectToServer(p);
 						Window w = Window.Get;
 						w.Log("HWID Sent!");
-						Window.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
+						WinAPI.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
 						{
 							w.ToolTips.SetToolTip(w.General_rtbxHWIDdata, "HWID Sent");
 						});
@@ -108,9 +109,9 @@ namespace xBot.Network
 				string service = packet.ReadAscii();
 				if (service == "GatewayServer")
 				{
-					Game.Data.Get.Locale = packet.ReadByte();
+					Info.Get.Locale = packet.ReadByte();
 					packet.ReadAscii();
-					Game.Data.Get.Version = packet.ReadUInt();
+					Info.Get.Version = packet.ReadUInt();
 				}
 			}
 			return false;
@@ -128,9 +129,9 @@ namespace xBot.Network
 				if (service == "GatewayServer")
 				{
 					Packet p = new Packet(Opcode.CLIENT_PATCH_REQUEST, true);
-					p.WriteUInt8(Game.Data.Get.Locale);
+					p.WriteUInt8(Info.Get.Locale);
 					p.WriteAscii("SR_Client");
-          p.WriteUInt32(Game.Data.Get.Version);
+          p.WriteUInt32(Info.Get.Version);
 					this.InjectToServer(p);
 				}
 			}

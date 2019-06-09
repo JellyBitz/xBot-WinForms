@@ -50,7 +50,7 @@ namespace xBot
 		}
 		public void LogError(string error)
 		{
-			File.AppendAllText("dump.log", WindowsAPI.getDate() + error + Environment.NewLine);
+			File.AppendAllText("dump.log", WinAPI.getDate() + error + Environment.NewLine);
 		}
 		public string getRandomCharname()
 		{
@@ -66,7 +66,16 @@ namespace xBot
 			}
 			return nick;
 		}
-		public void setHWID(ushort cOp,string SaveFrom, ushort sOp, string SendTo,bool SendOnlyOnce, string Data)
+		/// <summary>
+		/// Set the HWID setup.
+		/// </summary>
+		/// <param name="cOp">Client opcode used to save the HWID packet</param>
+		/// <param name="SaveFrom">Save from Gateway/Server/Both</param>
+		/// <param name="sOp">Server opcode used to send the HWID packet</param>
+		/// <param name="SendTo">Send to from Gateway/Server/Both</param>
+		/// <param name="SendOnlyOnce">Send HWID packet only once</param>
+		/// <param name="Data">Packet string format</param>
+		public void SetHWID(ushort cOp,string SaveFrom, ushort sOp, string SendTo,bool SendOnlyOnce, string Data)
 		{
 			Agent.Opcode.CLIENT_HWID = cOp;
 			Agent.Opcode.SERVER_HWID = sOp;
@@ -74,14 +83,14 @@ namespace xBot
 			_SendTo = SendTo;
 			_HWIDLoadsCount = SendOnlyOnce?-1:0;
 			if (Data != "")
-				_HWID = WindowsAPI.HexStringToBytes(Data.Replace(" ", ""));
+				_HWID = WinAPI.HexStringToBytes(Data.Replace(" ", ""));
 		}
 		public void SaveHWID(byte[] data)
 		{
 			_HWID = data;
 			Window w = Window.Get;
-			string hwid = WindowsAPI.BytesToHexString(data);
-			Window.InvokeIfRequired(w.General_lstrSilkroads, () => {
+			string hwid = WinAPI.BytesToHexString(data);
+			WinAPI.InvokeIfRequired(w.General_lstrSilkroads, () => {
 				w.General_lstrSilkroads.Nodes[w.Login_cmbxSilkroad.Text].Nodes["HWID"].Nodes["Data"].Text = "Data : "+hwid;
 				w.General_lstrSilkroads.Nodes[w.Login_cmbxSilkroad.Text].Nodes["HWID"].Nodes["Data"].Tag = hwid;
 			});
@@ -103,7 +112,7 @@ namespace xBot
 		}
 		public void CloseSROClient()
 		{
-			Process p = WindowsAPI.getSROCientProcess();
+			Process p = WinAPI.getSROCientProcess();
 			if (p != null)
 				p.Kill();
 		}

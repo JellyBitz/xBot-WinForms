@@ -324,7 +324,7 @@ namespace SecurityAPI
 				return m_reader.ReadDouble();
 			}
 		}
-		public String ReadAscii()
+		public string ReadAscii()
 		{
 			return ReadAscii(1252);
 		}

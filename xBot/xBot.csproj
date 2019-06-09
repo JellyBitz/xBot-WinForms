@@ -51,7 +51,12 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.110.0\lib\net451\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -65,8 +70,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\PK2Extractor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="App\PK2Extractor.Designer.cs">
+      <DependentUpon>PK2Extractor.cs</DependentUpon>
+    </Compile>
     <Compile Include="App\Settings.cs" />
-    <Compile Include="Game\Data.cs" />
+    <Compile Include="Game\Database.cs" />
     <Compile Include="Game\Info.cs" />
     <Compile Include="Game\Objects.cs" />
     <Compile Include="Network\Agent.cs" />
@@ -77,10 +88,10 @@
     <Compile Include="Game\Types.cs" />
     <Compile Include="Network\Proxy.cs" />
     <Compile Include="App\Bot.cs" />
-    <Compile Include="App\WindowsAPI.cs" />
+    <Compile Include="App\WinAPI.cs" />
     <Compile Include="App\Fonts.cs" />
-    <Compile Include="PK2ReaderAPI\File.cs" />
-    <Compile Include="PK2ReaderAPI\Folder.cs" />
+    <Compile Include="PK2ReaderAPI\PK2File.cs" />
+    <Compile Include="PK2ReaderAPI\PK2Folder.cs" />
     <Compile Include="PK2ReaderAPI\PK2Reader.cs" />
     <Compile Include="SecurityAPI\Blowfish.cs" />
     <Compile Include="SecurityAPI\Packet.cs" />
@@ -103,6 +114,9 @@
     <Compile Include="xGUI\ExampleControls.Designer.cs">
       <DependentUpon>ExampleControls.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="App\PK2Extractor.resx">
+      <DependentUpon>PK2Extractor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="App\Window.resx">
       <DependentUpon>Window.cs</DependentUpon>
     </EmbeddedResource>
@@ -154,9 +168,11 @@
     <Error Condition="!Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets'))" />
     <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props'))" />
     <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets'))" />
   </Target>
   <Import Project="..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" />
   <Import Project="..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

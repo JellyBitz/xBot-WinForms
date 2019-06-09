@@ -26,7 +26,7 @@ namespace xBot
 				Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
 				uint dummy = 0;
 				myFonts.AddMemoryFont(fontPtr, fontData.Length);
-				WindowsAPI.AddFontMemResourceEx(fontPtr, (uint)fontData.Length, IntPtr.Zero, ref dummy);
+				WinAPI.AddFontMemResourceEx(fontPtr, (uint)fontData.Length, IntPtr.Zero, ref dummy);
 				Marshal.FreeCoTaskMem(fontPtr);
 			}
 		}

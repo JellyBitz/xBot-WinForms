@@ -1,6 +1,7 @@
 ﻿using SecurityAPI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -26,41 +27,45 @@ namespace PK2ReaderAPI
 		private List<sPk2EntryBlock> m_EntryBlocks = new List<sPk2EntryBlock>();
 		public List<sPk2EntryBlock> EntryBlocks { get { return m_EntryBlocks; } }
 
-		private List<File> m_Files = new List<File>();
-		public List<File> Files { get { return m_Files; } }
+		private List<PK2File> m_Files = new List<PK2File>();
+		public List<PK2File> Files { get { return m_Files; } }
 
-		private List<Folder> m_Folders = new List<Folder>();
-		public List<Folder> Folders { get { return m_Folders; } }
+		private List<PK2Folder> m_Folders = new List<PK2Folder>();
+		public List<PK2Folder> Folders { get { return m_Folders; } }
 
 		private string m_Path;
 		public string Path { get { return m_Path; } }
 
-		private Folder m_CurrentFolder;
-		private Folder m_MainFolder;
+		private PK2Folder m_CurrentFolder;
+		private PK2Folder m_MainFolder;
 		private System.IO.FileStream m_FileStream;
 		#endregion
 
 		#region Constructor
 		public PK2Reader(string FileName, string BlowfishKey)
 		{
-			if (!System.IO.File.Exists(FileName))
+			if (!File.Exists(FileName))
 				throw new Exception("File not found");
 			else
 			{
 				m_Path = FileName;
-				m_Key = GenerateFinalBlowfishKey(BlowfishKey);
-				m_Key_Ascii = BlowfishKey;
+				// Set default key for most clients
+				if (BlowfishKey == "")
+					m_Key_Ascii = "169841";
+				else
+					m_Key_Ascii = BlowfishKey;
+				m_Key = GenerateFinalBlowfishKey(m_Key_Ascii);
 
-				m_FileStream = new System.IO.FileStream(FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read);
+				m_FileStream = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 				m_Size = m_FileStream.Length;
 
 				m_Blowfish.Initialize(m_Key);
-				System.IO.BinaryReader reader = new System.IO.BinaryReader(m_FileStream);
+				BinaryReader reader = new BinaryReader(m_FileStream);
 				m_Header = (sPk2Header)BufferToStruct(reader.ReadBytes(256), typeof(sPk2Header));
-				m_CurrentFolder = new Folder();
+				m_CurrentFolder = new PK2Folder();
 				m_CurrentFolder.Name = FileName;
-				m_CurrentFolder.Files = new List<File>();
-				m_CurrentFolder.SubFolders = new List<Folder>();
+				m_CurrentFolder.Files = new List<PK2File>();
+				m_CurrentFolder.SubFolders = new List<PK2Folder>();
 
 				m_MainFolder = m_CurrentFolder;
 				Read(reader.BaseStream.Position);
@@ -68,64 +73,25 @@ namespace PK2ReaderAPI
 		}
 		#endregion
 
-		#region Blowfish:Key_Generation
-		private static byte[] GenerateFinalBlowfishKey(string ascii_key)
-		{
-			//Using the default Base_Key
-			return GenerateFinalBlowfishKey(ascii_key, new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 });
-		}
-
-		private static byte[] GenerateFinalBlowfishKey(string ascii_key, byte[] base_key)
-		{
-			byte ascii_key_lenght = (byte)ascii_key.Length;
-
-			//Max count of 56 key bytes
-			if (ascii_key_lenght > 56)
-			{
-				ascii_key_lenght = 56;
-			}
-
-			//Get bytes from ascii
-			byte[] a_key = Encoding.ASCII.GetBytes(ascii_key);
-
-			//This is the Silkroad bas key used in all versions
-			byte[] b_key = new byte[56];
-
-			//Copy key to array to keep the b_key at 56 bytes. b_key has to be bigger than a_key
-			//to be able to xor every index of a_key.
-			Array.ConstrainedCopy(base_key, 0, b_key, 0, base_key.Length);
-
-			// Their key modification algorithm for the final blowfish key
-			byte[] bf_key = new byte[ascii_key_lenght];
-			for (byte x = 0; x < ascii_key_lenght; ++x)
-			{
-				bf_key[x] = (byte)(a_key[x] ^ b_key[x]);
-			}
-
-			return bf_key;
-		}
-
-		#endregion
-
 		#region Functions & Methods
-		public void ExtractFile(File File, string OutputPath)
+		public void ExtractFile(PK2File File, string OutputPath)
 		{
 			Byte[] data = GetFileBytes(File);
-			System.IO.FileStream stream = new System.IO.FileStream(OutputPath, System.IO.FileMode.OpenOrCreate);
-			System.IO.BinaryWriter writer = new System.IO.BinaryWriter(stream);
+			FileStream stream = new FileStream(OutputPath, FileMode.OpenOrCreate);
+			BinaryWriter writer = new BinaryWriter(stream);
 			writer.Write(data);
 
 		}
 		public void ExtractFile(string Name, string OutputPath)
 		{
-			Byte[] data = GetFileBytes(Name);
-			System.IO.FileStream stream = new System.IO.FileStream(OutputPath, System.IO.FileMode.OpenOrCreate);
-			System.IO.BinaryWriter writer = new System.IO.BinaryWriter(stream);
+			byte[] data = GetFileBytes(Name);
+			FileStream stream = new FileStream(OutputPath, FileMode.OpenOrCreate);
+			BinaryWriter writer = new BinaryWriter(stream);
 			writer.Write(data);
 
 		}
 
-		public string GetFileExtension(File File)
+		public string GetFileExtension(PK2File File)
 		{
 			int Offset = File.Name.LastIndexOf('.');
 			return File.Name.Substring(Offset);
@@ -141,19 +107,19 @@ namespace PK2ReaderAPI
 				throw new Exception("The file does not exsist");
 		}
 
-		public List<File> GetRootFiles()
+		public List<PK2File> GetRootFiles()
 		{
 			return m_MainFolder.Files;
 		}
-		public List<Folder> GetRootFolders()
+		public List<PK2Folder> GetRootFolders()
 		{
 			return m_MainFolder.SubFolders;
 		}
 
-		public List<File> GetFiles(string ParentFolder)
+		public List<PK2File> GetFiles(string ParentFolder)
 		{
-			List<File> ObjToReturn = new List<File>();
-			foreach (File file in Files)
+			List<PK2File> ObjToReturn = new List<PK2File>();
+			foreach (PK2File file in Files)
 			{
 				if (file.ParentFolder.Name == ParentFolder)
 				{
@@ -162,14 +128,14 @@ namespace PK2ReaderAPI
 			}
 			return ObjToReturn;
 		}
-		public List<Folder> GetSubFolders(string ParentFolder)
+		public List<PK2Folder> GetSubFolders(string ParentFolder)
 		{
-			List<Folder> ObjToReturn = new List<Folder>();
-			foreach (Folder folder in Folders)
+			List<PK2Folder> ObjToReturn = new List<PK2Folder>();
+			foreach (PK2Folder folder in Folders)
 			{
 				if (folder.Name == ParentFolder)
 				{
-					foreach (Folder subFolder in folder.SubFolders)
+					foreach (PK2Folder subFolder in folder.SubFolders)
 					{
 						ObjToReturn.Add(subFolder);
 					}
@@ -180,8 +146,8 @@ namespace PK2ReaderAPI
 
 		public bool FileExists(string Name)
 		{
-			File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
-			if (file.Position != 0)
+			PK2File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
+			if (file != null && file.Position != 0)
 			{
 				return true;
 			}
@@ -195,8 +161,8 @@ namespace PK2ReaderAPI
 		{
 			if (FileExists(Name))
 			{
-				System.IO.BinaryReader reader = new System.IO.BinaryReader(m_FileStream);
-				File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
+				BinaryReader reader = new BinaryReader(m_FileStream);
+				PK2File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
 				reader.BaseStream.Position = file.Position;
 				return reader.ReadBytes((int)file.Size);
 			}
@@ -206,12 +172,12 @@ namespace PK2ReaderAPI
 				return null;
 			}
 		}
-		public byte[] GetFileBytes(File File)
+		public byte[] GetFileBytes(PK2File File)
 		{
 			if (FileExists(File.Name))
 			{
-				System.IO.BinaryReader reader = new System.IO.BinaryReader(m_FileStream);
-				File file = m_Files.Find(item => item.Name.ToLower() == File.Name.ToLower());
+				BinaryReader reader = new BinaryReader(m_FileStream);
+				PK2File file = m_Files.Find(item => item.Name.ToLower() == File.Name.ToLower());
 				reader.BaseStream.Position = file.Position;
 				return reader.ReadBytes((int)file.Size);
 			}
@@ -229,7 +195,7 @@ namespace PK2ReaderAPI
 				byte[] tempBuffer = GetFileBytes(Name);
 				if (tempBuffer != null)
 				{
-					System.IO.TextReader txtReader = new System.IO.StreamReader(new System.IO.MemoryStream(tempBuffer));
+					TextReader txtReader = new StreamReader(new MemoryStream(tempBuffer));
 					return txtReader.ReadToEnd();
 				}
 				else
@@ -238,12 +204,12 @@ namespace PK2ReaderAPI
 			else
 				throw new Exception("File does not exsist!");
 		}
-		public string GetFileText(File File)
+		public string GetFileText(PK2File File)
 		{
 			byte[] tempBuffer = GetFileBytes(File.Name);
 			if (tempBuffer != null)
 			{
-				System.IO.TextReader txtReader = new System.IO.StreamReader(new System.IO.MemoryStream(tempBuffer));
+				TextReader txtReader = new StreamReader(new MemoryStream(tempBuffer));
 				return txtReader.ReadToEnd();
 			}
 			else
@@ -252,19 +218,19 @@ namespace PK2ReaderAPI
 
 		public System.IO.Stream GetFileStream(string Name)
 		{
-			System.IO.MemoryStream ObjToReturn = new System.IO.MemoryStream(GetFileBytes(Name));
+			MemoryStream ObjToReturn = new MemoryStream(GetFileBytes(Name));
 			return ObjToReturn;
 		}
-		public System.IO.Stream GetFileStream(File File)
+		public System.IO.Stream GetFileStream(PK2File File)
 		{
-			System.IO.MemoryStream ObjToReturn = new System.IO.MemoryStream(GetFileBytes(File.Name));
+			MemoryStream ObjToReturn = new MemoryStream(GetFileBytes(File.Name));
 			return ObjToReturn;
 		}
 
 		public List<string> GetFileNames()
 		{
 			List<string> tmpList = new List<string>();
-			foreach (File file in m_Files)
+			foreach (PK2File file in m_Files)
 			{
 				tmpList.Add(file.Name);
 			}
@@ -272,9 +238,9 @@ namespace PK2ReaderAPI
 		}
 		private void Read(long Position)
 		{
-			System.IO.BinaryReader reader = new System.IO.BinaryReader(m_FileStream);
+			BinaryReader reader = new BinaryReader(m_FileStream);
 			reader.BaseStream.Position = Position;
-			List<Folder> folders = new List<Folder>();
+			List<PK2Folder> folders = new List<PK2Folder>();
 			sPk2EntryBlock entryBlock = (sPk2EntryBlock)BufferToStruct(m_Blowfish.Decode(reader.ReadBytes(Marshal.SizeOf(typeof(sPk2EntryBlock)))), typeof(sPk2EntryBlock));
 
 
@@ -290,7 +256,7 @@ namespace PK2ReaderAPI
 					case 1: //Folder 
 						if (entry.Name != "." && entry.Name != "..")
 						{
-							Folder folder = new Folder();
+							PK2Folder folder = new PK2Folder();
 							folder.Name = entry.Name;
 							folder.Position = BitConverter.ToInt64(entry.g_Position, 0);
 							folders.Add(folder);
@@ -299,7 +265,7 @@ namespace PK2ReaderAPI
 						}
 						break;
 					case 2: //File
-						File file = new File();
+						PK2File file = new PK2File();
 						file.Position = entry.Position;
 						file.Name = entry.Name;
 						file.Size = entry.Size;
@@ -316,20 +282,58 @@ namespace PK2ReaderAPI
 			}
 
 
-			foreach (Folder folder in folders)
+			foreach (PK2Folder folder in folders)
 			{
 				m_CurrentFolder = folder;
 				if (folder.Files == null)
 				{
-					folder.Files = new List<File>();
+					folder.Files = new List<PK2File>();
 				}
 				if (folder.SubFolders == null)
 				{
-					folder.SubFolders = new List<Folder>();
+					folder.SubFolders = new List<PK2Folder>();
 				}
 				Read(folder.Position);
 			}
 
+		}
+		#endregion
+
+		#region Blowfish:Key_Generation
+		private static byte[] GenerateFinalBlowfishKey(string ascii_key)
+		{
+			// Using the default Base_Key
+			return GenerateFinalBlowfishKey(ascii_key, new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 });
+		}
+
+		private static byte[] GenerateFinalBlowfishKey(string ascii_key, byte[] base_key)
+		{
+			byte ascii_key_length = (byte)ascii_key.Length;
+
+			// Max count of 56 key bytes
+			if (ascii_key_length > 56)
+			{
+				ascii_key_length = 56;
+			}
+
+			// Get bytes from ascii
+			byte[] a_key = Encoding.ASCII.GetBytes(ascii_key);
+
+			// This is the Silkroad bas key used in all versions
+			byte[] b_key = new byte[56];
+
+			// Copy key to array to keep the b_key at 56 bytes. b_key has to be bigger than a_key
+			// to be able to xor every index of a_key.
+			Array.ConstrainedCopy(base_key, 0, b_key, 0, base_key.Length);
+
+			// Their key modification algorithm for the final blowfish key
+			byte[] bf_key = new byte[ascii_key_length];
+			for (byte x = 0; x < ascii_key_length; ++x)
+			{
+				bf_key[x] = (byte)(a_key[x] ^ b_key[x]);
+			}
+
+			return bf_key;
 		}
 		#endregion
 

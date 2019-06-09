@@ -1,6 +1,7 @@
 ﻿using SecurityAPI;
 using System.Collections.Generic;
 using System.Drawing;
+using xBot.Game;
 using xBot.Network.Packets;
 
 namespace xBot.Network
@@ -105,7 +106,7 @@ namespace xBot.Network
 						Bot.Get.Proxy.Agent.InjectToServer(p);
 						Window w = Window.Get;
 						w.Log("HWID Sent!");
-						Window.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
+						WinAPI.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
 						{
 							w.ToolTips.SetToolTip(w.General_rtbxHWIDdata, "HWID Sent!");
 						});
@@ -142,7 +143,7 @@ namespace xBot.Network
 					p.WriteUInt32(id);
 					p.WriteAscii(Window.Get.Login_tbxUsername.Text);
 					p.WriteAscii(Window.Get.Login_tbxPassword.Text);
-					p.WriteUInt16(Game.Data.Get.Locale);
+					p.WriteUInt16(Info.Get.Locale);
 					// MAC
 					p.WriteUInt32(0);
 					p.WriteUInt16(0);
@@ -156,7 +157,7 @@ namespace xBot.Network
 				{
 					Window.Get.Log("Logged successfully!");
 					Window.Get.setState("Logged");
-					Window.InvokeIfRequired(Window.Get.Login_btnStart, () =>
+					WinAPI.InvokeIfRequired(Window.Get.Login_btnStart, () =>
 					{
 						Window.Get.Login_btnStart.Font = new Font(Window.Get.Login_btnStart.Font, FontStyle.Strikeout);
 					});
@@ -182,7 +183,7 @@ namespace xBot.Network
 				if (success == 1)
 				{
 					w.Log("Character selected");
-					Window.InvokeIfRequired(w.Login_btnStart, () =>
+					WinAPI.InvokeIfRequired(w.Login_btnStart, () =>
 					{
 						w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Strikeout);
 					});
@@ -192,7 +193,7 @@ namespace xBot.Network
 				{
 					int error = packet.ReadUShort();
 					w.Log("Error: " + error);
-					w.setState("Error", Window.BotState.Error);
+					w.setState("Error", Window.ProcessState.Error);
 				}
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_BEGIN)

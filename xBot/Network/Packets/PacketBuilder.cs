@@ -7,7 +7,7 @@ namespace xBot.Network.Packets
 		public static void Login(string username, string password, int serverID)
 		{
 			Packet p = new Packet(Gateway.Opcode.CLIENT_LOGIN_REQUEST, true);
-			p.WriteUInt8(Game.Data.Get.Locale);
+			p.WriteUInt8(Info.Get.Locale);
 			p.WriteAscii(username);
 			p.WriteAscii(password);
 			p.WriteUInt16(serverID);
