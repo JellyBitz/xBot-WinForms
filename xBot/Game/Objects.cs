@@ -553,8 +553,16 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="byte"/></para>
 		/// </summary>
 		GMFlag,
-
-
+		/// <summary>
+		/// Attributes used by the skill, concatenated by "|" symbol.
+		/// <para>Data type : <see cref="string"/></para>
+		/// </summary>
+		SkillAttributes,
+		/// <summary>
+		/// PVP cape mode.
+		/// <para>Data type : <see cref="Types.PVPCape"/></para>
+		/// </summary>
+		PVPCape,
 
 
 
@@ -583,20 +591,12 @@ namespace xBot.Game
 
 
 
-
-
-
-
-
-
-
-
+		
 
 		/// <summary>
 		/// <para>Data type : <see cref="xBot.Game.SRObjectCollection"/></para>
 		/// </summary>
 		MaskItems,
-		PVPCape,
 		ItemOptLevel,
 		Mask,
 		hasMask,
@@ -644,12 +644,8 @@ namespace xBot.Game
 		unkUInt0,
 		unkUInt1,
 		unkUInt2,
-		unkByte5,
-		SkillAttributes,
+		unkByte5
 	}
-
-
-
 	/// <summary>
 	/// <para> Funny and customizable class to handle all game objects
 	/// in a dynamic way without falling too much at performance.</para>
@@ -773,7 +769,6 @@ namespace xBot.Game
 					tid2 = byte.Parse(data["tid2"]);
 					tid3 = byte.Parse(data["tid3"]);
 					tid4 = byte.Parse(data["tid4"]);
-
 
 					break;
 				case Type.Skill:
@@ -932,6 +927,7 @@ namespace xBot.Game
 					switch (xTile)
 					{
 						case 1: // Cave Downhang
+
 							break;
 					}
 					Point p = new Point();

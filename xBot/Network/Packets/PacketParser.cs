@@ -664,15 +664,14 @@ namespace xBot.Network.Packets
 			// Updating GUI elements
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
-				w.Minimap_tbxX.Text = "" + (int)((float)character[SRAttribute.X]);
-				w.Minimap_tbxY.Text = "" + (int)((float)character[SRAttribute.Y]);
-				w.Minimap_tbxZ.Text = "" + (int)((float)character[SRAttribute.Z]);
-				w.Minimap_tbxRegion.Text = "" + (int)((ushort)character[SRAttribute.Region]);
+				w.Minimap_tbxX.Text = ((int)((float)character[SRAttribute.X])).ToString();
+				w.Minimap_tbxY.Text = ((int)((float)character[SRAttribute.Y])).ToString();
+				w.Minimap_tbxZ.Text = ((int)((float)character[SRAttribute.Z])).ToString();
+				w.Minimap_tbxRegion.Text = ((int)((ushort)character[SRAttribute.Region])).ToString();
 				w.TESTING_AddSpawn(character);
 			});
 			Point coord = character.getPosition();
 			w.Minimap_CharacterPointer_Move(coord.X, coord.Y, (float)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
-
 		}
 		private static byte groupSpawnType;
 		private static ushort groupSpawnCount;
@@ -704,354 +703,347 @@ namespace xBot.Network.Packets
 		}
 		public static void EntitySpawn(Packet packet)
 		{
-			SRObject entity = null;
-			try
+			SRObject entity = new SRObject(packet.ReadUInt(), SRObject.Type.Entity);
+			if (entity.ID1 == 1)
 			{
-				entity = new SRObject(packet.ReadUInt(), SRObject.Type.Entity);
-				if (entity.ID1 == 1)
+				// BIONIC:
+				// - CHARACTER
+				// - NPC
+				//   - NPC_FORTRESS_STRUCT
+				//   - NPC_MOB
+				//   - NPC_COS
+				//   - NPC_FORTRESS_COS
+				if (entity.ID2 == 1)
 				{
-					// BIONIC:
-					// - CHARACTER
-					// - NPC
-					//   - NPC_FORTRESS_STRUCT
-					//   - NPC_MOB
-					//   - NPC_COS
-					//   - NPC_FORTRESS_COS
-					if (entity.ID2 == 1)
+					// CHARACTER
+					entity[SRAttribute.Scale] = packet.ReadByte();
+					entity[SRAttribute.BerserkLevel] = packet.ReadByte();
+					entity[SRAttribute.PVPCape] = packet.ReadByte();
+					entity[SRAttribute.ExpType] = packet.ReadByte();
+					// Inventory
+					SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
+					byte inventoryCount = packet.ReadByte();
+					for (byte i = 0; i < inventoryCount; i++)
 					{
-						// CHARACTER
-						entity[SRAttribute.Scale] = packet.ReadByte();
-						entity[SRAttribute.BerserkLevel] = packet.ReadByte();
-						entity[SRAttribute.PVPCape] = packet.ReadByte();
-						entity[SRAttribute.ExpType] = packet.ReadByte();
-						// Inventory
-						SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
-						byte inventoryCount = packet.ReadByte();
-						for (byte i = 0; i < inventoryCount; i++)
+						inventory[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
+						if (inventory[i].ID1 == 3 && inventory[i].ID2 == 1)
 						{
-							inventory[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
-							if (inventory[i].ID1 == 3 && inventory[i].ID2 == 1)
-							{
-								inventory[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
-							}
+							inventory[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
 						}
-						entity[SRAttribute.Inventory] = inventory;
-						// AvatarInventory
-						SRObjectCollection inventoryAvatar = new SRObjectCollection(packet.ReadByte());
-						byte inventoryAvatarCount = packet.ReadByte();
-						for (byte i = 0; i < inventoryAvatarCount; i++)
+					}
+					entity[SRAttribute.Inventory] = inventory;
+					// AvatarInventory
+					SRObjectCollection inventoryAvatar = new SRObjectCollection(packet.ReadByte());
+					byte inventoryAvatarCount = packet.ReadByte();
+					for (byte i = 0; i < inventoryAvatarCount; i++)
+					{
+						inventoryAvatar[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
+						if (inventoryAvatar[i].ID1 == 3 && inventoryAvatar[i].ID2 == 1)
 						{
-							inventoryAvatar[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
-							if (inventoryAvatar[i].ID1 == 3 && inventoryAvatar[i].ID2 == 1)
-							{
-								inventoryAvatar[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
-							}
+							inventoryAvatar[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
 						}
-						entity[SRAttribute.InventoryAvatar] = inventoryAvatar;
-						// Mask
-						byte hasMask = packet.ReadByte();
-						entity[SRAttribute.hasMask] = hasMask;
-						if (hasMask == 1)
+					}
+					entity[SRAttribute.InventoryAvatar] = inventoryAvatar;
+					// Mask
+					byte hasMask = packet.ReadByte();
+					entity[SRAttribute.hasMask] = hasMask;
+					if (hasMask == 1)
+					{
+						SRObject mask = new SRObject(packet.ReadUInt(), SRObject.Type.Model);
+						if (mask.ID1 == entity.ID1 && mask.ID2 == entity.ID2)
 						{
-							SRObject mask = new SRObject(packet.ReadUInt(), SRObject.Type.Model);
-							if (mask.ID1 == entity.ID1 && mask.ID2 == entity.ID2)
+							// Clone
+							mask[SRAttribute.Scale] = packet.ReadByte();
+							SRObjectCollection maskItems = new SRObjectCollection(packet.ReadByte());
+							for (int i = 0; i < maskItems.Capacity; i++)
 							{
-								// Clone
-								mask[SRAttribute.Scale] = packet.ReadByte();
-								SRObjectCollection maskItems = new SRObjectCollection(packet.ReadByte());
-								for (int i = 0; i < maskItems.Capacity; i++)
-								{
-									maskItems[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
-								}
-								mask[SRAttribute.MaskItems] = maskItems;
+								maskItems[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
 							}
-							entity[SRAttribute.Mask] = mask;
+							mask[SRAttribute.MaskItems] = maskItems;
 						}
+						entity[SRAttribute.Mask] = mask;
+					}
 
-					}
-					else if (entity.ID2 == 2 && entity.ID3 == 5)
+				}
+				else if (entity.ID2 == 2 && entity.ID3 == 5)
+				{
+					// NPC_FORTRESS_STRUCT
+					entity[SRAttribute.HP] = packet.ReadUInt();
+					entity[SRAttribute.refEventStructID] = packet.ReadUInt();
+					entity[SRAttribute.LifeState] = packet.ReadUShort();
+				}
+				// Position
+				entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.Region] = packet.ReadUShort();
+				entity[SRAttribute.X] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Angle] = packet.ReadUShort();
+				// Movement
+				byte hasDestination = packet.ReadByte();
+				entity[SRAttribute.hasDestination] = hasDestination;
+				entity[SRAttribute.MovementType] = packet.ReadByte();
+				if (hasDestination == 1)
+				{
+					// Mouse movement
+					entity[SRAttribute.DestinationRegion] = packet.ReadUShort();
+					if ((ushort)entity[SRAttribute.Region] < short.MaxValue)
 					{
-						// NPC_FORTRESS_STRUCT
-						entity[SRAttribute.HP] = packet.ReadUInt();
-						entity[SRAttribute.refEventStructID] = packet.ReadUInt();
-						entity[SRAttribute.LifeState] = packet.ReadUShort();
-					}
-					// Position
-					entity[SRAttribute.UniqueID] = packet.ReadUInt();
-					entity[SRAttribute.Region] = packet.ReadUShort();
-					entity[SRAttribute.X] = packet.ReadSingle();
-					entity[SRAttribute.Y] = packet.ReadSingle();
-					entity[SRAttribute.Z] = packet.ReadSingle();
-					entity[SRAttribute.Angle] = packet.ReadUShort();
-					// Movement
-					byte hasDestination = packet.ReadByte();
-					entity[SRAttribute.hasDestination] = hasDestination;
-					entity[SRAttribute.MovementType] = packet.ReadByte();
-					if (hasDestination == 1)
-					{
-						// Mouse movement
-						entity[SRAttribute.DestinationRegion] = packet.ReadUShort();
-						if ((ushort)entity[SRAttribute.Region] < short.MaxValue)
-						{
-							// World
-							entity[SRAttribute.DestinationOffsetX] = packet.ReadUShort();
-							entity[SRAttribute.DestinationOffsetY] = packet.ReadUShort();
-							entity[SRAttribute.DestinationOffsetZ] = packet.ReadUShort();
-						}
-						else
-						{
-							// Dungeon
-							entity[SRAttribute.DestinationOffsetX] = packet.ReadUInt();
-							entity[SRAttribute.DestinationOffsetY] = packet.ReadUInt();
-							entity[SRAttribute.DestinationOffsetZ] = packet.ReadUInt();
-						}
+						// World
+						entity[SRAttribute.DestinationOffsetX] = packet.ReadUShort();
+						entity[SRAttribute.DestinationOffsetY] = packet.ReadUShort();
+						entity[SRAttribute.DestinationOffsetZ] = packet.ReadUShort();
 					}
 					else
 					{
-						entity[SRAttribute.MovementSource] = packet.ReadByte();
-						// Represents the new angle, character is looking at
-						entity[SRAttribute.MovementAngle] = packet.ReadUShort();
+						// Dungeon
+						entity[SRAttribute.DestinationOffsetX] = packet.ReadUInt();
+						entity[SRAttribute.DestinationOffsetY] = packet.ReadUInt();
+						entity[SRAttribute.DestinationOffsetZ] = packet.ReadUInt();
 					}
-					// State
-					entity[SRAttribute.LifeState] = packet.ReadByte();
-					entity[SRAttribute.unkByte3] = packet.ReadByte();
-					entity[SRAttribute.MotionState] = packet.ReadByte();
-					entity[SRAttribute.PlayerStatus] = packet.ReadByte();
-					// Speed
-					entity[SRAttribute.WalkSpeed] = packet.ReadSingle();
-					entity[SRAttribute.RunSpeed] = packet.ReadSingle();
-					entity[SRAttribute.BerserkSpeed] = packet.ReadSingle();
-					// Buffs
-					SRObjectCollection buffs = new SRObjectCollection(packet.ReadByte());
-					for (int i = 0; i < buffs.Capacity; i++)
+				}
+				else
+				{
+					entity[SRAttribute.MovementSource] = packet.ReadByte();
+					// Represents the new angle, character is looking at
+					entity[SRAttribute.MovementAngle] = packet.ReadUShort();
+				}
+				// State
+				entity[SRAttribute.LifeState] = packet.ReadByte();
+				entity[SRAttribute.unkByte3] = packet.ReadByte();
+				entity[SRAttribute.MotionState] = packet.ReadByte();
+				entity[SRAttribute.PlayerStatus] = packet.ReadByte();
+				// Speed
+				entity[SRAttribute.WalkSpeed] = packet.ReadSingle();
+				entity[SRAttribute.RunSpeed] = packet.ReadSingle();
+				entity[SRAttribute.BerserkSpeed] = packet.ReadSingle();
+				// Buffs
+				SRObjectCollection buffs = new SRObjectCollection(packet.ReadByte());
+				for (int i = 0; i < buffs.Capacity; i++)
+				{
+					uint id = packet.ReadUInt();
+					buffs[i] = new SRObject(id, SRObject.Type.Skill);
+					buffs[i][SRAttribute.Duration] = packet.ReadUInt();
+					if (buffs[i].isAutoTransferEffect())
 					{
-						buffs[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Skill);
-						buffs[i][SRAttribute.Duration] = packet.ReadUInt();
-						if (buffs[i].isAutoTransferEffect())
-						{
-							buffs[i][SRAttribute.isCreator] = packet.ReadByte();
-						}
+						buffs[i][SRAttribute.isCreator] = packet.ReadByte();
 					}
-					entity[SRAttribute.Buffs] = buffs;
+				}
+				entity[SRAttribute.Buffs] = buffs;
+				if (entity.ID3 == 1)
+				{
+					// MOB
+					packet.ReadByte(); // 2
+					entity[SRAttribute.MobType] = packet.ReadByte();
+					packet.ReadByte(); // 5
+					packet.ReadByte(); // 0
+				}
+				else if (entity.ID2 == 1)
+				{
+					// CHARACTER
+					entity[SRAttribute.Name] = packet.ReadAscii();
+					entity[SRAttribute.JobType] = packet.ReadByte();
+					entity[SRAttribute.JobLevel] = packet.ReadByte();
+					entity[SRAttribute.PVPState] = packet.ReadByte();
+					bool hasTransport = packet.ReadByte() == 1;
+					entity[SRAttribute.hasTransport] = hasTransport;
+					entity[SRAttribute.isFighting] = packet.ReadByte();
+					if (hasTransport)
+					{
+						entity[SRAttribute.TransportUniqueID] = packet.ReadUInt();
+					}
+					entity[SRAttribute.ScrollMode] = packet.ReadByte();
+					entity[SRAttribute.InteractMode] = packet.ReadByte();
+					entity[SRAttribute.unkByte4] = packet.ReadByte();
+					// Guild
+					entity[SRAttribute.GuildName] = packet.ReadAscii();
+					if (!((SRObjectCollection)entity[SRAttribute.Inventory]).ContainsJobEquipment())
+					{
+						entity[SRAttribute.GuildID] = packet.ReadUInt();
+						entity[SRAttribute.GuildMemberName] = packet.ReadAscii();
+						entity[SRAttribute.GuildLastCrestRev] = packet.ReadUInt();
+						entity[SRAttribute.UnionID] = packet.ReadUInt();
+						entity[SRAttribute.UnionLastCrestRev] = packet.ReadUInt();
+						entity[SRAttribute.GuildisFriendly] = packet.ReadByte();
+						entity[SRAttribute.GuildMemberAuthorityType] = packet.ReadByte();
+					}
+					if ((byte)entity[SRAttribute.InteractMode] == Types.InteractMode.P2N_TALK)
+					{
+						entity[SRAttribute.StallName] = packet.ReadAscii();
+						entity[SRAttribute.DecorationItemID] = packet.ReadUInt();
+					}
+					entity[SRAttribute.EquipmentCooldown] = packet.ReadByte();
+					entity[SRAttribute.PVPCaptureTheFlagType] = packet.ReadByte();
+				}
+				else if (entity.ID2 == 2)
+				{
+					// NPC
+					entity[SRAttribute.hasTalk] = packet.ReadByte() != 0;
+					if ((bool)entity[SRAttribute.hasTalk])
+					{
+						entity[SRAttribute.TalkOptions] = packet.ReadUInt8Array(packet.ReadByte());
+					}
 					if (entity.ID3 == 1)
 					{
-						// MOB
-						packet.ReadByte(); // 2
-						entity[SRAttribute.MobType] = packet.ReadByte();
-						packet.ReadByte(); // 5
-						packet.ReadByte(); // 0
+						// NPC_MOB
+						entity[SRAttribute.Rarity] = packet.ReadByte();
+						if (entity.ID4 == 2 || entity.ID4 == 4)
+						{
+							// has multiple appearances (Selected by server)
+							entity[SRAttribute.Appearance] = packet.ReadByte();
+						}
 					}
-					else if (entity.ID2 == 1)
+					if (entity.ID3 == 3)
 					{
-						// CHARACTER
-						entity[SRAttribute.Name] = packet.ReadAscii();
-						entity[SRAttribute.JobType] = packet.ReadByte();
-						entity[SRAttribute.JobLevel] = packet.ReadByte();
-						entity[SRAttribute.PVPState] = packet.ReadByte();
-						byte hasTransport = packet.ReadByte();
-						entity[SRAttribute.hasTransport] = hasTransport;
-						entity[SRAttribute.isFighting] = packet.ReadByte();
-						if (hasTransport == 1)
+						// NPC_COS
+						if (entity.ID4 == 3 || entity.ID4 == 4)
 						{
-							entity[SRAttribute.TransportUniqueID] = packet.ReadUInt();
+							//NPC_COS_P (Growth / Ability)
+							entity[SRAttribute.Name] = packet.ReadAscii();
 						}
-						entity[SRAttribute.ScrollMode] = packet.ReadByte();
-						entity[SRAttribute.InteractMode] = packet.ReadByte();
-						entity[SRAttribute.unkByte4] = packet.ReadByte();
-						// Guild
-						entity[SRAttribute.GuildName] = packet.ReadAscii();
-						if (!((SRObjectCollection)entity[SRAttribute.Inventory]).ContainsJobEquipment())
+						if (entity.ID4 == 5)
 						{
-							entity[SRAttribute.GuildID] = packet.ReadUInt();
-							entity[SRAttribute.GuildMemberName] = packet.ReadAscii();
-							entity[SRAttribute.GuildLastCrestRev] = packet.ReadUInt();
-							entity[SRAttribute.UnionID] = packet.ReadUInt();
-							entity[SRAttribute.UnionLastCrestRev] = packet.ReadUInt();
-							entity[SRAttribute.GuildisFriendly] = packet.ReadByte();
-							entity[SRAttribute.GuildMemberAuthorityType] = packet.ReadByte();
+							// NPC_COS_GUILD
+							entity[SRAttribute.GuildName] = packet.ReadAscii();
 						}
-						if ((byte)entity[SRAttribute.InteractMode] == Types.InteractMode.P2N_TALK)
+						else if (entity.ID4 != 1)
 						{
-							entity[SRAttribute.StallName] = packet.ReadAscii();
-							entity[SRAttribute.DecorationItemID] = packet.ReadUInt();
+							entity[SRAttribute.OwnerName] = packet.ReadAscii();
 						}
-						entity[SRAttribute.EquipmentCooldown] = packet.ReadByte();
-						entity[SRAttribute.PVPCaptureTheFlagType] = packet.ReadByte();
-					}
-					else if (entity.ID2 == 2)
-					{
-						// NPC
-						entity[SRAttribute.hasTalk] = packet.ReadByte() != 0;
-						if ((bool)entity[SRAttribute.hasTalk])
+						if (entity.ID4 == 2 || entity.ID4 == 3 || entity.ID4 == 4 || entity.ID4 == 5)
 						{
-							entity[SRAttribute.TalkOptions] = packet.ReadUInt8Array(packet.ReadByte());
-						}
-						if (entity.ID3 == 1)
-						{
-							// NPC_MOB
-							entity[SRAttribute.Rarity] = packet.ReadByte();
-							if (entity.ID4 == 2 || entity.ID4 == 4)
+							// NPC_COS_T
+							// NPC_COS_P (Growth / Ability)
+							// NPC_COS_GUILD
+							entity[SRAttribute.JobType] = packet.ReadByte();
+							if (entity.ID4 != 4)
 							{
-								// has multiple appearances (Selected by server)
-								entity[SRAttribute.Appearance] = packet.ReadByte();
-							}
-						}
-						if (entity.ID3 == 3)
-						{
-							// NPC_COS
-							if (entity.ID4 == 3 || entity.ID4 == 4)
-							{
-								//NPC_COS_P (Growth / Ability)
-								entity[SRAttribute.Name] = packet.ReadAscii();
+								// Not pet pick (Ability)
+								entity[SRAttribute.PVPState] = packet.ReadByte();
 							}
 							if (entity.ID4 == 5)
 							{
 								// NPC_COS_GUILD
-								entity[SRAttribute.GuildName] = packet.ReadAscii();
-							}
-							else if (entity.ID4 != 1)
-							{
-								entity[SRAttribute.OwnerName] = packet.ReadAscii();
-							}
-							if (entity.ID4 == 2 || entity.ID4 == 3 || entity.ID4 == 4 || entity.ID4 == 5)
-							{
-								// NPC_COS_T
-								// NPC_COS_P (Growth / Ability)
-								// NPC_COS_GUILD
-								entity[SRAttribute.JobType] = packet.ReadByte();
-								if (entity.ID4 != 4)
-								{
-									// Not pet pick (Ability)
-									entity[SRAttribute.PVPState] = packet.ReadByte();
-								}
-								if (entity.ID4 == 5)
-								{
-									// NPC_COS_GUILD
-									entity[SRAttribute.OwnerRefObjID] = packet.ReadUInt();
-								}
-							}
-							if (entity.ID4 != 1)
-							{
-								entity[SRAttribute.OwnerUniqueID] = packet.ReadUInt();
+								entity[SRAttribute.OwnerRefObjID] = packet.ReadUInt();
 							}
 						}
-						else if (entity.ID3 == 4)
+						if (entity.ID4 != 1)
 						{
-							// NPC_FORTRESS_COS
-							entity[SRAttribute.GuildID] = packet.ReadUInt();
-							entity[SRAttribute.GuildName] = packet.ReadAscii();
+							entity[SRAttribute.OwnerUniqueID] = packet.ReadUInt();
 						}
 					}
+					else if (entity.ID3 == 4)
+					{
+						// NPC_FORTRESS_COS
+						entity[SRAttribute.GuildID] = packet.ReadUInt();
+						entity[SRAttribute.GuildName] = packet.ReadAscii();
+					}
+				}
+			}
+			else if (entity.ID1 == 3)
+			{
+				// ITEM_
+				// - ITEM_EQUIP
+				// - ITEM_ETC
+				//   - ITEM_ETC_MONEY_GOLD
+				//   - ITEM_ETC_TRADE
+				//   - ITEM_ETC_QUEST   
+				if (entity.ID2 == 1)
+				{
+					// ITEM_EQUIP
+					entity[SRAttribute.ItemOptLevel] = packet.ReadByte();
+				}
+				else if (entity.ID2 == 3)
+				{
+					// ITEM_ETC
+					if (entity.ID3 == 5 && entity.ID4 == 0)
+					{
+						// ITEM_ETC_MONEY_GOLD
+						entity[SRAttribute.Gold] = packet.ReadUInt();
+					}
+					else if (entity.ID3 == 8 || entity.ID3 == 9)
+					{
+						// ITEM_ETC_TRADE
+						// ITEM_ETC_QUEST
+						entity[SRAttribute.OwnerName] = packet.ReadAscii();
+					}
+				}
+				entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.Region] = packet.ReadUShort();
+				entity[SRAttribute.X] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Angle] = packet.ReadUShort();
+				entity[SRAttribute.hasOwner] = packet.ReadByte();
+				if ((byte)entity[SRAttribute.hasOwner] == 1)
+				{
+					entity[SRAttribute.OwnerJID] = packet.ReadUInt();
+				}
+				entity[SRAttribute.Rarity] = packet.ReadByte();
+			}
+			else if (entity.ID1 == 4)
+			{
+				// PORTALS
+				// - STORE
+				// - INS_TELEPORTER
+				entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.Region] = packet.ReadUShort();
+				entity[SRAttribute.X] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Angle] = packet.ReadUShort();
+
+				entity[SRAttribute.unkByte0] = packet.ReadByte();
+				entity[SRAttribute.unkByte1] = packet.ReadByte();
+				entity[SRAttribute.unkByte2] = packet.ReadByte();
+				entity[SRAttribute.unkByte3] = packet.ReadByte();
+				if ((byte)entity[SRAttribute.unkByte3] == 1)
+				{
+					// Regular
+					entity[SRAttribute.unkUInt0] = packet.ReadUInt();
+					entity[SRAttribute.unkUInt1] = packet.ReadUInt();
+				}
+				else if ((byte)entity[SRAttribute.unkByte3] == 3)
+				{
+					// Dimensional Hole
+					entity[SRAttribute.OwnerName] = packet.ReadAscii();
+					entity[SRAttribute.OwnerUniqueID] = packet.ReadUInt();
+				}
+				if ((byte)entity[SRAttribute.unkByte1] == 1)
+				{
+					// STORE_EVENTZONE_DEFAULT
+					entity[SRAttribute.unkUInt2] = packet.ReadUInt();
+					entity[SRAttribute.unkByte5] = packet.ReadByte();
+				}
+			}
+			else if (entity.ID == uint.MaxValue)
+			{
+				// EVENT_ZONE (Traps, Buffzones, ...)
+				entity[SRAttribute.unkUShort0] = packet.ReadUShort();
+				entity[SRAttribute.refSkillID] = packet.ReadUInt();
+				entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.Region] = packet.ReadUShort();
+				entity[SRAttribute.X] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Angle] = packet.ReadUShort();
+			}
+			if (packet.Opcode == Agent.Opcode.SERVER_ENTITY_SPAWN)
+			{
+				if (entity.ID1 == 1 || entity.ID1 == 4)
+				{
+					// BIONIC or STORE
+					entity[SRAttribute.unkByte6] = packet.ReadByte();
 				}
 				else if (entity.ID1 == 3)
 				{
-					// ITEM_
-					// - ITEM_EQUIP
-					// - ITEM_ETC
-					//   - ITEM_ETC_MONEY_GOLD
-					//   - ITEM_ETC_TRADE
-					//   - ITEM_ETC_QUEST   
-					if (entity.ID2 == 1)
-					{
-						// ITEM_EQUIP
-						entity[SRAttribute.ItemOptLevel] = packet.ReadByte();
-					}
-					else if (entity.ID2 == 3)
-					{
-						// ITEM_ETC
-						if (entity.ID3 == 5 && entity.ID4 == 0)
-						{
-							// ITEM_ETC_MONEY_GOLD
-							entity[SRAttribute.Gold] = packet.ReadUInt();
-						}
-						else if (entity.ID3 == 8 || entity.ID3 == 9)
-						{
-							// ITEM_ETC_TRADE
-							// ITEM_ETC_QUEST
-							entity[SRAttribute.OwnerName] = packet.ReadAscii();
-						}
-					}
+					// DROP
+					entity[SRAttribute.DropSource] = packet.ReadByte();
 					entity[SRAttribute.UniqueID] = packet.ReadUInt();
-					entity[SRAttribute.Region] = packet.ReadUShort();
-					entity[SRAttribute.X] = packet.ReadSingle();
-					entity[SRAttribute.Y] = packet.ReadSingle();
-					entity[SRAttribute.Z] = packet.ReadSingle();
-					entity[SRAttribute.Angle] = packet.ReadUShort();
-					entity[SRAttribute.hasOwner] = packet.ReadByte();
-					if ((byte)entity[SRAttribute.hasOwner] == 1)
-					{
-						entity[SRAttribute.OwnerJID] = packet.ReadUInt();
-					}
-					entity[SRAttribute.Rarity] = packet.ReadByte();
 				}
-				else if (entity.ID1 == 4)
-				{
-					// PORTALS
-					// - STORE
-					// - INS_TELEPORTER
-					entity[SRAttribute.UniqueID] = packet.ReadUInt();
-					entity[SRAttribute.Region] = packet.ReadUShort();
-					entity[SRAttribute.X] = packet.ReadSingle();
-					entity[SRAttribute.Y] = packet.ReadSingle();
-					entity[SRAttribute.Z] = packet.ReadSingle();
-					entity[SRAttribute.Angle] = packet.ReadUShort();
+			}
+			// End of Packet
 
-					entity[SRAttribute.unkByte0] = packet.ReadByte();
-					entity[SRAttribute.unkByte1] = packet.ReadByte();
-					entity[SRAttribute.unkByte2] = packet.ReadByte();
-					entity[SRAttribute.unkByte3] = packet.ReadByte();
-					if ((byte)entity[SRAttribute.unkByte3] == 1)
-					{
-						// Regular
-						entity[SRAttribute.unkUInt0] = packet.ReadUInt();
-						entity[SRAttribute.unkUInt1] = packet.ReadUInt();
-					}
-					else if ((byte)entity[SRAttribute.unkByte3] == 3)
-					{
-						// Dimensional Hole
-						entity[SRAttribute.OwnerName] = packet.ReadAscii();
-						entity[SRAttribute.OwnerUniqueID] = packet.ReadUInt();
-					}
-					if ((byte)entity[SRAttribute.unkByte1] == 1)
-					{
-						// STORE_EVENTZONE_DEFAULT
-						entity[SRAttribute.unkUInt2] = packet.ReadUInt();
-						entity[SRAttribute.unkByte5] = packet.ReadByte();
-					}
-				}
-				else if (entity.ID == uint.MaxValue)
-				{
-					// EVENT_ZONE (Traps, Buffzones, ...)
-					entity[SRAttribute.unkUShort0] = packet.ReadUShort();
-					entity[SRAttribute.refSkillID] = packet.ReadUInt();
-					entity[SRAttribute.UniqueID] = packet.ReadUInt();
-					entity[SRAttribute.Region] = packet.ReadUShort();
-					entity[SRAttribute.X] = packet.ReadSingle();
-					entity[SRAttribute.Y] = packet.ReadSingle();
-					entity[SRAttribute.Z] = packet.ReadSingle();
-					entity[SRAttribute.Angle] = packet.ReadUShort();
-				}
-				if (packet.Opcode == Agent.Opcode.SERVER_ENTITY_SPAWN)
-				{
-					if (entity.ID1 == 1 || entity.ID1 == 4)
-					{
-						// BIONIC or STORE
-						entity[SRAttribute.unkByte6] = packet.ReadByte();
-					}
-					else if (entity.ID1 == 3)
-					{
-						// DROP
-						entity[SRAttribute.DropSource] = packet.ReadByte();
-						entity[SRAttribute.UniqueID] = packet.ReadUInt();
-					}
-				}
-				// End of Packet
-			}
-			catch (Exception ex)
-			{
-				Bot.Get.LogError(ex.ToString() + Environment.NewLine + "[" + packet.Opcode.ToString("X2") + "][" + WinAPI.BytesToHexString(packet.GetBytes()) + "]");
-				throw new Exception("Packet parsing error");
-			}
 			// Keep the track of the entity
 			Info.Get.EntityList.Add(entity);
 

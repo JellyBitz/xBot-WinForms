@@ -17,9 +17,8 @@ xBot/bin/Debug/x64/
 xBot/bin/Debug/Firefox64/
 xBot/bin/Debug/GPUCache/
 
-# Extractor required
+# Bot data generated
 xBot/bin/Debug/Data/
-!xBot/bin/Debug/Data/README.txt
 
 # Packages can be restored via NuGet
 packages/

@@ -4,6 +4,8 @@ using SecurityAPI;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using xBot.Game;
+
 namespace xBot
 {
 	/// <summary>
@@ -75,37 +77,37 @@ namespace xBot
 		/// <param name="SendTo">Send to from Gateway/Server/Both</param>
 		/// <param name="SendOnlyOnce">Send HWID packet only once</param>
 		/// <param name="Data">Packet string format</param>
-		public void SetHWID(ushort cOp,string SaveFrom, ushort sOp, string SendTo,bool SendOnlyOnce, string Data)
+		public void SetHWID(ushort cOp,string SaveFrom, ushort sOp, string SendTo,bool SendOnlyOnce)
 		{
 			Agent.Opcode.CLIENT_HWID = cOp;
 			Agent.Opcode.SERVER_HWID = sOp;
+			Gateway.Opcode.CLIENT_HWID = cOp;
+			Gateway.Opcode.SERVER_HWID = sOp;
 			_SaveFrom = SaveFrom;
 			_SendTo = SendTo;
 			_HWIDLoadsCount = SendOnlyOnce?-1:0;
-			if (Data != "")
-				_HWID = WinAPI.HexStringToBytes(Data.Replace(" ", ""));
 		}
 		public void SaveHWID(byte[] data)
 		{
-			_HWID = data;
-			Window w = Window.Get;
+			File.WriteAllBytes("Data\\" + Info.Get.Database.Name + ".hwid", data);
 			string hwid = WinAPI.BytesToHexString(data);
+			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.General_lstrSilkroads, () => {
-				w.General_lstrSilkroads.Nodes[w.Login_cmbxSilkroad.Text].Nodes["HWID"].Nodes["Data"].Text = "Data : "+hwid;
-				w.General_lstrSilkroads.Nodes[w.Login_cmbxSilkroad.Text].Nodes["HWID"].Nodes["Data"].Tag = hwid;
+				w.General_lstrSilkroads.Nodes[Info.Get.Database.Name].Nodes["HWID"].Nodes["Data"].Text = "Data : "+hwid;
+				w.General_lstrSilkroads.Nodes[Info.Get.Database.Name].Nodes["HWID"].Nodes["Data"].Tag = hwid;
 			});
 			Settings.SaveBotSettings();
 		}
 		public byte[] LoadHWID()
 		{
-			if (hasHWID)
+			if (File.Exists("Data\\"+Info.Get.Database.Name+".hwid"))
 			{
 				if (_HWIDLoadsCount >= -1)
 				{
 					if (_HWIDLoadsCount == -1)
 						_HWIDLoadsCount = -2;
 					_HWIDLoadsCount++;
-					return _HWID;
+					return File.ReadAllBytes("Data\\" + Info.Get.Database.Name + ".hwid");
 				}
 			}
 			return null;

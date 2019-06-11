@@ -106,7 +106,6 @@ namespace PK2ReaderAPI
 			else
 				throw new Exception("The file does not exsist");
 		}
-
 		public List<PK2File> GetRootFiles()
 		{
 			return m_MainFolder.Files;

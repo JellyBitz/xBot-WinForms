@@ -374,9 +374,10 @@ namespace xBot
 							if (Login_cmbxSilkroad.Text == "")
 								return;
 							// Check if database has been generated previously
-							if (!Info.Get.SelectDatabase(Login_cmbxSilkroad.Text)) {
+							if (!Info.Get.SelectDatabase(Login_cmbxSilkroad.Text))
+							{
 								MessageBox.Show(this, "The database \"" + General_tbxSilkroadName.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
-                Control_Click(General_btnPK2Path, null);
+								Control_Click(General_btnPK2Path, null);
 								return;
 							}
 
@@ -401,19 +402,19 @@ namespace xBot
 							ports.Add((ushort)silkroad.Nodes["Port"].Tag);
 							if (hosts.Count == 0 || ports.Count == 0)
 								return;// Just in case
-							
+
 							// HWID Setup
 							ushort clientOp = (ushort)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag;
 							ushort serverOp = (ushort)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag;
 							string saveFrom = (string)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
 							string sendTo = (string)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
 							bool sendOnlyOnce = (bool)silkroad.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
-							Bot.Get.SetHWID(clientOp, saveFrom, serverOp, sendTo, sendOnlyOnce, (string)silkroad.Nodes["HWID"].Nodes["Data"].Tag);
+							Bot.Get.SetHWID(clientOp, saveFrom, serverOp, sendTo, sendOnlyOnce);
 
 							// Creating Proxy
-							Bot.Get.Proxy = new Proxy(Login_rbnClientless.Checked,hosts, ports);
+							Bot.Get.Proxy = new Proxy(Login_rbnClientless.Checked, hosts, ports);
 							Bot.Get.Proxy.RandomHost = (bool)silkroad.Nodes["RandomHost"].Tag;
-              Bot.Get.Proxy.Start();
+							Bot.Get.Proxy.Start();
 							break;
 						case "STOP":
 							// Lock Silkroad selection
@@ -433,9 +434,7 @@ namespace xBot
 							break;
 						case "SELECT":
 							if (Login_cmbxCharacter.Text == "")
-							{
 								return;
-							}
 							c.Font = new Font(c.Font, FontStyle.Strikeout);
 							PacketBuilder.SelectCharacter(Login_cmbxCharacter.Text);
 							break;
@@ -504,15 +503,15 @@ namespace xBot
 				case "General_btnPK2Path":
 					if (!Directory.Exists("Data"))
 						Directory.CreateDirectory("Data");
-					if (!Database.Exists(General_tbxSilkroadName.Text) || Database.Exists(General_tbxSilkroadName.Text) && MessageBox.Show(this,"The database \"" + General_tbxSilkroadName.Text + "\" already exists, Do you want to update it?","xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
+					if (!Database.Exists(General_tbxSilkroadName.Text) || Database.Exists(General_tbxSilkroadName.Text) && MessageBox.Show(this, "The database \"" + General_tbxSilkroadName.Text + "\" already exists, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
 					{
 						OpenFileDialog fileDialog = new OpenFileDialog();
 						fileDialog.Multiselect = false;
 						fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
 						fileDialog.ValidateNames = true;
-						fileDialog.Title = "Select your media .pk2 file";
-						fileDialog.FileName = "Media.pk2 file";
-						fileDialog.Filter = "pk2 file (*.pk2)|*.pk2|All files (*.*)|*.*";
+						fileDialog.Title = "Select your Media.pk2 file";
+						fileDialog.FileName = "Media.pk2";
+						fileDialog.Filter = "pk2 files (*.pk2)|*.pk2|All files (*.*)|*.*";
 						fileDialog.FilterIndex = 0;
 						if (fileDialog.ShowDialog() == DialogResult.OK)
 						{
@@ -528,10 +527,10 @@ namespace xBot
 				case "General_btnAddSilkroad":
 					if (General_tbxSilkroadName.Text != "")
 					{
-						string serverKey = General_tbxSilkroadName.Text;
-						if (!CleanSilkroadName(ref serverKey))
+						string silkroadkey = General_tbxSilkroadName.Text;
+						if (!CleanSilkroadName(ref silkroadkey))
 							return;
-						if(!Database.Exists(serverKey))
+						if (!Database.Exists(silkroadkey))
 							return;
 						byte locale;
 						if (General_tbxLocale.Text == "" || !byte.TryParse(General_tbxLocale.Text, out locale))
@@ -551,19 +550,19 @@ namespace xBot
 						if (General_tbxHWIDServerOp.Text != "" && !ushort.TryParse(General_tbxHWIDServerOp.Text, System.Globalization.NumberStyles.HexNumber, null, out hwidServerOp))
 							return;
 						// Genearting the whole server node
-						TreeNode server = new TreeNode(serverKey);
-						server.Name = serverKey;
+						TreeNode server = new TreeNode(silkroadkey);
+						server.Name = silkroadkey;
 
 						TreeNode node = new TreeNode("Hosts");
 						node.Name = "Hosts";
 						foreach (ListViewItem host in General_lstvHost.Items)
 							node.Nodes.Add(host.Text);
 						server.Nodes.Add(node);
-						node = new TreeNode("Use random host : " + (General_cbxRandomHost.Checked?"Yes":"No"));
+						node = new TreeNode("Use random host : " + (General_cbxRandomHost.Checked ? "Yes" : "No"));
 						node.Name = "RandomHost";
 						node.Tag = General_cbxRandomHost.Checked;
 						server.Nodes.Add(node);
-						node = new TreeNode("Port : "+ port);
+						node = new TreeNode("Port : " + port);
 						node.Name = "Port";
 						node.Tag = port;
 						server.Nodes.Add(node);
@@ -606,9 +605,13 @@ namespace xBot
 						serverNode.Nodes.Add(node);
 						hwid.Nodes.Add(serverNode);
 
-						node = new TreeNode("Data : " + (General_rtbxHWIDdata.Text == "" ? "None" : General_rtbxHWIDdata.Text));
+						string hwidData = "";
+						if (File.Exists("Data\\" + silkroadkey + ".hwid"))
+							hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + silkroadkey + ".hwid"));
+
+						node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
 						node.Name = "Data";
-						node.Tag = General_rtbxHWIDdata.Text;
+						node.Tag = hwidData;
 						hwid.Nodes.Add(node);
 
 						node = new TreeNode("Send Data only once : " + (General_cbxHWIDSendOnlyOnce.Checked ? "Yes" : "No"));
@@ -623,7 +626,8 @@ namespace xBot
 							Login_cmbxSilkroad.Items.Add(server.Name);
 
 						General_lstrSilkroads.Nodes.Add(server);
-						Settings.SaveBotSettings();
+						General_lstrSilkroads.SelectedNode = server;
+            Settings.SaveBotSettings();
 					}
 					break;
 				case "General_btnInjectPacket":
@@ -665,7 +669,6 @@ namespace xBot
 					break;
 			}
 		}
-
 		private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			TreeView t = (TreeView)sender;
@@ -682,14 +685,14 @@ namespace xBot
 						General_lstvHost.Items.Clear();
 						foreach (TreeNode host in server.Nodes["Hosts"].Nodes)
 							General_lstvHost.Items.Add(host.Text);
-
+						General_cbxRandomHost.Checked = (bool)server.Nodes["RandomHost"].Tag;
 						General_tbxPort.Text = server.Nodes["Port"].Tag.ToString();
 						General_tbxLocale.Text = server.Nodes["Locale"].Tag.ToString();
 						General_tbxVersion.Text = server.Nodes["Version"].Tag.ToString();
 						General_tbxHWIDClientOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag).ToString("X4");
 						General_cmbxHWIDClientSaveFrom.Text = (string)server.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
 						General_tbxHWIDServerOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag).ToString("X4");
-						General_cmbxHWIDClientSaveFrom.Text = (string)server.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
+						General_cmbxHWIDServerSendTo.Text = (string)server.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
 						General_rtbxHWIDdata.Text = (string)server.Nodes["HWID"].Nodes["Data"].Tag;
 						General_cbxHWIDSendOnlyOnce.Checked = (bool)server.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
 						General_btnAddSilkroad.Font = new Font(General_btnAddSilkroad.Font, FontStyle.Regular);
@@ -735,7 +738,6 @@ namespace xBot
 					break;
 			}
 		}
-
 		private void Control_CheckedChanged(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
@@ -830,7 +832,7 @@ namespace xBot
 					General_rtbxPackets.Clear();
 					break;
 				case "Menu_lstrSilkroads_remove":
-					if (General_lstrSilkroads.SelectedNode != null && General_lstrSilkroads.SelectedNode.Parent==null)
+					if (General_lstrSilkroads.SelectedNode != null && General_lstrSilkroads.SelectedNode.Parent == null)
 					{
 						TreeNode server = General_lstrSilkroads.SelectedNode;
 						while (server.Parent != null)
@@ -887,7 +889,6 @@ namespace xBot
 				}
 			}
 		}
-		
 		public void Minimap_CharacterPointer_Move(float x, float y, float z, ushort region)
 		{
 			if (Minimap_wbrChromeMap != null)
@@ -952,6 +953,24 @@ namespace xBot
 				lstrTESTING.Nodes[uniqueID.ToString()].Remove();
 			});
 		}
+		int ii = 1;
+		private void button2_Click(object sender, EventArgs e)
+		{
+			if (button2.Tag == null)
+			{
+				button2.Tag = "  ";
+				Info.Get.SelectDatabase("ELECTUS");
+			}
+			lstrTESTING.Nodes.Clear();
+			Packet p = new Packet(0x3019);
+			p.WriteUInt8Array(WinAPI.HexStringToBytes("73 07 00 00 22 00 00 01 6D 08 1F 01 00 00 00 8B 01 00 00 00 67 01 00 00 00 D3 01 00 00 00 AF 01 00 00 00 F7 01 00 00 00 47 00 00 00 00 86 2A 00 00 00 05 00 00 28 11 00 00 A8 61 00 80 65 44 7F 6F 02 C2 00 00 82 44 C8 7D 00 01 00 C8 7D 01 00 00 04 00 00 80 41 00 00 48 42 00 00 C8 42 00 09 00 5B 42 4F 54 5D 46 61 69 6C 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 88 07 00 00 22 02 00 00 6D 07 94 14 00 00 07 00 15 00 00 07 DC 14 00 00 07 48 15 00 00 07 24 15 00 00 07 6C 15 00 00 07 C0 23 01 00 09 05 05 CD 5E 00 00 00 C7 5E 00 00 00 2A 5F 00 00 00 9F 24 00 00 00 3F CE 00 00 02 00 77 D9 6A 00 A8 61 C3 7D 6E 44 7E 6F 02 C2 5A 07 85 44 27 C6 01 01 A8 61 B9 03 E0 FF 28 04 01 00 00 00 CD CC 8C 41 00 00 5C 42 00 00 C8 42 03 51 0D 00 00 0D 33 05 00 24 15 00 00 D4 E5 05 00 2C 1F 00 00 67 24 05 00 07 00 52 49 56 41 4C 53 53 01 01 00 00 00 00 00 00 0B 00 46 65 61 52 5F 4F 72 5F 44 69 65 82 02 00 00 07 00 5F 5F 42 52 4E 5F 5F 01 00 00 00 72 00 00 00 01 00 00 00 01 00 00 FF 76 07 00 00 33 00 00 00 6D 08 97 11 00 00 03 03 12 00 00 03 E2 11 00 00 03 4E 12 00 00 03 27 12 00 00 03 72 12 00 00 03 C6 0F 00 00 03 7A 10 00 00 03 05 00 00 1B A3 7E 00 A8 61 00 00 69 44 7E 6F 02 C2 00 00 9E 44 EA A6 01 01 A8 61 A4 03 E0 FF F0 04 01 00 00 00 CD CC 0C 42 00 00 DC 42 00 00 C8 42 01 49 85 00 00 FD 1D 07 00 09 00 5A 65 65 76 52 65 76 61 68 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 23 3A 00 00 00 22 00 00 6D 07 7D 32 00 00 07 D0 F8 00 00 07 CF F8 00 00 07 D2 F8 00 00 07 D1 F8 00 00 07 55 33 00 00 07 B0 13 01 00 08 05 05 CB 64 00 00 00 D5 64 00 00 00 9E 97 00 00 00 78 25 01 00 00 55 5F 00 00 03 00 2B D2 7F 00 A8 61 AC 9F 66 44 7E 6F 02 C2 2B B2 87 44 BD 60 01 01 A8 61 0D 03 E0 FF C6 04 01 00 03 00 55 E3 3D 42 9A 59 14 43 00 00 C8 42 05 24 15 00 00 E7 49 02 00 66 84 00 00 B8 46 02 00 61 84 00 00 BA D8 00 00 62 84 00 00 7C 28 00 00 63 84 00 00 54 F5 01 00 06 00 4B 6F 62 61 69 6E 02 05 00 00 00 00 00 00 05 00 4F 6D 65 67 61 8C 00 00 00 0C 00 47 65 74 54 72 69 67 67 65 72 65 64 00 00 00 00 0B 00 00 00 01 00 00 00 01 02 00 FF".Replace(" ","")));
+			p.Lock();
+			for (int i=0;i< ii; i++)
+			{
+				PacketParser.EntitySpawn(p);
+			}
+			ii++;
+    }
 		public void TESTING_EditSpawn(SRObject entity, SRAttribute att)
 		{
 			WinAPI.InvokeIfRequired(lstrTESTING, () => {

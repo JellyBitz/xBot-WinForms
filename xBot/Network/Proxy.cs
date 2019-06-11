@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using xBot.Game;
 
 namespace xBot.Network
 {
@@ -541,9 +542,7 @@ namespace xBot.Network
 		{
 			_running = false;
 			if (PingHandler != null)
-			{
 				PingHandler.Abort();
-			}
 			Bot.Get.LoginWithBot = false;
 			Bot.Get.CloseSROClient();
 			CloseGateway();
@@ -552,6 +551,7 @@ namespace xBot.Network
 		public void Stop()
 		{
 			Reset();
+			Info.Get.Database.Close();
 			_reconnections = 0;
 			Window w = Window.Get;
 			w.setState();

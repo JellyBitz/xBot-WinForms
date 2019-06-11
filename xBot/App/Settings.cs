@@ -52,7 +52,6 @@ namespace xBot
 					hwidserver["Opcode"] = ((ushort)node.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag).ToString("X4");
 					hwidserver["SendTo"] = (string)node.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
 
-					hwid["Data"] = (string)node.Nodes["HWID"].Nodes["Data"].Tag;
 					hwid["SendOnlyOnce"] = (bool)node.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
 				}
 				#endregion
@@ -105,9 +104,9 @@ namespace xBot
 							node.Nodes.Add(host.ToString());
             }
 						s.Nodes.Add(node);
-						node = new TreeNode("Use random host: " + ((bool)silkroad["Port"]?"Yes":"No"));
+						node = new TreeNode("Use random host : " + ((bool)silkroad["Port"]?"Yes":"No"));
             node.Name = "RandomHost";
-						node.Tag = (bool)silkroad["Port"];
+						node.Tag = (bool)silkroad["RandomHost"];
             s.Nodes.Add(node);
 
 						node = new TreeNode("Port : " + silkroad["Port"]);
@@ -154,9 +153,14 @@ namespace xBot
 						node.Tag = (string)silkroad["HWID"]["Server"]["SendTo"];
 						hwidserver.Nodes.Add(node);
 
-						node = new TreeNode("Data : " + (silkroad["HWID"]["Data"].ToString() == ""?"None": silkroad["HWID"]["Data"]));
+						string hwidData = "";
+            if (File.Exists("Data\\"+ key + ".hwid"))
+						{
+							hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + key + ".hwid"));
+						}
+						node = new TreeNode("Data : " + (hwidData == ""? "None": hwidData));
 						node.Name = "Data";
-						node.Tag = (string)silkroad["HWID"]["Data"];
+						node.Tag = hwidData;
 						hwid.Nodes.Add(node);
 						node = new TreeNode("Send Data only once : " + (bool.Parse(silkroad["HWID"]["SendOnlyOnce"].ToString()) ? "Yes" : "No"));
 						node.Name = "SendOnlyOnce";

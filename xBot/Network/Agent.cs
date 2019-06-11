@@ -182,11 +182,6 @@ namespace xBot.Network
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					w.Log("Character selected");
-					WinAPI.InvokeIfRequired(w.Login_btnStart, () =>
-					{
-						w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Strikeout);
-					});
 					w.setState("Loading...");
 				}
 				else

@@ -161,7 +161,7 @@
 			this.lblBlowfishKey.Location = new System.Drawing.Point(10, 56);
 			this.lblBlowfishKey.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
 			this.lblBlowfishKey.Name = "lblBlowfishKey";
-			this.lblBlowfishKey.Size = new System.Drawing.Size(155, 28);
+			this.lblBlowfishKey.Size = new System.Drawing.Size(156, 28);
 			this.lblBlowfishKey.TabIndex = 11;
 			this.lblBlowfishKey.Tag = "Source Sans Pro";
 			this.lblBlowfishKey.Text = "Set the Blowfish Key";

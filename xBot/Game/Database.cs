@@ -6,6 +6,9 @@ namespace xBot.Game
 {
 	public class Database
 	{
+		/// <summary>
+		/// Unique name to identify the silkroad database.
+		/// </summary>
 		public string Name { get; }
 		public string FileName { get; }
 		SQLiteConnection db;

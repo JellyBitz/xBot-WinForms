@@ -29,16 +29,16 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.ListViewItem listViewItem81 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem82 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem83 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem84 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem85 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem86 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem87 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem88 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem89 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem90 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("12313");
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
 			this.rtbxLogs = new System.Windows.Forms.RichTextBox();
 			this.TabPageV_Control01 = new System.Windows.Forms.Panel();
@@ -84,6 +84,7 @@
 			this.TabPageH_General_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_General_Option01 = new System.Windows.Forms.Button();
 			this.TabPageH_General_Option01_Panel = new System.Windows.Forms.Panel();
+			this.General_cbxRandomHost = new System.Windows.Forms.CheckBox();
 			this.General_btnPK2Path = new System.Windows.Forms.Button();
 			this.General_lstvHost = new System.Windows.Forms.ListView();
 			this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -95,10 +96,11 @@
 			this.Menu_lstrSilkroads = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.Menu_lstrSilkroads_remove = new System.Windows.Forms.ToolStripMenuItem();
 			this.General_gbxHWID = new System.Windows.Forms.GroupBox();
+			this.General_panelHWIDdata = new System.Windows.Forms.Panel();
+			this.General_rtbxHWIDdata = new System.Windows.Forms.RichTextBox();
 			this.General_cbxHWIDSendOnlyOnce = new System.Windows.Forms.CheckBox();
 			this.General_cmbxHWIDServerSendTo = new System.Windows.Forms.ComboBox();
 			this.General_cmbxHWIDClientSaveFrom = new System.Windows.Forms.ComboBox();
-			this.General_rtbxHWIDdata = new System.Windows.Forms.RichTextBox();
 			this.General_tbxHWIDClientOp = new System.Windows.Forms.TextBox();
 			this.General_lblHWIDClientOp = new System.Windows.Forms.Label();
 			this.General_tbxHWIDServerOp = new System.Windows.Forms.TextBox();
@@ -110,6 +112,7 @@
 			this.General_tbxVersion = new System.Windows.Forms.TextBox();
 			this.General_lblVersion = new System.Windows.Forms.Label();
 			this.General_lblPort = new System.Windows.Forms.Label();
+			this.General_tbxPort = new System.Windows.Forms.TextBox();
 			this.TabPageH_General_Option04_Panel = new System.Windows.Forms.Panel();
 			this.General_gbxPacketInject = new System.Windows.Forms.GroupBox();
 			this.General_cbxInjectMassive = new System.Windows.Forms.CheckBox();
@@ -162,18 +165,6 @@
 			this.TabPageH_Party_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option05_Panel = new System.Windows.Forms.Panel();
 			this.panelWindow = new System.Windows.Forms.Panel();
-			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
-			this.lstrTESTING = new System.Windows.Forms.TreeView();
-			this.TabPageV_Control01_Option02_Panel = new System.Windows.Forms.Panel();
-			this.TabPageH_Character = new System.Windows.Forms.Panel();
-			this.TabPageH_Character_Option04 = new System.Windows.Forms.Button();
-			this.TabPageH_Character_Option03 = new System.Windows.Forms.Button();
-			this.TabPageH_Character_Option02 = new System.Windows.Forms.Button();
-			this.TabPageH_Character_Option01 = new System.Windows.Forms.Button();
-			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
-			this.TabPageH_Character_Option01_Panel = new System.Windows.Forms.Panel();
-			this.TabPageH_Character_Option03_Panel = new System.Windows.Forms.Panel();
-			this.TabPageH_Character_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Login_btnAddSilkroad = new System.Windows.Forms.Button();
 			this.Login_lblSilkroad = new System.Windows.Forms.Label();
@@ -203,6 +194,18 @@
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
+			this.lstrTESTING = new System.Windows.Forms.TreeView();
+			this.TabPageV_Control01_Option02_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Character = new System.Windows.Forms.Panel();
+			this.TabPageH_Character_Option04 = new System.Windows.Forms.Button();
+			this.TabPageH_Character_Option03 = new System.Windows.Forms.Button();
+			this.TabPageH_Character_Option02 = new System.Windows.Forms.Button();
+			this.TabPageH_Character_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Character_Option01_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Character_Option03_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Character_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option10_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Chat = new System.Windows.Forms.Panel();
 			this.TabPageH_Chat_Option08 = new System.Windows.Forms.Button();
@@ -255,9 +258,7 @@
 			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.lblBotState = new System.Windows.Forms.Label();
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-			this.General_tbxPort = new System.Windows.Forms.TextBox();
-			this.General_panelHWIDdata = new System.Windows.Forms.Panel();
-			this.General_cbxRandomHost = new System.Windows.Forms.CheckBox();
+			this.button2 = new System.Windows.Forms.Button();
 			this.TabPageV_Control01.SuspendLayout();
 			this.panelHeader.SuspendLayout();
 			this.TabPageV_Control01_Option14_Panel.SuspendLayout();
@@ -266,6 +267,7 @@
 			this.Menu_lstvHost.SuspendLayout();
 			this.Menu_lstrSilkroads.SuspendLayout();
 			this.General_gbxHWID.SuspendLayout();
+			this.General_panelHWIDdata.SuspendLayout();
 			this.TabPageH_General_Option04_Panel.SuspendLayout();
 			this.General_gbxPacketInject.SuspendLayout();
 			this.General_gbxPacketFilter.SuspendLayout();
@@ -278,14 +280,14 @@
 			this.TabPageH_Party_Option02_Panel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.panelWindow.SuspendLayout();
-			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
-			this.TabPageV_Control01_Option02_Panel.SuspendLayout();
-			this.TabPageH_Character.SuspendLayout();
 			this.TabPageV_Control01_Option01_Panel.SuspendLayout();
 			this.Login_gbxCharacters.SuspendLayout();
 			this.Login_gbxConnection.SuspendLayout();
 			this.Login_gbxAccount.SuspendLayout();
 			this.Login_gbxServers.SuspendLayout();
+			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
+			this.TabPageV_Control01_Option02_Panel.SuspendLayout();
+			this.TabPageH_Character.SuspendLayout();
 			this.TabPageV_Control01_Option10_Panel.SuspendLayout();
 			this.TabPageH_Chat.SuspendLayout();
 			this.TabPageH_Chat_Option01_Panel.SuspendLayout();
@@ -300,7 +302,6 @@
 			this.TabPageV_Control01_Option09_Panel.SuspendLayout();
 			this.Minimap_panelMap.SuspendLayout();
 			this.Minimap_panelCoords.SuspendLayout();
-			this.General_panelHWIDdata.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// rtbxLogs
@@ -1124,6 +1125,23 @@
 			this.TabPageH_General_Option01_Panel.TabIndex = 0;
 			this.TabPageH_General_Option01_Panel.Visible = false;
 			// 
+			// General_cbxRandomHost
+			// 
+			this.General_cbxRandomHost.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxRandomHost.FlatAppearance.BorderSize = 0;
+			this.General_cbxRandomHost.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxRandomHost.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_cbxRandomHost.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxRandomHost.Location = new System.Drawing.Point(6, 228);
+			this.General_cbxRandomHost.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxRandomHost.Name = "General_cbxRandomHost";
+			this.General_cbxRandomHost.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxRandomHost.Size = new System.Drawing.Size(135, 45);
+			this.General_cbxRandomHost.TabIndex = 17;
+			this.General_cbxRandomHost.Tag = "Source Sans Pro";
+			this.General_cbxRandomHost.Text = "Use random host to connect";
+			this.General_cbxRandomHost.UseVisualStyleBackColor = false;
+			// 
 			// General_btnPK2Path
 			// 
 			this.General_btnPK2Path.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1177,13 +1195,13 @@
 			this.Menu_lstvHost.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Menu_lstvHost_remove});
 			this.Menu_lstvHost.Name = "Menu_lstvHost";
-			this.Menu_lstvHost.Size = new System.Drawing.Size(165, 26);
+			this.Menu_lstvHost.Size = new System.Drawing.Size(146, 26);
 			// 
 			// Menu_lstvHost_remove
 			// 
 			this.Menu_lstvHost_remove.Name = "Menu_lstvHost_remove";
-			this.Menu_lstvHost_remove.Size = new System.Drawing.Size(164, 22);
-			this.Menu_lstvHost_remove.Text = "Remove Selected";
+			this.Menu_lstvHost_remove.Size = new System.Drawing.Size(145, 22);
+			this.Menu_lstvHost_remove.Text = "Remove Host";
 			this.Menu_lstvHost_remove.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// General_lblSilkroadName
@@ -1240,13 +1258,13 @@
 			this.Menu_lstrSilkroads.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Menu_lstrSilkroads_remove});
 			this.Menu_lstrSilkroads.Name = "Menu_lstrServers";
-			this.Menu_lstrSilkroads.Size = new System.Drawing.Size(210, 26);
+			this.Menu_lstrSilkroads.Size = new System.Drawing.Size(163, 26);
 			// 
 			// Menu_lstrSilkroads_remove
 			// 
 			this.Menu_lstrSilkroads_remove.Name = "Menu_lstrSilkroads_remove";
-			this.Menu_lstrSilkroads_remove.Size = new System.Drawing.Size(209, 22);
-			this.Menu_lstrSilkroads_remove.Text = "Remove Silkroad Selected";
+			this.Menu_lstrSilkroads_remove.Size = new System.Drawing.Size(162, 22);
+			this.Menu_lstrSilkroads_remove.Text = "Remove Silkroad";
 			this.Menu_lstrSilkroads_remove.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// General_gbxHWID
@@ -1269,6 +1287,33 @@
 			this.General_gbxHWID.Tag = "Source Sans Pro";
 			this.General_gbxHWID.Text = "HWID setup (opcodes)";
 			this.ToolTips.SetToolTip(this.General_gbxHWID, "If the Server use it, then will be required for clientless");
+			// 
+			// General_panelHWIDdata
+			// 
+			this.General_panelHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.General_panelHWIDdata.Controls.Add(this.General_rtbxHWIDdata);
+			this.General_panelHWIDdata.Location = new System.Drawing.Point(6, 183);
+			this.General_panelHWIDdata.Name = "General_panelHWIDdata";
+			this.General_panelHWIDdata.Size = new System.Drawing.Size(121, 48);
+			this.General_panelHWIDdata.TabIndex = 8;
+			// 
+			// General_rtbxHWIDdata
+			// 
+			this.General_rtbxHWIDdata.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_rtbxHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.General_rtbxHWIDdata.DetectUrls = false;
+			this.General_rtbxHWIDdata.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.General_rtbxHWIDdata.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_rtbxHWIDdata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_rtbxHWIDdata.Location = new System.Drawing.Point(0, 0);
+			this.General_rtbxHWIDdata.Name = "General_rtbxHWIDdata";
+			this.General_rtbxHWIDdata.ReadOnly = true;
+			this.General_rtbxHWIDdata.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.General_rtbxHWIDdata.Size = new System.Drawing.Size(119, 46);
+			this.General_rtbxHWIDdata.TabIndex = 6;
+			this.General_rtbxHWIDdata.Tag = "Source Sans Pro";
+			this.General_rtbxHWIDdata.Text = "";
+			this.ToolTips.SetToolTip(this.General_rtbxHWIDdata, "HWID taken from Client opcode");
 			// 
 			// General_cbxHWIDSendOnlyOnce
 			// 
@@ -1328,24 +1373,6 @@
 			this.General_cmbxHWIDClientSaveFrom.TabIndex = 2;
 			this.General_cmbxHWIDClientSaveFrom.Tag = "Source Sans Pro";
 			this.ToolTips.SetToolTip(this.General_cmbxHWIDClientSaveFrom, "Save HWID from");
-			// 
-			// General_rtbxHWIDdata
-			// 
-			this.General_rtbxHWIDdata.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_rtbxHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.General_rtbxHWIDdata.DetectUrls = false;
-			this.General_rtbxHWIDdata.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.General_rtbxHWIDdata.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_rtbxHWIDdata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_rtbxHWIDdata.Location = new System.Drawing.Point(0, 0);
-			this.General_rtbxHWIDdata.Name = "General_rtbxHWIDdata";
-			this.General_rtbxHWIDdata.ReadOnly = true;
-			this.General_rtbxHWIDdata.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.General_rtbxHWIDdata.Size = new System.Drawing.Size(119, 46);
-			this.General_rtbxHWIDdata.TabIndex = 6;
-			this.General_rtbxHWIDdata.Tag = "Source Sans Pro";
-			this.General_rtbxHWIDdata.Text = "";
-			this.ToolTips.SetToolTip(this.General_rtbxHWIDdata, "HWID taken from Client opcode");
 			// 
 			// General_tbxHWIDClientOp
 			// 
@@ -1508,6 +1535,22 @@
 			this.General_lblPort.Tag = "Source Sans Pro";
 			this.General_lblPort.Text = "Port";
 			this.General_lblPort.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// General_tbxPort
+			// 
+			this.General_tbxPort.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_tbxPort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.General_tbxPort.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_tbxPort.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_tbxPort.Location = new System.Drawing.Point(51, 194);
+			this.General_tbxPort.Name = "General_tbxPort";
+			this.General_tbxPort.ReadOnly = true;
+			this.General_tbxPort.Size = new System.Drawing.Size(90, 28);
+			this.General_tbxPort.TabIndex = 11;
+			this.General_tbxPort.Tag = "Source Sans Pro";
+			this.General_tbxPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.General_tbxPort.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.General_tbxPort.Leave += new System.EventHandler(this.Control_FocusLeave);
 			// 
 			// TabPageH_General_Option04_Panel
 			// 
@@ -2149,16 +2192,16 @@
 			this.Party_lstvLeaders.FullRowSelect = true;
 			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.Party_lstvLeaders.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem81,
-            listViewItem82,
-            listViewItem83,
-            listViewItem84,
-            listViewItem85,
-            listViewItem86,
-            listViewItem87,
-            listViewItem88,
-            listViewItem89,
-            listViewItem90});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10});
 			this.Party_lstvLeaders.Location = new System.Drawing.Point(10, 51);
 			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
 			this.Party_lstvLeaders.MultiSelect = false;
@@ -2236,9 +2279,9 @@
 			// 
 			this.panelWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panelWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option13_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option01_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option14_Panel);
-			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option13_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option02_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option04_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option10_Panel);
@@ -2261,167 +2304,6 @@
 			this.panelWindow.Name = "panelWindow";
 			this.panelWindow.Size = new System.Drawing.Size(798, 471);
 			this.panelWindow.TabIndex = 1;
-			// 
-			// TabPageV_Control01_Option13_Panel
-			// 
-			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.lstrTESTING);
-			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
-			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 341);
-			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
-			this.TabPageV_Control01_Option13_Panel.Visible = false;
-			// 
-			// lstrTESTING
-			// 
-			this.lstrTESTING.FullRowSelect = true;
-			this.lstrTESTING.HideSelection = false;
-			this.lstrTESTING.Location = new System.Drawing.Point(7, 6);
-			this.lstrTESTING.Name = "lstrTESTING";
-			this.lstrTESTING.Size = new System.Drawing.Size(642, 325);
-			this.lstrTESTING.TabIndex = 2;
-			// 
-			// TabPageV_Control01_Option02_Panel
-			// 
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character);
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option02_Panel);
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option01_Panel);
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option03_Panel);
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option04_Panel);
-			this.TabPageV_Control01_Option02_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Option02_Panel.Name = "TabPageV_Control01_Option02_Panel";
-			this.TabPageV_Control01_Option02_Panel.Size = new System.Drawing.Size(657, 342);
-			this.TabPageV_Control01_Option02_Panel.TabIndex = 6;
-			this.TabPageV_Control01_Option02_Panel.Visible = false;
-			// 
-			// TabPageH_Character
-			// 
-			this.TabPageH_Character.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option04);
-			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option03);
-			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option02);
-			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option01);
-			this.TabPageH_Character.Location = new System.Drawing.Point(0, 0);
-			this.TabPageH_Character.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Character.Name = "TabPageH_Character";
-			this.TabPageH_Character.Size = new System.Drawing.Size(657, 28);
-			this.TabPageH_Character.TabIndex = 9;
-			// 
-			// TabPageH_Character_Option04
-			// 
-			this.TabPageH_Character_Option04.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Character_Option04.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Character_Option04.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option04.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Character_Option04.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Character_Option04.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option04.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Character_Option04.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Character_Option04.Location = new System.Drawing.Point(493, 0);
-			this.TabPageH_Character_Option04.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Character_Option04.Name = "TabPageH_Character_Option04";
-			this.TabPageH_Character_Option04.Size = new System.Drawing.Size(164, 26);
-			this.TabPageH_Character_Option04.TabIndex = 15;
-			this.TabPageH_Character_Option04.Tag = "Source Sans Pro";
-			this.TabPageH_Character_Option04.Text = ". . .";
-			this.TabPageH_Character_Option04.UseVisualStyleBackColor = false;
-			this.TabPageH_Character_Option04.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Character_Option03
-			// 
-			this.TabPageH_Character_Option03.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Character_Option03.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Character_Option03.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option03.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Character_Option03.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Character_Option03.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option03.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Character_Option03.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Character_Option03.Location = new System.Drawing.Point(329, 0);
-			this.TabPageH_Character_Option03.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Character_Option03.Name = "TabPageH_Character_Option03";
-			this.TabPageH_Character_Option03.Size = new System.Drawing.Size(164, 26);
-			this.TabPageH_Character_Option03.TabIndex = 14;
-			this.TabPageH_Character_Option03.Tag = "Source Sans Pro";
-			this.TabPageH_Character_Option03.Text = ". . .";
-			this.TabPageH_Character_Option03.UseVisualStyleBackColor = false;
-			this.TabPageH_Character_Option03.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Character_Option02
-			// 
-			this.TabPageH_Character_Option02.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Character_Option02.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Character_Option02.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option02.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Character_Option02.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Character_Option02.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Character_Option02.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Character_Option02.Location = new System.Drawing.Point(165, 0);
-			this.TabPageH_Character_Option02.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Character_Option02.Name = "TabPageH_Character_Option02";
-			this.TabPageH_Character_Option02.Size = new System.Drawing.Size(164, 26);
-			this.TabPageH_Character_Option02.TabIndex = 13;
-			this.TabPageH_Character_Option02.Tag = "Source Sans Pro";
-			this.TabPageH_Character_Option02.Text = ". . .";
-			this.TabPageH_Character_Option02.UseVisualStyleBackColor = false;
-			this.TabPageH_Character_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Character_Option01
-			// 
-			this.TabPageH_Character_Option01.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Character_Option01.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Character_Option01.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option01.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Character_Option01.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Character_Option01.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Character_Option01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Character_Option01.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Character_Option01.Location = new System.Drawing.Point(0, 0);
-			this.TabPageH_Character_Option01.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Character_Option01.Name = "TabPageH_Character_Option01";
-			this.TabPageH_Character_Option01.Size = new System.Drawing.Size(165, 26);
-			this.TabPageH_Character_Option01.TabIndex = 12;
-			this.TabPageH_Character_Option01.Tag = "Source Sans Pro";
-			this.TabPageH_Character_Option01.Text = "Potions";
-			this.TabPageH_Character_Option01.UseVisualStyleBackColor = false;
-			this.TabPageH_Character_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Character_Option02_Panel
-			// 
-			this.TabPageH_Character_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Character_Option02_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Character_Option02_Panel.Name = "TabPageH_Character_Option02_Panel";
-			this.TabPageH_Character_Option02_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Character_Option02_Panel.TabIndex = 11;
-			this.TabPageH_Character_Option02_Panel.Visible = false;
-			// 
-			// TabPageH_Character_Option01_Panel
-			// 
-			this.TabPageH_Character_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Character_Option01_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Character_Option01_Panel.Name = "TabPageH_Character_Option01_Panel";
-			this.TabPageH_Character_Option01_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Character_Option01_Panel.TabIndex = 10;
-			this.TabPageH_Character_Option01_Panel.Visible = false;
-			// 
-			// TabPageH_Character_Option03_Panel
-			// 
-			this.TabPageH_Character_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Character_Option03_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Character_Option03_Panel.Name = "TabPageH_Character_Option03_Panel";
-			this.TabPageH_Character_Option03_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Character_Option03_Panel.TabIndex = 13;
-			this.TabPageH_Character_Option03_Panel.Visible = false;
-			// 
-			// TabPageH_Character_Option04_Panel
-			// 
-			this.TabPageH_Character_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Character_Option04_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Character_Option04_Panel.Name = "TabPageH_Character_Option04_Panel";
-			this.TabPageH_Character_Option04_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Character_Option04_Panel.TabIndex = 12;
-			this.TabPageH_Character_Option04_Panel.Visible = false;
 			// 
 			// TabPageV_Control01_Option01_Panel
 			// 
@@ -2836,6 +2718,168 @@
 			this.columnHeader4.Text = "State";
 			this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.columnHeader4.Width = 115;
+			// 
+			// TabPageV_Control01_Option13_Panel
+			// 
+			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.button2);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.lstrTESTING);
+			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
+			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 341);
+			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
+			this.TabPageV_Control01_Option13_Panel.Visible = false;
+			// 
+			// lstrTESTING
+			// 
+			this.lstrTESTING.FullRowSelect = true;
+			this.lstrTESTING.HideSelection = false;
+			this.lstrTESTING.Location = new System.Drawing.Point(7, 6);
+			this.lstrTESTING.Name = "lstrTESTING";
+			this.lstrTESTING.Size = new System.Drawing.Size(642, 270);
+			this.lstrTESTING.TabIndex = 2;
+			// 
+			// TabPageV_Control01_Option02_Panel
+			// 
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character);
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option02_Panel);
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option01_Panel);
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option03_Panel);
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option04_Panel);
+			this.TabPageV_Control01_Option02_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Option02_Panel.Name = "TabPageV_Control01_Option02_Panel";
+			this.TabPageV_Control01_Option02_Panel.Size = new System.Drawing.Size(657, 342);
+			this.TabPageV_Control01_Option02_Panel.TabIndex = 6;
+			this.TabPageV_Control01_Option02_Panel.Visible = false;
+			// 
+			// TabPageH_Character
+			// 
+			this.TabPageH_Character.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option04);
+			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option03);
+			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option02);
+			this.TabPageH_Character.Controls.Add(this.TabPageH_Character_Option01);
+			this.TabPageH_Character.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Character.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Character.Name = "TabPageH_Character";
+			this.TabPageH_Character.Size = new System.Drawing.Size(657, 28);
+			this.TabPageH_Character.TabIndex = 9;
+			// 
+			// TabPageH_Character_Option04
+			// 
+			this.TabPageH_Character_Option04.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Character_Option04.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Character_Option04.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option04.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Character_Option04.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Character_Option04.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option04.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Character_Option04.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Character_Option04.Location = new System.Drawing.Point(493, 0);
+			this.TabPageH_Character_Option04.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Character_Option04.Name = "TabPageH_Character_Option04";
+			this.TabPageH_Character_Option04.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Character_Option04.TabIndex = 15;
+			this.TabPageH_Character_Option04.Tag = "Source Sans Pro";
+			this.TabPageH_Character_Option04.Text = ". . .";
+			this.TabPageH_Character_Option04.UseVisualStyleBackColor = false;
+			this.TabPageH_Character_Option04.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Character_Option03
+			// 
+			this.TabPageH_Character_Option03.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Character_Option03.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Character_Option03.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option03.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Character_Option03.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Character_Option03.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option03.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Character_Option03.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Character_Option03.Location = new System.Drawing.Point(329, 0);
+			this.TabPageH_Character_Option03.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Character_Option03.Name = "TabPageH_Character_Option03";
+			this.TabPageH_Character_Option03.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Character_Option03.TabIndex = 14;
+			this.TabPageH_Character_Option03.Tag = "Source Sans Pro";
+			this.TabPageH_Character_Option03.Text = ". . .";
+			this.TabPageH_Character_Option03.UseVisualStyleBackColor = false;
+			this.TabPageH_Character_Option03.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Character_Option02
+			// 
+			this.TabPageH_Character_Option02.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Character_Option02.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Character_Option02.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option02.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Character_Option02.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Character_Option02.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Character_Option02.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Character_Option02.Location = new System.Drawing.Point(165, 0);
+			this.TabPageH_Character_Option02.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Character_Option02.Name = "TabPageH_Character_Option02";
+			this.TabPageH_Character_Option02.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Character_Option02.TabIndex = 13;
+			this.TabPageH_Character_Option02.Tag = "Source Sans Pro";
+			this.TabPageH_Character_Option02.Text = ". . .";
+			this.TabPageH_Character_Option02.UseVisualStyleBackColor = false;
+			this.TabPageH_Character_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Character_Option01
+			// 
+			this.TabPageH_Character_Option01.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Character_Option01.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Character_Option01.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option01.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Character_Option01.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Character_Option01.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Character_Option01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Character_Option01.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Character_Option01.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Character_Option01.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Character_Option01.Name = "TabPageH_Character_Option01";
+			this.TabPageH_Character_Option01.Size = new System.Drawing.Size(165, 26);
+			this.TabPageH_Character_Option01.TabIndex = 12;
+			this.TabPageH_Character_Option01.Tag = "Source Sans Pro";
+			this.TabPageH_Character_Option01.Text = "Potions";
+			this.TabPageH_Character_Option01.UseVisualStyleBackColor = false;
+			this.TabPageH_Character_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Character_Option02_Panel
+			// 
+			this.TabPageH_Character_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Character_Option02_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Character_Option02_Panel.Name = "TabPageH_Character_Option02_Panel";
+			this.TabPageH_Character_Option02_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Character_Option02_Panel.TabIndex = 11;
+			this.TabPageH_Character_Option02_Panel.Visible = false;
+			// 
+			// TabPageH_Character_Option01_Panel
+			// 
+			this.TabPageH_Character_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Character_Option01_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Character_Option01_Panel.Name = "TabPageH_Character_Option01_Panel";
+			this.TabPageH_Character_Option01_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Character_Option01_Panel.TabIndex = 10;
+			this.TabPageH_Character_Option01_Panel.Visible = false;
+			// 
+			// TabPageH_Character_Option03_Panel
+			// 
+			this.TabPageH_Character_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Character_Option03_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Character_Option03_Panel.Name = "TabPageH_Character_Option03_Panel";
+			this.TabPageH_Character_Option03_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Character_Option03_Panel.TabIndex = 13;
+			this.TabPageH_Character_Option03_Panel.Visible = false;
+			// 
+			// TabPageH_Character_Option04_Panel
+			// 
+			this.TabPageH_Character_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Character_Option04_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Character_Option04_Panel.Name = "TabPageH_Character_Option04_Panel";
+			this.TabPageH_Character_Option04_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Character_Option04_Panel.TabIndex = 12;
+			this.TabPageH_Character_Option04_Panel.Visible = false;
 			// 
 			// TabPageV_Control01_Option10_Panel
 			// 
@@ -3562,47 +3606,15 @@
 			this.NotifyIcon.Text = "xBot";
 			this.NotifyIcon.Visible = true;
 			// 
-			// General_tbxPort
+			// button2
 			// 
-			this.General_tbxPort.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_tbxPort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.General_tbxPort.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_tbxPort.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_tbxPort.Location = new System.Drawing.Point(51, 194);
-			this.General_tbxPort.Name = "General_tbxPort";
-			this.General_tbxPort.ReadOnly = true;
-			this.General_tbxPort.Size = new System.Drawing.Size(90, 28);
-			this.General_tbxPort.TabIndex = 11;
-			this.General_tbxPort.Tag = "Source Sans Pro";
-			this.General_tbxPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.General_tbxPort.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.General_tbxPort.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// General_panelHWIDdata
-			// 
-			this.General_panelHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.General_panelHWIDdata.Controls.Add(this.General_rtbxHWIDdata);
-			this.General_panelHWIDdata.Location = new System.Drawing.Point(6, 183);
-			this.General_panelHWIDdata.Name = "General_panelHWIDdata";
-			this.General_panelHWIDdata.Size = new System.Drawing.Size(121, 48);
-			this.General_panelHWIDdata.TabIndex = 8;
-			// 
-			// General_cbxRandomHost
-			// 
-			this.General_cbxRandomHost.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxRandomHost.FlatAppearance.BorderSize = 0;
-			this.General_cbxRandomHost.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxRandomHost.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_cbxRandomHost.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxRandomHost.Location = new System.Drawing.Point(6, 228);
-			this.General_cbxRandomHost.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxRandomHost.Name = "General_cbxRandomHost";
-			this.General_cbxRandomHost.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxRandomHost.Size = new System.Drawing.Size(135, 45);
-			this.General_cbxRandomHost.TabIndex = 17;
-			this.General_cbxRandomHost.Tag = "Source Sans Pro";
-			this.General_cbxRandomHost.Text = "Use random host to connect";
-			this.General_cbxRandomHost.UseVisualStyleBackColor = false;
+			this.button2.Location = new System.Drawing.Point(29, 293);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(75, 23);
+			this.button2.TabIndex = 3;
+			this.button2.Text = "TEST";
+			this.button2.UseVisualStyleBackColor = true;
+			this.button2.Click += new System.EventHandler(this.button2_Click);
 			// 
 			// Window
 			// 
@@ -3634,6 +3646,7 @@
 			this.Menu_lstrSilkroads.ResumeLayout(false);
 			this.General_gbxHWID.ResumeLayout(false);
 			this.General_gbxHWID.PerformLayout();
+			this.General_panelHWIDdata.ResumeLayout(false);
 			this.TabPageH_General_Option04_Panel.ResumeLayout(false);
 			this.General_gbxPacketInject.ResumeLayout(false);
 			this.General_gbxPacketInject.PerformLayout();
@@ -3649,15 +3662,15 @@
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox3.PerformLayout();
 			this.panelWindow.ResumeLayout(false);
-			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
-			this.TabPageV_Control01_Option02_Panel.ResumeLayout(false);
-			this.TabPageH_Character.ResumeLayout(false);
 			this.TabPageV_Control01_Option01_Panel.ResumeLayout(false);
 			this.Login_gbxCharacters.ResumeLayout(false);
 			this.Login_gbxConnection.ResumeLayout(false);
 			this.Login_gbxAccount.ResumeLayout(false);
 			this.Login_gbxAccount.PerformLayout();
 			this.Login_gbxServers.ResumeLayout(false);
+			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
+			this.TabPageV_Control01_Option02_Panel.ResumeLayout(false);
+			this.TabPageH_Character.ResumeLayout(false);
 			this.TabPageV_Control01_Option10_Panel.ResumeLayout(false);
 			this.TabPageH_Chat.ResumeLayout(false);
 			this.TabPageH_Chat_Option01_Panel.ResumeLayout(false);
@@ -3674,7 +3687,6 @@
 			this.Minimap_panelMap.ResumeLayout(false);
 			this.Minimap_panelCoords.ResumeLayout(false);
 			this.Minimap_panelCoords.PerformLayout();
-			this.General_panelHWIDdata.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -3898,6 +3910,7 @@
 		public System.Windows.Forms.TextBox General_tbxPort;
 		private System.Windows.Forms.Panel General_panelHWIDdata;
 		public System.Windows.Forms.CheckBox General_cbxRandomHost;
+		private System.Windows.Forms.Button button2;
 	}
 }
 

@@ -85,7 +85,7 @@ namespace xBot.Game
 			string sql = "SELECT exp FROM levels WHERE level=" + level;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.getResult();
-			if(result.Count >= 0)
+			if(result.Count > 0)
 				return ulong.Parse(result[0]["exp"]);
 			return 0;
 		}
@@ -97,7 +97,7 @@ namespace xBot.Game
 			string sql = "SELECT * FROM models WHERE id=" + id;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.getResult();
-			if (result.Count >= 0)
+			if (result.Count > 0)
 				return result[0];
 			return null;
     }
@@ -109,7 +109,7 @@ namespace xBot.Game
 			string sql = "SELECT * FROM teleports WHERE id=" + id;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.getResult();
-			if (result.Count >= 0)
+			if (result.Count > 0)
 				return result[0];
 			return null;
 		}
@@ -121,7 +121,7 @@ namespace xBot.Game
 			string sql = "SELECT * FROM items WHERE id=" + id;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.getResult();
-			if (result.Count >= 0)
+			if (result.Count > 0)
 				return result[0];
 			return null;
 		}
@@ -133,7 +133,7 @@ namespace xBot.Game
 			string sql = "SELECT * FROM skills WHERE id=" + id;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.getResult();
-			if (result.Count >= 0)
+			if (result.Count > 0)
 				return result[0];
 			return null;
 		}
