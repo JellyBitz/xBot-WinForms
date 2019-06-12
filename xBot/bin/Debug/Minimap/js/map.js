@@ -63,8 +63,6 @@ var SilkroadMap = function(){
 	map_layer_jangan_b5,
 	map_layer_jangan_b6,
 	map_layer_jobtemple_1;
-	// NPC's locations by layer
-	var map_layer_NPCs;
 	// Shapes at the map
 	var map_shapes = [];
 	var map_shapes_id = 0;
@@ -111,169 +109,6 @@ var SilkroadMap = function(){
 		map_layer_jobtemple_1 = L.tileLayer(b_url+'d/rn_sd_egypt1_01_{x}x{-y}.jpg',{
 			attribution: '<a href="#">Job Temple</a>',center:{'x':24192,'y':-0.45},region:-32752,z:0,scale:1.4,
 			maxZoom:8,minZoom:8,errorTileUrl:b_url+'0.jpg'});
-		map_layer_NPCs={
-		"map_layer_world":{
-			/* NPC Format :
-			> "Name":["Title",x,y,z,r,Teleport Type?,Teleport?,x?,y?,z?,r?,Teleport??,x??,y??,z??,r??,...]
-			
-			"JANGAN":["",6464,1088,0,0,"main_gate","Donwhang",3554,2108,0,0,],
-			"Wangu & Sansan":["Storage-Keeper",6434,1059,0,0],
-			"Yangyun":["Herbalist",6494,1100,0,0],
-			"Jinjin":["Grocery Trader",6501,1067,0,0],
-			"Machun":["Stable-Keeper",6368,1005,0,0],
-			"Mrs Jang":["Protector Trader",6369,1068,0,0],
-			"Chulsan":["Blacksmith",6369,1100,0,0],
-			"Ishyak":["Islam Merchant",6503,1018,0,0],
-			"Jodaesan":["Specialty Trader",6511,1007,0,0],
-			"Hwajung":["Merchant Associate",6511,995,0,0],
-			"Gwakwi":["Hunter Associate",6303,1192,0,0],
-			"Leebaek":["Guild Manager",6246,1209,0,0],
-			"Sonhyeon":["General",6202,1181,0,0],
-			"Flora":["Adventurer",6503,986,0,0],
-			"Jowi":["Soldier",6177,1144,0,0],
-			"Dangsam":["Soldier",6439,962,0,0],
-			"Jingyo":["Soldier",6429,962,0,0],
-			"Fengil":["Soldier",6429,1150,0,0],
-			"Choiyoung":["Soldier",6437,1150,0,0],
-			"Qui-Shin Tomb":["",7200,2104,0,0,"dungeon","Underground Level 1 of Tomb of Qui-Shin [B1]",-23232,-324,0,-32761],
-			"CONSTANTINOPLE":["",-10683,2583,0,0,"main_gate","Samarkand",-5185,2895,0,0],
-			"Sikeulro":["Inn Master",-10618,2580,0,0],
-			"Retaldi":["Nun",-10617,2635,0,0],
-			"Balbardo":["Weapon Trader",-10674,2649,0,0],
-			"Treno":["Stable-Keeper",-10765,2532,0,0],
-			"Jatomo":["Protector Trader",-10750,2605,0,0],
-			"Demetry":["Adventurer",-10617,2554,0,0],
-			"Lipria":["Guide",-10618,2921,0,0],
-			"Raffy":["Guide",-10972,2628,0,0],
-			"Riise":["Guide",-10696,2609,0,0],
-			"Ratchel":["General",-10830,2467,0,0],
-			"Kapros":["Association Boss",-10833,2404,0,0],
-			"Uvetino":["Association Boss",-10885,2351,0,0],
-			"Tana":["Merchant Associate",-10736,2513,0,0],
-			"Tina":["Specialty Trader",-10717,2518,0,0],
-			"Vesaros":["Soldier",-10750,2664,0,0],
-			"Kotomo":["Soldier",-10740,2673,0,0],
-			"Kalsius":["Soldier",-10615,2935,0,0],
-			"Adria":["Hunter Associate",-10835,2703,0,0],
-			"Rialto":["Consul",-10864,2787,0,0],
-			"Justia":["Soldier",-10853,2301,0,0],
-			"Gilt":["Guild Manager",-10553,2328,0,0],
-			"Kartino":["Soldier",-10495,2472,0,0],
-			"Maximus":["Soldier",-10481,2484,0,0],
-			"Riedo":["Soldier",-10638,2935,0,0],
-			"Alex":["Soldier",-11005,2636,0,0],
-			"Takia":["Soldier",-11005,2650,0,0],
-			"Bajel":["Grocery Trader",-10683,2521,0,0],
-			"Gabriel":["Clergy",-10387,2776,0,0],
-			"Sunset Witch":["",-10377,3230,0,0],
-			"Yongso":["Boy",-10392,3220,0,0],
-			"Steward Yupitel":["",-10881,2617,0,0],
-			"Gale":["Harbor Manager",-11425,1162,0,0,"ferry","Droa Dock",-8692,2208,0,0,"Sigia Dock",-8700,1828,0,0],
-			"Morgun":["Pirate",-8692,2208,0,0,"ferry","Eastern Europe Dock",-11425,1162,0,0],
-			"Blackbeard":["Pirate",-8700,1828,0,0,"ferry","Eastern Europe Dock",-11425,1162,0,0],
-			"DONWHANG":["",3554,2108,0,0,"main_gate","Jangan",6435,1039,0,0,"Hotan",113,46,0,0],
-			"Agol":["Blacksmith",3575,2041,0,0],
-			"Yeolah":["Protector Trader",3575,2010,0,0],
-			"Paedo & Irina":["Storage-Keeper",3581,1989,0,0],
-			"Yeosun":["Grocery Trader",3511,1993,0,0],
-			"Bori":["Herbalist",3515,2033,0,0],
-			"Makgo":["Stable-Keeper",3597,2084,0,0],
-			"Leegeuk":["Merchant Associate",3500,2076,0,0],
-			"Leegak":["Specialty Shop Elder",3495,2076,0,0],
-			"Ryukang":["Guild Manager",3591,1964,0,0],
-			"Baeksong":["Soldier",3552,1946,0,0],
-			"Dooil":["Soldier",3468,2103,0,0],
-			"Manho":["Soldier",3468,2112,0,0],
-			"Hahun":["Soldier",3627,2106,0,0],
-			"Moho":["Soldier",3627,2115,0,0],
-			"Haraho":["Hunter Associate",3515,2175,0,0],
-			"Hyeon":["Buddhist Priest",3596,2237,0,0],
-			"Honmusa":["",3501,1966,0,0],
-			"Baekako":["",3491,1966,0,0],
-			"Donwhang Stone Cave":["",2471,2691,0,0,"dungeon","Donwhang Stone Cave [1F]",-24278,-88,0,-32767],
-			"SAMARKAND":["",-5185,2890,0,0,"main_gate","Constantinople",-10684,2586,0,0,"Hotan",113,49,0,0],
-			"Saesa":["Storage-Keeper",-5128,2801,0,0],
-			"Martel":["Nun",-5234,2872,0,0],
-			"Hoyun":["Stable-Keeper",-5116,2903,0,0],
-			"Tricai":["Weapon Trader",-5200,2961,0,0],
-			"Saha":["Grocery Trader",-5212,2833,0,0],
-			"Aryoan":["Protector Trader",-5247,2915,0,0],
-			"Hapsa":["Guild Manager",-5171,2971,0,0],
-			"Shahad":["Hunter Associate",-5144,3008,0,0],
-			"Karen":["Merchant Associate",-5118,2870,0,0],
-			"Toson":["Specialty Trader",-5101,2870,0,0],
-			"Dohwa":["Soldier",-5190,2709,0,0],
-			"Tapai":["Soldier",-5177,2709,0,0],
-			"Ahu":["Soldier",-5363,2898,0,0],
-			"Asahap":["Soldier",-5363,2885,0,0],
-			"Jooha":["Soldier",-5002,2898,0,0],
-			"Paje":["Soldier",-5002,2883,0,0],
-			"HOTAN":["",113,46,0,0,"main_gate","Donwhang",3554,2108,0,0,"Samarkand",-5185,2895,0,0,"Alexandria (N)",-16151,74,0,0,"Alexandria (S)",-16645,-272,0,0],
-			"Auisan":["Storage-Keeper",113,60,0,0],
-			"Mamoje":["Jewel Lapidary",85,-5,0,0],
-			"Gonishya":["Protector Trader",57,19,0,0],
-			"Manina":["Blacksmith",83,109,0,0],
-			"Soboi":["Potion Merchant",50,76,0,0],
-			"Sanmok":["Specialty Trader",151,90,0,0],
-			"Asaman":["Merchant Associate",157,83,0,0],
-			"Salihap":["Stable-Keeper",154,-5,0,0],
-			"Ahmok":["Hunter Associate",224,155,0,0],
-			"Musai":["Guild Manager",114,442,0,0],
-			"Baoman":["Soldier",317,53,0,0],
-			"Makhan":["Soldier",317,43,0,0],
-			"Wulan":["Soldier",-85,52,0,0],
-			"Batu":["Soldier",-85,42,0,0],
-			"Pao":["Soldier",119,353,0,0],
-			"Tuolan":["Soldier",109,353,0,0],
-			"Duyun":["Soldier",119,-155,0,0],
-			"Leihan":["Soldier",109,-155,0,0],
-			"Rahan":["Boat Ticket Seller",1079,-60,0,0,"ferry","Tarim North Ferry",1568,-18,0,0],
-			"Salmai":["Boat Ticket Seller",1568,-18,0,0,"ferry","Hotan North Ferry",1079,-60,0,0],
-			"Asimo":["Boat Ticket Seller",1124,-309,0,0,"ferry","Tarim South Ferry",1563,-269,0,0],
-			"Asa":["Boat Ticket Seller",1563,-269,0,0,"ferry","Hotan South Ferry",1124,-309,0,0],
-			"Asui":["Tunnel Manager",-1905,1981,0,0,"ferry","Central Asia Northeast Tunnel",-2761,2678,0,0],
-			"Topni":["Tunnel Manager",-2761,2678,0,0,"ferry","Taklamakan Nortwest Tunnel",-1905,1981,0,0],
-			"Salhap":["Tunnel Manager",-2731,2104,0,0,"ferry","Taklamakan Southwest Tunnel",-1902,1387,0,0],
-			"Maryokuk":["Tunnel Manager",-1902,1387,0,0,"ferry","Central Asia Southeast Tunnel",-2731,2104,0,0],
-			"Gate of Ruler":["",-4608,0,0,0,"tahomet_gate"],
-			"ALEXANDRIA NORTH":["",-16151,74,0,0,"main_gate","Alexandria (S)",-16645,-272,0,0,"Hotan",113,49,0,0],
-			"ALEXANDRIA SOUTH":["",-16645,-272,0,0,"main_gate","Alexandria (N)",-16151,74,0,0,"Hotan",113,49,0,0],
-		*/},
-		"map_layer_donwhang_1f":{
-			"Teleport":["",-24278,-88,0,-32767,"tel","DonWhang cave Exit",2471,2691,0,0]
-		},
-		"map_layer_jangan_b1":{
-			"Teleport [1]":["",-23232,-324,0,-32761,"tel","Qui-Shin Tomb Exit",7200,2104,0,0],
-			"Teleport [2]":["Audience Chamber",-23232,660,0,-32761,"tel","Military Camp 1 [B2]",-24815,559,0,-32762],
-		},
-		"map_layer_jangan_b2":{
-			"Teleport [1]":["Military Camp 1",-24815,559,0,-32762,"tel","Audience Chamber [B1]",-23232,660,0,-32761],
-			"Teleport [2]":["Military Camp 1",-24459,559,0,-32762,"tel","Teleport [3]",-24273,559,0,-32762],
-			"Teleport [3]":["",-24273,559,0,-32762,"tel","Teleport [2]",-24459,559,0,-32762],
-			"Teleport [4]":["",-24029,326,0,-32762,"tel"],
-			"Teleport [5]":["",-24204,-2,0,-32762,"tel"],
-			"Teleport [6]":["",-24631,-170,0,-32762,"tel"],
-			"Teleport [7]":["",-24399,-581,0,-32762,"tel"],
-			"Teleport [8]":["",-23858,-581,0,-32762,"tel"],
-			"Teleport [9]":["",-23255,-588,0,-32762,"tel"],
-			"Teleport [10]":["",-22631,-581,0,-32762,"tel"],
-			"Teleport [11]":["",-21979,-582,0,-32762,"tel"],
-			"Teleport [12]":["Military Camp 16",-21441,-581,0,-32762,"tel","Central Cave [B3]",-23568,95,0,-32763],
-		},
-		"map_layer_jangan_b3":{
-			"Teleport [1]":["Central Cave",-23568,95,0,-32763,"tel","Military Camp 16 [B2]",-21441,-581,0,-32762],
-			"Teleport [2]":["South Snake Cave (Re)",-25557,-1605,0,-32763,"tel","Southwest Snake Room (Ki) [B4]",-25632,-1436,0,-32764],
-		},
-		"map_layer_jangan_b4":{
-			"Teleport [1]":["Southwest Snake Room (Ki)",-25632,-1436,0,-32764,"tel","South Snake Cave (Re) [B3]",-25557,-1605,0,-32763],
-		},
-		"map_layer_jangan_b5":{
-		},
-		"map_layer_jangan_b6":{
-		},
-		"map_layer_jobtemple_1":{
-		}
-		};
 	};
 	// Change the current layer for another one if it's needed
 	var updateMapLayer = function (layer){
@@ -395,9 +230,7 @@ var SilkroadMap = function(){
 		// Filter layer objects
 		layer_npcs = [];
 		switch(map_layer){
-			// Select NPC's from layer
 			case map_layer_world:
-			layer_npcs=map_layer_NPCs.map_layer_world;
 			// Add house icons
 			// Jangan
 			addMarker(obj_npc_weapon,'Blacksmith',6357,1097);
@@ -452,87 +285,38 @@ var SilkroadMap = function(){
 			
 			break;
 			case map_layer_jangan_b1:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b1;
+
 			break;
 			case map_layer_jangan_b2:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b2;
+
 			break;
 			case map_layer_jangan_b3:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b3;
+
 			break;
 			case map_layer_jangan_b4:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b4;
+
 			break;
 			case map_layer_jangan_b5:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b5;
+
 			break;
 			case map_layer_jangan_b6:
-			layer_npcs=map_layer_NPCs.map_layer_jangan_b6;
+
 			break;
 			case map_layer_donwhang_1f:
-			layer_npcs=map_layer_NPCs.map_layer_donwhang_1f;
+
 			break;
 			case map_layer_donwhang_2f:
-			layer_npcs=map_layer_NPCs.map_layer_donwhang_2f;
+
 			break;
 			case map_layer_donwhang_3f:
-			layer_npcs=map_layer_NPCs.map_layer_donwhang_3f;
+
 			break;
 			case map_layer_donwhang_4f:
-			layer_npcs=map_layer_NPCs.map_layer_donwhang_4f;
+
 			break;
 			case map_layer_jobtemple_1:
-			layer_npcs=map_layer_NPCs.map_layer_jobtemple_1;
+
 			break;
-		}
-		// Load all NPC's & Teleports from layer
-		var npc_title,npc_name,npc_icon,npc_tp;
-		for(var key in layer_npcs){
-			npc_icon = obj_npc;
-			npc_tp = "";
-			npc_title = layer_npcs[key][0];
-			npc_name = '<div class="npc">'+key+'</div>';
-			// it's a teleport
-			if(layer_npcs[key].length > 5 ){
-				switch(layer_npcs[key][5]){
-					case "main_gate":
-					npc_icon = obj_tp_gate;
-					npc_title = '&starf; '+key;
-					npc_name = "";
-					break;
-					case "ferry":
-					npc_icon = obj_tp_ferry;
-					break;
-					case "gate":
-					npc_icon = obj_tp_gate;
-					npc_title = key;
-					npc_name = "";
-					break;
-					case "tahomet_gate":
-					npc_icon = obj_tp_tahomet_gate;
-					npc_title = key;
-					npc_name = "";
-					break;
-					case "dungeon":
-					npc_icon = obj_tp_dungeon;
-					npc_title = key;
-					npc_name = "";
-					break;
-					case "tel":
-					npc_icon = obj_tp_tel;
-					if(layer_npcs[key][0] != "")
-						npc_name = '<div class="npc">'+layer_npcs[key][0]+'</div>';
-					else
-						npc_name = "";
-					npc_title = key;
-					break;
-				}
-				// add tp movements
-				for (var i = 6; i < layer_npcs[key].length; i+=5) {
-					npc_tp += '<div class="opt">&bullet; <a href="#" onclick="SilkroadMap.MoveTo('+layer_npcs[key][i+1]+','+layer_npcs[key][i+2]+','+layer_npcs[key][i+3]+','+layer_npcs[key][i+4]+');">'+layer_npcs[key][i]+'</a></div>';
-				}
-			}
-			addMarker(npc_icon,npc_title+npc_name+npc_tp,layer_npcs[key][1],layer_npcs[key][2],layer_npcs[key][3],layer_npcs[key][4]);
 		}
 	};
 	// Kind minify & friendly reduced
@@ -829,7 +613,16 @@ var SilkroadMap = function(){
 					shadowAnchor: [12,40],
 					popupAnchor:  [0,-41]
 				});
-			}else if(type == "NPC_CH_POTION"){
+			}
+			else if(type.startsWith("MOB_")){
+				map_pointers[uniqueKey]["icon"] = new L.Icon({
+					iconUrl: b_url+'mob.png',
+					iconSize:     [25,41],
+					iconAnchor:   [12,40],
+					popupAnchor:  [0,-41]
+				});
+			}
+			else if(type == "NPC_CH_POTION"){
 				map_pointers[uniqueKey]["icon"] = new L.Icon({
 					iconUrl: b_url+'xy_potion.png',
 					iconSize:	[23,23],

@@ -143,20 +143,21 @@ namespace xBot.Network
 			}
 			w.Log("Connected");
 			w.setState("Connected");
-			// Handle easily by iterating
-			List<Context> gws = new List<Context>();
-			if (!ClientlessMode)
-			{
-				gws.Add(Gateway.Local);
-			}
-			else
-			{
-				PingHandler = new Thread(ThreadPing);
-				PingHandler.Start();
-			}
-			gws.Add(Gateway.Remote);
 			try
 			{
+				// Handle easily by iterating
+				List<Context> gws = new List<Context>();
+				if (!ClientlessMode)
+				{
+					gws.Add(Gateway.Local);
+				}
+				else
+				{
+					PingHandler = new Thread(ThreadPing);
+					PingHandler.Start();
+				}
+				gws.Add(Gateway.Remote);
+				
 				while (_running)
 				{
 					// Network input event processing

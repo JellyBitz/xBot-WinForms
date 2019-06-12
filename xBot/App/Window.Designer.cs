@@ -29,16 +29,16 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("12313");
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
 			this.rtbxLogs = new System.Windows.Forms.RichTextBox();
 			this.TabPageV_Control01 = new System.Windows.Forms.Panel();
@@ -83,6 +83,33 @@
 			this.TabPageH_General_Option03 = new System.Windows.Forms.Button();
 			this.TabPageH_General_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_General_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_General_Option04_Panel = new System.Windows.Forms.Panel();
+			this.General_gbxPacketInject = new System.Windows.Forms.GroupBox();
+			this.General_cbxInjectMassive = new System.Windows.Forms.CheckBox();
+			this.General_cbxInjectEncrypted = new System.Windows.Forms.CheckBox();
+			this.General_cmbxInjectTo = new System.Windows.Forms.ComboBox();
+			this.General_tbxInjectData = new System.Windows.Forms.TextBox();
+			this.General_lblInjectData = new System.Windows.Forms.Label();
+			this.General_btnInjectPacket = new System.Windows.Forms.Button();
+			this.General_tbxInjectOpcode = new System.Windows.Forms.TextBox();
+			this.General_lblInjectOpcode = new System.Windows.Forms.Label();
+			this.General_gbxPacketFilter = new System.Windows.Forms.GroupBox();
+			this.General_rbnPacketNotShow = new System.Windows.Forms.RadioButton();
+			this.General_rbnPacketOnlyShow = new System.Windows.Forms.RadioButton();
+			this.General_lstvOpcodes = new System.Windows.Forms.ListView();
+			this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvOpcodes = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvOpcodes_remove = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvOpcodes_removeAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.General_btnAddOpcode = new System.Windows.Forms.Button();
+			this.General_tbxFilterOpcode = new System.Windows.Forms.TextBox();
+			this.General_lblFilterOpcode = new System.Windows.Forms.Label();
+			this.General_rtbxPackets = new System.Windows.Forms.RichTextBox();
+			this.Menu_rtbxPackets = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_rtbxPackets_scroll = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_rtbxPackets_clear = new System.Windows.Forms.ToolStripMenuItem();
+			this.General_cbxShowPacketClient = new System.Windows.Forms.CheckBox();
+			this.General_cbxShowPacketServer = new System.Windows.Forms.CheckBox();
 			this.TabPageH_General_Option01_Panel = new System.Windows.Forms.Panel();
 			this.General_cbxRandomHost = new System.Windows.Forms.CheckBox();
 			this.General_btnPK2Path = new System.Windows.Forms.Button();
@@ -113,33 +140,6 @@
 			this.General_lblVersion = new System.Windows.Forms.Label();
 			this.General_lblPort = new System.Windows.Forms.Label();
 			this.General_tbxPort = new System.Windows.Forms.TextBox();
-			this.TabPageH_General_Option04_Panel = new System.Windows.Forms.Panel();
-			this.General_gbxPacketInject = new System.Windows.Forms.GroupBox();
-			this.General_cbxInjectMassive = new System.Windows.Forms.CheckBox();
-			this.General_cbxInjectEncrypted = new System.Windows.Forms.CheckBox();
-			this.General_cmbxInjectTo = new System.Windows.Forms.ComboBox();
-			this.General_tbxInjectData = new System.Windows.Forms.TextBox();
-			this.General_lblInjectData = new System.Windows.Forms.Label();
-			this.General_btnInjectPacket = new System.Windows.Forms.Button();
-			this.General_tbxInjectOpcode = new System.Windows.Forms.TextBox();
-			this.General_lblInjectOpcode = new System.Windows.Forms.Label();
-			this.General_gbxPacketFilter = new System.Windows.Forms.GroupBox();
-			this.General_rbnPacketNotShow = new System.Windows.Forms.RadioButton();
-			this.General_rbnPacketOnlyShow = new System.Windows.Forms.RadioButton();
-			this.General_lstvOpcodes = new System.Windows.Forms.ListView();
-			this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Menu_lstvOpcodes = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_lstvOpcodes_remove = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_lstvOpcodes_removeAll = new System.Windows.Forms.ToolStripMenuItem();
-			this.General_btnAddOpcode = new System.Windows.Forms.Button();
-			this.General_tbxFilterOpcode = new System.Windows.Forms.TextBox();
-			this.General_lblFilterOpcode = new System.Windows.Forms.Label();
-			this.General_rtbxPackets = new System.Windows.Forms.RichTextBox();
-			this.Menu_rtbxPackets = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_rtbxPackets_scroll = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_rtbxPackets_clear = new System.Windows.Forms.ToolStripMenuItem();
-			this.General_cbxShowPacketClient = new System.Windows.Forms.CheckBox();
-			this.General_cbxShowPacketServer = new System.Windows.Forms.CheckBox();
 			this.TabPageH_General_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_General_Option02_Panel = new System.Windows.Forms.Panel();
 			this.General_gbxCharacterSelection = new System.Windows.Forms.GroupBox();
@@ -165,6 +165,9 @@
 			this.TabPageH_Party_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option05_Panel = new System.Windows.Forms.Panel();
 			this.panelWindow = new System.Windows.Forms.Panel();
+			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
+			this.TESTbtn1 = new System.Windows.Forms.Button();
+			this.lstrTESTING = new System.Windows.Forms.TreeView();
 			this.TabPageV_Control01_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Login_btnAddSilkroad = new System.Windows.Forms.Button();
 			this.Login_lblSilkroad = new System.Windows.Forms.Label();
@@ -194,8 +197,6 @@
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
-			this.lstrTESTING = new System.Windows.Forms.TreeView();
 			this.TabPageV_Control01_Option02_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Character = new System.Windows.Forms.Panel();
 			this.TabPageH_Character_Option04 = new System.Windows.Forms.Button();
@@ -258,21 +259,25 @@
 			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.lblBotState = new System.Windows.Forms.Label();
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-			this.button2 = new System.Windows.Forms.Button();
+			this.Minimap_panelGameCoords = new System.Windows.Forms.Panel();
+			this.Minimap_lblGameX = new System.Windows.Forms.Label();
+			this.Minimap_tbxGameX = new System.Windows.Forms.TextBox();
+			this.Minimap_lblGameY = new System.Windows.Forms.Label();
+			this.Minimap_tbxGameY = new System.Windows.Forms.TextBox();
 			this.TabPageV_Control01.SuspendLayout();
 			this.panelHeader.SuspendLayout();
 			this.TabPageV_Control01_Option14_Panel.SuspendLayout();
 			this.TabPageH_General.SuspendLayout();
-			this.TabPageH_General_Option01_Panel.SuspendLayout();
-			this.Menu_lstvHost.SuspendLayout();
-			this.Menu_lstrSilkroads.SuspendLayout();
-			this.General_gbxHWID.SuspendLayout();
-			this.General_panelHWIDdata.SuspendLayout();
 			this.TabPageH_General_Option04_Panel.SuspendLayout();
 			this.General_gbxPacketInject.SuspendLayout();
 			this.General_gbxPacketFilter.SuspendLayout();
 			this.Menu_lstvOpcodes.SuspendLayout();
 			this.Menu_rtbxPackets.SuspendLayout();
+			this.TabPageH_General_Option01_Panel.SuspendLayout();
+			this.Menu_lstvHost.SuspendLayout();
+			this.Menu_lstrSilkroads.SuspendLayout();
+			this.General_gbxHWID.SuspendLayout();
+			this.General_panelHWIDdata.SuspendLayout();
 			this.TabPageH_General_Option02_Panel.SuspendLayout();
 			this.General_gbxCharacterSelection.SuspendLayout();
 			this.TabPageV_Control01_Option04_Panel.SuspendLayout();
@@ -280,12 +285,12 @@
 			this.TabPageH_Party_Option02_Panel.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.panelWindow.SuspendLayout();
+			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
 			this.TabPageV_Control01_Option01_Panel.SuspendLayout();
 			this.Login_gbxCharacters.SuspendLayout();
 			this.Login_gbxConnection.SuspendLayout();
 			this.Login_gbxAccount.SuspendLayout();
 			this.Login_gbxServers.SuspendLayout();
-			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
 			this.TabPageV_Control01_Option02_Panel.SuspendLayout();
 			this.TabPageH_Character.SuspendLayout();
 			this.TabPageV_Control01_Option10_Panel.SuspendLayout();
@@ -302,6 +307,7 @@
 			this.TabPageV_Control01_Option09_Panel.SuspendLayout();
 			this.Minimap_panelMap.SuspendLayout();
 			this.Minimap_panelCoords.SuspendLayout();
+			this.Minimap_panelGameCoords.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// rtbxLogs
@@ -997,8 +1003,8 @@
 			// TabPageV_Control01_Option14_Panel
 			// 
 			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General);
-			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General_Option01_Panel);
 			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General_Option04_Panel);
+			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General_Option01_Panel);
 			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General_Option03_Panel);
 			this.TabPageV_Control01_Option14_Panel.Controls.Add(this.TabPageH_General_Option02_Panel);
 			this.TabPageV_Control01_Option14_Panel.Location = new System.Drawing.Point(135, 45);
@@ -1100,6 +1106,378 @@
 			this.TabPageH_General_Option01.UseVisualStyleBackColor = false;
 			this.TabPageH_General_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
 			// 
+			// TabPageH_General_Option04_Panel
+			// 
+			this.TabPageH_General_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_gbxPacketInject);
+			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_gbxPacketFilter);
+			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_rtbxPackets);
+			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_cbxShowPacketClient);
+			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_cbxShowPacketServer);
+			this.TabPageH_General_Option04_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_General_Option04_Panel.Name = "TabPageH_General_Option04_Panel";
+			this.TabPageH_General_Option04_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_General_Option04_Panel.TabIndex = 11;
+			this.TabPageH_General_Option04_Panel.Visible = false;
+			// 
+			// General_gbxPacketInject
+			// 
+			this.General_gbxPacketInject.Controls.Add(this.General_cbxInjectMassive);
+			this.General_gbxPacketInject.Controls.Add(this.General_cbxInjectEncrypted);
+			this.General_gbxPacketInject.Controls.Add(this.General_cmbxInjectTo);
+			this.General_gbxPacketInject.Controls.Add(this.General_tbxInjectData);
+			this.General_gbxPacketInject.Controls.Add(this.General_lblInjectData);
+			this.General_gbxPacketInject.Controls.Add(this.General_btnInjectPacket);
+			this.General_gbxPacketInject.Controls.Add(this.General_tbxInjectOpcode);
+			this.General_gbxPacketInject.Controls.Add(this.General_lblInjectOpcode);
+			this.General_gbxPacketInject.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_gbxPacketInject.ForeColor = System.Drawing.Color.LightGray;
+			this.General_gbxPacketInject.Location = new System.Drawing.Point(5, 253);
+			this.General_gbxPacketInject.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
+			this.General_gbxPacketInject.Name = "General_gbxPacketInject";
+			this.General_gbxPacketInject.Size = new System.Drawing.Size(645, 54);
+			this.General_gbxPacketInject.TabIndex = 17;
+			this.General_gbxPacketInject.TabStop = false;
+			this.General_gbxPacketInject.Tag = "Source Sans Pro";
+			this.General_gbxPacketInject.Text = "Inject";
+			// 
+			// General_cbxInjectMassive
+			// 
+			this.General_cbxInjectMassive.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxInjectMassive.FlatAppearance.BorderSize = 0;
+			this.General_cbxInjectMassive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxInjectMassive.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_cbxInjectMassive.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxInjectMassive.Location = new System.Drawing.Point(510, 20);
+			this.General_cbxInjectMassive.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxInjectMassive.Name = "General_cbxInjectMassive";
+			this.General_cbxInjectMassive.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxInjectMassive.Size = new System.Drawing.Size(80, 24);
+			this.General_cbxInjectMassive.TabIndex = 18;
+			this.General_cbxInjectMassive.Tag = "Source Sans Pro";
+			this.General_cbxInjectMassive.Text = "Massive";
+			this.General_cbxInjectMassive.UseVisualStyleBackColor = false;
+			this.General_cbxInjectMassive.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// General_cbxInjectEncrypted
+			// 
+			this.General_cbxInjectEncrypted.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxInjectEncrypted.FlatAppearance.BorderSize = 0;
+			this.General_cbxInjectEncrypted.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxInjectEncrypted.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_cbxInjectEncrypted.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxInjectEncrypted.Location = new System.Drawing.Point(428, 19);
+			this.General_cbxInjectEncrypted.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxInjectEncrypted.Name = "General_cbxInjectEncrypted";
+			this.General_cbxInjectEncrypted.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxInjectEncrypted.Size = new System.Drawing.Size(90, 24);
+			this.General_cbxInjectEncrypted.TabIndex = 17;
+			this.General_cbxInjectEncrypted.Tag = "Source Sans Pro";
+			this.General_cbxInjectEncrypted.Text = "Encryped";
+			this.General_cbxInjectEncrypted.UseVisualStyleBackColor = false;
+			this.General_cbxInjectEncrypted.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// General_cmbxInjectTo
+			// 
+			this.General_cmbxInjectTo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_cmbxInjectTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.General_cmbxInjectTo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cmbxInjectTo.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_cmbxInjectTo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cmbxInjectTo.FormattingEnabled = true;
+			this.General_cmbxInjectTo.Items.AddRange(new object[] {
+            "Server",
+            "Client"});
+			this.General_cmbxInjectTo.Location = new System.Drawing.Point(360, 18);
+			this.General_cmbxInjectTo.MaxDropDownItems = 5;
+			this.General_cmbxInjectTo.Name = "General_cmbxInjectTo";
+			this.General_cmbxInjectTo.Size = new System.Drawing.Size(67, 27);
+			this.General_cmbxInjectTo.TabIndex = 16;
+			this.General_cmbxInjectTo.Tag = "Source Sans Pro";
+			// 
+			// General_tbxInjectData
+			// 
+			this.General_tbxInjectData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_tbxInjectData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.General_tbxInjectData.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_tbxInjectData.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_tbxInjectData.Location = new System.Drawing.Point(154, 18);
+			this.General_tbxInjectData.Name = "General_tbxInjectData";
+			this.General_tbxInjectData.Size = new System.Drawing.Size(200, 26);
+			this.General_tbxInjectData.TabIndex = 15;
+			this.General_tbxInjectData.Tag = "Source Sans Pro";
+			this.General_tbxInjectData.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.General_tbxInjectData.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// General_lblInjectData
+			// 
+			this.General_lblInjectData.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_lblInjectData.Location = new System.Drawing.Point(118, 18);
+			this.General_lblInjectData.Name = "General_lblInjectData";
+			this.General_lblInjectData.Size = new System.Drawing.Size(36, 26);
+			this.General_lblInjectData.TabIndex = 14;
+			this.General_lblInjectData.Tag = "Source Sans Pro";
+			this.General_lblInjectData.Text = "Data";
+			this.General_lblInjectData.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// General_btnInjectPacket
+			// 
+			this.General_btnInjectPacket.FlatAppearance.BorderSize = 0;
+			this.General_btnInjectPacket.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.General_btnInjectPacket.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.General_btnInjectPacket.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_btnInjectPacket.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_btnInjectPacket.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_btnInjectPacket.Location = new System.Drawing.Point(592, 18);
+			this.General_btnInjectPacket.Margin = new System.Windows.Forms.Padding(0);
+			this.General_btnInjectPacket.Name = "General_btnInjectPacket";
+			this.General_btnInjectPacket.Size = new System.Drawing.Size(46, 26);
+			this.General_btnInjectPacket.TabIndex = 6;
+			this.General_btnInjectPacket.Tag = "Source Sans Pro";
+			this.General_btnInjectPacket.Text = "Inject";
+			this.General_btnInjectPacket.UseCompatibleTextRendering = true;
+			this.General_btnInjectPacket.UseVisualStyleBackColor = false;
+			this.General_btnInjectPacket.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// General_tbxInjectOpcode
+			// 
+			this.General_tbxInjectOpcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_tbxInjectOpcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.General_tbxInjectOpcode.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_tbxInjectOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_tbxInjectOpcode.Location = new System.Drawing.Point(60, 18);
+			this.General_tbxInjectOpcode.Name = "General_tbxInjectOpcode";
+			this.General_tbxInjectOpcode.Size = new System.Drawing.Size(54, 26);
+			this.General_tbxInjectOpcode.TabIndex = 5;
+			this.General_tbxInjectOpcode.Tag = "Source Sans Pro";
+			this.General_tbxInjectOpcode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.General_tbxInjectOpcode.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.General_tbxInjectOpcode.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// General_lblInjectOpcode
+			// 
+			this.General_lblInjectOpcode.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_lblInjectOpcode.Location = new System.Drawing.Point(6, 18);
+			this.General_lblInjectOpcode.Name = "General_lblInjectOpcode";
+			this.General_lblInjectOpcode.Size = new System.Drawing.Size(54, 26);
+			this.General_lblInjectOpcode.TabIndex = 13;
+			this.General_lblInjectOpcode.Tag = "Source Sans Pro";
+			this.General_lblInjectOpcode.Text = "Opcode";
+			this.General_lblInjectOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// General_gbxPacketFilter
+			// 
+			this.General_gbxPacketFilter.Controls.Add(this.General_rbnPacketNotShow);
+			this.General_gbxPacketFilter.Controls.Add(this.General_rbnPacketOnlyShow);
+			this.General_gbxPacketFilter.Controls.Add(this.General_lstvOpcodes);
+			this.General_gbxPacketFilter.Controls.Add(this.General_btnAddOpcode);
+			this.General_gbxPacketFilter.Controls.Add(this.General_tbxFilterOpcode);
+			this.General_gbxPacketFilter.Controls.Add(this.General_lblFilterOpcode);
+			this.General_gbxPacketFilter.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_gbxPacketFilter.ForeColor = System.Drawing.Color.LightGray;
+			this.General_gbxPacketFilter.Location = new System.Drawing.Point(5, 24);
+			this.General_gbxPacketFilter.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
+			this.General_gbxPacketFilter.Name = "General_gbxPacketFilter";
+			this.General_gbxPacketFilter.Size = new System.Drawing.Size(181, 226);
+			this.General_gbxPacketFilter.TabIndex = 16;
+			this.General_gbxPacketFilter.TabStop = false;
+			this.General_gbxPacketFilter.Tag = "Source Sans Pro";
+			this.General_gbxPacketFilter.Text = "Filter";
+			// 
+			// General_rbnPacketNotShow
+			// 
+			this.General_rbnPacketNotShow.Checked = true;
+			this.General_rbnPacketNotShow.Location = new System.Drawing.Point(90, 15);
+			this.General_rbnPacketNotShow.Name = "General_rbnPacketNotShow";
+			this.General_rbnPacketNotShow.Size = new System.Drawing.Size(87, 19);
+			this.General_rbnPacketNotShow.TabIndex = 4;
+			this.General_rbnPacketNotShow.TabStop = true;
+			this.General_rbnPacketNotShow.Text = "Not show";
+			this.General_rbnPacketNotShow.UseVisualStyleBackColor = true;
+			this.General_rbnPacketNotShow.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// General_rbnPacketOnlyShow
+			// 
+			this.General_rbnPacketOnlyShow.Location = new System.Drawing.Point(6, 15);
+			this.General_rbnPacketOnlyShow.Name = "General_rbnPacketOnlyShow";
+			this.General_rbnPacketOnlyShow.Size = new System.Drawing.Size(84, 19);
+			this.General_rbnPacketOnlyShow.TabIndex = 3;
+			this.General_rbnPacketOnlyShow.Text = "Only show";
+			this.General_rbnPacketOnlyShow.UseVisualStyleBackColor = true;
+			this.General_rbnPacketOnlyShow.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// General_lstvOpcodes
+			// 
+			this.General_lstvOpcodes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.General_lstvOpcodes.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.General_lstvOpcodes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader9});
+			this.General_lstvOpcodes.ContextMenuStrip = this.Menu_lstvOpcodes;
+			this.General_lstvOpcodes.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_lstvOpcodes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_lstvOpcodes.FullRowSelect = true;
+			this.General_lstvOpcodes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.General_lstvOpcodes.Location = new System.Drawing.Point(2, 70);
+			this.General_lstvOpcodes.Margin = new System.Windows.Forms.Padding(0);
+			this.General_lstvOpcodes.MultiSelect = false;
+			this.General_lstvOpcodes.Name = "General_lstvOpcodes";
+			this.General_lstvOpcodes.Size = new System.Drawing.Size(177, 155);
+			this.General_lstvOpcodes.TabIndex = 10;
+			this.General_lstvOpcodes.Tag = "Source Sans Pro";
+			this.General_lstvOpcodes.TileSize = new System.Drawing.Size(201, 30);
+			this.General_lstvOpcodes.UseCompatibleStateImageBehavior = false;
+			this.General_lstvOpcodes.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader9
+			// 
+			this.columnHeader9.Text = "Opcodes";
+			this.columnHeader9.Width = 160;
+			// 
+			// Menu_lstvOpcodes
+			// 
+			this.Menu_lstvOpcodes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvOpcodes_remove,
+            this.Menu_lstvOpcodes_removeAll});
+			this.Menu_lstvOpcodes.Name = "Menu_lstvOpcodes";
+			this.Menu_lstvOpcodes.Size = new System.Drawing.Size(165, 48);
+			// 
+			// Menu_lstvOpcodes_remove
+			// 
+			this.Menu_lstvOpcodes_remove.Name = "Menu_lstvOpcodes_remove";
+			this.Menu_lstvOpcodes_remove.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvOpcodes_remove.Text = "Remove Selected";
+			this.Menu_lstvOpcodes_remove.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvOpcodes_removeAll
+			// 
+			this.Menu_lstvOpcodes_removeAll.Name = "Menu_lstvOpcodes_removeAll";
+			this.Menu_lstvOpcodes_removeAll.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvOpcodes_removeAll.Text = "Remove All";
+			this.Menu_lstvOpcodes_removeAll.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// General_btnAddOpcode
+			// 
+			this.General_btnAddOpcode.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.General_btnAddOpcode.FlatAppearance.BorderSize = 0;
+			this.General_btnAddOpcode.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.General_btnAddOpcode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.General_btnAddOpcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_btnAddOpcode.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_btnAddOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_btnAddOpcode.Location = new System.Drawing.Point(123, 37);
+			this.General_btnAddOpcode.Margin = new System.Windows.Forms.Padding(0);
+			this.General_btnAddOpcode.Name = "General_btnAddOpcode";
+			this.General_btnAddOpcode.Size = new System.Drawing.Size(51, 26);
+			this.General_btnAddOpcode.TabIndex = 6;
+			this.General_btnAddOpcode.Tag = "Source Sans Pro";
+			this.General_btnAddOpcode.Text = "Add";
+			this.General_btnAddOpcode.UseCompatibleTextRendering = true;
+			this.General_btnAddOpcode.UseVisualStyleBackColor = false;
+			this.General_btnAddOpcode.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// General_tbxFilterOpcode
+			// 
+			this.General_tbxFilterOpcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.General_tbxFilterOpcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.General_tbxFilterOpcode.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_tbxFilterOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_tbxFilterOpcode.Location = new System.Drawing.Point(59, 37);
+			this.General_tbxFilterOpcode.Name = "General_tbxFilterOpcode";
+			this.General_tbxFilterOpcode.Size = new System.Drawing.Size(60, 26);
+			this.General_tbxFilterOpcode.TabIndex = 5;
+			this.General_tbxFilterOpcode.Tag = "Source Sans Pro";
+			this.General_tbxFilterOpcode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.General_tbxFilterOpcode.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.General_tbxFilterOpcode.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// General_lblFilterOpcode
+			// 
+			this.General_lblFilterOpcode.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_lblFilterOpcode.Location = new System.Drawing.Point(6, 37);
+			this.General_lblFilterOpcode.Name = "General_lblFilterOpcode";
+			this.General_lblFilterOpcode.Size = new System.Drawing.Size(54, 26);
+			this.General_lblFilterOpcode.TabIndex = 13;
+			this.General_lblFilterOpcode.Tag = "Source Sans Pro";
+			this.General_lblFilterOpcode.Text = "Opcode";
+			this.General_lblFilterOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// General_rtbxPackets
+			// 
+			this.General_rtbxPackets.BackColor = System.Drawing.Color.Black;
+			this.General_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.General_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
+			this.General_rtbxPackets.DetectUrls = false;
+			this.General_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.General_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_rtbxPackets.Location = new System.Drawing.Point(191, 5);
+			this.General_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
+			this.General_rtbxPackets.Name = "General_rtbxPackets";
+			this.General_rtbxPackets.ReadOnly = true;
+			this.General_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.General_rtbxPackets.Size = new System.Drawing.Size(459, 245);
+			this.General_rtbxPackets.TabIndex = 15;
+			this.General_rtbxPackets.Tag = "Source Sans Pro";
+			this.General_rtbxPackets.Text = "";
+			// 
+			// Menu_rtbxPackets
+			// 
+			this.Menu_rtbxPackets.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_rtbxPackets_scroll,
+            this.Menu_rtbxPackets_clear});
+			this.Menu_rtbxPackets.Name = "Menu_rtbxPackets";
+			this.Menu_rtbxPackets.Size = new System.Drawing.Size(133, 48);
+			// 
+			// Menu_rtbxPackets_scroll
+			// 
+			this.Menu_rtbxPackets_scroll.CheckOnClick = true;
+			this.Menu_rtbxPackets_scroll.Name = "Menu_rtbxPackets_scroll";
+			this.Menu_rtbxPackets_scroll.Size = new System.Drawing.Size(132, 22);
+			this.Menu_rtbxPackets_scroll.Text = "Auto Scroll";
+			this.Menu_rtbxPackets_scroll.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_rtbxPackets_clear
+			// 
+			this.Menu_rtbxPackets_clear.Name = "Menu_rtbxPackets_clear";
+			this.Menu_rtbxPackets_clear.Size = new System.Drawing.Size(132, 22);
+			this.Menu_rtbxPackets_clear.Text = "Clear";
+			this.Menu_rtbxPackets_clear.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// General_cbxShowPacketClient
+			// 
+			this.General_cbxShowPacketClient.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxShowPacketClient.FlatAppearance.BorderSize = 0;
+			this.General_cbxShowPacketClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxShowPacketClient.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_cbxShowPacketClient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxShowPacketClient.Location = new System.Drawing.Point(94, 2);
+			this.General_cbxShowPacketClient.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxShowPacketClient.Name = "General_cbxShowPacketClient";
+			this.General_cbxShowPacketClient.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxShowPacketClient.Size = new System.Drawing.Size(94, 24);
+			this.General_cbxShowPacketClient.TabIndex = 2;
+			this.General_cbxShowPacketClient.Tag = "Source Sans Pro";
+			this.General_cbxShowPacketClient.Text = "Client";
+			this.ToolTips.SetToolTip(this.General_cbxShowPacketClient, "Show Client Packets");
+			this.General_cbxShowPacketClient.UseVisualStyleBackColor = false;
+			// 
+			// General_cbxShowPacketServer
+			// 
+			this.General_cbxShowPacketServer.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxShowPacketServer.FlatAppearance.BorderSize = 0;
+			this.General_cbxShowPacketServer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxShowPacketServer.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_cbxShowPacketServer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxShowPacketServer.Location = new System.Drawing.Point(2, 2);
+			this.General_cbxShowPacketServer.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxShowPacketServer.Name = "General_cbxShowPacketServer";
+			this.General_cbxShowPacketServer.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxShowPacketServer.Size = new System.Drawing.Size(94, 24);
+			this.General_cbxShowPacketServer.TabIndex = 1;
+			this.General_cbxShowPacketServer.Tag = "Source Sans Pro";
+			this.General_cbxShowPacketServer.Text = "Server";
+			this.ToolTips.SetToolTip(this.General_cbxShowPacketServer, "Show Server Packets");
+			this.General_cbxShowPacketServer.UseVisualStyleBackColor = false;
+			// 
 			// TabPageH_General_Option01_Panel
 			// 
 			this.TabPageH_General_Option01_Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -1187,7 +1565,7 @@
 			// 
 			// columnHeader10
 			// 
-			this.columnHeader10.Text = "Host";
+			this.columnHeader10.Text = "Hosts";
 			this.columnHeader10.Width = 115;
 			// 
 			// Menu_lstvHost
@@ -1552,378 +1930,6 @@
 			this.General_tbxPort.Enter += new System.EventHandler(this.Control_FocusEnter);
 			this.General_tbxPort.Leave += new System.EventHandler(this.Control_FocusLeave);
 			// 
-			// TabPageH_General_Option04_Panel
-			// 
-			this.TabPageH_General_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_gbxPacketInject);
-			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_gbxPacketFilter);
-			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_rtbxPackets);
-			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_cbxShowPacketClient);
-			this.TabPageH_General_Option04_Panel.Controls.Add(this.General_cbxShowPacketServer);
-			this.TabPageH_General_Option04_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_General_Option04_Panel.Name = "TabPageH_General_Option04_Panel";
-			this.TabPageH_General_Option04_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_General_Option04_Panel.TabIndex = 11;
-			this.TabPageH_General_Option04_Panel.Visible = false;
-			// 
-			// General_gbxPacketInject
-			// 
-			this.General_gbxPacketInject.Controls.Add(this.General_cbxInjectMassive);
-			this.General_gbxPacketInject.Controls.Add(this.General_cbxInjectEncrypted);
-			this.General_gbxPacketInject.Controls.Add(this.General_cmbxInjectTo);
-			this.General_gbxPacketInject.Controls.Add(this.General_tbxInjectData);
-			this.General_gbxPacketInject.Controls.Add(this.General_lblInjectData);
-			this.General_gbxPacketInject.Controls.Add(this.General_btnInjectPacket);
-			this.General_gbxPacketInject.Controls.Add(this.General_tbxInjectOpcode);
-			this.General_gbxPacketInject.Controls.Add(this.General_lblInjectOpcode);
-			this.General_gbxPacketInject.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_gbxPacketInject.ForeColor = System.Drawing.Color.LightGray;
-			this.General_gbxPacketInject.Location = new System.Drawing.Point(5, 253);
-			this.General_gbxPacketInject.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
-			this.General_gbxPacketInject.Name = "General_gbxPacketInject";
-			this.General_gbxPacketInject.Size = new System.Drawing.Size(645, 54);
-			this.General_gbxPacketInject.TabIndex = 17;
-			this.General_gbxPacketInject.TabStop = false;
-			this.General_gbxPacketInject.Tag = "Source Sans Pro";
-			this.General_gbxPacketInject.Text = "Inject";
-			// 
-			// General_cbxInjectMassive
-			// 
-			this.General_cbxInjectMassive.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxInjectMassive.FlatAppearance.BorderSize = 0;
-			this.General_cbxInjectMassive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxInjectMassive.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_cbxInjectMassive.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxInjectMassive.Location = new System.Drawing.Point(510, 20);
-			this.General_cbxInjectMassive.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxInjectMassive.Name = "General_cbxInjectMassive";
-			this.General_cbxInjectMassive.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxInjectMassive.Size = new System.Drawing.Size(80, 24);
-			this.General_cbxInjectMassive.TabIndex = 18;
-			this.General_cbxInjectMassive.Tag = "Source Sans Pro";
-			this.General_cbxInjectMassive.Text = "Massive";
-			this.General_cbxInjectMassive.UseVisualStyleBackColor = false;
-			this.General_cbxInjectMassive.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// General_cbxInjectEncrypted
-			// 
-			this.General_cbxInjectEncrypted.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxInjectEncrypted.FlatAppearance.BorderSize = 0;
-			this.General_cbxInjectEncrypted.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxInjectEncrypted.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_cbxInjectEncrypted.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxInjectEncrypted.Location = new System.Drawing.Point(428, 19);
-			this.General_cbxInjectEncrypted.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxInjectEncrypted.Name = "General_cbxInjectEncrypted";
-			this.General_cbxInjectEncrypted.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxInjectEncrypted.Size = new System.Drawing.Size(90, 24);
-			this.General_cbxInjectEncrypted.TabIndex = 17;
-			this.General_cbxInjectEncrypted.Tag = "Source Sans Pro";
-			this.General_cbxInjectEncrypted.Text = "Encryped";
-			this.General_cbxInjectEncrypted.UseVisualStyleBackColor = false;
-			this.General_cbxInjectEncrypted.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// General_cmbxInjectTo
-			// 
-			this.General_cmbxInjectTo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_cmbxInjectTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.General_cmbxInjectTo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cmbxInjectTo.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_cmbxInjectTo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cmbxInjectTo.FormattingEnabled = true;
-			this.General_cmbxInjectTo.Items.AddRange(new object[] {
-            "Server",
-            "Client"});
-			this.General_cmbxInjectTo.Location = new System.Drawing.Point(360, 18);
-			this.General_cmbxInjectTo.MaxDropDownItems = 5;
-			this.General_cmbxInjectTo.Name = "General_cmbxInjectTo";
-			this.General_cmbxInjectTo.Size = new System.Drawing.Size(67, 27);
-			this.General_cmbxInjectTo.TabIndex = 16;
-			this.General_cmbxInjectTo.Tag = "Source Sans Pro";
-			// 
-			// General_tbxInjectData
-			// 
-			this.General_tbxInjectData.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_tbxInjectData.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.General_tbxInjectData.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_tbxInjectData.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_tbxInjectData.Location = new System.Drawing.Point(154, 18);
-			this.General_tbxInjectData.Name = "General_tbxInjectData";
-			this.General_tbxInjectData.Size = new System.Drawing.Size(200, 26);
-			this.General_tbxInjectData.TabIndex = 15;
-			this.General_tbxInjectData.Tag = "Source Sans Pro";
-			this.General_tbxInjectData.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.General_tbxInjectData.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// General_lblInjectData
-			// 
-			this.General_lblInjectData.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_lblInjectData.Location = new System.Drawing.Point(118, 18);
-			this.General_lblInjectData.Name = "General_lblInjectData";
-			this.General_lblInjectData.Size = new System.Drawing.Size(36, 26);
-			this.General_lblInjectData.TabIndex = 14;
-			this.General_lblInjectData.Tag = "Source Sans Pro";
-			this.General_lblInjectData.Text = "Data";
-			this.General_lblInjectData.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// General_btnInjectPacket
-			// 
-			this.General_btnInjectPacket.FlatAppearance.BorderSize = 0;
-			this.General_btnInjectPacket.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.General_btnInjectPacket.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.General_btnInjectPacket.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_btnInjectPacket.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_btnInjectPacket.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_btnInjectPacket.Location = new System.Drawing.Point(592, 18);
-			this.General_btnInjectPacket.Margin = new System.Windows.Forms.Padding(0);
-			this.General_btnInjectPacket.Name = "General_btnInjectPacket";
-			this.General_btnInjectPacket.Size = new System.Drawing.Size(46, 26);
-			this.General_btnInjectPacket.TabIndex = 6;
-			this.General_btnInjectPacket.Tag = "Source Sans Pro";
-			this.General_btnInjectPacket.Text = "Inject";
-			this.General_btnInjectPacket.UseCompatibleTextRendering = true;
-			this.General_btnInjectPacket.UseVisualStyleBackColor = false;
-			this.General_btnInjectPacket.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// General_tbxInjectOpcode
-			// 
-			this.General_tbxInjectOpcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_tbxInjectOpcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.General_tbxInjectOpcode.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_tbxInjectOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_tbxInjectOpcode.Location = new System.Drawing.Point(60, 18);
-			this.General_tbxInjectOpcode.Name = "General_tbxInjectOpcode";
-			this.General_tbxInjectOpcode.Size = new System.Drawing.Size(54, 26);
-			this.General_tbxInjectOpcode.TabIndex = 5;
-			this.General_tbxInjectOpcode.Tag = "Source Sans Pro";
-			this.General_tbxInjectOpcode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.General_tbxInjectOpcode.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.General_tbxInjectOpcode.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// General_lblInjectOpcode
-			// 
-			this.General_lblInjectOpcode.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_lblInjectOpcode.Location = new System.Drawing.Point(6, 18);
-			this.General_lblInjectOpcode.Name = "General_lblInjectOpcode";
-			this.General_lblInjectOpcode.Size = new System.Drawing.Size(54, 26);
-			this.General_lblInjectOpcode.TabIndex = 13;
-			this.General_lblInjectOpcode.Tag = "Source Sans Pro";
-			this.General_lblInjectOpcode.Text = "Opcode";
-			this.General_lblInjectOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// General_gbxPacketFilter
-			// 
-			this.General_gbxPacketFilter.Controls.Add(this.General_rbnPacketNotShow);
-			this.General_gbxPacketFilter.Controls.Add(this.General_rbnPacketOnlyShow);
-			this.General_gbxPacketFilter.Controls.Add(this.General_lstvOpcodes);
-			this.General_gbxPacketFilter.Controls.Add(this.General_btnAddOpcode);
-			this.General_gbxPacketFilter.Controls.Add(this.General_tbxFilterOpcode);
-			this.General_gbxPacketFilter.Controls.Add(this.General_lblFilterOpcode);
-			this.General_gbxPacketFilter.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_gbxPacketFilter.ForeColor = System.Drawing.Color.LightGray;
-			this.General_gbxPacketFilter.Location = new System.Drawing.Point(5, 24);
-			this.General_gbxPacketFilter.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
-			this.General_gbxPacketFilter.Name = "General_gbxPacketFilter";
-			this.General_gbxPacketFilter.Size = new System.Drawing.Size(181, 226);
-			this.General_gbxPacketFilter.TabIndex = 16;
-			this.General_gbxPacketFilter.TabStop = false;
-			this.General_gbxPacketFilter.Tag = "Source Sans Pro";
-			this.General_gbxPacketFilter.Text = "Filter";
-			// 
-			// General_rbnPacketNotShow
-			// 
-			this.General_rbnPacketNotShow.Checked = true;
-			this.General_rbnPacketNotShow.Location = new System.Drawing.Point(90, 15);
-			this.General_rbnPacketNotShow.Name = "General_rbnPacketNotShow";
-			this.General_rbnPacketNotShow.Size = new System.Drawing.Size(87, 19);
-			this.General_rbnPacketNotShow.TabIndex = 4;
-			this.General_rbnPacketNotShow.TabStop = true;
-			this.General_rbnPacketNotShow.Text = "Not show";
-			this.General_rbnPacketNotShow.UseVisualStyleBackColor = true;
-			this.General_rbnPacketNotShow.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// General_rbnPacketOnlyShow
-			// 
-			this.General_rbnPacketOnlyShow.Location = new System.Drawing.Point(6, 15);
-			this.General_rbnPacketOnlyShow.Name = "General_rbnPacketOnlyShow";
-			this.General_rbnPacketOnlyShow.Size = new System.Drawing.Size(84, 19);
-			this.General_rbnPacketOnlyShow.TabIndex = 3;
-			this.General_rbnPacketOnlyShow.Text = "Only show";
-			this.General_rbnPacketOnlyShow.UseVisualStyleBackColor = true;
-			this.General_rbnPacketOnlyShow.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// General_lstvOpcodes
-			// 
-			this.General_lstvOpcodes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.General_lstvOpcodes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.General_lstvOpcodes.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader9});
-			this.General_lstvOpcodes.ContextMenuStrip = this.Menu_lstvOpcodes;
-			this.General_lstvOpcodes.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_lstvOpcodes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_lstvOpcodes.FullRowSelect = true;
-			this.General_lstvOpcodes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.General_lstvOpcodes.Location = new System.Drawing.Point(2, 70);
-			this.General_lstvOpcodes.Margin = new System.Windows.Forms.Padding(0);
-			this.General_lstvOpcodes.MultiSelect = false;
-			this.General_lstvOpcodes.Name = "General_lstvOpcodes";
-			this.General_lstvOpcodes.Size = new System.Drawing.Size(177, 155);
-			this.General_lstvOpcodes.TabIndex = 10;
-			this.General_lstvOpcodes.Tag = "Source Sans Pro";
-			this.General_lstvOpcodes.TileSize = new System.Drawing.Size(201, 30);
-			this.General_lstvOpcodes.UseCompatibleStateImageBehavior = false;
-			this.General_lstvOpcodes.View = System.Windows.Forms.View.Details;
-			// 
-			// columnHeader9
-			// 
-			this.columnHeader9.Text = "Opcodes";
-			this.columnHeader9.Width = 161;
-			// 
-			// Menu_lstvOpcodes
-			// 
-			this.Menu_lstvOpcodes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_lstvOpcodes_remove,
-            this.Menu_lstvOpcodes_removeAll});
-			this.Menu_lstvOpcodes.Name = "Menu_lstvOpcodes";
-			this.Menu_lstvOpcodes.Size = new System.Drawing.Size(165, 48);
-			// 
-			// Menu_lstvOpcodes_remove
-			// 
-			this.Menu_lstvOpcodes_remove.Name = "Menu_lstvOpcodes_remove";
-			this.Menu_lstvOpcodes_remove.Size = new System.Drawing.Size(164, 22);
-			this.Menu_lstvOpcodes_remove.Text = "Remove Selected";
-			this.Menu_lstvOpcodes_remove.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// Menu_lstvOpcodes_removeAll
-			// 
-			this.Menu_lstvOpcodes_removeAll.Name = "Menu_lstvOpcodes_removeAll";
-			this.Menu_lstvOpcodes_removeAll.Size = new System.Drawing.Size(164, 22);
-			this.Menu_lstvOpcodes_removeAll.Text = "Remove All";
-			this.Menu_lstvOpcodes_removeAll.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// General_btnAddOpcode
-			// 
-			this.General_btnAddOpcode.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.General_btnAddOpcode.FlatAppearance.BorderSize = 0;
-			this.General_btnAddOpcode.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.General_btnAddOpcode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.General_btnAddOpcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_btnAddOpcode.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_btnAddOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_btnAddOpcode.Location = new System.Drawing.Point(123, 37);
-			this.General_btnAddOpcode.Margin = new System.Windows.Forms.Padding(0);
-			this.General_btnAddOpcode.Name = "General_btnAddOpcode";
-			this.General_btnAddOpcode.Size = new System.Drawing.Size(51, 26);
-			this.General_btnAddOpcode.TabIndex = 6;
-			this.General_btnAddOpcode.Tag = "Source Sans Pro";
-			this.General_btnAddOpcode.Text = "Add";
-			this.General_btnAddOpcode.UseCompatibleTextRendering = true;
-			this.General_btnAddOpcode.UseVisualStyleBackColor = false;
-			this.General_btnAddOpcode.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// General_tbxFilterOpcode
-			// 
-			this.General_tbxFilterOpcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.General_tbxFilterOpcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.General_tbxFilterOpcode.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_tbxFilterOpcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_tbxFilterOpcode.Location = new System.Drawing.Point(59, 37);
-			this.General_tbxFilterOpcode.Name = "General_tbxFilterOpcode";
-			this.General_tbxFilterOpcode.Size = new System.Drawing.Size(60, 26);
-			this.General_tbxFilterOpcode.TabIndex = 5;
-			this.General_tbxFilterOpcode.Tag = "Source Sans Pro";
-			this.General_tbxFilterOpcode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.General_tbxFilterOpcode.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.General_tbxFilterOpcode.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// General_lblFilterOpcode
-			// 
-			this.General_lblFilterOpcode.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.General_lblFilterOpcode.Location = new System.Drawing.Point(6, 37);
-			this.General_lblFilterOpcode.Name = "General_lblFilterOpcode";
-			this.General_lblFilterOpcode.Size = new System.Drawing.Size(54, 26);
-			this.General_lblFilterOpcode.TabIndex = 13;
-			this.General_lblFilterOpcode.Tag = "Source Sans Pro";
-			this.General_lblFilterOpcode.Text = "Opcode";
-			this.General_lblFilterOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// General_rtbxPackets
-			// 
-			this.General_rtbxPackets.BackColor = System.Drawing.Color.Black;
-			this.General_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.General_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
-			this.General_rtbxPackets.DetectUrls = false;
-			this.General_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.General_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_rtbxPackets.Location = new System.Drawing.Point(191, 5);
-			this.General_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
-			this.General_rtbxPackets.Name = "General_rtbxPackets";
-			this.General_rtbxPackets.ReadOnly = true;
-			this.General_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.General_rtbxPackets.Size = new System.Drawing.Size(459, 245);
-			this.General_rtbxPackets.TabIndex = 15;
-			this.General_rtbxPackets.Tag = "Source Sans Pro";
-			this.General_rtbxPackets.Text = "";
-			// 
-			// Menu_rtbxPackets
-			// 
-			this.Menu_rtbxPackets.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_rtbxPackets_scroll,
-            this.Menu_rtbxPackets_clear});
-			this.Menu_rtbxPackets.Name = "Menu_rtbxPackets";
-			this.Menu_rtbxPackets.Size = new System.Drawing.Size(133, 48);
-			// 
-			// Menu_rtbxPackets_scroll
-			// 
-			this.Menu_rtbxPackets_scroll.CheckOnClick = true;
-			this.Menu_rtbxPackets_scroll.Name = "Menu_rtbxPackets_scroll";
-			this.Menu_rtbxPackets_scroll.Size = new System.Drawing.Size(132, 22);
-			this.Menu_rtbxPackets_scroll.Text = "Auto Scroll";
-			this.Menu_rtbxPackets_scroll.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// Menu_rtbxPackets_clear
-			// 
-			this.Menu_rtbxPackets_clear.Name = "Menu_rtbxPackets_clear";
-			this.Menu_rtbxPackets_clear.Size = new System.Drawing.Size(132, 22);
-			this.Menu_rtbxPackets_clear.Text = "Clear";
-			this.Menu_rtbxPackets_clear.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// General_cbxShowPacketClient
-			// 
-			this.General_cbxShowPacketClient.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxShowPacketClient.FlatAppearance.BorderSize = 0;
-			this.General_cbxShowPacketClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxShowPacketClient.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_cbxShowPacketClient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxShowPacketClient.Location = new System.Drawing.Point(94, 2);
-			this.General_cbxShowPacketClient.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxShowPacketClient.Name = "General_cbxShowPacketClient";
-			this.General_cbxShowPacketClient.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxShowPacketClient.Size = new System.Drawing.Size(94, 24);
-			this.General_cbxShowPacketClient.TabIndex = 2;
-			this.General_cbxShowPacketClient.Tag = "Source Sans Pro";
-			this.General_cbxShowPacketClient.Text = "Client";
-			this.ToolTips.SetToolTip(this.General_cbxShowPacketClient, "Show Client Packets");
-			this.General_cbxShowPacketClient.UseVisualStyleBackColor = false;
-			// 
-			// General_cbxShowPacketServer
-			// 
-			this.General_cbxShowPacketServer.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxShowPacketServer.FlatAppearance.BorderSize = 0;
-			this.General_cbxShowPacketServer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxShowPacketServer.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_cbxShowPacketServer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxShowPacketServer.Location = new System.Drawing.Point(2, 2);
-			this.General_cbxShowPacketServer.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxShowPacketServer.Name = "General_cbxShowPacketServer";
-			this.General_cbxShowPacketServer.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxShowPacketServer.Size = new System.Drawing.Size(94, 24);
-			this.General_cbxShowPacketServer.TabIndex = 1;
-			this.General_cbxShowPacketServer.Tag = "Source Sans Pro";
-			this.General_cbxShowPacketServer.Text = "Server";
-			this.ToolTips.SetToolTip(this.General_cbxShowPacketServer, "Show Server Packets");
-			this.General_cbxShowPacketServer.UseVisualStyleBackColor = false;
-			// 
 			// TabPageH_General_Option03_Panel
 			// 
 			this.TabPageH_General_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2192,16 +2198,16 @@
 			this.Party_lstvLeaders.FullRowSelect = true;
 			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.Party_lstvLeaders.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9,
-            listViewItem10});
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16,
+            listViewItem17,
+            listViewItem18,
+            listViewItem19,
+            listViewItem20});
 			this.Party_lstvLeaders.Location = new System.Drawing.Point(10, 51);
 			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
 			this.Party_lstvLeaders.MultiSelect = false;
@@ -2279,13 +2285,13 @@
 			// 
 			this.panelWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panelWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option09_Panel);
+			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option10_Panel);
+			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option14_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option13_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option01_Panel);
-			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option14_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option02_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option04_Panel);
-			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option10_Panel);
-			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option09_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option12_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option11_Panel);
 			this.panelWindow.Controls.Add(this.TabPageV_Control01_Option05_Panel);
@@ -2304,6 +2310,40 @@
 			this.panelWindow.Name = "panelWindow";
 			this.panelWindow.Size = new System.Drawing.Size(798, 471);
 			this.panelWindow.TabIndex = 1;
+			// 
+			// TabPageV_Control01_Option13_Panel
+			// 
+			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.TESTbtn1);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.lstrTESTING);
+			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
+			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 341);
+			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
+			this.TabPageV_Control01_Option13_Panel.Visible = false;
+			// 
+			// TESTbtn1
+			// 
+			this.TESTbtn1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TESTbtn1.Location = new System.Drawing.Point(6, 300);
+			this.TESTbtn1.Name = "TESTbtn1";
+			this.TESTbtn1.Size = new System.Drawing.Size(102, 34);
+			this.TESTbtn1.TabIndex = 3;
+			this.TESTbtn1.Text = "TEST BUTTON";
+			this.TESTbtn1.UseVisualStyleBackColor = true;
+			this.TESTbtn1.Click += new System.EventHandler(this.TESTINGbtn_Click);
+			// 
+			// lstrTESTING
+			// 
+			this.lstrTESTING.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.lstrTESTING.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lstrTESTING.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.lstrTESTING.FullRowSelect = true;
+			this.lstrTESTING.HideSelection = false;
+			this.lstrTESTING.Location = new System.Drawing.Point(7, 6);
+			this.lstrTESTING.Name = "lstrTESTING";
+			this.lstrTESTING.Size = new System.Drawing.Size(642, 285);
+			this.lstrTESTING.TabIndex = 2;
 			// 
 			// TabPageV_Control01_Option01_Panel
 			// 
@@ -2718,26 +2758,6 @@
 			this.columnHeader4.Text = "State";
 			this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.columnHeader4.Width = 115;
-			// 
-			// TabPageV_Control01_Option13_Panel
-			// 
-			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.button2);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.lstrTESTING);
-			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
-			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 341);
-			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
-			this.TabPageV_Control01_Option13_Panel.Visible = false;
-			// 
-			// lstrTESTING
-			// 
-			this.lstrTESTING.FullRowSelect = true;
-			this.lstrTESTING.HideSelection = false;
-			this.lstrTESTING.Location = new System.Drawing.Point(7, 6);
-			this.lstrTESTING.Name = "lstrTESTING";
-			this.lstrTESTING.Size = new System.Drawing.Size(642, 270);
-			this.lstrTESTING.TabIndex = 2;
 			// 
 			// TabPageV_Control01_Option02_Panel
 			// 
@@ -3352,6 +3372,7 @@
 			// Minimap_panelMap
 			// 
 			this.Minimap_panelMap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Minimap_panelMap.Controls.Add(this.Minimap_panelGameCoords);
 			this.Minimap_panelMap.Controls.Add(this.Minimap_panelCoords);
 			this.Minimap_panelMap.Location = new System.Drawing.Point(0, 0);
 			this.Minimap_panelMap.Margin = new System.Windows.Forms.Padding(0);
@@ -3606,15 +3627,68 @@
 			this.NotifyIcon.Text = "xBot";
 			this.NotifyIcon.Visible = true;
 			// 
-			// button2
+			// Minimap_panelGameCoords
 			// 
-			this.button2.Location = new System.Drawing.Point(29, 293);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(75, 23);
-			this.button2.TabIndex = 3;
-			this.button2.Text = "TEST";
-			this.button2.UseVisualStyleBackColor = true;
-			this.button2.Click += new System.EventHandler(this.button2_Click);
+			this.Minimap_panelGameCoords.Controls.Add(this.Minimap_lblGameX);
+			this.Minimap_panelGameCoords.Controls.Add(this.Minimap_tbxGameX);
+			this.Minimap_panelGameCoords.Controls.Add(this.Minimap_lblGameY);
+			this.Minimap_panelGameCoords.Controls.Add(this.Minimap_tbxGameY);
+			this.Minimap_panelGameCoords.Location = new System.Drawing.Point(520, 36);
+			this.Minimap_panelGameCoords.Name = "Minimap_panelGameCoords";
+			this.Minimap_panelGameCoords.Size = new System.Drawing.Size(135, 36);
+			this.Minimap_panelGameCoords.TabIndex = 18;
+			// 
+			// Minimap_lblGameX
+			// 
+			this.Minimap_lblGameX.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Minimap_lblGameX.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Minimap_lblGameX.Location = new System.Drawing.Point(4, 5);
+			this.Minimap_lblGameX.Margin = new System.Windows.Forms.Padding(0);
+			this.Minimap_lblGameX.Name = "Minimap_lblGameX";
+			this.Minimap_lblGameX.Size = new System.Drawing.Size(15, 25);
+			this.Minimap_lblGameX.TabIndex = 8;
+			this.Minimap_lblGameX.Text = "X";
+			this.Minimap_lblGameX.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Minimap_tbxGameX
+			// 
+			this.Minimap_tbxGameX.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Minimap_tbxGameX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Minimap_tbxGameX.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Minimap_tbxGameX.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Minimap_tbxGameX.Location = new System.Drawing.Point(19, 5);
+			this.Minimap_tbxGameX.Margin = new System.Windows.Forms.Padding(0);
+			this.Minimap_tbxGameX.Name = "Minimap_tbxGameX";
+			this.Minimap_tbxGameX.ReadOnly = true;
+			this.Minimap_tbxGameX.Size = new System.Drawing.Size(46, 25);
+			this.Minimap_tbxGameX.TabIndex = 9;
+			this.Minimap_tbxGameX.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			// 
+			// Minimap_lblGameY
+			// 
+			this.Minimap_lblGameY.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Minimap_lblGameY.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Minimap_lblGameY.Location = new System.Drawing.Point(68, 5);
+			this.Minimap_lblGameY.Margin = new System.Windows.Forms.Padding(0);
+			this.Minimap_lblGameY.Name = "Minimap_lblGameY";
+			this.Minimap_lblGameY.Size = new System.Drawing.Size(15, 25);
+			this.Minimap_lblGameY.TabIndex = 10;
+			this.Minimap_lblGameY.Text = "Y";
+			this.Minimap_lblGameY.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Minimap_tbxGameY
+			// 
+			this.Minimap_tbxGameY.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Minimap_tbxGameY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Minimap_tbxGameY.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Minimap_tbxGameY.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Minimap_tbxGameY.Location = new System.Drawing.Point(83, 5);
+			this.Minimap_tbxGameY.Margin = new System.Windows.Forms.Padding(0);
+			this.Minimap_tbxGameY.Name = "Minimap_tbxGameY";
+			this.Minimap_tbxGameY.ReadOnly = true;
+			this.Minimap_tbxGameY.Size = new System.Drawing.Size(46, 25);
+			this.Minimap_tbxGameY.TabIndex = 11;
+			this.Minimap_tbxGameY.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// Window
 			// 
@@ -3640,13 +3714,6 @@
 			this.panelHeader.PerformLayout();
 			this.TabPageV_Control01_Option14_Panel.ResumeLayout(false);
 			this.TabPageH_General.ResumeLayout(false);
-			this.TabPageH_General_Option01_Panel.ResumeLayout(false);
-			this.TabPageH_General_Option01_Panel.PerformLayout();
-			this.Menu_lstvHost.ResumeLayout(false);
-			this.Menu_lstrSilkroads.ResumeLayout(false);
-			this.General_gbxHWID.ResumeLayout(false);
-			this.General_gbxHWID.PerformLayout();
-			this.General_panelHWIDdata.ResumeLayout(false);
 			this.TabPageH_General_Option04_Panel.ResumeLayout(false);
 			this.General_gbxPacketInject.ResumeLayout(false);
 			this.General_gbxPacketInject.PerformLayout();
@@ -3654,6 +3721,13 @@
 			this.General_gbxPacketFilter.PerformLayout();
 			this.Menu_lstvOpcodes.ResumeLayout(false);
 			this.Menu_rtbxPackets.ResumeLayout(false);
+			this.TabPageH_General_Option01_Panel.ResumeLayout(false);
+			this.TabPageH_General_Option01_Panel.PerformLayout();
+			this.Menu_lstvHost.ResumeLayout(false);
+			this.Menu_lstrSilkroads.ResumeLayout(false);
+			this.General_gbxHWID.ResumeLayout(false);
+			this.General_gbxHWID.PerformLayout();
+			this.General_panelHWIDdata.ResumeLayout(false);
 			this.TabPageH_General_Option02_Panel.ResumeLayout(false);
 			this.General_gbxCharacterSelection.ResumeLayout(false);
 			this.TabPageV_Control01_Option04_Panel.ResumeLayout(false);
@@ -3662,13 +3736,13 @@
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox3.PerformLayout();
 			this.panelWindow.ResumeLayout(false);
+			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
 			this.TabPageV_Control01_Option01_Panel.ResumeLayout(false);
 			this.Login_gbxCharacters.ResumeLayout(false);
 			this.Login_gbxConnection.ResumeLayout(false);
 			this.Login_gbxAccount.ResumeLayout(false);
 			this.Login_gbxAccount.PerformLayout();
 			this.Login_gbxServers.ResumeLayout(false);
-			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
 			this.TabPageV_Control01_Option02_Panel.ResumeLayout(false);
 			this.TabPageH_Character.ResumeLayout(false);
 			this.TabPageV_Control01_Option10_Panel.ResumeLayout(false);
@@ -3687,6 +3761,8 @@
 			this.Minimap_panelMap.ResumeLayout(false);
 			this.Minimap_panelCoords.ResumeLayout(false);
 			this.Minimap_panelCoords.PerformLayout();
+			this.Minimap_panelGameCoords.ResumeLayout(false);
+			this.Minimap_panelGameCoords.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -3910,7 +3986,12 @@
 		public System.Windows.Forms.TextBox General_tbxPort;
 		private System.Windows.Forms.Panel General_panelHWIDdata;
 		public System.Windows.Forms.CheckBox General_cbxRandomHost;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button TESTbtn1;
+		public System.Windows.Forms.Panel Minimap_panelGameCoords;
+		private System.Windows.Forms.Label Minimap_lblGameX;
+		public System.Windows.Forms.TextBox Minimap_tbxGameX;
+		private System.Windows.Forms.Label Minimap_lblGameY;
+		public System.Windows.Forms.TextBox Minimap_tbxGameY;
 	}
 }
 

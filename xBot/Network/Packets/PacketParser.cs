@@ -551,29 +551,28 @@ namespace xBot.Network.Packets
 			character[SRAttribute.UniqueID] = p.ReadUInt();
 			character[SRAttribute.Region] = p.ReadUShort();
 			character[SRAttribute.X] = p.ReadSingle();
-			character[SRAttribute.Y] = p.ReadSingle();
 			character[SRAttribute.Z] = p.ReadSingle();
+			character[SRAttribute.Y] = p.ReadSingle();
 			character[SRAttribute.Angle] = p.ReadUShort();
 
-			character[SRAttribute.hasDestination] = p.ReadByte() == 1;
+			character[SRAttribute.hasMovement] = p.ReadByte() == 1;
 			character[SRAttribute.MovementType] = p.ReadByte();
-
-			if ((bool)character[SRAttribute.hasDestination])
+			if ((bool)character[SRAttribute.hasMovement])
 			{
-				character[SRAttribute.DestinationRegion] = p.ReadUShort();
+				character[SRAttribute.MovementRegion] = p.ReadUShort();
 				if (character.inDungeon())
 				{
 					// Dungeon offsets
-					character[SRAttribute.DestinationOffsetX] = p.ReadUInt();
-					character[SRAttribute.DestinationOffsetY] = p.ReadUInt();
-					character[SRAttribute.DestinationOffsetZ] = p.ReadUInt();
+					character[SRAttribute.MovementOffsetX] = p.ReadUInt();
+					character[SRAttribute.MovementOffsetZ] = p.ReadUInt();
+					character[SRAttribute.MovementOffsetY] = p.ReadUInt();
 				}
 				else
 				{
-					// World offsets
-					character[SRAttribute.DestinationOffsetX] = p.ReadUShort();
-					character[SRAttribute.DestinationOffsetY] = p.ReadUShort();
-					character[SRAttribute.DestinationOffsetZ] = p.ReadUShort();
+					// World
+					character[SRAttribute.MovementOffsetX] = p.ReadUShort();
+					character[SRAttribute.MovementOffsetZ] = p.ReadUShort();
+					character[SRAttribute.MovementOffsetY] = p.ReadUShort();
 				}
 			}
 			else
@@ -660,17 +659,24 @@ namespace xBot.Network.Packets
 					character.CopyAttributes(charList);
 				}
 			}
+			// Keep my own track
+			Info.Get.EntityList.Add(character);
 
 			// Updating GUI elements
 			Window w = Window.Get;
+			w.TESTING_AddSpawn(character);
+
 			WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
 				w.Minimap_tbxX.Text = ((int)((float)character[SRAttribute.X])).ToString();
 				w.Minimap_tbxY.Text = ((int)((float)character[SRAttribute.Y])).ToString();
 				w.Minimap_tbxZ.Text = ((int)((float)character[SRAttribute.Z])).ToString();
-				w.Minimap_tbxRegion.Text = ((int)((ushort)character[SRAttribute.Region])).ToString();
-				w.TESTING_AddSpawn(character);
+				w.Minimap_tbxRegion.Text = ((ushort)character[SRAttribute.Region]).ToString();
 			});
 			Point coord = character.getPosition();
+			WinAPI.InvokeIfRequired(w.Minimap_panelGameCoords, () => {
+				w.Minimap_tbxGameX.Text = coord.X.ToString();
+				w.Minimap_tbxGameY.Text = coord.Y.ToString();
+			});
 			w.Minimap_CharacterPointer_Move(coord.X, coord.Y, (float)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
 		}
 		private static byte groupSpawnType;
@@ -776,30 +782,30 @@ namespace xBot.Network.Packets
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
 				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
 				// Movement
 				byte hasDestination = packet.ReadByte();
-				entity[SRAttribute.hasDestination] = hasDestination;
+				entity[SRAttribute.hasMovement] = hasDestination;
 				entity[SRAttribute.MovementType] = packet.ReadByte();
 				if (hasDestination == 1)
 				{
 					// Mouse movement
-					entity[SRAttribute.DestinationRegion] = packet.ReadUShort();
+					entity[SRAttribute.MovementRegion] = packet.ReadUShort();
 					if ((ushort)entity[SRAttribute.Region] < short.MaxValue)
 					{
 						// World
-						entity[SRAttribute.DestinationOffsetX] = packet.ReadUShort();
-						entity[SRAttribute.DestinationOffsetY] = packet.ReadUShort();
-						entity[SRAttribute.DestinationOffsetZ] = packet.ReadUShort();
+						entity[SRAttribute.MovementOffsetX] = packet.ReadUShort();
+						entity[SRAttribute.MovementOffsetZ] = packet.ReadUShort();
+						entity[SRAttribute.MovementOffsetY] = packet.ReadUShort();
 					}
 					else
 					{
 						// Dungeon
-						entity[SRAttribute.DestinationOffsetX] = packet.ReadUInt();
-						entity[SRAttribute.DestinationOffsetY] = packet.ReadUInt();
-						entity[SRAttribute.DestinationOffsetZ] = packet.ReadUInt();
+						entity[SRAttribute.MovementOffsetX] = packet.ReadUInt();
+						entity[SRAttribute.MovementOffsetZ] = packet.ReadUInt();
+						entity[SRAttribute.MovementOffsetY] = packet.ReadUInt();
 					}
 				}
 				else
@@ -971,11 +977,11 @@ namespace xBot.Network.Packets
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
 				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
-				entity[SRAttribute.hasOwner] = packet.ReadByte();
-				if ((byte)entity[SRAttribute.hasOwner] == 1)
+				entity[SRAttribute.hasOwner] = packet.ReadByte() == 1;
+				if ((bool)entity[SRAttribute.hasOwner])
 				{
 					entity[SRAttribute.OwnerJID] = packet.ReadUInt();
 				}
@@ -1024,8 +1030,8 @@ namespace xBot.Network.Packets
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
 				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.Y] = packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
 			}
 			if (packet.Opcode == Agent.Opcode.SERVER_ENTITY_SPAWN)
@@ -1039,7 +1045,7 @@ namespace xBot.Network.Packets
 				{
 					// DROP
 					entity[SRAttribute.DropSource] = packet.ReadByte();
-					entity[SRAttribute.UniqueID] = packet.ReadUInt();
+					entity[SRAttribute.DropUniqueID] = packet.ReadUInt();
 				}
 			}
 			// End of Packet
@@ -1050,40 +1056,83 @@ namespace xBot.Network.Packets
 			// Update GUI
 			Window w = Window.Get;
 			w.TESTING_AddSpawn(entity);
-		}
+			w.Minimap_ObjectPointer_Add((uint)entity[SRAttribute.UniqueID], (string)entity[SRAttribute.Servername], (string)entity[SRAttribute.Name], (float)entity[SRAttribute.X], (float)entity[SRAttribute.Y], (float)entity[SRAttribute.Z], (ushort)entity[SRAttribute.Region]);
+    }
 		public static void EntityDespawn(Packet packet)
 		{
 			uint uniqueID = packet.ReadUInt();
 			// End of Packet
+
 			// Keep the track of the entity
 			SRObject entity = Info.Get.getEntity(uniqueID);
 			if (entity != null)
 				Info.Get.EntityList.Remove(entity);
-		}
+
+			// Update GUI
+			Window w = Window.Get;
+			w.TESTING_RemoveSpawn(uniqueID);
+			w.Minimap_ObjectPointer_Remove(uniqueID);
+    }
 		public static void EntityMovement(Packet packet)
 		{
 			SRObject entity = new SRObject();
 			entity[SRAttribute.UniqueID] = packet.ReadUInt();
-			entity[SRAttribute.hasDestination] = packet.ReadByte() == 1;
-			if ((bool)entity[SRAttribute.hasDestination])
+			entity[SRAttribute.hasMovement] = packet.ReadByte() == 1;
+			if ((bool)entity[SRAttribute.hasMovement])
 			{
-				entity[SRAttribute.DestinationRegion] = packet.ReadUShort();
-				if (entity.inDungeon((ushort)entity[SRAttribute.DestinationRegion]))
+				entity[SRAttribute.MovementRegion] = packet.ReadUShort();
+				if (entity.inDungeon((ushort)entity[SRAttribute.MovementRegion]))
 				{
-					entity[SRAttribute.DestinationOffsetX] = packet.ReadUInt();
-					entity[SRAttribute.DestinationOffsetY] = packet.ReadUInt();
-					entity[SRAttribute.DestinationOffsetZ] = packet.ReadUInt();
+					entity[SRAttribute.MovementOffsetX] = packet.ReadInt32();
+					entity[SRAttribute.MovementOffsetZ] = packet.ReadInt32();
+					entity[SRAttribute.MovementOffsetY] = packet.ReadInt32();
 				}
 				else
 				{
-					entity[SRAttribute.DestinationOffsetX] = packet.ReadUShort();
-					entity[SRAttribute.DestinationOffsetY] = packet.ReadUShort();
-					entity[SRAttribute.DestinationOffsetZ] = packet.ReadUShort();
+          entity[SRAttribute.MovementOffsetX] = packet.ReadInt16();
+					entity[SRAttribute.MovementOffsetZ] = packet.ReadInt16();
+					entity[SRAttribute.MovementOffsetY] = packet.ReadInt16();
 				}
+			}
+			bool flag = packet.ReadByte() == 1;
+			if (flag)
+			{
+				packet.ReadUShort(); // Region
+				packet.ReadUShort(); // ???
+				packet.ReadUShort(); // ???
+				packet.ReadUShort(); // ???
+				packet.ReadUShort(); // ???
 			}
 			// End of Packet
 
+			// Keep the track of the entity
+			SRObject e = Info.Get.getEntity((uint)entity[SRAttribute.UniqueID]);
+			e.CopyAttributes(entity,true);
 
+			// Update Minimap Movement
+			if ((bool)entity[SRAttribute.hasMovement])
+			{
+				Window w = Window.Get;
+				Point p = e.getMovementPosition();
+				if (e == Info.Get.Character)
+				{
+					WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
+						w.Minimap_tbxX.Text = ((short)entity[SRAttribute.MovementOffsetX]).ToString();
+						w.Minimap_tbxY.Text = ((short)entity[SRAttribute.MovementOffsetY]).ToString();
+						w.Minimap_tbxZ.Text = ((short)entity[SRAttribute.MovementOffsetZ]).ToString();
+						w.Minimap_tbxRegion.Text = ((ushort)entity[SRAttribute.MovementRegion]).ToString();
+					});
+					WinAPI.InvokeIfRequired(w.Minimap_panelGameCoords, () => {
+						w.Minimap_tbxGameX.Text = p.X.ToString();
+						w.Minimap_tbxGameY.Text = p.Y.ToString();
+					});
+					w.Minimap_CharacterPointer_Move(p.X, p.Y, (short)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
+				}
+				else
+				{
+					w.Minimap_ObjectPointer_Move((uint)entity[SRAttribute.UniqueID], p.X, p.Y, (short)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
+				}
+			}
 		}
 		public static void EnviromentCelestialPosition(Packet packet)
 		{
@@ -1105,13 +1154,9 @@ namespace xBot.Network.Packets
 					uint playerID = packet.ReadUInt();
 					SRObject p = Info.Get.getEntity(playerID);
 					if (p != null && p.Contains(SRAttribute.Name))
-					{
 						player = (string)p[SRAttribute.Name];
-					}
 					else
-					{
 						player = "[UID:" + playerID + "]";
-					}
 					break;
 				case Types.Chat.Private:
 				case Types.Chat.Party: // Party

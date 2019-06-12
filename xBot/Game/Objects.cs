@@ -396,32 +396,32 @@ namespace xBot.Game
 		/// Check if the entity is moving to some point.
 		/// <para>Data type : <see cref="bool"/></para>
 		/// </summary>
-		hasDestination,
+		hasMovement,
 		/// <summary>
 		/// ...
 		/// <para>Data type : <see cref="byte"/></para>
 		/// </summary>
 		MovementType,
 		/// <summary>
-		/// Destination region of the object.
+		/// Movement destination region of the object.
 		/// <para>Data type : <see cref="ushort"/></para>
 		/// </summary>
-		DestinationRegion,
+		MovementRegion,
 		/// <summary>
-		/// Destination offset position X of the map.
-		/// <para>Data type : <see cref="uint"/> (if is on dungeons) or <see cref="ushort"/></para>
+		/// Movement offset position X of the map.
+		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
 		/// </summary>
-		DestinationOffsetX,
+		MovementOffsetX,
 		/// <summary>
-		/// Destination offset position Y of the map.
-		/// <para>Data type : <see cref="uint"/> (if is on dungeons) or <see cref="ushort"/></para>
+		/// Movement offset position Y of the map.
+		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
 		/// </summary>
-		DestinationOffsetY,
+		MovementOffsetY,
 		/// <summary>
-		/// Destination offset position Z of the map.
-		/// <para>Data type : <see cref="uint"/> (if is on dungeons) or <see cref="ushort"/></para>
+		/// Movement offset position Z of the map.
+		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
 		/// </summary>
-		DestinationOffsetZ,
+		MovementOffsetZ,
 		/// <summary>
 		/// Cause of the movement.
 		/// <para>Data type : <see cref="Types.MovementSource"/></para>
@@ -563,7 +563,11 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="Types.PVPCape"/></para>
 		/// </summary>
 		PVPCape,
-
+		/// <summary>
+		/// Drop group by unique ID.
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
+		DropUniqueID,
 
 
 
@@ -846,7 +850,11 @@ namespace xBot.Game
 		{
 			return (SRObject)MemberwiseClone();
 		}
-		public List<string> ToArray()
+		public override string ToString()
+		{
+			return id.ToString();
+		}
+		public List<string> ToStringArray()
 		{
 			List<string> array = new List<string>();
 			array.Add("ID:" + ID + " | ID1:" + ID1 + " | ID2:" + ID2 + " | ID3:" + ID3 + " | ID4:" + ID4);
@@ -938,24 +946,24 @@ namespace xBot.Game
 			}
 			throw new Exception("Not enough data to generate position.");
 		}
-		public Point getDestinationPosition()
+		public Point getMovementPosition()
 		{
-			if (this.Contains(SRAttribute.DestinationRegion)
-				&& this.Contains(SRAttribute.DestinationOffsetX)
-				&& this.Contains(SRAttribute.DestinationOffsetY)
-				&& this.Contains(SRAttribute.DestinationOffsetZ))
+			if (this.Contains(SRAttribute.MovementRegion)
+				&& this.Contains(SRAttribute.MovementOffsetX)
+				&& this.Contains(SRAttribute.MovementOffsetY)
+				&& this.Contains(SRAttribute.MovementOffsetZ))
 			{
-				if (!this.inDungeon((ushort)this[SRAttribute.DestinationRegion]))
+				if (!this.inDungeon((ushort)this[SRAttribute.MovementRegion]))
 				{
 					// Map: {yTile}x{xTile}.jpg
-					byte yTile = (byte)((ushort)this[SRAttribute.DestinationRegion] >> 8);
-					byte xTile = (byte)((ushort)this[SRAttribute.DestinationRegion] & 255);
+					byte yTile = (byte)((ushort)this[SRAttribute.MovementRegion] >> 8);
+					byte xTile = (byte)((ushort)this[SRAttribute.MovementRegion] & 255);
 					
 					// World tiles offsets. Y: 135; X: 92;
 					// 256x256 (image size) but taken as 192x192 units (zoom scale)
 					Point p = new Point();
-					p.X = (xTile - 135) * 192 + ((ushort)this[SRAttribute.DestinationOffsetX]) / 10;
-					p.Y = (yTile - 92) * 192 + (ushort.MaxValue - (ushort)this[SRAttribute.DestinationOffsetY]) / 10;
+					p.X = (xTile - 135) * 192 + ((short)this[SRAttribute.MovementOffsetX]) / 10;
+					p.Y = (yTile - 92) * 192 + ((short)this[SRAttribute.MovementOffsetY]) / 10;
 					return p;
 				}
 				else

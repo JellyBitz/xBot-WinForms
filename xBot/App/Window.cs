@@ -324,7 +324,7 @@ namespace xBot
 				WinAPI.InvokeIfRequired(General_rtbxPackets, () => {
 					if (General_rtbxPackets.Lines.Length > 1024)
 						General_rtbxPackets.Text = General_rtbxPackets.Text.Substring(General_rtbxPackets.Text.IndexOf('\n'));
-					General_rtbxPackets.AppendText(packet);
+					General_rtbxPackets.AppendText(packet + Environment.NewLine);
 				});
 			}
 			catch { }
@@ -644,7 +644,7 @@ namespace xBot
 								{
 									try
 									{
-										data = WinAPI.HexStringToBytes(General_tbxInjectData.Text);
+										data = WinAPI.HexStringToBytes(General_tbxInjectData.Text.Replace(" ",""));
 									}
 									catch
 									{
@@ -657,8 +657,8 @@ namespace xBot
 									Bot.Get.Proxy.InjectToServer(p);
 								else
 									Bot.Get.Proxy.InjectToClient(p);
-								LogPacket("Packet injected > [Opcode] 0x" + opcode.ToString("X4") + " [Encrypted] " + General_cbxInjectEncrypted.Checked + " [Massive] ");
-								LogPacket("[DATA] " + WinAPI.BytesToHexString(data));
+								LogPacket("Packet injected: [Opcode] 0x" + opcode.ToString("X4") + " " + (General_cbxInjectEncrypted.Checked ? "[Encrypted]" : "") + (General_cbxInjectMassive.Checked ? "[Massive]" : ""));
+								LogPacket("[Data] " + WinAPI.BytesToHexString(data));
 							}
 							else
 							{
@@ -896,27 +896,6 @@ namespace xBot
 				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.MovePointer(" + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
 			}
 		}
-		public void Minimap_ObjectPointer_Add(uint UniqueID, string type, string htmlPopup, float x, float y, float z, ushort region)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.AddExtraPointer('" + UniqueID + "','" + type + "','" + htmlPopup + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Move(uint UniqueID, float x, float y, float z, ushort region)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Remove(uint UniqueID)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
-			}
-		}
 		private bool CleanSilkroadName(ref string SilkroadName)
 		{
 			SilkroadName = SilkroadName.Trim();
@@ -939,9 +918,14 @@ namespace xBot
 		}
 		public void TESTING_AddSpawn(SRObject entity)
 		{
-			TreeNode node = new TreeNode((string)entity[SRAttribute.Name]);
+			string text = (string)entity[SRAttribute.Name];
+			TreeNode node = new TreeNode();
+			if(text == "")
+				node.Text = text;
+			else
+				node.Text = (string)entity[SRAttribute.Servername];
 			node.Name = entity[SRAttribute.UniqueID].ToString();
-			foreach (string str in entity.ToArray())
+			foreach (string str in entity.ToStringArray())
 				node.Nodes.Add(str);
 			WinAPI.InvokeIfRequired(lstrTESTING, () => {
 				lstrTESTING.Nodes.Add(node);
@@ -953,24 +937,16 @@ namespace xBot
 				lstrTESTING.Nodes[uniqueID.ToString()].Remove();
 			});
 		}
-		int ii = 1;
-		private void button2_Click(object sender, EventArgs e)
+		private void TESTINGbtn_Click(object sender, EventArgs e)
 		{
-			if (button2.Tag == null)
-			{
-				button2.Tag = "  ";
-				Info.Get.SelectDatabase("ELECTUS");
-			}
-			lstrTESTING.Nodes.Clear();
-			Packet p = new Packet(0x3019);
-			p.WriteUInt8Array(WinAPI.HexStringToBytes("73 07 00 00 22 00 00 01 6D 08 1F 01 00 00 00 8B 01 00 00 00 67 01 00 00 00 D3 01 00 00 00 AF 01 00 00 00 F7 01 00 00 00 47 00 00 00 00 86 2A 00 00 00 05 00 00 28 11 00 00 A8 61 00 80 65 44 7F 6F 02 C2 00 00 82 44 C8 7D 00 01 00 C8 7D 01 00 00 04 00 00 80 41 00 00 48 42 00 00 C8 42 00 09 00 5B 42 4F 54 5D 46 61 69 6C 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 88 07 00 00 22 02 00 00 6D 07 94 14 00 00 07 00 15 00 00 07 DC 14 00 00 07 48 15 00 00 07 24 15 00 00 07 6C 15 00 00 07 C0 23 01 00 09 05 05 CD 5E 00 00 00 C7 5E 00 00 00 2A 5F 00 00 00 9F 24 00 00 00 3F CE 00 00 02 00 77 D9 6A 00 A8 61 C3 7D 6E 44 7E 6F 02 C2 5A 07 85 44 27 C6 01 01 A8 61 B9 03 E0 FF 28 04 01 00 00 00 CD CC 8C 41 00 00 5C 42 00 00 C8 42 03 51 0D 00 00 0D 33 05 00 24 15 00 00 D4 E5 05 00 2C 1F 00 00 67 24 05 00 07 00 52 49 56 41 4C 53 53 01 01 00 00 00 00 00 00 0B 00 46 65 61 52 5F 4F 72 5F 44 69 65 82 02 00 00 07 00 5F 5F 42 52 4E 5F 5F 01 00 00 00 72 00 00 00 01 00 00 00 01 00 00 FF 76 07 00 00 33 00 00 00 6D 08 97 11 00 00 03 03 12 00 00 03 E2 11 00 00 03 4E 12 00 00 03 27 12 00 00 03 72 12 00 00 03 C6 0F 00 00 03 7A 10 00 00 03 05 00 00 1B A3 7E 00 A8 61 00 00 69 44 7E 6F 02 C2 00 00 9E 44 EA A6 01 01 A8 61 A4 03 E0 FF F0 04 01 00 00 00 CD CC 0C 42 00 00 DC 42 00 00 C8 42 01 49 85 00 00 FD 1D 07 00 09 00 5A 65 65 76 52 65 76 61 68 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 23 3A 00 00 00 22 00 00 6D 07 7D 32 00 00 07 D0 F8 00 00 07 CF F8 00 00 07 D2 F8 00 00 07 D1 F8 00 00 07 55 33 00 00 07 B0 13 01 00 08 05 05 CB 64 00 00 00 D5 64 00 00 00 9E 97 00 00 00 78 25 01 00 00 55 5F 00 00 03 00 2B D2 7F 00 A8 61 AC 9F 66 44 7E 6F 02 C2 2B B2 87 44 BD 60 01 01 A8 61 0D 03 E0 FF C6 04 01 00 03 00 55 E3 3D 42 9A 59 14 43 00 00 C8 42 05 24 15 00 00 E7 49 02 00 66 84 00 00 B8 46 02 00 61 84 00 00 BA D8 00 00 62 84 00 00 7C 28 00 00 63 84 00 00 54 F5 01 00 06 00 4B 6F 62 61 69 6E 02 05 00 00 00 00 00 00 05 00 4F 6D 65 67 61 8C 00 00 00 0C 00 47 65 74 54 72 69 67 67 65 72 65 64 00 00 00 00 0B 00 00 00 01 00 00 00 01 02 00 FF".Replace(" ","")));
-			p.Lock();
-			for (int i=0;i< ii; i++)
-			{
-				PacketParser.EntitySpawn(p);
-			}
-			ii++;
-    }
+			SRObject a = new SRObject();
+			a[SRAttribute.X] = 863f;
+			a[SRAttribute.Y] = 44f;
+			a[SRAttribute.Z] = 714f;
+			a[SRAttribute.Region] = (ushort)24744;
+			Point p = a.getPosition();
+
+		}
 		public void TESTING_EditSpawn(SRObject entity, SRAttribute att)
 		{
 			WinAPI.InvokeIfRequired(lstrTESTING, () => {
@@ -980,6 +956,27 @@ namespace xBot
 				else
 					n.Nodes.Add(att.ToString(), "\"" + att + "\":" + entity[att]);
 			});
+		}
+		public void Minimap_ObjectPointer_Add(uint UniqueID, string type, string htmlPopup, float x, float y, float z, ushort region)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.AddExtraPointer('" + UniqueID + "','" + type + "','" + htmlPopup + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
+			}
+		}
+		public void Minimap_ObjectPointer_Move(uint UniqueID, float x, float y, float z, ushort region)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
+			}
+		}
+		public void Minimap_ObjectPointer_Remove(uint UniqueID)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
+			}
 		}
 	}
 }
