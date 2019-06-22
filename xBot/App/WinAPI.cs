@@ -32,6 +32,8 @@ namespace xBot
 		public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 		public const int SW_HIDE = 0;
 		public const int SW_SHOW = 5;
+		[DllImport("psapi.dll")]
+		public static extern bool EmptyWorkingSet(IntPtr hProcess);
 		[DllImport("user32.dll")]
 		public static extern bool SetForegroundWindow(IntPtr hWnd);
 		[DllImport("user32.dll")]
@@ -48,10 +50,15 @@ namespace xBot
 		}
 		public static void InvokeIfRequired(Control control, MethodInvoker action)
 		{
-			if (control.InvokeRequired)
-				control.Invoke(action);
-			else
-				action();
+			try
+			{
+				if (control.InvokeRequired)
+					control.Invoke(action);
+				else
+					action();
+			}catch (System.ComponentModel.InvalidAsynchronousStateException){
+				// Window closed catch
+			}
 		}
 		/// <summary>
 		/// Returns SRO_Client process that is using the current agent/gateway port.
@@ -156,6 +163,7 @@ namespace xBot
 		}
 		public static byte[] HexStringToBytes(string hex)
 		{
+			hex = hex.Replace(" ", "");
 			return Enumerable.Range(0, hex.Length)
 											 .Where(x => x % 2 == 0)
 											 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))

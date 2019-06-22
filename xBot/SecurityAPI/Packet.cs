@@ -269,6 +269,17 @@ namespace SecurityAPI
 				return m_reader.ReadInt32();
 			}
 		}
+		public int ReadInt()
+		{
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+				return m_reader.ReadInt32();
+			}
+		}
 		public ulong ReadULong()
 		{
 			lock (m_lock)
@@ -292,6 +303,17 @@ namespace SecurityAPI
 			}
 		}
 		public Int64 ReadInt64()
+		{
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+				return m_reader.ReadInt64();
+			}
+		}
+		public long ReadLong()
 		{
 			lock (m_lock)
 			{

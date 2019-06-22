@@ -11,8 +11,8 @@ namespace xBot.Game
 		/// </summary>
 		public string Name { get; }
 		public string FileName { get; }
-		SQLiteConnection db;
-		SQLiteCommand q;
+		private SQLiteConnection db;
+		private SQLiteCommand q;
 		public Database(string Name)
 		{
 			this.Name = Name;
@@ -118,7 +118,8 @@ namespace xBot.Game
 			if (db != null && db.State != System.Data.ConnectionState.Closed)
 			{
 				db.Close();
-			}
+				db = null;
+      }
 		}
 		public static bool Exists(string Name)
 		{

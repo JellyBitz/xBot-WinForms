@@ -5,13 +5,13 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using xBot.Network;
-using xBot.Network.Packets;
 using CefSharp;
 using CefSharp.WinForms;
 using xBot.Game;
 using SecurityAPI;
 using System.Text.RegularExpressions;
 using System.Text;
+using xGraphics;
 
 namespace xBot
 {
@@ -33,8 +33,10 @@ namespace xBot
 			InitializeComponent();
 			InitializeFonts(this);
 			InitializeIndexAndTabs();
-			InitializeChromium();
 		}
+		/// <summary>
+		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
+		/// </summary>
 		public static Window Get
 		{
 			get
@@ -48,10 +50,19 @@ namespace xBot
 		{
 			for (int i = 0; i < c.Controls.Count; i++)
 			{
-				// Using fontName as TAG to be selected from WinForms
-				c.Controls[i].Font = Fonts.Get.Load(c.Controls[i].Font, (string)c.Controls[i].Tag);
-				InitializeFonts(c.Controls[i]);
-			}
+				if (c.Controls[i].GetType().Name == "xProgressBar")
+				{
+					xProgressBar pgb = (xProgressBar)c.Controls[i];
+					pgb.TextFont = Fonts.Get.Load(pgb.TextFont, (string)pgb.Tag);
+        }
+				else
+				{
+					// Using fontName as TAG to be selected from WinForms
+					c.Controls[i].Font = Fonts.Get.Load(c.Controls[i].Font, (string)c.Controls[i].Tag);
+					InitializeFonts(c.Controls[i]);
+				}
+				c.Controls[i].Tag = null;
+      }
 		}
 		private void InitializeIndexAndTabs()
 		{
@@ -72,16 +83,19 @@ namespace xBot
 			this.General_cmbxHWIDServerSendTo.SelectedIndex = 0;
 			this.General_cmbxInjectTo.SelectedIndex = 0;
 		}
+		/// <summary>
+		/// Load WebBrowser diplaying the Silkroad world map.
+		/// </summary>
 		public void InitializeChromium()
 		{
 			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
-			if (File.Exists(path))
+			if (Minimap_wbrChromeMap == null && File.Exists(path))
 			{
 				// Initialize cef with the provided settings
 				CefSettings settings = new CefSettings();
 				Cef.Initialize(settings);
 				Minimap_wbrChromeMap = new ChromiumWebBrowser(path);
-				Minimap_wbrChromeMap.Dock = DockStyle.Fill;
+        Minimap_wbrChromeMap.Dock = DockStyle.Fill;
 				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
 			}
 		}
@@ -90,7 +104,7 @@ namespace xBot
 			// Welcome
 			rtbxLogs.Text = WinAPI.getDate() + " Welcome to " + ProductName + " v" + ProductVersion + " | Made by Engels \"JellyBitz\" Quintero\n";
 			rtbxLogs.Text += WinAPI.getDate() + " Discord : JellyBitz#7643";
-			setState();
+			LogProcess();
 			// Load basic
 			Settings.LoadBotSettings();
 			LoadCommandLine();
@@ -102,34 +116,29 @@ namespace xBot
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 0; i < args.Length; i++)
 			{
-				if (i + 1 < args.Length)
+				if (args[i].StartsWith("-silkroad="))
 				{
-					// Fill fields
-					switch (args[i])
-					{
-						case "-username":
-							Login_tbxUsername.Text = args[i];
-							break;
-						case "-password":
-							Login_tbxPassword.Text = args[i];
-							break;
-						case "-server":
-							Login_cmbxServer.Text = args[i];
-							break;
-						case "-charname":
-							Login_cmbxCharacter.Text = args[i];
-							break;
-					}
+					Login_cmbxSilkroad.Text = args[i].Substring(10);
 				}
-				else
+				else if (args[i].StartsWith("-username="))
 				{
-					// Checks
-					switch (args[i])
-					{
-						case "--client":
-							Login_rbnClient.Checked = true;
-							break;
-					}
+					Login_tbxUsername.Text = args[i].Substring(10);
+				}
+				else if (args[i].StartsWith("-password="))
+				{
+					Login_tbxPassword.Text = args[i].Substring(10);
+				}
+				else if (args[i].StartsWith("-server="))
+				{
+					Login_cmbxServer.Text = args[i].Substring(8);
+				}
+				else if (args[i].StartsWith("-charname="))
+				{
+					Login_cmbxCharacter.Text = args[i].Substring(11);
+				}
+				else if (args[i].Equals("--client"))
+				{
+					Login_rbnClient.Checked = true;
 				}
 			}
 			// Check if everything is correct to start auto login
@@ -227,6 +236,12 @@ namespace xBot
 			c.BackColor = c.Parent.BackColor;
 			c.Parent.Parent.Controls[c.Name + "_Panel"].Visible = true;
 		}
+		public void EnableControl(Control c, bool active)
+		{
+			WinAPI.InvokeIfRequired(c, () =>{
+				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
+			});
+		}
 		// Control Focus
 		private void Control_FocusEnter(object sender, EventArgs e)
 		{
@@ -275,28 +290,28 @@ namespace xBot
 			}
 		}
 		#endregion
-		public void setState(string text = "Ready", ProcessState state = ProcessState.Default)
+		public void LogProcess(string text = "Ready", ProcessState state = ProcessState.Default)
 		{
 			WinAPI.InvokeIfRequired(lblBotState, () => {
 				lblBotState.Text = text;
 				switch (state)
 				{
 					case ProcessState.Warning:
-						setStateColor(Color.FromArgb(202, 81, 0));
+						SetProcessColor(Color.FromArgb(202, 81, 0));
 						break;
 					case ProcessState.Disconnected:
-						setStateColor(Color.FromArgb(104, 33, 122));
+						SetProcessColor(Color.FromArgb(104, 33, 122));
 						break;
 					case ProcessState.Error:
-						setStateColor(Color.Red);
+						SetProcessColor(Color.Red);
 						break;
 					default:
-						setStateColor(Color.FromArgb(0, 122, 204));
+						SetProcessColor(Color.FromArgb(0, 122, 204));
 						break;
 				}
 			});
 		}
-		private void setStateColor(Color newColor)
+		private void SetProcessColor(Color newColor)
 		{
 			if (newColor == BackColor)
 				return;
@@ -310,9 +325,22 @@ namespace xBot
 			try
 			{
 				WinAPI.InvokeIfRequired(rtbxLogs, () => {
+					// Keep 256 lines as max capacity
 					if (rtbxLogs.Lines.Length > 256)
-						rtbxLogs.Text = rtbxLogs.Text.Substring(rtbxLogs.Text.IndexOf('\n'));
-					rtbxLogs.Text += "\n" + WinAPI.getDate() + " " + text;
+						rtbxLogs.Text = rtbxLogs.Text.Substring(rtbxLogs.Text.IndexOf("\n"));
+					rtbxLogs.Text += Environment.NewLine + WinAPI.getDate() + " " + text;
+				});
+			}
+			catch { }
+		}
+		public void LogMessageFilter(string message)
+		{
+			try
+			{
+				WinAPI.InvokeIfRequired(Character_rtbxMessageFilter, () => {
+					if (Character_rtbxMessageFilter.Lines.Length > 256)
+						Character_rtbxMessageFilter.Text = Character_rtbxMessageFilter.Text.Substring(Character_rtbxMessageFilter.Text.IndexOf("\n"));
+					Character_rtbxMessageFilter.Text += WinAPI.getDate() + " " + message + Environment.NewLine;
 				});
 			}
 			catch { }
@@ -322,9 +350,10 @@ namespace xBot
 			try
 			{
 				WinAPI.InvokeIfRequired(General_rtbxPackets, () => {
+					// Keep 1024 lines as max capacity
 					if (General_rtbxPackets.Lines.Length > 1024)
-						General_rtbxPackets.Text = General_rtbxPackets.Text.Substring(General_rtbxPackets.Text.IndexOf('\n'));
-					General_rtbxPackets.AppendText(packet + Environment.NewLine);
+						General_rtbxPackets.Text = General_rtbxPackets.Text.Substring(General_rtbxPackets.Text.IndexOf("\n"));
+					General_rtbxPackets.Text += packet + Environment.NewLine;
 				});
 			}
 			catch { }
@@ -334,11 +363,9 @@ namespace xBot
 			try
 			{
 				WinAPI.InvokeIfRequired(chat, () => {
-					if (chat.Lines.Length > 1024)
+					if (chat.Lines.Length > 512)
 						chat.Text = chat.Text.Substring(chat.Text.IndexOf('\n'));
-					if (player != "")
-						player += ":";
-					chat.Text += player + message + "\n";
+					chat.Text += player +": "+ message + Environment.NewLine;
 				});
 			}
 			catch { }
@@ -373,25 +400,28 @@ namespace xBot
 						case "START":
 							if (Login_cmbxSilkroad.Text == "")
 								return;
+							Info i = Info.Get;
 							// Check if database has been generated previously
-							if (!Info.Get.SelectDatabase(Login_cmbxSilkroad.Text))
+							if (!i.SelectDatabase(Login_cmbxSilkroad.Text))
 							{
 								MessageBox.Show(this, "The database \"" + General_tbxSilkroadName.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
-								Control_Click(General_btnPK2Path, null);
+								TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+								TabPageH_Option_Click(TabPageH_General_Option01, null);
 								return;
 							}
+							TreeNode silkroad = General_lstrSilkroads.Nodes[i.Silkroad];
 
-							c.Text = "STOP";
-							// Lock Silkroad selection
-							Login_cmbxSilkroad.Enabled = false;
-							General_btnAddSilkroad.Font = new Font(General_btnAddSilkroad.Font, FontStyle.Strikeout);
-
-							TreeNode silkroad = General_lstrSilkroads.Nodes[Login_cmbxSilkroad.Text];
-							// Clientless check
-							if (Login_rbnClientless.Checked)
+							// SR_Client Path check
+							if (!Login_rbnClientless.Checked)
 							{
-								Info.Get.Locale = byte.Parse(silkroad.Nodes["Locale"].Tag.ToString());
-								Info.Get.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
+								if (!silkroad.Nodes.ContainsKey("ClientPath"))
+								{
+									MessageBox.Show(this, "You need to select the SRO_Client path first.", "xBot", MessageBoxButtons.OK);
+									TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+									TabPageH_Option_Click(TabPageH_General_Option01, null);
+									return;
+								}
+								Bot.Get.ClientPath = (string)silkroad.Nodes["ClientPath"].Tag;
 							}
 
 							// Add possibles Gateways/Ports
@@ -401,53 +431,62 @@ namespace xBot
 							List<ushort> ports = new List<ushort>();
 							ports.Add((ushort)silkroad.Nodes["Port"].Tag);
 							if (hosts.Count == 0 || ports.Count == 0)
-								return;// Just in case
+								return; // Just in case
+							
+							i.Locale = byte.Parse(silkroad.Nodes["Locale"].Tag.ToString());
+							i.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
+
+							// Lock Silkroad selection
+							c.Text = "STOP";
+							EnableControl(Login_btnLauncher, false);
+							EnableControl(General_btnAddSilkroad, false);
+							Login_cmbxSilkroad.Enabled = false;
 
 							// HWID Setup
+							Bot b = Bot.Get;
 							ushort clientOp = (ushort)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag;
 							ushort serverOp = (ushort)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag;
 							string saveFrom = (string)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
 							string sendTo = (string)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
 							bool sendOnlyOnce = (bool)silkroad.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
-							Bot.Get.SetHWID(clientOp, saveFrom, serverOp, sendTo, sendOnlyOnce);
+							b.SetHWID(clientOp, saveFrom, serverOp, sendTo, sendOnlyOnce);
 
 							// Creating Proxy
-							Bot.Get.Proxy = new Proxy(Login_rbnClientless.Checked, hosts, ports);
-							Bot.Get.Proxy.RandomHost = (bool)silkroad.Nodes["RandomHost"].Tag;
-							Bot.Get.Proxy.Start();
+							b.Proxy = new Proxy(Login_rbnClientless.Checked, hosts, ports);
+							b.Proxy.RandomHost = (bool)silkroad.Nodes["RandomHost"].Tag;
+							b.Proxy.Start();
 							break;
 						case "STOP":
-							// Lock Silkroad selection
-							Login_cmbxSilkroad.Enabled = true;
-							General_btnAddSilkroad.Font = new Font(General_btnAddSilkroad.Font, FontStyle.Regular);
-							c.Text = "START";
 							Bot.Get.Proxy.Stop();
 							break;
 						case "LOGIN":
 							if (Login_tbxUsername.Text == "" || Login_tbxPassword.Text == "" || Login_cmbxServer.Text == "")
-							{
 								return;
-							}
-							c.Font = new Font(c.Font, FontStyle.Strikeout);
-							setState("Login...");
-							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text, (int)Login_cmbxServer.Tag);
+							Info.Get.Server = Login_cmbxServer.Text;
+							EnableControl(c, false);
+							LogProcess("Login...");
+							Bot.Get.LoginFromBot = true;
+							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text, (ushort)Login_cmbxServer.Tag);
 							break;
 						case "SELECT":
 							if (Login_cmbxCharacter.Text == "")
 								return;
-							c.Font = new Font(c.Font, FontStyle.Strikeout);
+							Info.Get.Charname = Login_cmbxCharacter.Text;
+							EnableControl(c, false);
 							PacketBuilder.SelectCharacter(Login_cmbxCharacter.Text);
 							break;
 					}
 					break;
-				case "Login_btnLoader":
-					if (File.Exists("edxSilkroadLoader6.exe"))
+				case "Login_btnLauncher":
+					if (Login_cmbxSilkroad.Text != "")
 					{
-						Process.Start("edxSilkroadLoader6.exe");
-					}
-					else
-					{
-						MessageBox.Show(this, "edxSilkroadLoader6 cannot be found at bot folder");
+						TreeNode silkroad = General_lstrSilkroads.Nodes[Login_cmbxSilkroad.Text];
+						if (!silkroad.Nodes.ContainsKey("LauncherPath"))
+						{
+							MessageBox.Show(this, "You need to select the Launcher path first.", "xBot", MessageBoxButtons.OK);
+							TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+							TabPageH_Option_Click(TabPageH_General_Option01, null);
+						}
 					}
 					break;
 				case "btnShowHideClient":
@@ -462,6 +501,7 @@ namespace xBot
 							{
 								WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
 								WinAPI.SetForegroundWindow(p);
+								WinAPI.EmptyWorkingSet(sro_client.Handle);
 							}
 							btnShowHideClient.ForeColor = Color.RoyalBlue;
 						}
@@ -500,6 +540,15 @@ namespace xBot
 						}
 					}
 					break;
+				case "Minimap_btnLoadMap":
+					// Try to load WebBrowser map
+					InitializeChromium();
+					if (Minimap_wbrChromeMap != null)
+					{
+						// Map loaded
+						Minimap_btnLoadMap.Parent.Controls.Remove(Minimap_btnLoadMap);
+					}
+					break;
 				case "General_btnPK2Path":
 					if (!Directory.Exists("Data"))
 						Directory.CreateDirectory("Data");
@@ -522,6 +571,46 @@ namespace xBot
 							}
 						}
 						WinAPI.SetForegroundWindow(this.Handle);
+					}
+					break;
+				case "General_btnLauncherPath":
+					using (OpenFileDialog fileDialog = new OpenFileDialog())
+					{
+						fileDialog.Multiselect = false;
+						fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+						fileDialog.ValidateNames = true;
+						fileDialog.Title = "Select your Silkroad Launcher";
+						fileDialog.FileName = "Silkroad.exe";
+						fileDialog.Filter = "Silkroad.exe (*.exe)|silkroad.exe|All executables (*.exe)|*.exe";
+						fileDialog.FilterIndex = 0;
+						if (fileDialog.ShowDialog() == DialogResult.OK)
+						{
+							General_btnLauncherPath.Tag = fileDialog.FileName;
+						}
+						else
+						{
+							General_btnLauncherPath.Tag = null;
+						}
+					}
+					break;
+				case "General_btnClientPath":
+					using (OpenFileDialog fileDialog = new OpenFileDialog())
+					{
+						fileDialog.Multiselect = false;
+						fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+						fileDialog.ValidateNames = true;
+						fileDialog.Title = "Select your SRO_Client.exe";
+						fileDialog.FileName = "SRO_Client.exe";
+						fileDialog.Filter = "SRO_Client.exe (sro_client.exe)|sro_client.exe|SRO_Client.exe (*.exe)|*.exe";
+						fileDialog.FilterIndex = 0;
+						if (fileDialog.ShowDialog() == DialogResult.OK)
+						{
+							General_btnClientPath.Tag = fileDialog.FileName;
+						}
+						else
+						{
+							General_btnClientPath.Tag = null;
+						}
 					}
 					break;
 				case "General_btnAddSilkroad":
@@ -566,6 +655,20 @@ namespace xBot
 						node.Name = "Port";
 						node.Tag = port;
 						server.Nodes.Add(node);
+						if (General_btnLauncherPath.Tag != null)
+						{
+							node = new TreeNode("Launcher Path : " + (string)General_btnLauncherPath.Tag);
+							node.Name = "LauncherPath";
+							node.Tag = General_btnLauncherPath.Tag;
+							server.Nodes.Add(node);
+						}
+						if (General_btnClientPath.Tag != null)
+						{
+							node = new TreeNode("Client Path : " + (string)General_btnClientPath.Tag);
+							node.Name = "ClientPath";
+							node.Tag = General_btnClientPath.Tag;
+							server.Nodes.Add(node);
+						}
 						node = new TreeNode("Version : " + version);
 						node.Name = "Version";
 						node.Tag = version;
@@ -627,7 +730,7 @@ namespace xBot
 
 						General_lstrSilkroads.Nodes.Add(server);
 						General_lstrSilkroads.SelectedNode = server;
-            Settings.SaveBotSettings();
+						Settings.SaveBotSettings();
 					}
 					break;
 				case "General_btnInjectPacket":
@@ -657,8 +760,7 @@ namespace xBot
 									Bot.Get.Proxy.InjectToServer(p);
 								else
 									Bot.Get.Proxy.InjectToClient(p);
-								LogPacket("Packet injected: [Opcode] 0x" + opcode.ToString("X4") + " " + (General_cbxInjectEncrypted.Checked ? "[Encrypted]" : "") + (General_cbxInjectMassive.Checked ? "[Massive]" : ""));
-								LogPacket("[Data] " + WinAPI.BytesToHexString(data));
+								LogPacket("Packet injected 0x" + opcode.ToString("X4"));
 							}
 							else
 							{
@@ -687,18 +789,20 @@ namespace xBot
 							General_lstvHost.Items.Add(host.Text);
 						General_cbxRandomHost.Checked = (bool)server.Nodes["RandomHost"].Tag;
 						General_tbxPort.Text = server.Nodes["Port"].Tag.ToString();
-						General_tbxLocale.Text = server.Nodes["Locale"].Tag.ToString();
+						General_btnLauncherPath.Tag = (server.Nodes.ContainsKey("LauncherPath") ? server.Nodes["LauncherPath"].Tag : null);
+						General_btnClientPath.Tag = (server.Nodes.ContainsKey("ClientPath") ? server.Nodes["ClientPath"].Tag : null);
 						General_tbxVersion.Text = server.Nodes["Version"].Tag.ToString();
+						General_tbxLocale.Text = server.Nodes["Locale"].Tag.ToString();
 						General_tbxHWIDClientOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag).ToString("X4");
 						General_cmbxHWIDClientSaveFrom.Text = (string)server.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
 						General_tbxHWIDServerOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag).ToString("X4");
 						General_cmbxHWIDServerSendTo.Text = (string)server.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
 						General_rtbxHWIDdata.Text = (string)server.Nodes["HWID"].Nodes["Data"].Tag;
 						General_cbxHWIDSendOnlyOnce.Checked = (bool)server.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
-						General_btnAddSilkroad.Font = new Font(General_btnAddSilkroad.Font, FontStyle.Regular);
+						if (Login_cmbxSilkroad.Enabled)
+							this.EnableControl(General_btnAddSilkroad, true);
 					}
 					break;
-
 			}
 		}
 		private void ListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -709,7 +813,7 @@ namespace xBot
 				case "Login_lstvServers":
 					if (l.SelectedItems.Count == 1)
 					{
-						Login_cmbxServer.Tag = int.Parse(l.SelectedItems[0].SubItems[3].Text);
+						Login_cmbxServer.Tag = ushort.Parse(l.SelectedItems[0].Name);
 						Login_cmbxServer.Text = l.SelectedItems[0].Text;
 					}
 					break;
@@ -727,7 +831,7 @@ namespace xBot
 			switch (c.Name)
 			{
 				case "Login_cmbxServer":
-					Login_cmbxServer.Tag = int.Parse(Login_lstvServers.Items[c.SelectedIndex].SubItems[3].Text);
+					Login_cmbxServer.Tag = ushort.Parse(Login_lstvServers.Items[c.SelectedIndex].Name);
 					Login_cmbxServer.Text = Login_lstvServers.Items[c.SelectedIndex].Text;
 					break;
 				case "Chat_cmbxMsgType":
@@ -746,12 +850,12 @@ namespace xBot
 				case "Login_rbnClient":
 					if (Login_rbnClient.Checked)
 					{
-						Login_btnLoader.Visible = true;
+						Login_btnLauncher.Visible = true;
 						Login_btnStart.Location = new Point(110, 14);
 					}
 					else
 					{
-						Login_btnLoader.Visible = false;
+						Login_btnLauncher.Visible = false;
 						Login_btnStart.Location = new Point(110, 32);
 					}
 					break;
@@ -786,13 +890,17 @@ namespace xBot
 					string silkroadkey = General_tbxSilkroadName.Text;
 					if (CleanSilkroadName(ref silkroadkey))
 					{
-						General_btnPK2Path.Font = new Font(General_btnPK2Path.Font, FontStyle.Regular);
+						EnableControl(General_btnPK2Path, true);
 						General_btnPK2Path.Tag = silkroadkey;
+						EnableControl(General_btnLauncherPath, true);
+						EnableControl(General_btnClientPath, true);
 					}
 					else
 					{
-						General_btnPK2Path.Font = new Font(General_btnPK2Path.Font, FontStyle.Strikeout);
+						EnableControl(General_btnPK2Path, false);
 						General_btnPK2Path.Tag = null;
+						EnableControl(General_btnLauncherPath, false);
+						EnableControl(General_btnClientPath, false);
 					}
 					break;
 			}
@@ -834,11 +942,10 @@ namespace xBot
 				case "Menu_lstrSilkroads_remove":
 					if (General_lstrSilkroads.SelectedNode != null && General_lstrSilkroads.SelectedNode.Parent == null)
 					{
-						TreeNode server = General_lstrSilkroads.SelectedNode;
-						while (server.Parent != null)
-							server = server.Parent;
-						Login_cmbxSilkroad.Items.Remove(server.Name);
-						server.Remove();
+						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == General_lstrSilkroads.SelectedNode.Name)
+							return; // Is actually being used
+						Login_cmbxSilkroad.Items.Remove(General_lstrSilkroads.SelectedNode.Name);
+						General_lstrSilkroads.SelectedNode.Remove();
 						Settings.SaveBotSettings();
 					}
 					break;
@@ -846,6 +953,7 @@ namespace xBot
 					if (General_lstvHost.SelectedItems.Count == 1)
 					{
 						General_lstvHost.SelectedItems[0].Remove();
+						Settings.SaveBotSettings();
 					}
 					break;
 			}
@@ -920,15 +1028,21 @@ namespace xBot
 		{
 			string text = (string)entity[SRAttribute.Name];
 			TreeNode node = new TreeNode();
-			if(text == "")
+			if(text != "")
 				node.Text = text;
 			else
 				node.Text = (string)entity[SRAttribute.Servername];
-			node.Name = entity[SRAttribute.UniqueID].ToString();
+			node.Name = ((uint)entity[SRAttribute.UniqueID]).ToString();
 			foreach (string str in entity.ToStringArray())
 				node.Nodes.Add(str);
 			WinAPI.InvokeIfRequired(lstrTESTING, () => {
 				lstrTESTING.Nodes.Add(node);
+			});
+		}
+		public void TESTING_Clear()
+		{
+      WinAPI.InvokeIfRequired(lstrTESTING, () => {
+				lstrTESTING.Nodes.Clear();
 			});
 		}
 		public void TESTING_RemoveSpawn(uint uniqueID)
@@ -939,29 +1053,32 @@ namespace xBot
 		}
 		private void TESTINGbtn_Click(object sender, EventArgs e)
 		{
-			SRObject a = new SRObject();
-			a[SRAttribute.X] = 863f;
-			a[SRAttribute.Y] = 44f;
-			a[SRAttribute.Z] = 714f;
-			a[SRAttribute.Region] = (ushort)24744;
-			Point p = a.getPosition();
-
+			Info.Get.SelectDatabase("JSRO.NET");
+			Packet p = new Packet(0x3019, false, false, WinAPI.HexStringToBytes("73 07 00 00 22 00 00 00 2D 05 3B 0E 00 00 00 3C 0E 00 00 00 3D 0E 00 00 00 34 0E 00 00 00 47 0E 00 00 05 00 00 7E 5D 23 01 99 65 00 80 68 44 6F 14 CF C2 00 60 D7 44 39 B7 01 01 99 65 A2 03 99 FF BB 06 01 00 00 00 00 00 80 41 00 00 48 42 00 00 C8 42 01 8A 0F 00 00 82 25 03 00 07 00 4A 6F 63 6B 65 72 6F 00 01 00 01 01 5B 6B 23 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 8B 07 00 00 44 00 00 00 37 07 35 06 00 00 00 7D 06 00 00 00 59 06 00 00 00 C6 06 00 00 00 A1 06 00 00 00 E9 06 00 00 00 BA 00 00 00 00 05 00 00 B3 B9 23 01 99 65 45 42 6D 44 7F 18 CA C2 81 00 D9 44 09 91 01 01 99 65 B5 03 9B FF C8 06 01 00 00 00 9A 99 99 41 01 00 70 42 00 00 C8 42 01 8A 0F 00 00 6C 2A 07 00 0C 00 69 44 6F 6E 54 43 61 72 65 5F 78 44 00 01 00 01 01 21 BA 23 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 84 07 00 00 40 00 00 01 37 05 41 0E 00 00 00 42 0E 00 00 00 43 0E 00 00 00 30 0E 00 00 00 86 2A 00 00 00 05 00 00 98 F9 23 01 99 65 00 00 6D 44 0B 81 CE C2 00 A0 DD 44 1C 77 01 01 99 65 B4 03 99 FF ED 06 01 00 00 00 00 00 80 41 00 00 48 42 00 00 C8 42 01 8A 0F 00 00 08 DF 02 00 0A 00 53 75 6D 6D 65 72 54 69 6D 65 00 01 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 3C 5D 00 00 5B 6B 23 01 99 65 00 80 68 44 6F 14 CF C2 00 60 D7 44 39 B7 01 01 99 65 A2 03 99 FF BB 06 01 00 00 00 00 00 34 42 00 00 16 43 00 00 C8 42 00 00 8F 08 00 00 21 BA 23 01 99 65 45 42 6D 44 7F 18 CA C2 81 00 D9 44 09 91 01 01 99 65 B5 03 9B FF C8 06 01 00 00 00 00 00 34 42 00 00 B4 42 00 00 C8 42 00 00 FF FF FF FF 54 00 8A 0F 00 00 38 3E 24 01 99 65 00 C0 6E 44 0A B5 C1 C2 00 20 D1 44 00 00 FF FF FF FF 54 00 8A 0F 00 00 85 40 24 01 99 65 00 80 65 44 66 4E D3 C2 00 40 DD 44 00 00"));
+			p.Lock();
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
+			PacketParser.EntitySpawn(p);
 		}
-		public void TESTING_EditSpawn(SRObject entity, SRAttribute att)
+		public void TESTING_EditSpawn(SRObject entity,SRAttribute att)
 		{
-			WinAPI.InvokeIfRequired(lstrTESTING, () => {
-				TreeNode n = lstrTESTING.Nodes["" + (uint)entity[SRAttribute.UniqueID]];
+			WinAPI.InvokeIfRequired(lstrTESTING, ()=> {
+				TreeNode n = lstrTESTING.Nodes[entity[SRAttribute.UniqueID].ToString()];
 				if (n.Nodes.ContainsKey(att.ToString()))
 					n.Nodes[att.ToString()].Text = "\"" + att + "\":" + entity[att];
 				else
 					n.Nodes.Add(att.ToString(), "\"" + att + "\":" + entity[att]);
 			});
 		}
-		public void Minimap_ObjectPointer_Add(uint UniqueID, string type, string htmlPopup, float x, float y, float z, ushort region)
+		public void Minimap_ObjectPointer_Add(uint UniqueID, string servername, string htmlPopup, float x, float y, float z, ushort region)
 		{
 			if (Minimap_wbrChromeMap != null)
 			{
-				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.AddExtraPointer('" + UniqueID + "','" + type + "','" + htmlPopup + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
+				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.AddExtraPointer('" + UniqueID + "','" + servername + "','" + htmlPopup + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
 			}
 		}
 		public void Minimap_ObjectPointer_Move(uint UniqueID, float x, float y, float z, ushort region)
@@ -971,11 +1088,19 @@ namespace xBot
 				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + ((int)x) + "," + ((int)y) + "," + ((int)z) + "," + region + ");", true);
 			}
 		}
+
 		public void Minimap_ObjectPointer_Remove(uint UniqueID)
 		{
 			if (Minimap_wbrChromeMap != null)
 			{
 				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
+			}
+		}
+		public void Minimap_ObjectPointer_Clear()
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.RemoveAllExtraPointers();", true);
 			}
 		}
 	}

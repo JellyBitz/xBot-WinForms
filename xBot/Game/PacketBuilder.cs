@@ -1,10 +1,11 @@
 ﻿using SecurityAPI;
-using xBot.Game;
-namespace xBot.Network.Packets
+using xBot.Network;
+
+namespace xBot.Game
 {
 	public static class PacketBuilder
 	{
-		public static void Login(string username, string password, int serverID)
+		public static void Login(string username, string password, ushort serverID)
 		{
 			Packet p = new Packet(Gateway.Opcode.CLIENT_LOGIN_REQUEST, true);
 			p.WriteUInt8(Info.Get.Locale);
@@ -12,7 +13,6 @@ namespace xBot.Network.Packets
 			p.WriteAscii(password);
 			p.WriteUInt16(serverID);
 			Bot.Get.Proxy.Gateway.InjectToServer(p);
-			Bot.Get.LoginWithBot = true;
 		}
 		public static void RequestCharacterList()
 		{
@@ -75,16 +75,16 @@ namespace xBot.Network.Packets
 		public static void SendChatAll(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.All);
-			p.WriteInt8(Window.Get.Chat_rtbxAll.Lines.Length); // Client chat index
+			p.WriteUInt8(Types.Chat.All);
+			p.WriteUInt8(Window.Get.Chat_rtbxAll.Lines.Length); // Client chat current index
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void SendChatPrivate(string player, string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.Private);
-			p.WriteInt8(Window.Get.Chat_rtbxPrivate.Lines.Length);
+			p.WriteUInt8(Types.Chat.Private);
+			p.WriteUInt8(Window.Get.Chat_rtbxPrivate.Lines.Length);
 			p.WriteAscii(player);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -92,32 +92,32 @@ namespace xBot.Network.Packets
 		public static void SendChatParty(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.Party);
-			p.WriteInt8(Window.Get.Chat_rtbxParty.Lines.Length);
+			p.WriteUInt8(Types.Chat.Party);
+			p.WriteUInt8(Window.Get.Chat_rtbxParty.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void SendChatGuild(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.Guild);
-			p.WriteInt8(Window.Get.Chat_rtbxGuild.Lines.Length);
+			p.WriteUInt8(Types.Chat.Guild);
+			p.WriteUInt8(Window.Get.Chat_rtbxGuild.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void SendChatUnion(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.Union);
-			p.WriteInt8(Window.Get.Chat_rtbxUnion.Lines.Length);
+			p.WriteUInt8(Types.Chat.Union);
+			p.WriteUInt8(Window.Get.Chat_rtbxUnion.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void SendChatAcademy(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteInt8(Types.Chat.Academy);
-			p.WriteInt8(Window.Get.Chat_rtbxAcademy.Lines.Length);
+			p.WriteUInt8(Types.Chat.Academy);
+			p.WriteUInt8(Window.Get.Chat_rtbxAcademy.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}

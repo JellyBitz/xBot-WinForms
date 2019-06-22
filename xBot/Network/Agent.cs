@@ -1,8 +1,8 @@
 ﻿using SecurityAPI;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using xBot.Game;
-using xBot.Network.Packets;
 
 namespace xBot.Network
 {
@@ -25,18 +25,23 @@ namespace xBot.Network
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
 				SERVER_CHARACTER_SELECTION_ACTION_RESPONSE = 0xB007,
-				SERVER_ENTITY_MOVEMENT = 0xB021,
 				SERVER_CHARACTER_DATA_BEGIN = 0x34A5,
 				SERVER_CHARACTER_DATA = 0x3013,
 				SERVER_CHARACTER_DATA_END = 0x34A6,
+				SERVER_CHARACTER_INFO_UPDATE = 0x303D,
+				SERVER_CHARACTER_EXPERIENCE_UPDATE = 0x3056,
+
 				SERVER_ENTITY_SPAWN = 0x3015,
 				SERVER_ENTITY_DESPAWN = 0x3016,
 				SERVER_ENTITY_GROUPSPAWN_BEGIN = 0x3017,
 				SERVER_ENTITY_GROUPSPAWN_END = 0x3018,
 				SERVER_ENTITY_GROUPSPAWN_DATA = 0x3019,
 				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
+				SERVER_ENTITY_MOVEMENT = 0xB021,
 				SERVER_CHAT_UPDATE = 0x3026,
 				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
+				SERVER_ENTITY_LEVEL_UP = 0x3054,
+				SERVER_ENTITY_BAR_UPDATE = 0x3057,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -51,7 +56,7 @@ namespace xBot.Network
 		public uint id { get; }
 		public string Host { get; }
 		public ushort Port { get; }
-		public Agent(uint queqeID,string host,ushort port)
+		public Agent(uint queqeID, string host, ushort port)
 		{
 			id = queqeID;
 			Host = host;
@@ -83,7 +88,8 @@ namespace xBot.Network
 		/// <returns>True if the packet is handled by the bot</returns>
 		public bool PacketHandler(Context context, Packet packet)
 		{
-			if (context == Local) {
+			if (context == Local)
+			{
 				// HWID setup (saving/updating data from client)
 				if (packet.Opcode == Opcode.CLIENT_HWID)
 				{
@@ -104,12 +110,7 @@ namespace xBot.Network
 					{
 						Packet p = new Packet(Opcode.CLIENT_HWID, false, false, hwidData);
 						Bot.Get.Proxy.Agent.InjectToServer(p);
-						Window w = Window.Get;
-						w.Log("HWID Sent!");
-						WinAPI.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
-						{
-							w.ToolTips.SetToolTip(w.General_rtbxHWIDdata, "HWID Sent!");
-						});
+						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
 					}
 				}
 			}
@@ -122,9 +123,19 @@ namespace xBot.Network
 		/// <returns>True if the packet won't be sent to the server</returns>
 		private bool Local_PacketHandler(Packet packet)
 		{
-			if (packet.Opcode == Opcode.CLIENT_AUTH_REQUEST && Bot.Get.LoginWithBot)
+			if (packet.Opcode == Opcode.CLIENT_AUTH_REQUEST && Bot.Get.LoginFromBot)
 			{
 				return true;
+			}
+			else if (packet.Opcode == Opcode.CLIENT_CHARACTER_SELECTION_JOIN_REQUEST)
+			{
+				Info.Get.Charname = packet.ReadAscii();
+				Window w = Window.Get;
+				w.EnableControl(w.Login_btnStart, false);
+			}
+			else if (packet.Opcode == Opcode.CLIENT_CONFIRM_SPAWN && !ClientlessMode)
+			{
+				Bot.Get._Event_Teleported();
 			}
 			return false;
 		}
@@ -135,7 +146,8 @@ namespace xBot.Network
 		/// <returns>True if the packet will be ignored by the client</returns>
 		private bool Remote_PacketHandler(Packet packet)
 		{
-			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && Bot.Get.LoginWithBot) {
+			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && Bot.Get.LoginFromBot)
+			{
 				string service = packet.ReadAscii();
 				if (service == "AgentServer")
 				{
@@ -152,24 +164,23 @@ namespace xBot.Network
 			}
 			else if (packet.Opcode == Opcode.SERVER_AUTH_RESPONSE)
 			{
+				Window w = Window.Get;
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					Window.Get.Log("Logged successfully!");
-					Window.Get.setState("Logged");
-					WinAPI.InvokeIfRequired(Window.Get.Login_btnStart, () =>
-					{
-						Window.Get.Login_btnStart.Font = new Font(Window.Get.Login_btnStart.Font, FontStyle.Strikeout);
-					});
+					// Generating Bot Event to keep this method clean
+					Bot.Get._Event_Connected();
+
+					w.Log("Logged successfully!");
+					w.LogProcess("Logged");
+					w.EnableControl(w.Login_btnStart, false);
 					if (ClientlessMode)
-					{
 						PacketBuilder.RequestCharacterList();
-					}
 				}
 				else
 				{
 					byte error = packet.ReadByte();
-					Window.Get.Log("Login error [" + error + "]");
+					w.Log("Login error [" + error + "]");
 				}
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_SELECTION_ACTION_RESPONSE)
@@ -182,13 +193,13 @@ namespace xBot.Network
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					w.setState("Loading...");
+					w.LogProcess("Loading...");
 				}
 				else
 				{
 					int error = packet.ReadUShort();
 					w.Log("Error: " + error);
-					w.setState("Error", Window.ProcessState.Error);
+					w.LogProcess("Error", Window.ProcessState.Error);
 				}
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_BEGIN)
@@ -201,19 +212,27 @@ namespace xBot.Network
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_END)
 			{
-				// Generating Bot Event to keep this method clean
-				Bot.Get._Event_Teleported();
-
 				PacketParser.CharacterDataEnd(packet);
-        if (ClientlessMode)
+				if (ClientlessMode)
 				{
+					// Generating Bot Events to keep methods clean
+					Bot.Get._Event_Teleported();
+
 					// Confirm spawn after loading
-					Packet protocol = new Packet(Opcode.CLIENT_CONFIRM_UNKNOWN);
+					Packet protocol = new Packet(Opcode.CLIENT_CONFIRM_SPAWN);
 					InjectToServer(protocol);
 
-					protocol = new Packet(Opcode.CLIENT_CONFIRM_SPAWN);
+					protocol = new Packet(Opcode.CLIENT_CONFIRM_UNKNOWN);
 					InjectToServer(protocol);
 				}
+			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_INFO_UPDATE)
+			{
+				PacketParser.CharacterInfoUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_EXPERIENCE_UPDATE)
+			{
+				PacketParser.CharacterExperienceUpdate(packet);
 			}
 			else if (packet.Opcode == Opcode.GLOBAL_XTRAP_IDENTIFICATION && ClientlessMode)
 			{
@@ -259,6 +278,14 @@ namespace xBot.Network
 			else if (packet.Opcode == Opcode.SERVER_ENTITY_MOVEMENT)
 			{
 				PacketParser.EntityMovement(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_ENTITY_LEVEL_UP)
+			{
+				PacketParser.EntityLevelUp(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_ENTITY_BAR_UPDATE)
+			{
+				PacketParser.EntityBarUpdate(packet);
 			}
 			return false;
 		}

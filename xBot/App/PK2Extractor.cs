@@ -15,7 +15,7 @@ namespace xBot
 	public partial class PK2Extractor : Form
 	{
 		private Thread tGenerator;
-		private const byte CPU_BREAK = 50;
+		private const byte CPU_BREAK = 100;
 		private string pk2FileName { get; }
 		private string dbName { get; }
 		private PK2Reader pk2;
@@ -131,8 +131,12 @@ namespace xBot
 			}
 			catch (Exception ex)
 			{
-				// Not a big deal, can be added manually
-				Log("Extracting error: " + ex.Message);
+				Log("Extracting error, the version cannot be readed. "+ ex.Message);
+				LogState("Error");
+				WinAPI.InvokeIfRequired(btnStart, () => {
+					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				});
+				return;
 			}
 
 			try
@@ -165,8 +169,11 @@ namespace xBot
 			}
 			catch (Exception ex)
 			{
-				// Not a big deal
-				Log("Extracting error: " + ex.Message);
+				Log("Extracting error, gateways cannot be readed. " + ex.Message);
+				LogState("Error");
+				WinAPI.InvokeIfRequired(btnStart, () => {
+					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				});
 			}
 
 			try
@@ -181,8 +188,11 @@ namespace xBot
 			}
 			catch (Exception ex)
 			{
-				// Not a big deal
-				Log("Extracting error: " + ex.Message);
+				Log("Extracting error, the gateport cannot be readed. " + ex.Message);
+				LogState("Error");
+				WinAPI.InvokeIfRequired(btnStart, () => {
+					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				});
 			}
 
 			// Recreating database
@@ -242,7 +252,8 @@ namespace xBot
 			LoadTeleportData();
 			Thread.Sleep(CPU_BREAK);
 			Log("Adding Teleports & Structures...");
-			AddTeleports();
+			AddTeleportBuildings();
+			AddTeleportLinks();
 			Thread.Sleep(CPU_BREAK);
 			Log("Adding Levels...");
 			AddLevels();
@@ -252,6 +263,15 @@ namespace xBot
 			db.Close();
 			WinAPI.InvokeIfRequired(w.General_btnAddSilkroad, () => {
 				w.General_btnAddSilkroad.Font = new Font(w.General_btnAddSilkroad.Font, FontStyle.Regular);
+			});
+			WinAPI.InvokeIfRequired(this, () => {
+				WinAPI.SetForegroundWindow(this.Handle);
+			});
+			WinAPI.InvokeIfRequired(w, () => {
+				w.Control_Click(w.General_btnLauncherPath, null);
+			});
+			WinAPI.InvokeIfRequired(w, () => {
+				w.Control_Click(w.General_btnClientPath, null);
 			});
 			WinAPI.InvokeIfRequired(w, () => {
 				w.Control_Click(w.General_btnAddSilkroad, null);
@@ -269,6 +289,7 @@ namespace xBot
 			char[] split = new char[] { '\t' };
 			string[] data;
 			byte language = 8; // English
+			bool languageCheck = false; // Secure the switch at starting only
 
 			// short file, load all lines to memory
 			string[] files = pk2.GetFileText("TextDataName.txt").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -289,6 +310,27 @@ namespace xBot
 								LogState("Loading " + data[1]);
 
 							// Check if has translation
+							if (!languageCheck && language == 8 && (data[language] == "0" || data[language] == ""))
+							{
+								language++; // Vietnamese
+								Log("English not found. Switching language to Vietnamese");
+								try
+								{
+									if (language == 9 && (data[language] == "0" || data[language] == ""))
+									{
+										Log("Vietnamese not found. Switching language to Korean");
+										language = 2; // Korean
+									}
+								}
+								catch {
+									Log("Languages not found. Contact me to add language support");
+									language = 1; // Korean
+									// Just save only references and fix specific server
+								}
+							}
+							if (!languageCheck)
+								languageCheck = true;
+							
 							if (data[language] != "0")
 								NameReferences[data[1]] = data[language];
 
@@ -345,8 +387,9 @@ namespace xBot
 							{
 								data = line.Split(split, StringSplitOptions.None);
 								// Extract name if has one
+
 								name = "";
-								if (data[5] != "xxx")
+                if (data[5] != "xxx")
 									name = GetName(data[5]);
 								if (name == "")
 									name = data[2];
@@ -422,7 +465,7 @@ namespace xBot
 								name = GetName(data[5]);
 							if (name == "")
 								name = data[2];
-							// Extract attacking skills if it has one
+							// Extract attacking skills if has one
 							skills = "";
 							index = 83;
 							while (data[index] != "0")
@@ -693,8 +736,8 @@ namespace xBot
 					{
 						data = line.Split(split, StringSplitOptions.None);
 
-						// 80% display
-						if (rand.Next(1, 1000) <= 800)
+						// 50% display
+						if (rand.Next(1, 1000) <= 500)
 							LogState("Loading " + data[2]);
 						TeleportBuildings[data[1]] = data;
 
@@ -704,10 +747,68 @@ namespace xBot
 				}
 			}
 		}
-		public void AddTeleports()
+		public void AddTeleportBuildings()
+		{
+			string sql = "CREATE TABLE teleportbuildings (";
+			sql += "id INTEGER PRIMARY KEY,";
+			sql += "servername VARCHAR(64), ";
+			sql += "name VARCHAR(64),";
+			sql += "tid1 INTEGER,";
+			sql += "tid2 INTEGER,";
+			sql += "tid3 INTEGER,";
+			sql += "tid4 INTEGER";
+			sql += ");";
+			db.ExecuteQuery(sql);
+
+			// vars constantly used
+			Random rand = new Random();
+			string line, name;
+			char[] split = new char[] { '\t' };
+			string[] data;
+
+			TeleportBuildings = new Dictionary<string, string[]>();
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportBuilding.txt")))
+			{
+				// using faster sqlite performance
+				db.Begin();
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+						// Extract name if has one
+						name = "";
+            if (data[5] != "xxx")
+							name = GetName(data[5]);
+						if (name == "")
+							name = data[2];
+
+						// 50% display
+						if (rand.Next(1, 1000) <= 500)
+							LogState("Adding " + data[2]);
+						// INSERT
+						db.Prepare("INSERT INTO teleportbuildings (id,servername,name,tid1,tid2,tid3,tid4) VALUES(?,?,?,?,?,?,?)");
+						db.Bind("id", data[1]);
+						db.Bind("servername", data[2]);
+						db.Bind("name", name);
+						db.Bind("tid1", data[9]);
+						db.Bind("tid2", data[10]);
+						db.Bind("tid3", data[11]);
+						db.Bind("tid4", data[12]);
+						db.ExecuteQuery();
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+				db.End();
+			}
+		}
+		public void AddTeleportLinks()
 		{
 			// JOIN teleports & links (since will be required all time)
-			string sql = "CREATE TABLE teleports (";
+			string sql = "CREATE TABLE teleportlinks (";
 			sql += "sourceid INTEGER,";
 			sql += "destinationid INTEGER,";
 			sql += "id INTEGER,";
@@ -773,7 +874,8 @@ namespace xBot
 							{
 								// Teleports without gate
 								name = GetName(TeleportData[data[1]][4]);
-								tid1 = tid2 = tid3 = tid4 = "0";
+								tid1 = "4";
+								tid2 = tid3 = tid4 = "0";
 							}
 						}
 						if (name == "")
@@ -783,7 +885,7 @@ namespace xBot
 						destination = GetName(TeleportData[data[2]][4]);
 						if (destination == "")
 						{
-							db.ExecuteQuery("SELECT name FROM teleports WHERE sourceid=" + data[2]);
+							db.ExecuteQuery("SELECT name FROM teleportlinks WHERE sourceid=" + data[2]);
 							List<NameValueCollection> result = db.getResult();
 							if (result.Count != 0)
 								destination = result[0]["name"];
@@ -807,7 +909,7 @@ namespace xBot
 						if (rand.Next(1, 1000) <= 300)
 							LogState("Adding " + TeleportData[data[1]][2]);
 						// INSERT
-						db.Prepare("INSERT INTO teleports (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,region,spawn_x,spawn_y,pos_x,pos_y) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+						db.Prepare("INSERT INTO teleportlinks (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,region,spawn_x,spawn_y,pos_x,pos_y) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 						db.Bind("sourceid", data[1]);
 						db.Bind("destinationid", data[2]);
 						db.Bind("id", TeleportData[data[1]][3]);

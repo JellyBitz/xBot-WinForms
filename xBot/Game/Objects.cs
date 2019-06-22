@@ -32,6 +32,7 @@ namespace xBot.Game
 		Level,
 		/// <summary>
 		/// Maximum level reached.
+		/// <para>Data type : <see cref="byte"/></para>
 		/// </summary>
 		LevelMax,
 		/// <summary>
@@ -46,22 +47,27 @@ namespace xBot.Game
 		ExpMax,
 		/// <summary>
 		/// Skill points.
+		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		SP,
 		/// <summary>
 		/// Skill points experience.
+		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		SPExp,
 		/// <summary>
 		/// Current strength points.
+		/// <para>Data type : <see cref="ushort"/></para>
 		/// </summary>
 		STR,
 		/// <summary>
 		/// Current intelligence points.
+		/// <para>Data type : <see cref="ushort"/></para>
 		/// </summary>
 		INT,
 		/// <summary>
 		/// Stat points remaining.
+		/// <para>Data type : <see cref="ushort"/></para>
 		/// </summary>
 		StatPoints,
 		/// <summary>
@@ -568,7 +574,11 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		DropUniqueID,
-
+		/// <summary>
+		/// Bad status check from universal pills.
+		/// <para>Data type : <see cref="bool"/></para>
+		/// </summary>
+		hasBadStatus,
 
 
 		/// <summary>
@@ -591,11 +601,6 @@ namespace xBot.Game
 		/// Unknown byte from Character (Possibly some status)
 		/// </summary>
 		unkByte05,
-
-
-
-
-		
 
 		/// <summary>
 		/// <para>Data type : <see cref="xBot.Game.SRObjectCollection"/></para>
@@ -664,7 +669,8 @@ namespace xBot.Game
 			Item,
 			Mastery,
 			Skill,
-			Quest
+			Quest,
+			EventZone
 		}
 		private Dictionary<string, object> _attributes;
 		private uint id;
@@ -730,11 +736,21 @@ namespace xBot.Game
 						_type = Type.Teleport;
 						goto case Type.Teleport;
 					}
+					data = Info.Get.getTeleportLink(ID);
+					if (data != null)
+					{
+						_type = Type.Teleport;
+						goto case Type.Teleport;
+					}
 					data = Info.Get.getItem(ID);
 					if (data != null)
 					{
 						_type = Type.Item;
 						goto case Type.Item;
+					}
+					if(id == uint.MaxValue)
+					{
+						_type = Type.EventZone;
 					}
 					break;
 				case Type.Model:
@@ -746,10 +762,6 @@ namespace xBot.Game
 					tid2 = byte.Parse(data["tid2"]);
 					tid3 = byte.Parse(data["tid3"]);
 					tid4 = byte.Parse(data["tid4"]);
-
-
-
-
 					break;
 				case Type.Item:
 					if (data == null)
@@ -760,20 +772,18 @@ namespace xBot.Game
 					tid2 = byte.Parse(data["tid2"]);
 					tid3 = byte.Parse(data["tid3"]);
 					tid4 = byte.Parse(data["tid4"]);
-
-
-
 					break;
 				case Type.Teleport:
 					if (data == null)
 						data = Info.Get.getTeleport(ID);
+					if (data == null)
+						data = Info.Get.getTeleportLink(ID);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
-					tid1 = byte.Parse(data["tid1"]);
+					tid1 = 4;
 					tid2 = byte.Parse(data["tid2"]);
 					tid3 = byte.Parse(data["tid3"]);
 					tid4 = byte.Parse(data["tid4"]);
-
 					break;
 				case Type.Skill:
 					if (data == null)
@@ -781,7 +791,6 @@ namespace xBot.Game
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					this[SRAttribute.SkillAttributes] = data["attributes"];
-
 					break;
 				case Type.Mastery:
 
@@ -790,8 +799,6 @@ namespace xBot.Game
 
 					break;
 			}
-
-
 		}
 		/// <summary>
 		/// Load the object keeping all attributes previously saved
@@ -800,7 +807,7 @@ namespace xBot.Game
 		/// <param name="type">type</param>
 		public void Load(string ServerName, Type Type)
 		{
-			
+			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Get or set the attributes from game object.

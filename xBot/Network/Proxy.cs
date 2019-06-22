@@ -1,6 +1,7 @@
 ﻿using SecurityAPI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Net.Sockets;
@@ -15,9 +16,11 @@ namespace xBot.Network
 		public Gateway Gateway { get { return _gateway; } }
 		private Agent _agent;
 		public Agent Agent { get { return _agent; } }
-		private Socket _socketBinded;
-		private int _reconnections;
+		private Thread ThreadWaitConnection;
+		private int _LocalReconnectionNumber;
+		private int _RemoteReconnectionNumber;
 		public bool ClientlessMode { get; }
+
 		private Thread PingHandler;
 		private bool _running;
 		public bool isRunning
@@ -33,7 +36,7 @@ namespace xBot.Network
 		public List<string> GatewayHosts { get; }
 		public Proxy(bool ClientlessMode, List<string> Hosts,List<ushort> Ports)
 		{
-			this.ClientlessMode = ClientlessMode;
+      this.ClientlessMode = ClientlessMode;
 			GatewayHosts = Hosts;
 			RandomHost = false;
 			GatewayPorts = Ports;
@@ -70,8 +73,9 @@ namespace xBot.Network
 		private string SelectHost()
 		{
 			if (RandomHost)
-				return GatewayHosts[rand.Next(GatewayHosts.Count)];
-			lastHostIndexSelected++;
+				lastHostIndexSelected = rand.Next(GatewayHosts.Count);
+			else
+				lastHostIndexSelected++;
 			if (lastHostIndexSelected == GatewayHosts.Count)
 				lastHostIndexSelected = 0;
 			return GatewayHosts[lastHostIndexSelected];
@@ -86,78 +90,55 @@ namespace xBot.Network
 		private void ThreadGateway()
 		{
 			_gateway = new Gateway(this.SelectHost(), this.SelectPort());
-			_socketBinded = bindSocket("127.0.0.1", 20190);
+
 			Window w = Window.Get;
-			if (!ClientlessMode)
+			Socket SocketBinded = bindSocket("127.0.0.1", 20190);
+      if (!ClientlessMode)
 			{
-				Gateway.Local.Socket = _socketBinded;
-				w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
-				w.setState("Waiting client connection...", Window.ProcessState.Warning);
+				Gateway.Local.Socket = SocketBinded;
 				try
 				{
+					w.LogProcess("Executing EdxLoader...");
+					EdxLoader loader = new EdxLoader(Bot.Get.ClientPath);
+					loader.SetPatches(true,true,false);
+					loader.StartClient(false, Info.Get.Locale,0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
+					
+					WaitConnection(60,ref _LocalReconnectionNumber, 10);
+					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
+					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
-					w.setState();
-				}
-				catch { Reset(); return; }
+					w.LogProcess("Connected");
+					ThreadWaitConnection.Abort();
+					_LocalReconnectionNumber = 0;
+        }
+				catch { return; }
 			}
-			Gateway.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			if (_reconnections == 0)
-			{
-				w.Log("Connecting to Gateway server [" + Gateway.Host + ":" + Gateway.Port + "]");
-				w.setState("Waiting server connection...");
-			}
-			else
-			{
-				w.Log("Reconnecting to gateway server [" + Gateway.Host + ":" + Gateway.Port + "] (" + _reconnections + "/10)");
-				w.setState("Waiting server connection...", Window.ProcessState.Warning);
-				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
-					w.Login_btnStart.Text = "STOP";
-				});
-			}
-			DateTime dateConnecting = new DateTime(DateTime.Now.Ticks);
 			try
 			{
+				Gateway.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				w.Log("Connecting to Gateway server [" + Gateway.Host + ":" + Gateway.Port + "]");
+				w.LogProcess("Waiting server connection...");
+				
+				WaitConnection(60, ref _RemoteReconnectionNumber, 10);
 				Gateway.Remote.Socket.Connect(Gateway.Host, Gateway.Port);
+				w.Log("Connected");
+				w.LogProcess("Connected");
+				ThreadWaitConnection.Abort();
+				_RemoteReconnectionNumber = 0;
 			}
-			catch
-			{
-				int duration = (new DateTime(DateTime.Now.Ticks - dateConnecting.Ticks)).Second;
-				// Reconnecting 10 times, 60 second minimum delay (10 minutes)
-				if (duration < 60)
-				{
-					Thread.Sleep((60 - duration) * 1000);
-				}
-				if (ClientlessMode && _reconnections < 10 && _running)
-				{
-					_reconnections++;
-					Reset();
-					Start();
-					return;
-				}
-				else
-				{
-					w.Log("Failed to connect to Gateway server");
-					Stop();
-				}
-				return;
-			}
-			w.Log("Connected");
-			w.setState("Connected");
+			catch { return; }
 			try
 			{
 				// Handle easily by iterating
 				List<Context> gws = new List<Context>();
-				if (!ClientlessMode)
-				{
+				gws.Add(Gateway.Remote);
+				if (!ClientlessMode){
 					gws.Add(Gateway.Local);
-				}
-				else
-				{
+				}else{
 					PingHandler = new Thread(ThreadPing);
 					PingHandler.Start();
 				}
-				gws.Add(Gateway.Remote);
-				
+				// Running process
 				while (_running)
 				{
 					// Network input event processing
@@ -203,18 +184,21 @@ namespace xBot.Network
 									if (result == 1)
 									{
 										_agent = new Agent(packet.ReadUInt(), packet.ReadAscii(), packet.ReadUShort());
-										Thread agThread = new Thread(ThreadAgent);
+
+										string[] ip_port = SocketBinded.LocalEndPoint.ToString().Split(':');
+										Thread agThread = new Thread((ThreadStart)delegate() {
+											ThreadAgent(ip_port[0], int.Parse(ip_port[1])+1);
+                    });
 										agThread.Priority = ThreadPriority.AboveNormal;
 										agThread.Start();
-										// Generating Bot Event to keep this method clean
-										Bot.Get._Event_Connected();
+
 										Thread.Sleep(100);
 										// Send packet about client listeninig
 										Packet agPacket = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
 										agPacket.WriteUInt8(result);
 										agPacket.WriteUInt32(Agent.id);
-										agPacket.WriteAscii(((IPEndPoint)_socketBinded.LocalEndPoint).Address.ToString());
-										agPacket.WriteUInt16(((IPEndPoint)_socketBinded.LocalEndPoint).Port + 1);
+										agPacket.WriteAscii(((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString());
+										agPacket.WriteUInt16(((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1);
 										context.RelaySecurity.Send(agPacket);
 									}
 									else if (result == 2)
@@ -227,10 +211,8 @@ namespace xBot.Network
 													uint maxAttempts = packet.ReadUInt();
 													uint attempts = packet.ReadUInt();
 													w.Log("Password entry has failed (" + attempts + " / " + maxAttempts + " attempts)");
-													w.setState("Password failed", Window.ProcessState.Warning);
-													WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
-														w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
-													});
+													w.LogProcess("Password failed", Window.ProcessState.Warning);
+													w.EnableControl(w.Login_btnStart, true);
 													break;
 												}
 											case 2:
@@ -245,15 +227,14 @@ namespace xBot.Network
 													ushort endMinute = packet.ReadUShort();
 													ushort endSecond = packet.ReadUShort();
 													w.Log("Account banned till [" + endDay + "/" + endMonth + "/" + endYear + " " + endHour + "/" + endMinute + "/" + endSecond + "]. Reason: " + blockedReason);
-													WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
-														w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
-													});
+													w.EnableControl(w.Login_btnStart, true);
 												}
 												break;
 											default:
-												w.Log("Login error C" + error);
+												w.Log("Login error [" + error+"]");
 												break;
 										}
+										context.RelaySecurity.Send(packet);
 									}
 								}
 								else if (!Gateway.PacketHandler(context, packet)
@@ -314,7 +295,7 @@ namespace xBot.Network
 			catch (Exception ex)
 			{
 				CloseGateway();
-				w.LogPacket("[G] Error: " + ex.Message + Environment.NewLine);
+				w.LogPacket("[G] Error: " + ex.Message);
 				if (_agent == null)
 				{
 					// Reset proxy
@@ -323,32 +304,31 @@ namespace xBot.Network
 				}
 			}
 		}
-		private void ThreadAgent()
+		private void ThreadAgent(string Host, int Port)
 		{
 			Window w = Window.Get;
 			// Connect AgentClient to Proxy
 			if (!ClientlessMode)
 			{
-				string[] localAgent = _socketBinded.LocalEndPoint.ToString().Split(':');
-				Agent.Local.Socket = bindSocket(localAgent[0], int.Parse(localAgent[1]) + 1);
-				w.setState("Waiting client connection...", Window.ProcessState.Warning);
+				Agent.Local.Socket = bindSocket(Host, Port);
+				w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
 				try
 				{
 					Agent.Local.Socket = Agent.Local.Socket.Accept();
-					w.setState();
+					w.LogProcess();
 				}
 				catch { Reset(); return; }
 			}
 			Agent.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			try
 			{
-				w.setState("Waiting server connection...");
+				w.LogProcess("Waiting server connection...");
 				Agent.Remote.Socket.Connect(Agent.Host, Agent.Port);
 			}
 			catch
 			{
 				w.Log("Failed to connect to the server");
-				w.setState();
+				w.LogProcess();
 				Reset();
 				return;
 			}
@@ -463,7 +443,7 @@ namespace xBot.Network
 		private Socket bindSocket(string ip, int port)
 		{
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			for (int i = port; i < UInt16.MaxValue; i += 2)
+			for (int i = port; i < ushort.MaxValue; i += 2)
 			{
 				try
 				{
@@ -477,6 +457,31 @@ namespace xBot.Network
 			}
 			return null;
 		}
+		/// <summary>
+		/// Wait a connection and try to reconnect the proxy if is necessary.
+		/// </summary>
+		/// <param name="seconds">Maximum time for waiting</param>
+		/// <param name="nReconnection">Current connection counter</param>
+		/// <param name="maxReconection">Max connections to stop</param>
+		private void WaitConnection(int seconds,ref int nReconnection,int maxReconection)
+		{
+			int refnReconnection = nReconnection;
+      ThreadWaitConnection = (new Thread((ThreadStart)delegate {
+				while (true)
+				{
+					if (seconds == 0)
+					{
+						Reset();
+						Start();
+						refnReconnection++;
+						return;
+					}
+					Thread.Sleep(1000);
+					seconds--;
+				}
+			}));
+      ThreadWaitConnection.Start();
+		}
 		private void ThreadPing()
 		{
 			while (_running)
@@ -489,16 +494,16 @@ namespace xBot.Network
 						Packet p = new Packet(Agent.Opcode.GLOBAL_PING);
 						Agent.InjectToServer(p);
 					}
-					catch { /*Connection closed*/ }
+					catch { /*Connection closed*/ _agent = null; }
 				}
-				else if (Gateway != null)
+			  if (Gateway != null)
 				{
 					try
 					{
 						Packet p = new Packet(Gateway.Opcode.GLOBAL_PING);
 						Gateway.InjectToServer(p);
 					}
-					catch { /*Connection closed*/ }
+					catch { /*Connection closed*/ _gateway = null; }
 				}
 				Thread.Sleep(6666);
 			}
@@ -544,30 +549,30 @@ namespace xBot.Network
 			_running = false;
 			if (PingHandler != null)
 				PingHandler.Abort();
-			Bot.Get.LoginWithBot = false;
 			Bot.Get.CloseSROClient();
 			CloseGateway();
 			CloseAgent();
 		}
 		public void Stop()
 		{
+			if (ThreadWaitConnection != null)
+				ThreadWaitConnection.Abort();
 			Reset();
-			Info.Get.Database.Close();
-			_reconnections = 0;
+			
+      Info.Get.Database.Close();
 			Window w = Window.Get;
-			w.setState();
-			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
-				w.Login_btnStart.Text = "START";
-				w.Login_btnStart.Font = new Font(w.Login_btnStart.Font, FontStyle.Regular);
-			});
-
+			w.LogProcess("Disconnected");
+			// Reset locket controls
 			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
 				w.Login_cmbxSilkroad.Enabled = true;
 			});
-			WinAPI.InvokeIfRequired(w.General_btnAddSilkroad, () => {
-				w.General_btnAddSilkroad.Font = new Font(w.General_btnAddSilkroad.Font, FontStyle.Regular);
+			w.EnableControl(w.General_btnAddSilkroad, true);
+			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
+				w.Login_btnStart.Text = "START";
+				w.EnableControl(w.Login_btnStart, true);
 			});
-
+			w.EnableControl(w.Login_btnLauncher, true);
+			
 			WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () => {
 				w.Login_gbxCharacters.Visible = false;
 			});

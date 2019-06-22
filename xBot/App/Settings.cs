@@ -36,9 +36,13 @@ namespace xBot
 					server["Hosts"] = hosts;
 					server["RandomHost"] = (bool)node.Nodes["RandomHost"].Tag;
 					server["Port"] = (ushort)node.Nodes["Port"].Tag;
+					if (node.Nodes.ContainsKey("LauncherPath"))
+						server["LauncherPath"] = (string)node.Nodes["LauncherPath"].Tag;
+					if (node.Nodes.ContainsKey("ClientPath"))
+						server["ClientPath"] = (string)node.Nodes["ClientPath"].Tag;
 					server["Version"] = (uint)node.Nodes["Version"].Tag;
 					server["Locale"] = (byte)node.Nodes["Locale"].Tag;
-
+					
 					JObject hwid = new JObject();
 					server["HWID"] = hwid;
 
@@ -114,15 +118,30 @@ namespace xBot
 						node.Tag = (ushort)silkroad["Port"];
 						s.Nodes.Add(node);
 
-						node = new TreeNode("Locale : "+ silkroad["Locale"]);
-						node.Name = "Locale";
-						node.Tag = (byte)silkroad["Locale"];
-            s.Nodes.Add(node);
+						if (silkroad.ContainsKey("LauncherPath"))
+						{
+							node = new TreeNode("Launcher Path : " + silkroad["LauncherPath"]);
+							node.Name = "LauncherPath";
+							node.Tag = (string)silkroad["LauncherPath"];
+							s.Nodes.Add(node);
+						}
+						if (silkroad.ContainsKey("ClientPath"))
+						{
+							node = new TreeNode("Client Path : " + silkroad["ClientPath"]);
+							node.Name = "ClientPath";
+							node.Tag = (string)silkroad["ClientPath"];
+							s.Nodes.Add(node);
+						}
 
 						node = new TreeNode("Version : " + silkroad["Version"]);
 						node.Name = "Version";
 						node.Tag = (uint)silkroad["Version"];
 						s.Nodes.Add(node);
+
+						node = new TreeNode("Locale : "+ silkroad["Locale"]);
+						node.Name = "Locale";
+						node.Tag = (byte)silkroad["Locale"];
+            s.Nodes.Add(node);
 
 						ushort hwidClientOp = ushort.Parse((string)silkroad["HWID"]["Client"]["Opcode"], System.Globalization.NumberStyles.HexNumber);
 						ushort hwidServerOp = ushort.Parse((string)silkroad["HWID"]["Server"]["Opcode"],System.Globalization.NumberStyles.HexNumber);
@@ -154,10 +173,8 @@ namespace xBot
 						hwidserver.Nodes.Add(node);
 
 						string hwidData = "";
-            if (File.Exists("Data\\"+ key + ".hwid"))
-						{
-							hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + key + ".hwid"));
-						}
+            if (File.Exists("Data\\"+ key.Name + ".hwid"))
+							hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + key.Name + ".hwid"));
 						node = new TreeNode("Data : " + (hwidData == ""? "None": hwidData));
 						node.Name = "Data";
 						node.Tag = hwidData;
@@ -174,7 +191,7 @@ namespace xBot
 					}
 				}
 				if (root.ContainsKey("AutoMagically")) {
-					JToken autoMagic = root["AutoMagically"];
+					JObject autoMagic = (JObject)root["AutoMagically"];
 					try
 					{
 						w.General_cbxCreateChar.Checked = (bool)autoMagic["CreateCharacter"];
@@ -226,7 +243,7 @@ namespace xBot
 		{
 
 		}
-		public static void LoadCharacterSettings()
+		public static void LoadCharacterSettings(string silkroad,string server,string charname)
 		{
 
 		}

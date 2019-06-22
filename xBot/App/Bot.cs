@@ -19,28 +19,32 @@ namespace xBot
 		/// </summary>
 		public bool isAutoLogin { get; set; }
 		public Proxy Proxy { get; set; }
-		public bool LoginWithBot { get; set; }
-		private bool _triggerJoinedToGame;
-		private byte[] _HWID;
+		public string ClientPath { get; set; }
+		public bool LoginFromBot { get; set; }
 		/// <summary>
 		/// Check if the HWID is loaded.
 		/// </summary>
 		public bool hasHWID { get { return _HWID != null; } }
-		private string _SaveFrom;
+		private byte[] _HWID;
 		public string SaveHWIDFrom { get { return _SaveFrom; } }
-		private string _SendTo;
+		private string _SaveFrom;
 		public string SendHWIDTo { get { return _SendTo; } }
-		private int _HWIDLoadsCount;
+		private string _SendTo;
+		private int _HWIDLoadsCounter;
 		/// <summary>
-		/// Check if the character is on game.
+		/// Check if the character is in game.
 		/// </summary>
 		public bool inGame {
 			get { return _triggerJoinedToGame; }
 		}
+		private bool _triggerJoinedToGame;
 		private Bot()
 		{
 			_HWID = null;
     }
+		/// <summary>
+		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
+		/// </summary>
 		public static Bot Get
 		{
 			get
@@ -50,9 +54,12 @@ namespace xBot
 				return _this;
 			}
 		}
-		public void LogError(string error)
+		public void LogError(string error,Packet p = null)
 		{
-			File.AppendAllText("dump.log", WinAPI.getDate() + error + Environment.NewLine);
+			string msg = WinAPI.getDate() + error+Environment.NewLine;
+			if (p != null)
+				msg += "["+p.Opcode.ToString("X4")+"]["+WinAPI.BytesToHexString(p.GetBytes())+"]" + Environment.NewLine;
+			File.AppendAllText("dump.log", msg);
 		}
 		public string getRandomCharname()
 		{
@@ -79,35 +86,27 @@ namespace xBot
 		/// <param name="Data">Packet string format</param>
 		public void SetHWID(ushort cOp,string SaveFrom, ushort sOp, string SendTo,bool SendOnlyOnce)
 		{
-			Agent.Opcode.CLIENT_HWID = cOp;
-			Agent.Opcode.SERVER_HWID = sOp;
-			Gateway.Opcode.CLIENT_HWID = cOp;
-			Gateway.Opcode.SERVER_HWID = sOp;
+			Agent.Opcode.CLIENT_HWID = Gateway.Opcode.CLIENT_HWID = cOp;
+			Agent.Opcode.SERVER_HWID = Gateway.Opcode.SERVER_HWID = sOp;
 			_SaveFrom = SaveFrom;
 			_SendTo = SendTo;
-			_HWIDLoadsCount = SendOnlyOnce?-1:0;
+			_HWIDLoadsCounter = SendOnlyOnce?-1:0;
 		}
 		public void SaveHWID(byte[] data)
 		{
-			File.WriteAllBytes("Data\\" + Info.Get.Database.Name + ".hwid", data);
-			string hwid = WinAPI.BytesToHexString(data);
-			Window w = Window.Get;
-			WinAPI.InvokeIfRequired(w.General_lstrSilkroads, () => {
-				w.General_lstrSilkroads.Nodes[Info.Get.Database.Name].Nodes["HWID"].Nodes["Data"].Text = "Data : "+hwid;
-				w.General_lstrSilkroads.Nodes[Info.Get.Database.Name].Nodes["HWID"].Nodes["Data"].Tag = hwid;
-			});
-			Settings.SaveBotSettings();
+			Window.Get.LogProcess("HWID Detected : " + WinAPI.BytesToHexString(data));
+			File.WriteAllBytes("Data\\" + Info.Get.Silkroad+ ".hwid", data);
 		}
 		public byte[] LoadHWID()
 		{
-			if (File.Exists("Data\\"+Info.Get.Database.Name+".hwid"))
+			if (File.Exists("Data\\"+ Info.Get.Silkroad + ".hwid"))
 			{
-				if (_HWIDLoadsCount >= -1)
+				if (_HWIDLoadsCounter >= -1)
 				{
-					if (_HWIDLoadsCount == -1)
-						_HWIDLoadsCount = -2;
-					_HWIDLoadsCount++;
-					return File.ReadAllBytes("Data\\" + Info.Get.Database.Name + ".hwid");
+					if (_HWIDLoadsCounter == -1)
+						_HWIDLoadsCounter = -2;
+					_HWIDLoadsCounter++;
+					return File.ReadAllBytes("Data\\" + Info.Get.Silkroad + ".hwid");
 				}
 			}
 			return null;
@@ -118,27 +117,54 @@ namespace xBot
 			if (p != null)
 				p.Kill();
 		}
-		#region (Events)
+		#region (Game & Bot Events)
+		/// <summary>
+		/// Called when the account has been logged succesfully and the Agent has been connected.
+		/// </summary>
 		private void Event_Connected()
 		{
 
 		}
+		/// <summary>
+		/// Called right before all character data is saved & spawn packet is detected.
+		/// </summary>
 		private void Event_Teleported()
 		{
 			if (inGame)
 			{
-				Window.Get.setState("Teleported");
+				Window.Get.LogProcess("Teleported");
 			}
+			// Recommended to wait 10 seconds to do some action
+
 		}
+		/// <summary>
+		/// Just before <see cref="Event_Teleported"/> is called. Generated only once per character login.
+		/// </summary>
 		private void Event_JoinedToGame()
 		{
 			Window w = Window.Get;
-			w.setState("In Game");
+			w.LogProcess("In Game");
 			w.Log("Joined successfully to the game");
 
+			Info i = Info.Get;
+			Settings.LoadCharacterSettings(i.Silkroad,i.Server,i.Charname);
+		}
+		/// <summary>
+		/// Called when the Health or Mana from the character has changed.
+		/// </summary>
+		public void Event_BarUpdated()
+		{
+			// Check for pots, skills, etc..
+		}
+		/// <summary>
+		/// Called only when the maximum level has been increased.
+		/// </summary>
+		public void Event_LevelUp()
+		{
+			// Up stats points, skills, etc..
 		}
 		#endregion
-		#region (Event System Handler)
+		#region (Event Hooks & System handler)
 		public void _Event_Connected()
 		{
 			_triggerJoinedToGame = false;
@@ -147,12 +173,16 @@ namespace xBot
 		
 		public void _Event_Teleported()
 		{
-			Event_Teleported();
-			if (_triggerJoinedToGame == false)
+			// Reset data saved previously
+			Info.Get.EntityList.Clear();
+			Window.Get.Minimap_ObjectPointer_Clear();
+			Window.Get.TESTING_Clear();
+      if (_triggerJoinedToGame == false)
 			{
 				_triggerJoinedToGame = true;
 				Event_JoinedToGame();
 			}
+			Event_Teleported();
 		}
 		#endregion
 	}

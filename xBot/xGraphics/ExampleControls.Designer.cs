@@ -1,4 +1,4 @@
-﻿namespace xGUI
+﻿namespace xGraphics
 {
 	partial class ExampleControls
 	{
@@ -28,26 +28,26 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem23 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem24 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem25 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem26 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem27 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem28 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem29 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem30 = new System.Windows.Forms.ListViewItem("12313");
-			System.Windows.Forms.ListViewItem listViewItem31 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem32 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem33 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem34 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem35 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem36 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem37 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem38 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem39 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem40 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem61 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem62 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem63 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem64 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem65 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem66 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem67 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem68 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem69 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem70 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem71 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem72 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem73 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem74 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem75 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem76 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem77 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem78 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem79 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem80 = new System.Windows.Forms.ListViewItem("12313");
 			this.TabPageV_Control01 = new System.Windows.Forms.Panel();
 			this.tabvOptionIcon10 = new System.Windows.Forms.Label();
 			this.TabPageV_Control01_Option10 = new System.Windows.Forms.Button();
@@ -122,6 +122,9 @@
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.TabPageH_Party_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Party_Option04_Panel = new System.Windows.Forms.Panel();
+			this.General_gbxPacketFilter = new System.Windows.Forms.GroupBox();
+			this.General_cbxShowPacketClient = new System.Windows.Forms.CheckBox();
+			this.General_cbxInjectEncrypted = new System.Windows.Forms.CheckBox();
 			this.TabPageV_Control01.SuspendLayout();
 			this.TabPageH_Control01.SuspendLayout();
 			this.TabPageH_Control01_Option01_Panel.SuspendLayout();
@@ -132,6 +135,7 @@
 			this.TabPageH_Party.SuspendLayout();
 			this.TabPageH_Party_Option02_Panel.SuspendLayout();
 			this.groupBox1.SuspendLayout();
+			this.General_gbxPacketFilter.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TabPageV_Control01
@@ -951,16 +955,16 @@
 			this.Party_lstvLeaders.FullRowSelect = true;
 			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.Party_lstvLeaders.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem21,
-            listViewItem22,
-            listViewItem23,
-            listViewItem24,
-            listViewItem25,
-            listViewItem26,
-            listViewItem27,
-            listViewItem28,
-            listViewItem29,
-            listViewItem30});
+            listViewItem61,
+            listViewItem62,
+            listViewItem63,
+            listViewItem64,
+            listViewItem65,
+            listViewItem66,
+            listViewItem67,
+            listViewItem68,
+            listViewItem69,
+            listViewItem70});
 			this.Party_lstvLeaders.Location = new System.Drawing.Point(10, 51);
 			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
 			this.Party_lstvLeaders.MultiSelect = false;
@@ -1150,16 +1154,16 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem31,
-            listViewItem32,
-            listViewItem33,
-            listViewItem34,
-            listViewItem35,
-            listViewItem36,
-            listViewItem37,
-            listViewItem38,
-            listViewItem39,
-            listViewItem40});
+            listViewItem71,
+            listViewItem72,
+            listViewItem73,
+            listViewItem74,
+            listViewItem75,
+            listViewItem76,
+            listViewItem77,
+            listViewItem78,
+            listViewItem79,
+            listViewItem80});
 			this.listView1.Location = new System.Drawing.Point(10, 51);
 			this.listView1.Margin = new System.Windows.Forms.Padding(0);
 			this.listView1.MultiSelect = false;
@@ -1224,12 +1228,62 @@
 			this.TabPageH_Party_Option04_Panel.TabIndex = 8;
 			this.TabPageH_Party_Option04_Panel.Visible = false;
 			// 
+			// General_gbxPacketFilter
+			// 
+			this.General_gbxPacketFilter.Controls.Add(this.General_cbxInjectEncrypted);
+			this.General_gbxPacketFilter.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_gbxPacketFilter.ForeColor = System.Drawing.Color.LightGray;
+			this.General_gbxPacketFilter.Location = new System.Drawing.Point(244, 190);
+			this.General_gbxPacketFilter.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
+			this.General_gbxPacketFilter.Name = "General_gbxPacketFilter";
+			this.General_gbxPacketFilter.Size = new System.Drawing.Size(181, 70);
+			this.General_gbxPacketFilter.TabIndex = 17;
+			this.General_gbxPacketFilter.TabStop = false;
+			this.General_gbxPacketFilter.Tag = "Source Sans Pro";
+			this.General_gbxPacketFilter.Text = "Groupbox";
+			// 
+			// General_cbxShowPacketClient
+			// 
+			this.General_cbxShowPacketClient.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxShowPacketClient.FlatAppearance.BorderSize = 0;
+			this.General_cbxShowPacketClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxShowPacketClient.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_cbxShowPacketClient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxShowPacketClient.Location = new System.Drawing.Point(433, 223);
+			this.General_cbxShowPacketClient.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxShowPacketClient.Name = "General_cbxShowPacketClient";
+			this.General_cbxShowPacketClient.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxShowPacketClient.Size = new System.Drawing.Size(94, 24);
+			this.General_cbxShowPacketClient.TabIndex = 18;
+			this.General_cbxShowPacketClient.Tag = "Source Sans Pro";
+			this.General_cbxShowPacketClient.Text = "Client";
+			this.General_cbxShowPacketClient.UseVisualStyleBackColor = false;
+			// 
+			// General_cbxInjectEncrypted
+			// 
+			this.General_cbxInjectEncrypted.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxInjectEncrypted.FlatAppearance.BorderSize = 0;
+			this.General_cbxInjectEncrypted.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxInjectEncrypted.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.General_cbxInjectEncrypted.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxInjectEncrypted.Location = new System.Drawing.Point(45, 23);
+			this.General_cbxInjectEncrypted.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxInjectEncrypted.Name = "General_cbxInjectEncrypted";
+			this.General_cbxInjectEncrypted.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxInjectEncrypted.Size = new System.Drawing.Size(90, 24);
+			this.General_cbxInjectEncrypted.TabIndex = 18;
+			this.General_cbxInjectEncrypted.Tag = "Source Sans Pro";
+			this.General_cbxInjectEncrypted.Text = "Encryped";
+			this.General_cbxInjectEncrypted.UseVisualStyleBackColor = false;
+			// 
 			// ExampleControls
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
 			this.ClientSize = new System.Drawing.Size(800, 742);
+			this.Controls.Add(this.General_cbxShowPacketClient);
+			this.Controls.Add(this.General_gbxPacketFilter);
 			this.Controls.Add(this.TabPageV_Control01_Option04_Panel);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.Login_gbxAccount);
@@ -1262,6 +1316,7 @@
 			this.TabPageH_Party_Option02_Panel.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
+			this.General_gbxPacketFilter.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1342,5 +1397,8 @@
 		public System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Panel TabPageH_Party_Option03_Panel;
 		private System.Windows.Forms.Panel TabPageH_Party_Option04_Panel;
+		private System.Windows.Forms.GroupBox General_gbxPacketFilter;
+		public System.Windows.Forms.CheckBox General_cbxShowPacketClient;
+		private System.Windows.Forms.CheckBox General_cbxInjectEncrypted;
 	}
 }

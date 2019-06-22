@@ -50,6 +50,7 @@
 		public static class LifeState
 		{
 			public const byte
+				Unborn = 0,
 				Alive = 1,
 				Dead = 2;
 		}
@@ -117,7 +118,14 @@
 				NPC = 13,
 				Academy = 16;
 		}
-		
+		public static class BarUpdate	{
+			public const byte
+				HP = 1,
+				MP = 2,
+				HPMP = 3,
+				BadStatus = 4,
+				EntityHPMP = 5;
+    }
 		public static class CharacterSelectionAction
 		{
 			public const byte
@@ -157,7 +165,6 @@
 				P2N_TALK = 4,
 				OPNMKT_DEAL = 6;
 		}
-
     public static class GuildMemberAuthority
 		{
 			public const byte

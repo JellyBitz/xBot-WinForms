@@ -1,7 +1,6 @@
 ﻿using SecurityAPI;
 using System.Collections.Generic;
 using xBot.Game;
-using xBot.Network.Packets;
 
 namespace xBot.Network
 {
@@ -85,13 +84,8 @@ namespace xBot.Network
 					if (hwidData != null)
 					{
 						Packet p = new Packet(Opcode.CLIENT_HWID, false, false, hwidData);
-						Bot.Get.Proxy.Agent.InjectToServer(p);
-						Window w = Window.Get;
-						w.Log("HWID Sent!");
-						WinAPI.InvokeIfRequired(w.General_rtbxHWIDdata, () =>
-						{
-							w.ToolTips.SetToolTip(w.General_rtbxHWIDdata, "HWID Sent");
-						});
+						Bot.Get.Proxy.Gateway.InjectToServer(p);
+						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
 					}
 				}
 			}
@@ -109,10 +103,27 @@ namespace xBot.Network
 				string service = packet.ReadAscii();
 				if (service == "GatewayServer")
 				{
-					Info.Get.Locale = packet.ReadByte();
-					packet.ReadAscii();
-					Info.Get.Version = packet.ReadUInt();
+					byte locale = packet.ReadByte();
+					packet.ReadAscii(); // SR_CLIENT
+					uint version = packet.ReadUInt();
+					
+					Info i = Info.Get;
+					if (i.Version != version)
+						Window.Get.Log("Warning: The bot database is outdate, try to update to avoid future errors");
+					i.Version = version;
 				}
+			}
+			else if (packet.Opcode == Opcode.CLIENT_LOGIN_REQUEST)
+			{
+				packet.ReadByte(); // locale
+				packet.ReadAscii(); // id
+				packet.ReadAscii(); // psw
+				ushort serverID = packet.ReadUShort(); // server id
+				
+				Window w = Window.Get;
+				WinAPI.InvokeIfRequired(w.Login_lstvServers, ()=> {
+					Info.Get.Server = w.Login_lstvServers.Items.Find(serverID.ToString(), false)[0].Text;
+        });
 			}
 			return false;
 		}
@@ -143,13 +154,14 @@ namespace xBot.Network
 						this.InjectToServer(p);
 						break;
 					case 2:
-						Window.Get.Log("Client version incorrect (outdated) or the server is down");
+						Window.Get.Log("Client Version incorrect (outdated) or the server is down");
 						Bot.Get.Proxy.Stop();
 						break;
 				}
 			}
 			else if (packet.Opcode == Opcode.SERVER_SHARD_LIST_RESPONSE)
 			{
+				Bot.Get.LoginFromBot = false;
 				PacketParser.ShardListResponse(packet);
 			}
 			return false;

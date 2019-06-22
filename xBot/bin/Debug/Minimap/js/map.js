@@ -391,12 +391,9 @@ var SilkroadMap = function(){
 			var b_url = 'images/silkroad/minimap/icon/';
 			var obj_char = new L.Icon({
 				iconUrl: b_url+'character.png',
-				shadowUrl: b_url+'character_shadow.png',
-				iconSize:     [25,41],
-				shadowSize: [25,41],
-				iconAnchor:   [12,40],
-				shadowAnchor: [12,40],
-				popupAnchor:  [0,-41]
+				iconSize:     [16,16],
+				iconAnchor:   [8,16],
+				popupAnchor:  [0,-16]
 			});
 			var p = map_marker_char_pos;
 			map_marker_char = L.marker(SilkroadToMap(p[0],p[1],p[2],p[3]),{icon:obj_char}).bindPopup('Your Position').addTo(map);
@@ -590,7 +587,7 @@ var SilkroadMap = function(){
 			map_marker_char_pos = null;
 			updateMapLayer(map_layer);
 		},
-		AddExtraPointer(uniqueKey,type,html,x,y,z=0,r=0){
+		AddExtraPointer(uniqueKey,servername,html,x,y,z=0,r=0){
 			if(!map_pointers[uniqueKey]){
 				map_pointers[uniqueKey] = [];
 			}
@@ -598,50 +595,40 @@ var SilkroadMap = function(){
 			map_pointers[uniqueKey]["y"] = y;
 			map_pointers[uniqueKey]["z"] = z;
 			map_pointers[uniqueKey]["r"] = r;
-			map_pointers[uniqueKey]["type"] = type;
 			map_pointers[uniqueKey]["html"] = html;
 			// create marker
 			var b_url = 'images/silkroad/minimap/icon/';
 
-			if(type.startsWith("CHAR_")){
+			if(servername.startsWith("CHAR_")){
 				map_pointers[uniqueKey]["icon"] = new L.Icon({
 					iconUrl: b_url+'character.png',
-					shadowUrl: b_url+'character_shadow.png',
-					iconSize:     [25,41],
-					shadowSize: [25,41],
-					iconAnchor:   [12,40],
-					shadowAnchor: [12,40],
-					popupAnchor:  [0,-41]
+					iconSize:     [16,16],
+					iconAnchor:   [8,16],
+					popupAnchor:  [0,-16]
 				});
 			}
-			else if(type.startsWith("MOB_")){
+			else if(servername.startsWith("COS_")){
+				map_pointers[uniqueKey]["icon"] = new L.Icon({
+					iconUrl: b_url+'cos.png',
+					iconSize:     [16,16],
+					iconAnchor:   [8,16],
+					popupAnchor:  [0,-16]
+				});
+			}
+			else if(servername.startsWith("MOB_")){
 				map_pointers[uniqueKey]["icon"] = new L.Icon({
 					iconUrl: b_url+'mob.png',
-					iconSize:     [25,41],
-					iconAnchor:   [12,40],
-					popupAnchor:  [0,-41]
+					iconSize:     [16,16],
+					iconAnchor:   [8,16],
+					popupAnchor:  [0,-16]
 				});
 			}
-			else if(type == "NPC_CH_POTION"){
-				map_pointers[uniqueKey]["icon"] = new L.Icon({
-					iconUrl: b_url+'xy_potion.png',
-					iconSize:	[23,23],
-					iconAnchor:	[12,11],
-					popupAnchor:[0,-6]
-				});
-			}else if(type == "NPC_CH_WAREHOUSE"){
-				map_pointers[uniqueKey]["icon"] = new L.Icon({
-					iconUrl: b_url+'xy_warehouse.png',
-					iconSize:	[23,23],
-					iconAnchor:	[12,11],
-					popupAnchor:[0,-6]
-				});
-			}else{
+			else if(servername.startsWith("NPC_")){
 				map_pointers[uniqueKey]["icon"] = new L.Icon({
 					iconUrl: b_url+'xy_npc.png',
-					iconSize:	[11,15],
-					iconAnchor:	[6,7],
-					popupAnchor:[0,-7]
+					iconSize:     [11,15],
+					iconAnchor:   [6,7],
+					popupAnchor:  [0,-15]
 				});
 			}
 			// force marker update
@@ -667,7 +654,7 @@ var SilkroadMap = function(){
 				delete map_pointers[uniqueKey];
 			}
 		},
-		RemoveAllExtraPointers(uniqueKey){
+		RemoveAllExtraPointers(){
 			map_pointers = [];
 		}
 	};
