@@ -61,6 +61,16 @@ namespace xBot.Properties {
         }
         
         /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap About {
+            get {
+                object obj = ResourceManager.GetObject("About", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Busca un recurso adaptado de tipo System.Byte[].
         /// </summary>
         internal static byte[] fa_brands_400 {
@@ -106,16 +116,6 @@ namespace xBot.Properties {
         internal static System.Drawing.Bitmap ProjexNET_40x40 {
             get {
                 object obj = ResourceManager.GetObject("ProjexNET_40x40", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ProjexNET_40x401 {
-            get {
-                object obj = ResourceManager.GetObject("ProjexNET_40x401", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

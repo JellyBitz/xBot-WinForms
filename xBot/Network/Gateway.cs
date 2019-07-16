@@ -10,8 +10,8 @@ namespace xBot.Network
 		{
 			// static opcodes could be edited at realtime (for different vSRO types)
 			public static ushort
-				CLIENT_HWID = 0,
-				SERVER_HWID = 0;
+				CLIENT_HWID_RESPONSE = 0,
+				SERVER_HWID_REQUEST = 0;
 			public const ushort
 				CLIENT_PATCH_REQUEST = 0x6100,
 				CLIENT_SHARD_LIST_REQUEST = 0x6101,
@@ -44,10 +44,16 @@ namespace xBot.Network
 			// Setup cycle : (Client < > Proxy < > Server)
 			Remote.RelaySecurity = Local.Security; // Client < Proxy < Server
 			Local.RelaySecurity = Remote.Security; // Client > Proxy > Server
-			// ignore list
-			IgnoreOpcodeClient = new List<ushort>(new ushort[] { Opcode.GLOBAL_HANDSHAKE, Opcode.GLOBAL_HANDSHAKE_OK });
+
+			IgnoreOpcodeClient = new List<ushort>(); // ignore list
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_HANDSHAKE);
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_HANDSHAKE_OK);
 			IgnoreOpcodeClient.Add(Opcode.GLOBAL_IDENTIFICATION); // proxy to remote is handled by API
-			IgnoreOpcodeServer = new List<ushort>(new ushort[] { Opcode.GLOBAL_HANDSHAKE, Opcode.GLOBAL_HANDSHAKE_OK });
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_PING); // handling ping manually
+
+			IgnoreOpcodeServer = new List<ushort>(); // ignore list
+			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE);
+			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE_OK);
 		}
 		public bool ClientlessMode { get { return Local.Socket == null; } }
 		public bool IgnoreOpcode(ushort opcode, Context c)
@@ -66,9 +72,9 @@ namespace xBot.Network
 		{
 			if (context == Local) {
 				// HWID setup (saving/updating data from client)
-				if (packet.Opcode == Opcode.CLIENT_HWID)
+				if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
 				{
-					if (Bot.Get.SaveHWIDFrom == "Gateway" || Bot.Get.SaveHWIDFrom == "Both")
+					if (Bot.Get.HWIDSaveFrom == "Gateway" || Bot.Get.HWIDSaveFrom == "Both")
 					{
 						Bot.Get.SaveHWID(packet.GetBytes());
 					}
@@ -76,15 +82,15 @@ namespace xBot.Network
 				return Local_PacketHandler(packet);
 			}
 			// HWID setup (sending data to server)
-			if (packet.Opcode == Opcode.SERVER_HWID && ClientlessMode && Bot.Get.hasHWID)
+			if (packet.Opcode == Opcode.SERVER_HWID_REQUEST && ClientlessMode)
 			{
-				if (Bot.Get.SendHWIDTo == "Gateway" || Bot.Get.SaveHWIDFrom == "Both")
+				if (Bot.Get.HWIDSendTo == "Gateway" || Bot.Get.HWIDSendTo == "Both")
 				{
 					byte[] hwidData = Bot.Get.LoadHWID();
 					if (hwidData != null)
 					{
-						Packet p = new Packet(Opcode.CLIENT_HWID, false, false, hwidData);
-						Bot.Get.Proxy.Gateway.InjectToServer(p);
+						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
+						InjectToServer(p);
 						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
 					}
 				}
@@ -115,14 +121,16 @@ namespace xBot.Network
 			}
 			else if (packet.Opcode == Opcode.CLIENT_LOGIN_REQUEST)
 			{
+				Info i = Info.Get;
+
 				packet.ReadByte(); // locale
 				packet.ReadAscii(); // id
 				packet.ReadAscii(); // psw
-				ushort serverID = packet.ReadUShort(); // server id
-				
+				i.ServerID = packet.ReadUShort().ToString();
+
 				Window w = Window.Get;
 				WinAPI.InvokeIfRequired(w.Login_lstvServers, ()=> {
-					Info.Get.Server = w.Login_lstvServers.Items.Find(serverID.ToString(), false)[0].Text;
+					i.Server = w.Login_lstvServers.Items.Find(i.ServerID, false)[0].Text;
         });
 			}
 			return false;

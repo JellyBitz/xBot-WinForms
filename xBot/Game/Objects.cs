@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace xBot.Game
 {
@@ -45,6 +46,11 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="ulong"/></para>
 		/// </summary>
 		ExpMax,
+		/// <summary>
+		/// Maximum experience from Job currently used.
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
+		JobExpMax,
 		/// <summary>
 		/// Skill points.
 		/// <para>Data type : <see cref="uint"/></para>
@@ -116,7 +122,7 @@ namespace xBot.Game
 		/// </summary>
 		InventoryAvatar,
 		/// <summary>
-		/// Item Plus.
+		/// Item Plus. Value increased by using elixirs.
 		/// <para>Data type : <see cref="byte"/></para>
 		/// </summary>
 		Plus,
@@ -147,10 +153,14 @@ namespace xBot.Game
 		MPMax,
 		/// <summary>
 		/// Experience Icon.
-		/// <para>Data type : <see cref="Types.Exp"/></para>
-		/// <para>Used on : Character</para>
+		/// <para>Data type : <see cref="Types.ExpIcon"/></para>
 		/// </summary>
-		ExpType,
+		ExpIconType,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
+		GatheredExpPoint,
 		/// <summary>
 		/// Daily kills on PK mode.
 		/// <para>Data type : <see cref="byte"/></para>
@@ -254,7 +264,6 @@ namespace xBot.Game
 		/// <summary>
 		/// Pet state.
 		/// <para>Data type : <see cref="Types.PetState"/></para>
-		/// <para>Used on : <see cref="SRAttribute.Inventory"/></para>
 		/// </summary>
 		PetState,
 		/// <summary>
@@ -379,18 +388,17 @@ namespace xBot.Game
 		Region,
 		/// <summary>
 		/// Position X of the map.
-		/// <para>Data type : <see cref="float"/></para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		X,
 		/// <summary>
 		/// Position Y of the map.
-		/// <para>Data type : <see cref="float"/></para>
-		/// <para>Used on : Character</para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		Y,
 		/// <summary>
 		/// Position Z of the map.
-		/// <para>Data type : <see cref="float"/></para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		Z,
 		/// <summary>
@@ -415,51 +423,51 @@ namespace xBot.Game
 		MovementRegion,
 		/// <summary>
 		/// Movement offset position X of the map.
-		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		MovementOffsetX,
 		/// <summary>
 		/// Movement offset position Y of the map.
-		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		MovementOffsetY,
 		/// <summary>
 		/// Movement offset position Z of the map.
-		/// <para>Data type : <see cref="int"/> (if is on dungeons) or <see cref="short"/></para>
+		/// <para>Data type : <see cref="int"/></para>
 		/// </summary>
 		MovementOffsetZ,
 		/// <summary>
-		/// Cause of the movement.
-		/// <para>Data type : <see cref="Types.MovementSource"/></para>
+		/// Movement action.
+		/// <para>Data type : <see cref="Types.MovementAction"/></para>
 		/// </summary>
-		MovementSource,
+		MovementActionType,
 		/// <summary>
 		/// New arrow direction from the character at the map after the movement.
 		/// <para>Data type : <see cref="ushort"/></para>
 		/// </summary>
 		MovementAngle,
 		/// <summary>
-		/// Dead or alive entity state.
+		/// Current entity state.
 		/// <para>Data type : <see cref="Types.LifeState"/></para>
 		/// </summary>
 		LifeState,
 		/// <summary>
-		/// Graphic animation.
+		/// Motion being used.
 		/// <para>Data type : <see cref="Types.MotionState"/></para>
 		/// </summary>
 		MotionState,
 		/// <summary>
-		/// Graphic animation.
+		/// Game restrictions comes with client graphic animation.
 		/// <para>Data type : <see cref="Types.PlayerState"/></para>
 		/// </summary>
-		PlayerStatus,
+		PlayerState,
 		/// <summary>
-		/// Walking speed at percentage.
+		/// Walking speed percentage.
 		/// <para>Data type : <see cref="float"/></para>
 		/// </summary>
 		SpeedWalking,
 		/// <summary>
-		/// Running speed at percentage.
+		/// Running speed percentage.
 		/// <para>Data type : <see cref="float"/></para>
 		/// </summary>
 		SpeedRunning,
@@ -526,7 +534,6 @@ namespace xBot.Game
 		/// <summary>
 		/// Check if has transport activated
 		/// <para>Data type : <see cref="bool"/></para>
-		/// <para>Used on : Character</para>
 		/// </summary>
 		hasTransport,
 		/// <summary>
@@ -535,15 +542,15 @@ namespace xBot.Game
 		/// </summary>
 		isFighting,
 		/// <summary>
-		/// Transport Unique ID from Job.
+		/// Transport Unique ID.
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		TransportUniqueID,
 		/// <summary>
-		/// Info about CTF Event.
+		/// Check the CTF Event.
 		/// <para>Data type : <see cref="Types.CaptureTheFlag"/></para>
 		/// </summary>
-		PVPCaptureTheFlagType,
+		CaptureTheFlagType,
 		/// <summary>
 		/// ...
 		/// <para>Data type : <see cref="ulong"/></para>
@@ -565,11 +572,6 @@ namespace xBot.Game
 		/// </summary>
 		SkillAttributes,
 		/// <summary>
-		/// PVP cape mode.
-		/// <para>Data type : <see cref="Types.PVPCape"/></para>
-		/// </summary>
-		PVPCape,
-		/// <summary>
 		/// Drop group by unique ID.
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
@@ -579,63 +581,106 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="bool"/></para>
 		/// </summary>
 		hasBadStatus,
-
-
 		/// <summary>
-		/// Unknown byte from Item.	
+		/// Short description for users.
+		/// <para>Data type : <see cref="string"/></para>
 		/// </summary>
-		unkByte01,
+		Description,
 		/// <summary>
-		/// Unknown byte from Character (Not a counter)
+		/// Check if the player is using mask (rogue item)
+		/// <para>Data type : <see cref="bool"/></para>
 		/// </summary>
-		unkByte02,
+		hasMask,
 		/// <summary>
-		/// Unknown byte from Character (Not a counter)
+		/// The exact model of the mask using.
+		/// <para>Data type : <see cref="SRObject"/></para>
 		/// </summary>
-		unkByte03,
+		Mask,
 		/// <summary>
-		/// Unknown byte from Character (Structure changes?)
-		/// </summary>
-		unkByte04,
-		/// <summary>
-		/// Unknown byte from Character (Possibly some status)
-		/// </summary>
-		unkByte05,
-
-		/// <summary>
-		/// <para>Data type : <see cref="xBot.Game.SRObjectCollection"/></para>
+		/// Used to display exactly the clone.
+		/// <para>Data type : <see cref="SRObjectCollection"/></para>
 		/// </summary>
 		MaskItems,
-		ItemOptLevel,
-		Mask,
-		hasMask,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
 		refEventStructID,
-		unkByte3,
-		WalkSpeed,
-		RunSpeed,
-		BerserkSpeed,
-		GuildName,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="Types.ScrollMode"/></para>
+		/// </summary>
 		ScrollMode,
 		/// <summary>
-		/// <para>Data type : <see cref="byte"/></para>
+		/// ...
+		/// <para>Data type : <see cref="Types.InteractMode"/></para>
 		/// </summary>
 		InteractMode,
-		unkByte4,
 		/// <summary>
+		/// Guild name, can be empty.
+		/// <para>Data type : <see cref="string"/></para>
+		/// </summary>
+		GuildName,
+		/// <summary>
+		/// Guild unique Identifier. 
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		GuildID,
+		/// <summary>
+		/// Guild member name set by the master.
+		/// <para>Data type : <see cref="string"/></para>
+		/// </summary>
 		GuildMemberName,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
 		GuildLastCrestRev,
+		/// <summary>
+		/// Union unique Identifier. 
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
 		UnionID,
-		GuildisFriendly,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
 		UnionLastCrestRev,
+		/// <summary>
+		/// Check if the guild is friendly (Fortress War).
+		/// <para>Data type : <see cref="byte"/></para>
+		/// </summary>
+		GuildisFriendly,
+		/// <summary>
+		/// Guild member authority. (Fortress War)
+		/// <para>Data type : <see cref="Types.GuildMemberAuthority"/></para>
+		/// </summary>
 		GuildMemberAuthorityType,
+		/// <summary>
+		/// Stall name.
+		/// <para>Data type : <see cref="string"/></para>
+		/// </summary>
 		StallName,
+		/// <summary>
+		/// Stall decoration identifier.
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
 		DecorationItemID,
+		/// <summary>
+		/// ...
+		/// <para>Data type : <see cref="byte"/></para>
+		/// </summary>
 		EquipmentCooldown,
+		/// <summary>
+		/// Skill reference.
+		/// <para>Data type : <see cref="SRObject"/></para>
+		/// </summary>
+		Skill,
+
+
+
+
 		DropSource,
-		unkByte6,
 		hasTalk,
 		TalkOptions,
 		Rarity,
@@ -645,15 +690,22 @@ namespace xBot.Game
 		OwnerUniqueID,
 		hasOwner,
 		OwnerJID,
-		unkUShort0,
-		refSkillID,
-		unkByte1,
-		unkByte2,
-		unkByte0,
-		unkUInt0,
-		unkUInt1,
-		unkUInt2,
-		unkByte5
+		
+
+
+		unkByte01,
+		unkByte02,
+		unkByte03,
+		unkByte04,
+		unkByte05,
+		unkByte06,
+		unkByte07,
+		unkByte08,
+		unkUShort01,
+		unkUShort02,
+		unkUInt01,
+		unkUInt02,
+		unkUInt03
 	}
 	/// <summary>
 	/// <para> Funny and customizable class to handle all game objects
@@ -690,7 +742,7 @@ namespace xBot.Game
 		{
 			_attributes = new Dictionary<string, object>();
 			id = tid1 = tid2 = tid3 = tid4 = 0;
-		}
+    }
 		/// <summary>
 		/// Creates a game object from the ID specified.
 		/// </summary>
@@ -700,16 +752,6 @@ namespace xBot.Game
 		{
 			_attributes = new Dictionary<string, object>();
 			Load(ID, Type);
-		}
-		/// <summary>
-		/// Creates a game object from the name specified.
-		/// </summary>
-		/// <param name="ServerName">Object name</param>
-		/// <param name="Type">Object type</param>
-		public SRObject(string ServerName, Type Type)
-		{
-			_attributes = new Dictionary<string, object>();
-			Load(ServerName, Type);
 		}
 		/// <summary>
 		/// Load the object overriding all attributes previously saved.
@@ -724,25 +766,25 @@ namespace xBot.Game
       switch (type)
 			{
 				case Type.Entity:
-					data = Info.Get.getModel(ID);
+					data = Info.Get.GetModel(ID);
 					if (data != null)
 					{
 						_type = Type.Model;
 						goto case Type.Model;
 					}
-					data = Info.Get.getTeleport(ID);
+					data = Info.Get.GetTeleport(ID);
 					if (data != null)
 					{
 						_type = Type.Teleport;
 						goto case Type.Teleport;
 					}
-					data = Info.Get.getTeleportLink(ID);
+					data = Info.Get.GetTeleportLink(ID);
 					if (data != null)
 					{
 						_type = Type.Teleport;
 						goto case Type.Teleport;
 					}
-					data = Info.Get.getItem(ID);
+					data = Info.Get.GetItem(ID);
 					if (data != null)
 					{
 						_type = Type.Item;
@@ -755,7 +797,7 @@ namespace xBot.Game
 					break;
 				case Type.Model:
 					if(data == null)
-						data = Info.Get.getModel(ID);
+						data = Info.Get.GetModel(ID);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 1;
@@ -765,7 +807,12 @@ namespace xBot.Game
 					break;
 				case Type.Item:
 					if (data == null)
-						data = Info.Get.getItem(ID);
+						data = Info.Get.GetItem(ID);
+					if (data == null)
+					{
+						int xx = 0;
+						xx++;
+					}
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 3;
@@ -775,9 +822,9 @@ namespace xBot.Game
 					break;
 				case Type.Teleport:
 					if (data == null)
-						data = Info.Get.getTeleport(ID);
+						data = Info.Get.GetTeleport(ID);
 					if (data == null)
-						data = Info.Get.getTeleportLink(ID);
+						data = Info.Get.GetTeleportLink(ID);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 4;
@@ -787,27 +834,28 @@ namespace xBot.Game
 					break;
 				case Type.Skill:
 					if (data == null)
-						data = Info.Get.getSkill(ID);
+						data = Info.Get.GetSkill(ID);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					this[SRAttribute.SkillAttributes] = data["attributes"];
 					break;
 				case Type.Mastery:
-
+					if (ID != 0)
+					{
+						data = Info.Get.GetMastery(ID);
+						this[SRAttribute.Name] = data["name"];
+						this[SRAttribute.Description] = data["description"];
+					}
+					else
+					{
+						this[SRAttribute.Name] = "";
+						this[SRAttribute.Description] = "";
+					}
 					break;
 				case Type.Quest:
 
 					break;
 			}
-		}
-		/// <summary>
-		/// Load the object keeping all attributes previously saved
-		/// </summary>
-		/// <param name="Name">Name of the object, for example : CHAR_CH_MAN_ADVENTURER</param>
-		/// <param name="type">type</param>
-		public void Load(string ServerName, Type Type)
-		{
-			throw new NotImplementedException();
 		}
 		/// <summary>
 		/// Get or set the attributes from game object.
@@ -852,42 +900,66 @@ namespace xBot.Game
 		/// <summary>
 		///  Clone all objects attributes keeping a new object reference.
 		/// </summary>
-		/// <returns></returns>
 		public SRObject Clone()
 		{
 			return (SRObject)MemberwiseClone();
 		}
-		public override string ToString()
+		/// <summary>
+		/// Converts all his <see cref="SRAttribute"/> to nodes for an easy view.
+		/// </summary>
+		public TreeNode ToNode()
 		{
-			return id.ToString();
-		}
-		public List<string> ToStringArray()
-		{
-			List<string> array = new List<string>();
-			array.Add("ID:" + ID + " | ID1:" + ID1 + " | ID2:" + ID2 + " | ID3:" + ID3 + " | ID4:" + ID4);
-			array.Add("Type:" +type.ToString());
-			foreach ( string key in _attributes.Keys)
+			string text = (string)this[SRAttribute.Name];
+			TreeNode root = new TreeNode(text==""?"No name": text);
+			if (Contains(SRAttribute.UniqueID))
+				root.Name = ((uint)this[SRAttribute.UniqueID]).ToString();
+			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + type.ToString() + ")"));
+			root.Nodes.Add(new TreeNode("Type IDs [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]"));
+			foreach (string key in _attributes.Keys)
 			{
-				array.Add("\""+key+"\":" + _attributes[key]);
+				switch (_attributes[key].GetType().Name)
+				{
+					case "SRObject":
+						root.Nodes.Add(((SRObject)_attributes[key]).ToNode());
+						break;
+					case "SRObjectCollection":
+						TreeNode obj = new TreeNode(key);
+						obj.Nodes.AddRange(((SRObjectCollection)_attributes[key]).ToNodes());
+						root.Nodes.Add(obj);
+						break;
+					case "Byte[]": // Will be temporaly till find understandable data.
+						TreeNode bytes = new TreeNode(key);
+						foreach (byte _byte in (byte[])_attributes[key])
+							bytes.Nodes.Add(_byte.ToString());
+						root.Nodes.Add(bytes);
+						break;
+					case "Int32[]": // Will be temporaly till find understandable data.
+						TreeNode ints = new TreeNode(key);
+						foreach (int _int in (int[])_attributes[key])
+							ints.Nodes.Add(_int.ToString());
+						root.Nodes.Add(ints);
+						break;
+					default:
+						root.Nodes.Add(new TreeNode("\"" + key + "\" : " + _attributes[key]));
+						break;
+				}
 			}
-			return array;
+			return root;
 		}
 		#region Methods that depends on object type
 		/// <summary>
 		/// Gets the current experience at percent of the character.
-		/// <para>Used on : Characters</para>
 		/// </summary>
-		public ulong getExpPercent()
+		public double GetExpPercent()
 		{
 			if (this.Contains(SRAttribute.Exp) && this.Contains(SRAttribute.ExpMax))
 			{
-				return (ulong)this[SRAttribute.Exp] * 100 / (ulong)this[SRAttribute.ExpMax];
+				return (ulong)this[SRAttribute.Exp] * 100d / (ulong)this[SRAttribute.ExpMax];
 			}
 			return 0;
 		}
 		/// <summary>
-		/// Check if skill has auto transfer effect like Recovery division.
-		/// <para>Used on : Skills</para>
+		/// Check if <see cref="Type.Skill"/> has auto transfer effect like Recovery division.
 		/// </summary>
 		public bool isAutoTransferEffect()
 		{
@@ -903,82 +975,52 @@ namespace xBot.Game
 			return (region >= short.MaxValue);
 		}
 		/// <summary>
-		/// Check if an entity is at dungeon like Cave, Forgotten World,
-		/// or Temple, using his saved previously region. 
+		/// Get entity position in game coordinates.
 		/// </summary>
-		public bool inDungeon()
+		public Point GetPosition(ushort Region,int X,int Y,int Z)
 		{
-			return ( (ushort)this[SRAttribute.Region] >= short.MaxValue );
+			if (!this.inDungeon(Region))
+			{
+				// Map: {yTile}x{xTile}.jpg
+				byte yTile = (byte)(Region >> 8);
+				byte xTile = (byte)(Region & 255);
+				// World tiles offsets. Y: 135; X: 92;
+				// 192x192 units / 10:1 scale 
+				Point p = new Point();
+				p.X = (xTile - 135) * 192 + (X / 10);
+				p.Y = (yTile - 92) * 192 + (Y / 10);
+				return p;
+			}
+			else
+			{
+				// Not confirmed yet...
+
+				//// Map: {yTile}x{xTile}.jpg
+				//byte yTile = (byte)(Region >> 8);
+				//byte xTile = (byte)(Region & 255);
+				//// World tiles offsets. Y: 128; X: 128;
+				//switch (xTile)
+				//{
+				//	case 1: // Cave Downhang
+
+				//		break;
+				//}
+				Point p = new Point();
+				//p.X = (xTile - 128) * 192 + (X / 10);
+				//p.Y = (yTile - 128) * 192 + (Y/ 10);
+				return p;
+			}
 		}
 		/// <summary>
-		/// Get entity position with in game coordinates.
+		/// Converts and return an degree (angle) with 360° as max.
 		/// </summary>
-		/// <returns><see cref="Point.Empty"/> if cannot find enougth data</returns>
-		public Point getPosition()
-		{
-			if (this.Contains(SRAttribute.Region)
-				&& this.Contains(SRAttribute.X)
-				&& this.Contains(SRAttribute.Y)
-				&& this.Contains(SRAttribute.Z))
-			{
-				if (!this.inDungeon())
-				{
-					// Map: {yTile}x{xTile}.jpg
-					byte yTile = (byte)((ushort)this[SRAttribute.Region] >> 8);
-					byte xTile = (byte)((ushort)this[SRAttribute.Region] & 255);
-					// World tiles offsets. Y: 135; X: 92;
-					// 192x192 units / 10:1 scale 
-					Point p = new Point();
-					p.X = (int)((xTile - 135) * 192 + ((float)this[SRAttribute.X]) / 10);
-					p.Y = (int)((yTile - 92) * 192 + ((float)this[SRAttribute.Y]) / 10);
-					return p;
-				}
-				else
-				{
-					// Map: {yTile}x{xTile}.jpg
-					byte yTile = (byte)((ushort)this[SRAttribute.Region] >> 8);
-					byte xTile = (byte)((ushort)this[SRAttribute.Region] & 255);
-					// World tiles offsets. Y: 128; X: 128;
-					switch (xTile)
-					{
-						case 1: // Cave Downhang
-
-							break;
-					}
-					Point p = new Point();
-					p.X = (int)((xTile - 128) * 192 + ((float)this[SRAttribute.X]) / 10);
-					p.Y = (int)((yTile - 128) * 192 + ((float)this[SRAttribute.Y]) / 10);
-					return p;
-				}
+		public int GetDegree(ushort Angle){
+			int degree = (Angle * 360 / 0xFFFF);
+			// Reduce to 360 as max
+			while(degree >= 360){
+				degree -= 360;
 			}
-			throw new Exception("Not enough data to generate position.");
-		}
-		public Point getMovementPosition()
-		{
-			if (this.Contains(SRAttribute.MovementRegion)
-				&& this.Contains(SRAttribute.MovementOffsetX)
-				&& this.Contains(SRAttribute.MovementOffsetY)
-				&& this.Contains(SRAttribute.MovementOffsetZ))
-			{
-				if (!this.inDungeon((ushort)this[SRAttribute.MovementRegion]))
-				{
-					// Map: {yTile}x{xTile}.jpg
-					byte yTile = (byte)((ushort)this[SRAttribute.MovementRegion] >> 8);
-					byte xTile = (byte)((ushort)this[SRAttribute.MovementRegion] & 255);
-					
-					// World tiles offsets. Y: 135; X: 92;
-					// 256x256 (image size) but taken as 192x192 units (zoom scale)
-					Point p = new Point();
-					p.X = (xTile - 135) * 192 + ((short)this[SRAttribute.MovementOffsetX]) / 10;
-					p.Y = (yTile - 92) * 192 + ((short)this[SRAttribute.MovementOffsetY]) / 10;
-					return p;
-				}
-				else
-				{
-					return Point.Empty;
-				}
-			}
-			throw new Exception("Not enough data to generate destination position.");
+			return degree;
 		}
 		#endregion
 	}
@@ -1060,38 +1102,30 @@ namespace xBot.Game
 		}
 		#endregion
 		#region Methods
+		public void Add(SRObject obj)
+		{
+			this[Capacity] = obj;
+    }
 		public void Clear()
 		{
 			_items.Clear();
 			_count = 0;
 		}
-		public override string ToString()
+		public TreeNode[] ToNodes()
 		{
-			string result = "[";
-			foreach (SRObject i in _items)
+			List<TreeNode> nodes = new List<TreeNode>();
+			foreach (SRObject obj in _items)
 			{
-				if(i == null)
-				{
-					result += "null|";
-        }
+				if (obj == null)
+					nodes.Add(new TreeNode("Empty"));
 				else
-				{
-					result += i.ToString()+"|";
-				}
+					nodes.Add(obj.ToNode());
 			}
-			if (result == "[")
-			{
-				return "[None]";
-			}
-			else
-			{
-				return result.Remove(result.Length-1) + "]";
-			}
+			return nodes.ToArray();
 		}
 		/// <summary>
 		/// Check if the list has some job equipment
 		/// </summary>
-		/// <returns></returns>
 		public bool ContainsJobEquipment()
 		{
 			for (int i = 0; i < Capacity; i++)

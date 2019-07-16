@@ -33,6 +33,7 @@
 			this.rtbxLogs = new System.Windows.Forms.RichTextBox();
 			this.pnlLogs = new System.Windows.Forms.Panel();
 			this.panelWindow = new System.Windows.Forms.Panel();
+			this.cmbxLanguage = new System.Windows.Forms.ComboBox();
 			this.lblHeaderIcon = new System.Windows.Forms.Label();
 			this.btnStart = new System.Windows.Forms.Button();
 			this.tbxBlowfishKey = new System.Windows.Forms.TextBox();
@@ -52,7 +53,7 @@
 			this.btnWinExit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
 			this.btnWinExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnWinExit.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.btnWinExit.Location = new System.Drawing.Point(363, 12);
+			this.btnWinExit.Location = new System.Drawing.Point(363, 9);
 			this.btnWinExit.Margin = new System.Windows.Forms.Padding(0);
 			this.btnWinExit.Name = "btnWinExit";
 			this.btnWinExit.Size = new System.Drawing.Size(24, 24);
@@ -94,6 +95,7 @@
 			// panelWindow
 			// 
 			this.panelWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.panelWindow.Controls.Add(this.cmbxLanguage);
 			this.panelWindow.Controls.Add(this.lblHeaderIcon);
 			this.panelWindow.Controls.Add(this.btnStart);
 			this.panelWindow.Controls.Add(this.tbxBlowfishKey);
@@ -105,6 +107,28 @@
 			this.panelWindow.Name = "panelWindow";
 			this.panelWindow.Size = new System.Drawing.Size(398, 247);
 			this.panelWindow.TabIndex = 8;
+			// 
+			// cmbxLanguage
+			// 
+			this.cmbxLanguage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.cmbxLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbxLanguage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.cmbxLanguage.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.cmbxLanguage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.cmbxLanguage.FormattingEnabled = true;
+			this.cmbxLanguage.Items.AddRange(new object[] {
+            "Default",
+            "English",
+            "Korean",
+            "Vietnam"});
+			this.cmbxLanguage.Location = new System.Drawing.Point(230, 56);
+			this.cmbxLanguage.MaxDropDownItems = 5;
+			this.cmbxLanguage.Name = "cmbxLanguage";
+			this.cmbxLanguage.Size = new System.Drawing.Size(87, 28);
+			this.cmbxLanguage.Sorted = true;
+			this.cmbxLanguage.TabIndex = 18;
+			this.cmbxLanguage.Tag = "Source Sans Pro";
+			this.toolTips.SetToolTip(this.cmbxLanguage, "Language");
 			// 
 			// lblHeaderIcon
 			// 
@@ -124,10 +148,10 @@
 			this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnStart.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.btnStart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.btnStart.Location = new System.Drawing.Point(275, 56);
+			this.btnStart.Location = new System.Drawing.Point(322, 56);
 			this.btnStart.Margin = new System.Windows.Forms.Padding(0);
 			this.btnStart.Name = "btnStart";
-			this.btnStart.Size = new System.Drawing.Size(112, 28);
+			this.btnStart.Size = new System.Drawing.Size(65, 28);
 			this.btnStart.TabIndex = 15;
 			this.btnStart.Tag = "Source Sans Pro";
 			this.btnStart.Text = "Start";
@@ -144,7 +168,7 @@
 			this.tbxBlowfishKey.Location = new System.Drawing.Point(165, 56);
 			this.tbxBlowfishKey.MaxLength = 6;
 			this.tbxBlowfishKey.Name = "tbxBlowfishKey";
-			this.tbxBlowfishKey.Size = new System.Drawing.Size(100, 28);
+			this.tbxBlowfishKey.Size = new System.Drawing.Size(60, 28);
 			this.tbxBlowfishKey.TabIndex = 12;
 			this.tbxBlowfishKey.Tag = "Source Sans Pro";
 			this.tbxBlowfishKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -166,12 +190,12 @@
 			this.lblBlowfishKey.Tag = "Source Sans Pro";
 			this.lblBlowfishKey.Text = "Set the Blowfish Key";
 			this.lblBlowfishKey.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTips.SetToolTip(this.lblBlowfishKey, "Leave it empty to use default");
+			this.toolTips.SetToolTip(this.lblBlowfishKey, "Leave it empty to use default (169841)");
 			// 
 			// lblHeader
 			// 
 			this.lblHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.lblHeader.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblHeader.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.lblHeader.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
 			this.lblHeader.Location = new System.Drawing.Point(0, 0);
 			this.lblHeader.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
@@ -180,7 +204,7 @@
 			this.lblHeader.Size = new System.Drawing.Size(398, 42);
 			this.lblHeader.TabIndex = 16;
 			this.lblHeader.Tag = "Source Sans Pro";
-			this.lblHeader.Text = "PK2Extractor";
+			this.lblHeader.Text = "PK2 Extractor";
 			this.lblHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Window_Drag_MouseDown);
 			// 
@@ -199,6 +223,7 @@
 			this.lblProcessState.TabIndex = 9;
 			this.lblProcessState.Tag = "Source Sans Pro";
 			this.lblProcessState.Text = "xBot - ProjexNET";
+			this.lblProcessState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblProcessState.UseMnemonic = false;
 			// 
 			// PK2Extractor
@@ -215,7 +240,7 @@
 			this.Padding = new System.Windows.Forms.Padding(1);
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.pnlLogs.ResumeLayout(false);
 			this.panelWindow.ResumeLayout(false);
 			this.panelWindow.PerformLayout();
@@ -235,5 +260,6 @@
 		private System.Windows.Forms.Label lblHeaderIcon;
 		private System.Windows.Forms.ToolTip toolTips;
 		private System.Windows.Forms.Label lblProcessState;
+		public System.Windows.Forms.ComboBox cmbxLanguage;
 	}
 }

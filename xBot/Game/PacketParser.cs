@@ -3,8 +3,6 @@ using SecurityAPI;
 using System.Windows.Forms;
 using System.Drawing;
 using xBot.Network;
-using System.Collections.Specialized;
-using System.IO;
 
 namespace xBot.Game
 {
@@ -15,6 +13,7 @@ namespace xBot.Game
 		public static void ShardListResponse(Packet packet)
 		{
 			Window w = Window.Get;
+			Info i = Info.Get;
 			WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
 				w.Login_lstvServers.Items.Clear();
 				//Window.get.Login_lstvServers.Groups.Clear();
@@ -30,6 +29,7 @@ namespace xBot.Game
 				//	Window.get.Login_lstvServers.Groups.Add(farmID.ToString(), farmName);
 				//});
 			}
+			i.ServerID = "";
 			while (packet.ReadByte() == 1)
 			{
 				ushort serverID = packet.ReadUShort();
@@ -37,68 +37,67 @@ namespace xBot.Game
 				ushort onlineCount = packet.ReadUShort();
 				ushort maxCapacity = packet.ReadUShort();
 				bool isAvailable = packet.ReadByte() == 1;
-				byte serverID_farmID = packet.ReadByte();
-				
+				byte farm_ID = packet.ReadByte();
+
 				// Generate server list
-				ListViewItem i = new ListViewItem(serverName);
-				i.Name = serverID.ToString();
-				i.SubItems.Add(onlineCount + " / " + maxCapacity);
-				i.SubItems.Add((isAvailable ? "Available" : "Not available"));
+				ListViewItem server = new ListViewItem(serverName);
+				server.Name = serverID.ToString();
+				server.SubItems.Add(onlineCount + " / " + maxCapacity);
+				server.SubItems.Add((isAvailable ? "Available" : "Not available"));
 				WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
-					//i.Group = Window.get().Login_lstvServers.Groups[serverID_farmID.ToString()];
-					w.Login_lstvServers.Items.Add(i);
+					//i.Group = w.Login_lstvServers.Groups[serverID_farmID.ToString()];
+					w.Login_lstvServers.Items.Add(server);
 				});
 				if (isAvailable)
 				{
-					if (Bot.Get.isAutoLogin)
-					{
-						if (w.Login_cmbxServer.Tag != null
-							&& ((string)w.Login_cmbxServer.Tag).ToLower() == serverName.ToLower())
+					WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
+						w.Login_cmbxServer.Items.Add(serverName);
+						// Select Server if is AutoLogin
+						if (Bot.Get.isAutoLogin
+						&& w.Login_cmbxServer.Tag != null
+						&& ((string)w.Login_cmbxServer.Tag).ToLower().Contains(serverName.ToLower()))
 						{
-							w.Login_cmbxServer.Tag = serverID;
-            }
-					}
-					else
-					{
-						WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
-							w.Login_cmbxServer.Items.Add(serverName);
-						});
-					}
+							w.Login_cmbxServer.Text = serverName;
+							i.ServerID = serverID.ToString();
+						}
+					});
 				}
 			}
-			// AutoLogin
-			if (Bot.Get.isAutoLogin)
-			{
-				WinAPI.InvokeIfRequired(w.Login_gbxAccount, () => {
-					PacketBuilder.Login(w.Login_tbxUsername.Text, w.Login_tbxPassword.Text, (ushort)w.Login_cmbxServer.Tag);
-				});
-			}
-			else
-			{
-				// Check first one as default
-				WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
-					if (w.Login_cmbxServer.SelectedText == "" && w.Login_cmbxServer.Items.Count > 0)
-					{
-						w.Login_cmbxServer.SelectedIndex = 0;
-					}
-				});
-			}
-			// Unblock button
+			// Unlock button
 			if (w.Login_btnStart.Text == "STOP" && Bot.Get.Proxy.ClientlessMode)
 			{
 				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 					w.Login_btnStart.Text = "LOGIN";
-					if (!Bot.Get.isAutoLogin)
-						w.EnableControl(w.Login_btnStart, true);
 				});
 			}
 			w.LogProcess("Server selection");
+
+			// AutoLogin
+			if (Bot.Get.isAutoLogin) {
+				// Server found
+				if (i.ServerID != "") {
+					WinAPI.InvokeIfRequired(w, () => {
+						w.Control_Click(w.Login_btnStart, null);
+					});
+				}
+			}
+			else
+			{
+				// Select first one (Just for UX)
+				if (w.Login_cmbxServer.Items.Count > 0)
+				{
+					WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
+						w.Login_cmbxServer.SelectedIndex = 0;
+					});
+				}
+			}
 		}
 		public static void CharacterSelectionActionResponse(Packet packet)
 		{
 			byte action = packet.ReadByte();
 			byte result = packet.ReadByte();
-			switch (action)
+
+			switch ((Types.CharacterSelectionAction)action)
 			{
 				case Types.CharacterSelectionAction.Create:
 					if (result == 1)
@@ -109,24 +108,34 @@ namespace xBot.Game
 					{
 						Window.Get.Log("Character creation failed!");
 					}
+					if (Bot.Get.Proxy.ClientlessMode)
+						PacketBuilder.RequestCharacterList();
 					break;
 				case Types.CharacterSelectionAction.CheckName:
 					if (result == 1)
 					{
-						Window.Get.Log("Nickname available..");
+						if (Bot.Get.isCreatingCharacter)
+						{
+							Window.Get.Log("Nickname available!");
+							Bot.Get.CreateCharacter();
+						}
 					}
 					else
 					{
 						Window.Get.Log("Nickname has been already taken!");
+						if (Bot.Get.isCreatingCharacter)
+							Bot.Get.CreateNickname();
 					}
 					break;
 				case Types.CharacterSelectionAction.Delete:
-
+					// Not checked...
 					break;
 				case Types.CharacterSelectionAction.List:
 					if (result == 1)
 					{
 						Window w = Window.Get;
+						Info i = Info.Get;
+						Bot b = Bot.Get;
 						// Reset values
 						WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
 						{
@@ -136,17 +145,17 @@ namespace xBot.Game
 						{
 							w.Login_cmbxCharacter.Items.Clear();
 						});
-						Info.Get.CharacterList.Clear();
+						i.CharacterList.Clear();
 						// Start packet reading 
 						byte nChars = packet.ReadByte();
-						for (int i = 0; i < nChars; i++)
+						for (int n = 0; n < nChars; n++)
 						{
 							SRObject character = new SRObject(packet.ReadUInt(), SRObject.Type.Model);
 							character[SRAttribute.Name] = packet.ReadAscii();
 							character[SRAttribute.Scale] = packet.ReadByte();
 							character[SRAttribute.Level] = packet.ReadByte();
 							character[SRAttribute.Exp] = packet.ReadULong();
-							character[SRAttribute.ExpMax] = Info.Get.getMaxExp((byte)character[SRAttribute.Level]);
+							character[SRAttribute.ExpMax] = i.GetExpMax((byte)character[SRAttribute.Level]);
 							character[SRAttribute.STR] = packet.ReadUShort();
 							character[SRAttribute.INT] = packet.ReadUShort();
 							character[SRAttribute.StatPoints] = packet.ReadUShort();
@@ -157,13 +166,13 @@ namespace xBot.Game
 							{
 								character[SRAttribute.DeletingTime] = packet.ReadUInt();
 							}
-							character[SRAttribute.GuildMemberType] = packet.ReadByte();
+							character[SRAttribute.GuildMemberType] = (Types.GuildMember)packet.ReadByte();
 							character[SRAttribute.isGuildRenameRequired] = packet.ReadByte() == 1;
 							if ((bool)character[SRAttribute.isGuildRenameRequired])
 							{
 								character[SRAttribute.GuildName] = packet.ReadAscii();
 							}
-							character[SRAttribute.AcademyMemberType] = packet.ReadByte();
+							character[SRAttribute.AcademyMemberType] = (Types.AcademyMember)packet.ReadByte();
 							SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
 							for (int j = 0; j < inventory.Capacity; j++)
 							{
@@ -181,48 +190,68 @@ namespace xBot.Game
 							// End of Packet
 
 							// Adding to game info
-							Info.Get.CharacterList.Add(character);
+							i.CharacterList.Add(character);
 
 							// Filling data to GUI
 							ListViewItem l = new ListViewItem();
 							l.Text = character[SRAttribute.Name] + ((bool)character[SRAttribute.isDeleting] ? " (*)" : "");
 							l.Name = (string)character[SRAttribute.Name];
 							l.SubItems.Add(character[SRAttribute.Level].ToString());
-							l.SubItems.Add(Math.Round((double)character.getExpPercent(), 2) + " %");
+							l.SubItems.Add(Math.Round(character.GetExpPercent(), 2) + " %");
 							l.SubItems.Add(character.ID.ToString());
-							WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
-							{
+							WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () => {
 								w.Login_lstvCharacters.Items.Add(l);
 							});
-							WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
+							if (!(bool)character[SRAttribute.isDeleting])
 							{
-								w.Login_cmbxCharacter.Items.Add(l.Name);
-							});
-						}
-						// Auto select first character as default
-						if (w.Login_cmbxCharacter.Items.Count > 0)
-						{
-							WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
-							{
-								w.Login_cmbxCharacter.SelectedIndex = 0;
-							});
+								WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
+									w.Login_cmbxCharacter.Items.Add(l.Name);
+									// Select Charname if AutoLogin is activated
+									if (b.isAutoLogin
+									&& w.Login_cmbxCharacter.Tag != null
+									&& ((string)w.Login_cmbxCharacter.Tag).ToLower() == l.Name.ToLower())
+									{
+										w.Login_cmbxCharacter.Text = l.Name;
+									}
+								});
+							}
 						}
 						// Switch Listview's [Servers to Characters] selection 
-						WinAPI.InvokeIfRequired(w.Login_gbxServers, () =>
-						{
+						WinAPI.InvokeIfRequired(w.Login_gbxServers, () => {
 							w.Login_gbxServers.Visible = false;
 						});
-						WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () =>
-						{
+						WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () => {
 							w.Login_gbxCharacters.Visible = true;
 						});
-						// Switch and restaure [Login to Select] button
-						WinAPI.InvokeIfRequired(w.Login_btnStart, () =>
-						{
+						// Switch and restaure [LOGIN to SELECT] button
+						WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 							w.Login_btnStart.Text = "SELECT";
 							w.EnableControl(w.Login_btnStart, true);
 						});
 						w.LogProcess("Character selection");
+
+						// AutoLogin
+						if (b.isAutoLogin)
+						{
+							WinAPI.InvokeIfRequired(w, () => {
+								if (w.Login_cmbxCharacter.Text != "")
+								{
+									w.Control_Click(w.Login_btnStart, null);
+									return;
+								}
+							});
+						}
+						else
+						{
+							// Select first one (Just for UX)
+							if (w.Login_cmbxCharacter.Items.Count > 0)
+							{
+								WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
+									w.Login_cmbxCharacter.SelectedIndex = 0;
+								});
+							}
+						}
+						b.Event_CharacterListing();
 					}
 					else if (result == 2)
 					{
@@ -247,7 +276,7 @@ namespace xBot.Game
 			Packet p = characterDataPacket;
 			p.Lock();
 
-			p.ReadUInt(); // ServerTime (SROTimeStamp)
+			Info.Get.ServerTime = p.ReadUInt();
 			SRObject character = new SRObject(p.ReadUInt(), SRObject.Type.Model);
 			character[SRAttribute.Scale] = p.ReadByte();
 			character[SRAttribute.Level] = p.ReadByte();
@@ -258,15 +287,15 @@ namespace xBot.Game
 			character[SRAttribute.SP] = p.ReadUInt();
 			character[SRAttribute.StatPoints] = p.ReadUShort();
 			character[SRAttribute.BerserkPoints] = p.ReadByte();
-			p.ReadUInt(); // GatheredExpPoint.. wut is this ?
+			character[SRAttribute.GatheredExpPoint] = p.ReadUInt();
 			character[SRAttribute.HPMax] = p.ReadUInt();
 			character[SRAttribute.MPMax] = p.ReadUInt();
-			character[SRAttribute.ExpType] = p.ReadByte();
+			character[SRAttribute.ExpIconType] = (Types.ExpIcon)p.ReadByte();
 			character[SRAttribute.PKDaily] = p.ReadByte();
 			character[SRAttribute.PKTotal] = p.ReadUShort();
 			character[SRAttribute.PKPenalty] = p.ReadUInt();
 			character[SRAttribute.BerserkLevel] = p.ReadByte();
-			character[SRAttribute.PVPCapeType] = p.ReadByte();
+			character[SRAttribute.PVPCapeType] = (Types.PVPCape)p.ReadByte();
 			#region (Inventory)
 			SRObjectCollection Inventory = new SRObjectCollection(p.ReadByte());
 			character[SRAttribute.Inventory] = Inventory;
@@ -349,8 +378,8 @@ namespace xBot.Game
 						if (item.ID3 == 1)
 						{
 							// ITEM_COS_P
-							item[SRAttribute.PetState] = p.ReadByte();
-							switch ((byte)item[SRAttribute.PetState])
+							item[SRAttribute.PetState] = (Types.PetState)p.ReadByte();
+							switch ((Types.PetState)item[SRAttribute.PetState])
 							{
 								case Types.PetState.Summoned:
 								case Types.PetState.Alive:
@@ -562,9 +591,9 @@ namespace xBot.Game
 			#region (Game Position)
 			character[SRAttribute.UniqueID] = p.ReadUInt();
 			character[SRAttribute.Region] = p.ReadUShort();
-			character[SRAttribute.X] = p.ReadSingle();
-			character[SRAttribute.Z] = p.ReadSingle();
-			character[SRAttribute.Y] = p.ReadSingle();
+			character[SRAttribute.X] = (int)p.ReadSingle();
+			character[SRAttribute.Z] = (int)p.ReadSingle();
+			character[SRAttribute.Y] = (int)p.ReadSingle();
 			character[SRAttribute.Angle] = p.ReadUShort();
 
 			character[SRAttribute.hasMovement] = p.ReadByte() == 1;
@@ -572,31 +601,31 @@ namespace xBot.Game
 			if ((bool)character[SRAttribute.hasMovement])
 			{
 				character[SRAttribute.MovementRegion] = p.ReadUShort();
-				if (character.inDungeon())
+				if (character.inDungeon((ushort)character[SRAttribute.MovementRegion]))
 				{
 					// Dungeon offsets
-					character[SRAttribute.MovementOffsetX] = p.ReadUInt();
-					character[SRAttribute.MovementOffsetZ] = p.ReadUInt();
-					character[SRAttribute.MovementOffsetY] = p.ReadUInt();
+					character[SRAttribute.MovementOffsetX] = p.ReadInt();
+					character[SRAttribute.MovementOffsetZ] = p.ReadInt();
+					character[SRAttribute.MovementOffsetY] = p.ReadInt();
 				}
 				else
 				{
 					// World
-					character[SRAttribute.MovementOffsetX] = p.ReadUShort();
-					character[SRAttribute.MovementOffsetZ] = p.ReadUShort();
-					character[SRAttribute.MovementOffsetY] = p.ReadUShort();
+					character[SRAttribute.MovementOffsetX] = (int)(p.ReadShort());
+					character[SRAttribute.MovementOffsetZ] = (int)(p.ReadShort());
+					character[SRAttribute.MovementOffsetY] = (int)(p.ReadShort());
 				}
 			}
 			else
 			{
-				character[SRAttribute.MovementSource] = p.ReadByte();
+				character[SRAttribute.MovementActionType] = (Types.MovementAction)p.ReadByte();
 				character[SRAttribute.MovementAngle] = p.ReadUShort();
 			}
 			#endregion
-			character[SRAttribute.LifeState] = p.ReadByte();
-			character[SRAttribute.unkByte05] = p.ReadByte();
-			character[SRAttribute.MotionState] = p.ReadByte();
-			character[SRAttribute.PlayerStatus] = p.ReadByte();
+			character[SRAttribute.LifeState] = (Types.LifeState)p.ReadByte();
+			character[SRAttribute.unkByte05] = p.ReadByte(); // (Possibly bad status flag)
+			character[SRAttribute.MotionState] = (Types.MotionState)p.ReadByte();
+			character[SRAttribute.PlayerState] = (Types.PlayerState)p.ReadByte();
 			character[SRAttribute.SpeedWalking] = p.ReadSingle();
 			character[SRAttribute.SpeedRunning] = p.ReadSingle();
 			character[SRAttribute.SpeedBerserk] = p.ReadSingle();
@@ -619,19 +648,19 @@ namespace xBot.Game
 			character[SRAttribute.Name] = p.ReadAscii();
 			#region (Job & PVP)
 			character[SRAttribute.JobName] = p.ReadAscii();
-			character[SRAttribute.JobType] = p.ReadByte();
+			character[SRAttribute.JobType] = (Types.Job)p.ReadByte();
 			character[SRAttribute.JobLevel] = p.ReadByte();
 			character[SRAttribute.JobExp] = p.ReadUInt();
 			character[SRAttribute.JobContribution] = p.ReadUInt();
 			character[SRAttribute.JobReward] = p.ReadUInt();
-			character[SRAttribute.PVPState] = p.ReadByte();
+			character[SRAttribute.PVPState] = (Types.PVPState)p.ReadByte();
 			character[SRAttribute.hasTransport] = p.ReadByte() == 1;
 			character[SRAttribute.isFighting] = p.ReadByte() == 1;
 			if ((bool)character[SRAttribute.hasTransport])
 			{
 				character[SRAttribute.TransportUniqueID] = p.ReadUInt();
 			}
-			character[SRAttribute.PVPCaptureTheFlagType] = p.ReadByte();
+			character[SRAttribute.CaptureTheFlagType] = (Types.CaptureTheFlag)p.ReadByte();
 			character[SRAttribute.GuideFlag] = p.ReadULong();
 			character[SRAttribute.JID] = p.ReadUInt();
 			character[SRAttribute.GMFlag] = p.ReadByte();
@@ -661,25 +690,20 @@ namespace xBot.Game
 			#endregion
 			// End of Packet
 
+			// Initializing basic bars
+			character[SRAttribute.ExpMax] = Info.Get.GetExpMax((byte)character[SRAttribute.Level]);
+			character[SRAttribute.JobExpMax] = Info.Get.GetJobExpMax((byte)character[SRAttribute.JobLevel],(Types.Job)character[SRAttribute.JobType]);
+			character[SRAttribute.HP] = character[SRAttribute.HPMax];
+			character[SRAttribute.MP] = character[SRAttribute.MPMax];
+
 			// Set the current character selected
 			Info.Get.Character = character;
-			foreach (SRObject charList in Info.Get.CharacterList)
-			{
-				// Copy all previous data saved on character selection
-				if ((string)character[SRAttribute.Name] == (string)charList[SRAttribute.Name])
-				{
-					character.CopyAttributes(charList);
-				}
-			}
 
 			// Updating GUI
 			Window w = Window.Get;
-			w.TESTING_AddSpawn(character);
+			w.GameInfo_AddSpawn(character);
 
 			#region (Character)
-			WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
-				w.Character_lblLevel.Text = "Lv. " + (byte)character[SRAttribute.Level];
-			});
 			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
 				w.Character_pgbHP.Maximum = (int)((uint)character[SRAttribute.HPMax]);
 				w.Character_pgbHP.Value = w.Character_pgbHP.Maximum;
@@ -688,37 +712,61 @@ namespace xBot.Game
 				w.Character_pgbMP.Maximum = (int)((uint)character[SRAttribute.MPMax]);
 				w.Character_pgbMP.Value = w.Character_pgbMP.Maximum;
 			});
+			WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
+				w.Character_lblLevel.Text = "Lv. " + character[SRAttribute.Level];
+			});
 			WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
 				w.Character_pgbExp.Maximum = (int)((ulong)character[SRAttribute.ExpMax]);
 				w.Character_pgbExp.Value = (int)((ulong)character[SRAttribute.Exp]);
 			});
+			WinAPI.InvokeIfRequired(w.Character_lblJobLevel, () => {
+				w.Character_lblJobLevel.Text = "Job Lv. " + character[SRAttribute.JobLevel];
+			});
+			WinAPI.InvokeIfRequired(w.Character_pgbJobExp, () => {
+				w.Character_pgbJobExp.Maximum = (int)((uint)character[SRAttribute.JobExpMax]);
+				w.Character_pgbJobExp.Value = (int)((uint)character[SRAttribute.JobExp]);
+			});
+			w.SetSROGold((ulong)character[SRAttribute.Gold]);
+			WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
+				w.Character_lblLocation.Text = Info.Get.GetRegion((ushort)character[SRAttribute.Region]);
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblSP, () => {
+				w.Character_lblSP.Text = character[SRAttribute.SP].ToString();
+			});
+			WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
+				w.Character_lblStatPoints.Text = character[SRAttribute.StatPoints].ToString();
+				if ((ushort)character[SRAttribute.StatPoints] > 0)
+					w.Character_btnAddSTR.Enabled = w.Character_btnAddINT.Enabled = true;
+			});
 			#endregion
 
+			#region (Minimap)
 			WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
-				w.Minimap_tbxX.Text = ((int)((float)character[SRAttribute.X])).ToString();
-				w.Minimap_tbxY.Text = ((int)((float)character[SRAttribute.Y])).ToString();
-				w.Minimap_tbxZ.Text = ((int)((float)character[SRAttribute.Z])).ToString();
+				w.Minimap_tbxX.Text = ((int)character[SRAttribute.X]).ToString();
+				w.Minimap_tbxY.Text = ((int)character[SRAttribute.Y]).ToString();
+				w.Minimap_tbxZ.Text = ((int)character[SRAttribute.Z]).ToString();
 				w.Minimap_tbxRegion.Text = ((ushort)character[SRAttribute.Region]).ToString();
 			});
-			Point coord = character.getPosition();
+			Point coord = character.GetPosition((ushort)character[SRAttribute.Region], (int)character[SRAttribute.X], (int)character[SRAttribute.Y], (int)character[SRAttribute.Z]);
 			WinAPI.InvokeIfRequired(w.Minimap_panelGameCoords, () => {
-				w.Minimap_tbxGameX.Text = coord.X.ToString();
-				w.Minimap_tbxGameY.Text = coord.Y.ToString();
+				w.Minimap_tbxCoordX.Text = coord.X.ToString();
+				w.Minimap_tbxCoordY.Text = coord.Y.ToString();
 			});
-			w.Minimap_CharacterPointer_Move(coord.X, coord.Y, (float)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
+			w.Minimap_CharacterPointer_Move((int)character[SRAttribute.X], (int)character[SRAttribute.Y], (int)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
+			#endregion
 		}
-		public static void CharacterInfoUpdate(Packet packet)
+		public static void CharacterStatsUpdate(Packet packet)
 		{
 			Info i = Info.Get;
 
-			packet.ReadUInt();
-			packet.ReadUInt();
-			packet.ReadUInt();
-			packet.ReadUInt();
-			packet.ReadUShort();
-			packet.ReadUShort();
-			packet.ReadUShort();
-			packet.ReadUShort();
+			uint PhyAtkMin = packet.ReadUInt();
+			uint PhyAtkMax = packet.ReadUInt();
+			uint MagAtkMin = packet.ReadUInt();
+			uint MagAtkMax = packet.ReadUInt();
+			ushort PhyDefense = packet.ReadUShort();
+			ushort MagDefense = packet.ReadUShort();
+			ushort HitRate = packet.ReadUShort();
+			ushort ParryRatio = packet.ReadUShort();
 			i.Character[SRAttribute.HPMax] = packet.ReadUInt();
 			i.Character[SRAttribute.MPMax] = packet.ReadUInt();
 			i.Character[SRAttribute.STR] = packet.ReadUShort();
@@ -747,28 +795,42 @@ namespace xBot.Game
 					w.Character_pgbMP.Value = (int)((uint)i.Character[SRAttribute.MP]);
 				});
 			}
+			WinAPI.InvokeIfRequired(w.Character_lblSTR, () => {
+				w.Character_lblSTR.Text = i.Character[SRAttribute.STR].ToString();
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblINT, () => {
+				w.Character_lblINT.Text = i.Character[SRAttribute.INT].ToString();
+			});
 		}
 		public static void CharacterExperienceUpdate(Packet packet)
 		{
 			Info i = Info.Get;
 			Window w = Window.Get;
 
-			packet.ReadUInt(); // UniqueID from source exp.
+			packet.ReadUInt(); // uniqueID (for displaying graphics)
 			long ExpReceived = packet.ReadLong();
-			long SPExpReceived = packet.ReadLong(); // Long SP EXP ?'?
-			byte f = packet.ReadByte();
+			long SPExpReceived = packet.ReadLong(); // Long SP EXP? weird...
+			byte unkFlag = packet.ReadByte();
 			// End of Packet
 
 			if (w.Character_cbxMessageExp.Checked)
 			{
-				if(ExpReceived != 0)
-					w.LogMessageFilter("["+ ExpReceived + "] experience points gained.");
-				//if(SPExpReceived !=0 )
-				//	w.LogMessageFilter("[" + SPExpReceived + "] skill experience points gained.");
+				if (ExpReceived > 0)
+				{
+					w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_STATE_GAIN_EXP", ExpReceived));
+				}
+				else if (ExpReceived < 0)
+				{
+					w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_STATE_LOSE_EXP", ExpReceived));
+				}
+				if (SPExpReceived > 0)
+				{
+					w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_STATE_GET_SKILL_EXP", SPExpReceived));
+				}
 			}
 			CalculateExp(ExpReceived, (long)((ulong)i.Character[SRAttribute.Exp]), (long)((ulong)i.Character[SRAttribute.ExpMax]), (byte)i.Character[SRAttribute.Level]);
 		}
-		private static void CalculateExp(long ExpReceived,long Exp,long ExpMax,byte level)
+		private static void CalculateExp(long ExpReceived, long Exp, long ExpMax, byte level)
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
@@ -777,24 +839,38 @@ namespace xBot.Game
 			{
 				// Level Up
 				i.Character[SRAttribute.Level] = (byte)(level + 1);
-				if ((byte)i.Character[SRAttribute.Level] > (byte)i.Character[SRAttribute.LevelMax])
-				{
-					i.Character[SRAttribute.LevelMax] = i.Character[SRAttribute.Level];
-					Bot.Get.Event_LevelUp();
-				}
+				WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
+					w.Character_lblLevel.Text ="Lv. " + i.Character[SRAttribute.Level];
+				});
 				// Update new ExpMax
-				i.Character[SRAttribute.ExpMax] = i.getMaxExp((byte)i.Character[SRAttribute.Level]);
+				i.Character[SRAttribute.ExpMax] = i.GetExpMax((byte)i.Character[SRAttribute.Level]);
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
 					w.Character_pgbExp.Maximum = (int)((ulong)i.Character[SRAttribute.ExpMax]);
 				});
+				// Update max. level reached
+				if ((byte)i.Character[SRAttribute.Level] > (byte)i.Character[SRAttribute.LevelMax])
+				{
+					i.Character[SRAttribute.LevelMax] = i.Character[SRAttribute.Level];
+					i.Character[SRAttribute.StatPoints] = (ushort)((ushort)i.Character[SRAttribute.StatPoints] + 3);
+					WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
+						w.Character_lblStatPoints.Text = i.Character[SRAttribute.StatPoints].ToString();
+						w.Character_btnAddSTR.Enabled = w.Character_btnAddINT.Enabled = true;
+					});
+					// Generate bot event
+					Bot.Get.Event_LevelUp((byte)(i.Character[SRAttribute.Level]));
+				}
+				// Continue recursivity
 				CalculateExp((Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)i.Character[SRAttribute.ExpMax]), (byte)(level + 1));
 			}
 			else if (ExpReceived + Exp < 0)
 			{
 				// Level Down
 				i.Character[SRAttribute.Level] = (byte)(level - 1);
+				WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
+					w.Character_lblLevel.Text = ((byte)i.Character[SRAttribute.Level]).ToString();
+				});
 				// Update new ExpMax
-				i.Character[SRAttribute.ExpMax] = i.getMaxExp((byte)i.Character[SRAttribute.Level]);
+				i.Character[SRAttribute.ExpMax] = i.GetExpMax((byte)i.Character[SRAttribute.Level]);
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
 					w.Character_pgbExp.Maximum = (int)((ulong)i.Character[SRAttribute.ExpMax]);
 				});
@@ -807,6 +883,29 @@ namespace xBot.Game
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
 					w.Character_pgbExp.Value = (int)((ulong)i.Character[SRAttribute.Exp]);
 				});
+			}
+		}
+		public static void CharacterInfoUpdate(Packet packet)
+		{
+			Window w = Window.Get;
+			Info i = Info.Get;
+
+			byte type = packet.ReadByte();
+			switch (type)
+			{
+				case 1: // Gold
+					i.Character[SRAttribute.Gold] = packet.ReadULong();
+					w.SetSROGold((ulong)i.Character[SRAttribute.Gold]);
+					break;
+				case 2: // SP
+					i.Character[SRAttribute.SP] = packet.ReadUInt();
+					WinAPI.InvokeIfRequired(w.Character_lblSP, () => {
+						w.Character_lblSP.Text = i.Character[SRAttribute.SP].ToString();
+					});
+					break;
+				case 4: // Berserk
+					i.Character[SRAttribute.BerserkLevel] = packet.ReadByte();
+					break;
 			}
 		}
 		private static byte groupSpawnType;
@@ -854,17 +953,18 @@ namespace xBot.Game
 					// CHARACTER
 					entity[SRAttribute.Scale] = packet.ReadByte();
 					entity[SRAttribute.BerserkLevel] = packet.ReadByte();
-					entity[SRAttribute.PVPCape] = packet.ReadByte();
-					entity[SRAttribute.ExpType] = packet.ReadByte();
+					entity[SRAttribute.PVPCapeType] = (Types.PVPCape)packet.ReadByte();
+					entity[SRAttribute.ExpIconType] = (Types.ExpIcon)packet.ReadByte();
 					// Inventory
-					SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
+					packet.ReadByte(); // max capacity. seems useless at the moment..
+					SRObjectCollection inventory = new SRObjectCollection();
 					byte inventoryCount = packet.ReadByte();
 					for (byte i = 0; i < inventoryCount; i++)
 					{
 						inventory[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
 						if (inventory[i].ID1 == 3 && inventory[i].ID2 == 1)
 						{
-							inventory[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
+							inventory[i][SRAttribute.Plus] = packet.ReadByte();
 						}
 					}
 					entity[SRAttribute.Inventory] = inventory;
@@ -876,14 +976,13 @@ namespace xBot.Game
 						inventoryAvatar[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Item);
 						if (inventoryAvatar[i].ID1 == 3 && inventoryAvatar[i].ID2 == 1)
 						{
-							inventoryAvatar[i][SRAttribute.ItemOptLevel] = packet.ReadByte();
+							inventoryAvatar[i][SRAttribute.Plus] = packet.ReadByte();
 						}
 					}
 					entity[SRAttribute.InventoryAvatar] = inventoryAvatar;
 					// Mask
-					byte hasMask = packet.ReadByte();
-					entity[SRAttribute.hasMask] = hasMask;
-					if (hasMask == 1)
+					entity[SRAttribute.hasMask] = packet.ReadByte() == 1;
+					if ((bool)entity[SRAttribute.hasMask])
 					{
 						SRObject mask = new SRObject(packet.ReadUInt(), SRObject.Type.Model);
 						if (mask.ID1 == entity.ID1 && mask.ID2 == entity.ID2)
@@ -899,66 +998,62 @@ namespace xBot.Game
 						}
 						entity[SRAttribute.Mask] = mask;
 					}
-
 				}
 				else if (entity.ID2 == 2 && entity.ID3 == 5)
 				{
 					// NPC_FORTRESS_STRUCT
 					entity[SRAttribute.HP] = packet.ReadUInt();
 					entity[SRAttribute.refEventStructID] = packet.ReadUInt();
-					entity[SRAttribute.LifeState] = packet.ReadUShort();
+					entity[SRAttribute.LifeState] = (Types.LifeState)packet.ReadUShort();
 				}
 				// Position
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
-				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Z] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.X] = (int)packet.ReadSingle();
+				entity[SRAttribute.Z] = (int)packet.ReadSingle();
+				entity[SRAttribute.Y] = (int)packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
 				// Movement
-				byte hasDestination = packet.ReadByte();
-				entity[SRAttribute.hasMovement] = hasDestination;
+				entity[SRAttribute.hasMovement] = packet.ReadByte() == 1;
 				entity[SRAttribute.MovementType] = packet.ReadByte();
-				if (hasDestination == 1)
+				if ((bool)entity[SRAttribute.hasMovement])
 				{
 					// Mouse movement
 					entity[SRAttribute.MovementRegion] = packet.ReadUShort();
 					if ((ushort)entity[SRAttribute.Region] < short.MaxValue)
 					{
 						// World
-						entity[SRAttribute.MovementOffsetX] = packet.ReadUShort();
-						entity[SRAttribute.MovementOffsetZ] = packet.ReadUShort();
-						entity[SRAttribute.MovementOffsetY] = packet.ReadUShort();
+						entity[SRAttribute.MovementOffsetX] = (int)packet.ReadInt16();
+						entity[SRAttribute.MovementOffsetZ] = (int)packet.ReadInt16();
+						entity[SRAttribute.MovementOffsetY] = (int)packet.ReadInt16();
 					}
 					else
 					{
 						// Dungeon
-						entity[SRAttribute.MovementOffsetX] = packet.ReadUInt();
-						entity[SRAttribute.MovementOffsetZ] = packet.ReadUInt();
-						entity[SRAttribute.MovementOffsetY] = packet.ReadUInt();
+						entity[SRAttribute.MovementOffsetX] = packet.ReadInt();
+						entity[SRAttribute.MovementOffsetZ] = packet.ReadInt();
+						entity[SRAttribute.MovementOffsetY] = packet.ReadInt();
 					}
 				}
 				else
 				{
-					entity[SRAttribute.MovementSource] = packet.ReadByte();
-					// Represents the new angle, character is looking at
+					entity[SRAttribute.MovementActionType] = (Types.MovementAction)packet.ReadByte();
 					entity[SRAttribute.MovementAngle] = packet.ReadUShort();
 				}
-				// State
-				entity[SRAttribute.LifeState] = packet.ReadByte();
-				entity[SRAttribute.unkByte3] = packet.ReadByte();
-				entity[SRAttribute.MotionState] = packet.ReadByte();
-				entity[SRAttribute.PlayerStatus] = packet.ReadByte();
+				// States
+				entity[SRAttribute.LifeState] = (Types.LifeState)packet.ReadByte();
+				entity[SRAttribute.unkByte01] = packet.ReadByte(); // Possibly bad status flag
+				entity[SRAttribute.MotionState] = (Types.MotionState)packet.ReadByte();
+				entity[SRAttribute.PlayerState] = (Types.PlayerState)packet.ReadByte();
 				// Speed
-				entity[SRAttribute.WalkSpeed] = packet.ReadSingle();
-				entity[SRAttribute.RunSpeed] = packet.ReadSingle();
-				entity[SRAttribute.BerserkSpeed] = packet.ReadSingle();
+				entity[SRAttribute.SpeedWalking] = packet.ReadSingle();
+				entity[SRAttribute.SpeedRunning] = packet.ReadSingle();
+				entity[SRAttribute.SpeedBerserk] = packet.ReadSingle();
 				// Buffs
 				SRObjectCollection buffs = new SRObjectCollection(packet.ReadByte());
 				for (int i = 0; i < buffs.Capacity; i++)
 				{
-					uint id = packet.ReadUInt();
-					buffs[i] = new SRObject(id, SRObject.Type.Skill);
+					buffs[i] = new SRObject(packet.ReadUInt(), SRObject.Type.Skill);
 					buffs[i][SRAttribute.Duration] = packet.ReadUInt();
 					if (buffs[i].isAutoTransferEffect())
 					{
@@ -969,28 +1064,27 @@ namespace xBot.Game
 				if (entity.ID3 == 1)
 				{
 					// MOB
-					packet.ReadByte();
-					packet.ReadByte();
-					packet.ReadByte();
-					entity[SRAttribute.MobType] = packet.ReadByte();
-				}
+					entity[SRAttribute.unkByte02] = packet.ReadByte();
+					entity[SRAttribute.unkByte03] = packet.ReadByte();
+					entity[SRAttribute.unkByte04] = packet.ReadByte();
+					entity[SRAttribute.MobType] = (Types.Mob)packet.ReadByte();
+        }
 				else if (entity.ID2 == 1)
 				{
 					// CHARACTER
 					entity[SRAttribute.Name] = packet.ReadAscii();
-					entity[SRAttribute.JobType] = packet.ReadByte();
+					entity[SRAttribute.JobType] = (Types.Job)packet.ReadByte();
 					entity[SRAttribute.JobLevel] = packet.ReadByte();
-					entity[SRAttribute.PVPState] = packet.ReadByte();
-					bool hasTransport = packet.ReadByte() == 1;
-					entity[SRAttribute.hasTransport] = hasTransport;
+					entity[SRAttribute.PVPState] = (Types.PVPState)packet.ReadByte();
+					entity[SRAttribute.hasTransport] = packet.ReadByte() == 1;
 					entity[SRAttribute.isFighting] = packet.ReadByte();
-					if (hasTransport)
+					if ((bool)entity[SRAttribute.hasTransport])
 					{
 						entity[SRAttribute.TransportUniqueID] = packet.ReadUInt();
 					}
-					entity[SRAttribute.ScrollMode] = packet.ReadByte();
-					entity[SRAttribute.InteractMode] = packet.ReadByte();
-					entity[SRAttribute.unkByte4] = packet.ReadByte();
+					entity[SRAttribute.ScrollMode] = (Types.ScrollMode)packet.ReadByte();
+					entity[SRAttribute.InteractMode] = (Types.InteractMode)packet.ReadByte();
+					entity[SRAttribute.unkByte02] = packet.ReadByte();
 					// Guild
 					entity[SRAttribute.GuildName] = packet.ReadAscii();
 					if (!((SRObjectCollection)entity[SRAttribute.Inventory]).ContainsJobEquipment())
@@ -1003,13 +1097,13 @@ namespace xBot.Game
 						entity[SRAttribute.GuildisFriendly] = packet.ReadByte();
 						entity[SRAttribute.GuildMemberAuthorityType] = packet.ReadByte();
 					}
-					if ((byte)entity[SRAttribute.InteractMode] == Types.InteractMode.P2N_TALK)
+					if ((Types.InteractMode)entity[SRAttribute.InteractMode] == Types.InteractMode.P2N_TALK)
 					{
 						entity[SRAttribute.StallName] = packet.ReadAscii();
 						entity[SRAttribute.DecorationItemID] = packet.ReadUInt();
 					}
 					entity[SRAttribute.EquipmentCooldown] = packet.ReadByte();
-					entity[SRAttribute.PVPCaptureTheFlagType] = packet.ReadByte();
+					entity[SRAttribute.CaptureTheFlagType] = (Types.CaptureTheFlag)packet.ReadByte();
 				}
 				else if (entity.ID2 == 2)
 				{
@@ -1051,11 +1145,11 @@ namespace xBot.Game
 							// NPC_COS_T
 							// NPC_COS_P (Growth / Ability)
 							// NPC_COS_GUILD
-							entity[SRAttribute.JobType] = packet.ReadByte();
+							entity[SRAttribute.JobType] = (Types.Job)packet.ReadByte();
 							if (entity.ID4 != 4)
 							{
 								// Not pet pick (Ability)
-								entity[SRAttribute.PVPState] = packet.ReadByte();
+								entity[SRAttribute.PVPState] = (Types.PVPState)packet.ReadByte();
 							}
 							if (entity.ID4 == 5)
 							{
@@ -1087,7 +1181,7 @@ namespace xBot.Game
 				if (entity.ID2 == 1)
 				{
 					// ITEM_EQUIP
-					entity[SRAttribute.ItemOptLevel] = packet.ReadByte();
+					entity[SRAttribute.Plus] = packet.ReadByte();
 				}
 				else if (entity.ID2 == 3)
 				{
@@ -1106,9 +1200,9 @@ namespace xBot.Game
 				}
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
-				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Z] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
+				entity[SRAttribute.X] = (int)packet.ReadSingle();
+				entity[SRAttribute.Z] = (int)packet.ReadSingle();
+				entity[SRAttribute.Y] = (int)packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
 				entity[SRAttribute.hasOwner] = packet.ReadByte() == 1;
 				if ((bool)entity[SRAttribute.hasOwner])
@@ -1124,56 +1218,56 @@ namespace xBot.Game
 				// - INS_TELEPORTER
 				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
-				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
-				entity[SRAttribute.Z] = packet.ReadSingle();
+				entity[SRAttribute.X] = (int)packet.ReadSingle();
+				entity[SRAttribute.Y] = (int)packet.ReadSingle();
+				entity[SRAttribute.Z] = (int)packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
 
-				entity[SRAttribute.unkByte0] = packet.ReadByte();
-				entity[SRAttribute.unkByte1] = packet.ReadByte();
-				entity[SRAttribute.unkByte2] = packet.ReadByte();
-				entity[SRAttribute.unkByte3] = packet.ReadByte();
-				if ((byte)entity[SRAttribute.unkByte3] == 1)
+				entity[SRAttribute.unkByte01] = packet.ReadByte();
+				entity[SRAttribute.unkByte02] = packet.ReadByte();
+				entity[SRAttribute.unkByte03] = packet.ReadByte();
+				entity[SRAttribute.unkByte04] = packet.ReadByte();
+				if ((byte)entity[SRAttribute.unkByte04] == 1)
 				{
 					// Regular
-					entity[SRAttribute.unkUInt0] = packet.ReadUInt();
-					entity[SRAttribute.unkUInt1] = packet.ReadUInt();
+					entity[SRAttribute.unkUInt01] = packet.ReadUInt();
+					entity[SRAttribute.unkUInt02] = packet.ReadUInt();
 				}
-				else if ((byte)entity[SRAttribute.unkByte3] == 3)
+				else if ((byte)entity[SRAttribute.unkByte04] == 6)
 				{
 					// Dimensional Hole
 					entity[SRAttribute.OwnerName] = packet.ReadAscii();
 					entity[SRAttribute.OwnerUniqueID] = packet.ReadUInt();
 				}
-				if ((byte)entity[SRAttribute.unkByte1] == 1)
+				if ((byte)entity[SRAttribute.unkByte02] == 1)
 				{
 					// STORE_EVENTZONE_DEFAULT
-					entity[SRAttribute.unkUInt2] = packet.ReadUInt();
-					entity[SRAttribute.unkByte5] = packet.ReadByte();
+					entity[SRAttribute.unkUInt03] = packet.ReadUInt();
+					entity[SRAttribute.unkByte05] = packet.ReadByte();
 				}
 			}
 			else if (entity.ID == uint.MaxValue)
 			{
 				// EVENT_ZONE (Traps, Buffzones, ...)
-				entity[SRAttribute.unkUShort0] = packet.ReadUShort();
-				entity[SRAttribute.refSkillID] = packet.ReadUInt();
-				entity[SRAttribute.UniqueID] = packet.ReadUInt();
-				entity[SRAttribute.Region] = packet.ReadUShort();
-				entity[SRAttribute.X] = packet.ReadSingle();
-				entity[SRAttribute.Z] = packet.ReadSingle();
-				entity[SRAttribute.Y] = packet.ReadSingle();
-				entity[SRAttribute.Angle] = packet.ReadUShort();
+				entity[SRAttribute.unkUShort01] = packet.ReadUShort();
+				SRObject Skill = new SRObject(packet.ReadUInt(), SRObject.Type.Skill);
+				entity[SRAttribute.Skill] = Skill;
 
-				NameValueCollection data = Info.Get.getSkill((uint)entity[SRAttribute.refSkillID]);
-				entity[SRAttribute.Servername] = data["servername"];
-        entity[SRAttribute.Name] = data["name"];
-      }
+        entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.Region] = packet.ReadUShort();
+				entity[SRAttribute.X] = (int)packet.ReadSingle();
+				entity[SRAttribute.Z] = (int)packet.ReadSingle();
+				entity[SRAttribute.Y] = (int)packet.ReadSingle();
+				entity[SRAttribute.Angle] = packet.ReadUShort();
+				
+				entity[SRAttribute.Name] = Skill[SRAttribute.Name];
+			}
 			if (packet.Opcode == Agent.Opcode.SERVER_ENTITY_SPAWN)
 			{
 				if (entity.ID1 == 1 || entity.ID1 == 4)
 				{
 					// BIONIC or STORE
-					entity[SRAttribute.unkByte6] = packet.ReadByte();
+					entity[SRAttribute.unkByte06] = packet.ReadByte();
 				}
 				else if (entity.ID1 == 3)
 				{
@@ -1183,14 +1277,9 @@ namespace xBot.Game
 				}
 			}
 			// End of Packet
-
+			
 			// Keep the track of the entity
-			Info.Get.EntityList.Add(entity);
-
-			// Update GUI
-			Window w = Window.Get;
-			w.TESTING_AddSpawn(entity);
-			w.Minimap_ObjectPointer_Add((uint)entity[SRAttribute.UniqueID], (string)entity[SRAttribute.Servername], (string)entity[SRAttribute.Name], (float)entity[SRAttribute.X], (float)entity[SRAttribute.Y], (float)entity[SRAttribute.Z], (ushort)entity[SRAttribute.Region]);
+			Bot.Get._Event_Spawn(entity);
 		}
 		public static void EntityDespawn(Packet packet)
 		{
@@ -1198,13 +1287,7 @@ namespace xBot.Game
 			// End of Packet
 
 			// Keep the track of the entity
-			SRObject entity = Info.Get.getEntity(uniqueID);
-			Info.Get.EntityList.Remove(entity);
-
-			// Update GUI
-			Window w = Window.Get;
-			w.TESTING_RemoveSpawn(uniqueID);
-			w.Minimap_ObjectPointer_Remove(uniqueID);
+			Bot.Get._Event_Despawn(uniqueID);
 		}
 		public static void EntityMovement(Packet packet)
 		{
@@ -1222,9 +1305,9 @@ namespace xBot.Game
 				}
 				else
 				{
-					entity[SRAttribute.MovementOffsetX] = packet.ReadInt16();
-					entity[SRAttribute.MovementOffsetZ] = packet.ReadInt16();
-					entity[SRAttribute.MovementOffsetY] = packet.ReadInt16();
+					entity[SRAttribute.MovementOffsetX] = (int)(packet.ReadInt16());
+					entity[SRAttribute.MovementOffsetZ] = (int)(packet.ReadInt16());
+					entity[SRAttribute.MovementOffsetY] = (int)(packet.ReadInt16());
 				}
 			}
 			bool flag = packet.ReadByte() == 1;
@@ -1239,31 +1322,34 @@ namespace xBot.Game
 			// End of Packet
 
 			// Keep the track of the entity
-			SRObject e = Info.Get.getEntity((uint)entity[SRAttribute.UniqueID]);
-			e.CopyAttributes(entity,true);
+			SRObject e = Info.Get.GetEntity((uint)entity[SRAttribute.UniqueID]);
+			e.CopyAttributes(entity, true);
 
 			// Update Minimap Movement
 			if ((bool)entity[SRAttribute.hasMovement])
 			{
 				Window w = Window.Get;
-				Point p = e.getMovementPosition();
 				if (e == Info.Get.Character)
 				{
+					WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
+						w.Character_lblLocation.Text = Info.Get.GetRegion((ushort)entity[SRAttribute.MovementRegion]);
+					});
 					WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
-						w.Minimap_tbxX.Text = ((short)entity[SRAttribute.MovementOffsetX]).ToString();
-						w.Minimap_tbxY.Text = ((short)entity[SRAttribute.MovementOffsetY]).ToString();
-						w.Minimap_tbxZ.Text = ((short)entity[SRAttribute.MovementOffsetZ]).ToString();
+						w.Minimap_tbxX.Text = ((int)entity[SRAttribute.MovementOffsetX]).ToString();
+						w.Minimap_tbxY.Text = ((int)entity[SRAttribute.MovementOffsetY]).ToString();
+						w.Minimap_tbxZ.Text = ((int)entity[SRAttribute.MovementOffsetZ]).ToString();
 						w.Minimap_tbxRegion.Text = ((ushort)entity[SRAttribute.MovementRegion]).ToString();
 					});
+					Point p = e.GetPosition((ushort)entity[SRAttribute.MovementRegion], (int)entity[SRAttribute.MovementOffsetX], (int)entity[SRAttribute.MovementOffsetY], (int)entity[SRAttribute.MovementOffsetZ]);
 					WinAPI.InvokeIfRequired(w.Minimap_panelGameCoords, () => {
-						w.Minimap_tbxGameX.Text = p.X.ToString();
-						w.Minimap_tbxGameY.Text = p.Y.ToString();
+						w.Minimap_tbxCoordX.Text = p.X.ToString();
+						w.Minimap_tbxCoordY.Text = p.Y.ToString();
 					});
-					w.Minimap_CharacterPointer_Move(p.X, p.Y, (short)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
+					w.Minimap_CharacterPointer_Move((int)entity[SRAttribute.MovementOffsetX], (int)entity[SRAttribute.MovementOffsetY], (int)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
 				}
 				else
 				{
-					w.Minimap_ObjectPointer_Move((uint)entity[SRAttribute.UniqueID], p.X, p.Y, (short)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
+					w.Minimap_ObjectPointer_Move((uint)entity[SRAttribute.UniqueID], (int)entity[SRAttribute.MovementOffsetX], (int)entity[SRAttribute.MovementOffsetY], (int)entity[SRAttribute.MovementOffsetZ], (ushort)entity[SRAttribute.MovementRegion]);
 				}
 			}
 		}
@@ -1280,13 +1366,13 @@ namespace xBot.Game
 		{
 			byte type = packet.ReadByte();
 			string player = "";
-			switch (type)
+			switch ((Types.Chat)type)
 			{
 				case Types.Chat.All:
 				case Types.Chat.GM:
 				case Types.Chat.NPC:
 					uint playerID = packet.ReadUInt();
-					SRObject p = Info.Get.getEntity(playerID);
+					SRObject p = Info.Get.GetEntity(playerID);
 					if (p != null && p.Contains(SRAttribute.Name))
 						player = (string)p[SRAttribute.Name];
 					else
@@ -1311,7 +1397,7 @@ namespace xBot.Game
 
 			Window w = Window.Get;
 			// Chat GUI filter
-			switch (type)
+			switch ((Types.Chat)type)
 			{
 				case Types.Chat.All:
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
@@ -1323,7 +1409,7 @@ namespace xBot.Game
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
 					break;
 				case Types.Chat.Private:
-					w.LogChatMessage(w.Chat_rtbxPrivate, player, message);
+					w.LogChatMessage(w.Chat_rtbxPrivate, player + "(From)", message);
 					break;
 				case Types.Chat.Party:
 					w.LogChatMessage(w.Chat_rtbxParty, player, message);
@@ -1344,7 +1430,10 @@ namespace xBot.Game
 					w.LogChatMessage(w.Chat_rtbxStall, player, message);
 					break;
 				case Types.Chat.Notice:
-					w.LogChatMessage(w.Chat_rtbxAll,"(Notice)", message);
+					w.LogChatMessage(w.Chat_rtbxAll, "(Notice)", message);
+					break;
+				default:
+					w.LogChatMessage(w.Chat_rtbxAll, "(...)", message);
 					break;
 			}
 		}
@@ -1358,73 +1447,380 @@ namespace xBot.Game
 		}
 		public static void EntityLevelUp(Packet packet)
 		{
-			uint uniqueID = packet.ReadUInt();
+			//uint uniqueID = packet.ReadUInt();
+			//// End of Packet
 
-			Info i = Info.Get;
-			if (uniqueID == (uint)i.Character[SRAttribute.UniqueID])
-			{
-				// Unneccesary packet since everything
-				// is calculated on SERVER_CHARACTER_EXPERIENCE_UPDATE
-				Window w =	Window.Get;
-				if (w.Character_cbxMessageExp.Checked)
-					w.LogMessageFilter("Level Up!");
-			}
+			// Possibly used later when is on party for kicking players
 		}
-		public static void EntityBarUpdate(Packet packet)
+		public static void EntityStateUpdate(Packet packet)
 		{
 			uint uniqueID = packet.ReadUInt();
-			packet.ReadByte();
-			packet.ReadByte();
+			byte unkByte01 = packet.ReadByte();
+			byte unkByte02 =packet.ReadByte();
 
 			Info i = Info.Get;
-			SRObject entity = i.getEntity(uniqueID);
+			SRObject entity = i.GetEntity(uniqueID);
 			if (entity == null)
 				return;
 
 			Window w = Window.Get;
-			byte barType = packet.ReadByte();
+			Types.EntityStateUpdate barType = (Types.EntityStateUpdate)packet.ReadByte();
 			switch (barType)
 			{
-				case Types.BarUpdate.HP:
+				case Types.EntityStateUpdate.HP:
 					entity[SRAttribute.HP] = packet.ReadUInt();
 					break;
-				case Types.BarUpdate.MP:
+				case Types.EntityStateUpdate.MP:
 					entity[SRAttribute.MP] = packet.ReadUInt();
 					break;
-				case Types.BarUpdate.HPMP:
-				case Types.BarUpdate.EntityHPMP:
+				case Types.EntityStateUpdate.HPMP:
+				case Types.EntityStateUpdate.EntityHPMP:
 					entity[SRAttribute.HP] = packet.ReadUInt();
 					entity[SRAttribute.MP] = packet.ReadUInt();
 					break;
-				case Types.BarUpdate.BadStatus:
+				case Types.EntityStateUpdate.BadStatus:
 					entity[SRAttribute.hasBadStatus] = packet.ReadByte() == 1;
 					break;
 			}
 			// End of Packet
-			
+
 			if (entity == i.Character)
 			{
-				if (barType == Types.BarUpdate.HP || barType == Types.BarUpdate.HPMP)
+				if (barType == Types.EntityStateUpdate.HP || barType == Types.EntityStateUpdate.HPMP)
 				{
-					WinAPI.InvokeIfRequired(w.Character_pgbHP, () =>
-					{
+					WinAPI.InvokeIfRequired(w.Character_pgbHP, () =>{
 						w.Character_pgbHP.Value = (int)((uint)entity[SRAttribute.HP]);
 					});
-					Bot.Get.Event_BarUpdated();
+					Bot.Get.Event_StateUpdated();
 				}
-				if (barType == Types.BarUpdate.MP || barType == Types.BarUpdate.HPMP)
+				if (barType == Types.EntityStateUpdate.MP || barType == Types.EntityStateUpdate.HPMP)
 				{
-					WinAPI.InvokeIfRequired(w.Character_pgbMP, () =>
-					{
+					WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
 						w.Character_pgbMP.Value = (int)((uint)entity[SRAttribute.MP]);
 					});
-					Bot.Get.Event_BarUpdated();
+					Bot.Get.Event_StateUpdated();
 				}
+			}
+		}
+		public static void EnviromentWheaterUpdate(Packet packet)
+		{
+			Info i = Info.Get;
+			i.WheaterType = packet.ReadByte();
+			i.WheaterIntensity = packet.ReadByte();
+		}
+		public static void UniqueUpdate(Packet packet)
+		{
+			Window w = Window.Get;
+			Info i = Info.Get;
+
+			byte type = packet.ReadByte();
+			switch (type)
+			{
+				case 5:
+					if (w.Character_cbxMessageUnique.Checked)
+					{
+						byte unkByte01 = packet.ReadByte();
+						uint modelID = packet.ReadUInt();
+
+						string unique = i.GetModel(modelID)["name"];
+						w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_APPEAR_UNIC", unique));
+					}
+					break;
+				case 6:
+					if (w.Character_cbxMessageUnique.Checked)
+					{
+						byte unkByte01 = packet.ReadByte();
+						uint modelID = packet.ReadUInt();
+						string player = packet.ReadAscii();
+
+						string unique = i.GetModel(modelID)["name"];
+						w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_ANYONE_DEAD_UNIC", player, unique));
+					}
+					break;
+			}
+		}
+		public static void PlayerInvitationRequest(Packet packet)
+		{
+			byte type = packet.ReadByte();
+			uint uniqueID = packet.ReadUInt32();
+			switch ((Types.PlayerInvitation)type)
+			{
+				case Types.PlayerInvitation.PartyCreation: // Party - Not created yet
+				case Types.PlayerInvitation.PartyInvitation: // Party
+					byte partySetupFlags = packet.ReadByte();
+					Bot.Get.Event_PartyInvitation(uniqueID, partySetupFlags);
+					break;
+				case Types.PlayerInvitation.GuildInvitation: // Guild - Not confirmed
+
+					break;
+				case Types.PlayerInvitation.UnionInvitation: // Union - Not confirmed
+
+					break;
+				case Types.PlayerInvitation.AcademyInvitation: // Academy - Not confirmed
+
+					break;
+			}
+		}
+		public static void PartyData(Packet packet)
+		{
+			uint unkUint01 = packet.ReadUInt();
+			uint unkUint02 = packet.ReadUInt();
+			byte partyPurposeType = packet.ReadByte();
+			byte partySetupType = packet.ReadByte();
+			byte playerCount = packet.ReadByte();
+			for (int j = 0; j < playerCount; j++)
+			{
+				PartyAddPlayer(packet);
+			}
+			
+			// Party Setup to boolean
+			bool ExpShared =  Types.HasFlag(partySetupType, Types.PartySetup.ExpShared);
+			bool ItemShared = Types.HasFlag(partySetupType, Types.PartySetup.ItemShared);
+			bool AnyoneCanInvite = Types.HasFlag(partySetupType, Types.PartySetup.AnyoneCanInvite);
+
+			// Update GUI with current party setup
+			Window w = Window.Get;
+
+			string partySetup = "• Exp. "+ (ExpShared ? "Shared" : "Free-For-All") + " • Item "+ (ItemShared ? "Shared" : "Free-For-All") + " • "+ (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
+			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
+				w.Party_lblCurrentSetup.Text = partySetup;
+			});
+			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
+				w.ToolTips.SetToolTip(w.Party_lblCurrentSetup, ((Types.PartyPurpose)partyPurposeType).ToString());
+			});
+
+			// Generating Bot Event
+			Bot.Get.Event_PartyJoined(partySetupType,partyPurposeType);
+		}
+		private static void PartyAddPlayer(Packet packet)
+		{
+			SRObject player = new SRObject();
+			player[SRAttribute.unkByte01] = packet.ReadByte();
+			player[SRAttribute.ID] = packet.ReadUInt(); // ID from Party
+			string name = packet.ReadAscii();
+			player.Load(packet.ReadUInt(), SRObject.Type.Model);
+			player[SRAttribute.Name] = name;
+			player[SRAttribute.Level] = packet.ReadByte();
+			player[SRAttribute.unkByte02] = packet.ReadByte();
+			player[SRAttribute.Region] = packet.ReadUShort();
+			if (player.inDungeon((ushort)player[SRAttribute.Region]))
+			{
+				// On dungeon
+				player[SRAttribute.X] = packet.ReadInt();
+				player[SRAttribute.Z] = packet.ReadInt();
+				player[SRAttribute.Y] = packet.ReadInt();
 			}
 			else
 			{
-				w.TESTING_EditSpawn(entity, SRAttribute.HP);
-				w.TESTING_EditSpawn(entity, SRAttribute.MP);
+				player[SRAttribute.X] = (int)packet.ReadShort();
+				player[SRAttribute.Z] = (int)packet.ReadShort();
+				player[SRAttribute.Y] = (int)packet.ReadShort();
+			}
+			player[SRAttribute.unkByte03] = packet.ReadByte(); // 2 = unkByte08.
+			player[SRAttribute.unkByte04] = packet.ReadByte();
+			player[SRAttribute.unkByte05] = packet.ReadByte();
+			player[SRAttribute.unkByte06] = packet.ReadByte();
+			player[SRAttribute.GuildName] = packet.ReadAscii();
+			player[SRAttribute.unkByte07] = packet.ReadByte();
+			if(packet.Opcode == Agent.Opcode.SERVER_PARTY_UPDATE && (byte)player[SRAttribute.unkByte03] == 2)
+			{
+				player[SRAttribute.unkByte08] = packet.ReadByte();
+			}
+			SRObjectCollection Masteries = new SRObjectCollection();
+			Masteries.Add(new SRObject(packet.ReadUInt(), SRObject.Type.Mastery)); // Primary
+			Masteries.Add(new SRObject(packet.ReadUInt(), SRObject.Type.Mastery)); // Secondary
+			player[SRAttribute.Masteries] = Masteries;
+
+			// Keep on track players for updates
+			Info i = Info.Get;
+			i.PartyList.Add(player);
+
+			// Add player to GUI
+			ListViewItem item = new ListViewItem(name);
+			item.Name = player[SRAttribute.ID].ToString();
+			item.SubItems.Add((string)player[SRAttribute.GuildName]);
+			item.SubItems.Add(player[SRAttribute.Level].ToString());
+			item.SubItems.Add("");
+			item.SubItems.Add(i.GetRegion((ushort)player[SRAttribute.Region]));
+
+			Window w = Window.Get;
+			WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
+				w.Party_lstvMembers.Items.Add(item);
+			});
+		}
+		public static void PartyUpdate(Packet packet)
+		{
+			Window w = Window.Get;
+			Info i = Info.Get;
+			
+			byte type = packet.ReadByte();
+
+			uint memberID;
+			switch ((Types.PartyUpdate)type)
+			{
+				case Types.PartyUpdate.Dismissed: // No members left on party
+					ushort unkUShort = packet.ReadUShort();
+					// Clear GUI
+					w.Party_Clear();
+					// Event hook
+					Bot.Get._Event_PartyLeaved();
+					break;
+				case Types.PartyUpdate.MemberJoined:
+					PartyAddPlayer(packet);
+					break;
+				case Types.PartyUpdate.MemberLeave:
+					memberID = packet.ReadUInt();
+					byte reason = packet.ReadByte();
+					
+					SRObject player = i.GetPartyMember(memberID);
+					if ((string)player[SRAttribute.Name] == i.Charname)
+					{
+						w.Party_Clear();
+						// Event hook
+						Bot.Get.Event_PartyLeaved();
+					}
+					else
+					{
+						i.PartyList.Remove(player);
+						WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
+							w.Party_lstvMembers.Items[memberID.ToString()].Remove();
+						});
+					}
+					break;
+				case Types.PartyUpdate.MemberUpdate:
+					memberID = packet.ReadUInt();
+					byte updateType = packet.ReadByte();
+					switch (updateType)
+					{
+						case 4: // HP & MP
+							byte HPMP = packet.ReadByte();
+							int HP = (HPMP & 15) * 100 / 0xB; // Converted to percentage
+							int MP = (HPMP >> 4) * 100 / 0xA; // Converted to percentage
+
+							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
+								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[3].Text = string.Format("{0}% / {1}%", HP, MP);
+							});
+							break;
+						case 0x20: // Map position
+							string region = i.GetRegion(packet.ReadUShort());
+							// X,Y,Z .. not important, only for minimap
+							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
+								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[4].Text = region;
+							});
+							break;
+					}
+					break;
+			}
+		}
+		public static void PartyMatchResponse(Packet packet){
+			Window w = Window.Get;
+			WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch,()=> {
+				w.Party_lstvPartyMatch.Items.Clear();
+      });
+			
+			byte success = packet.ReadByte();
+			if (success == 1)
+			{
+				byte pageCount = packet.ReadByte();
+				byte pageIndex = packet.ReadByte();
+				byte partyCount = packet.ReadByte();
+
+				ListViewItem[] partys = new ListViewItem[partyCount];
+        for (int j = 0; j < partyCount; j++)
+				{
+					uint number = packet.ReadUInt();
+					uint unkUInt01 = packet.ReadUInt(); // Unique ID ?
+					string master = packet.ReadAscii();
+					byte unkByte01 = packet.ReadByte();
+					byte playersCount = packet.ReadByte();
+					byte setupType = packet.ReadByte();
+					byte purposeType = packet.ReadByte();
+					byte levelMin = packet.ReadByte();
+					byte levelMax = packet.ReadByte();
+					string title = packet.ReadAscii();
+
+					// Party setup to boolean
+					bool ExpShared = Types.HasFlag(setupType, Types.PartySetup.ExpShared);
+					bool ItemShared = Types.HasFlag(setupType, Types.PartySetup.ItemShared);
+					bool AnyoneCanInvite = Types.HasFlag(setupType, Types.PartySetup.AnyoneCanInvite);
+
+					ListViewItem party = new ListViewItem(number.ToString());
+					party.Name = unkUInt01.ToString(); // Try to confirm Unique ID while testing
+					party.SubItems.Add(master);
+					party.SubItems.Add(title);
+					party.SubItems.Add(levelMin + "~"+levelMax);
+					party.SubItems.Add(playersCount +"/"+(ExpShared?"8":"4"));
+					party.SubItems.Add(((Types.PartyPurpose)purposeType).ToString());
+					party.ToolTipText = "Exp. "+ (ExpShared ? "Shared" : "Free - For - All") + "\nItem " + (ItemShared ? "Shared" : "Free-For-All") + "\n" + (AnyoneCanInvite ? "Anyone" : "Only Master") + "Can Invite";
+					partys[j] = party;
+				}
+				if (partyCount > 0)
+				{
+					// Add partys
+					WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch, () => {
+						w.Party_lstvPartyMatch.Items.AddRange(partys);
+					});
+				}
+
+				// Set page changer
+				WinAPI.InvokeIfRequired(w.Party_lblPageNumber, () => {
+					w.Party_lblPageNumber.Text = (pageIndex + 1).ToString();
+				});
+				WinAPI.InvokeIfRequired(w.Party_btnLastPage, () => {
+					w.Party_btnLastPage.Enabled = pageIndex != 0;
+        });
+				WinAPI.InvokeIfRequired(w.Party_btnNextPage, () => {
+					w.Party_btnNextPage.Enabled = pageCount != pageIndex + 1;
+				});
+			}
+		}
+		public static void EntitySelection(Packet packet)
+		{
+			bool sucess = packet.ReadByte() == 1;
+			if (sucess)
+			{
+				Bot.Get.SelectedUID = packet.ReadUInt();
+				byte flag = packet.ReadByte();
+				if(flag == 0){
+					// NPC
+					byte[] talkOptions = packet.ReadUInt8Array(packet.ReadByte());
+					byte unkByte01 = packet.ReadByte();
+				}
+				else if(flag == 1){
+
+				}
+			}
+		}
+		public static void CharacterAddStatPointResponse(Packet packet)
+		{
+			Window w = Window.Get;
+
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				Info i = Info.Get;
+
+				ushort StatPoints = (ushort)i.Character[SRAttribute.StatPoints];
+        if (StatPoints > 0)
+				{
+					i.Character[SRAttribute.StatPoints] = (ushort)(StatPoints - 1);
+					WinAPI.InvokeIfRequired(w.Character_lblStatPoints,()=> {
+						w.Character_lblStatPoints.Text = i.Character[SRAttribute.StatPoints].ToString();
+          });
+					if ((ushort)i.Character[SRAttribute.StatPoints] == 0)
+					{
+						// lock buttons
+						WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
+							w.Character_btnAddINT.Enabled = w.Character_btnAddSTR.Enabled = false;
+						});
+					}
+        }
+			}
+			else
+			{
+				WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
+					w.Character_btnAddINT.Enabled = w.Character_btnAddSTR.Enabled = false;
+				});
 			}
 		}
 	}

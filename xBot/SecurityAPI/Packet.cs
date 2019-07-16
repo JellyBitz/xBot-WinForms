@@ -236,6 +236,17 @@ namespace SecurityAPI
 				return m_reader.ReadInt16();
 			}
 		}
+		public short ReadShort()
+		{
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+				return m_reader.ReadInt16();
+			}
+		}
 		public uint ReadUInt()
 		{
 			lock (m_lock)
@@ -335,7 +346,18 @@ namespace SecurityAPI
 				return m_reader.ReadSingle();
 			}
 		}
-		public Double ReadDouble()
+		public float ReadFloat()
+		{
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+				return m_reader.ReadSingle();
+			}
+		}
+		public double ReadDouble()
 		{
 			lock (m_lock)
 			{
@@ -350,7 +372,7 @@ namespace SecurityAPI
 		{
 			return ReadAscii(1252);
 		}
-		public String ReadAscii(int codepage)
+		public string ReadAscii(int codepage)
 		{
 			lock (m_lock)
 			{
@@ -593,8 +615,18 @@ namespace SecurityAPI
 				return m_writer.BaseStream.Seek(offset, orgin);
 			}
 		}
-
 		public void WriteUInt8(byte value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value);
+			}
+		}
+		public void WriteByte(byte value)
 		{
 			lock (m_lock)
 			{
@@ -627,6 +659,17 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
+		public void WriteUShort(ushort value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value);
+			}
+		}
 		public void WriteInt16(Int16 value)
 		{
 			lock (m_lock)
@@ -639,6 +682,17 @@ namespace SecurityAPI
 			}
 		}
 		public void WriteUInt32(UInt32 value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value);
+			}
+		}
+		public void WriteUInt(uint value)
 		{
 			lock (m_lock)
 			{
@@ -671,6 +725,17 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
+		public void WriteULong(ulong value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value);
+			}
+		}
 		public void WriteInt64(Int64 value)
 		{
 			lock (m_lock)
@@ -683,6 +748,17 @@ namespace SecurityAPI
 			}
 		}
 		public void WriteSingle(Single value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value);
+			}
+		}
+		public void WriteFloat(float value)
 		{
 			lock (m_lock)
 			{

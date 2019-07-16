@@ -1,7 +1,7 @@
 ﻿using SecurityAPI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Threading;
 using xBot.Game;
 
 namespace xBot.Network
@@ -12,15 +12,23 @@ namespace xBot.Network
 		{
 			// static opcodes could be edited at realtime (for different vSRO types)
 			public static ushort
-				CLIENT_HWID = 0,
-				SERVER_HWID = 0;
+				CLIENT_HWID_RESPONSE = 0,
+				SERVER_HWID_REQUEST = 0;
 			public const ushort
 				CLIENT_AUTH_REQUEST = 0x6103,
 				CLIENT_CHARACTER_SELECTION_JOIN_REQUEST = 0x7001,
 				CLIENT_CHARACTER_SELECTION_ACTION_REQUEST = 0x7007,
+				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
+				CLIENT_ENVIROMENT_WEATHER_REQUEST = 0x750E,
+				CLIENT_CHARACTER_MOVEMENT = 0x7021,
+				CLIENT_CHARACTER_ADD_STR_REQUEST = 0x7050,
+				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
 				CLIENT_CHAT_REQUEST = 0x7025,
-				CLIENT_CONFIRM_UNKNOWN = 0x750E,
-				CLIENT_CONFIRM_SPAWN = 0x3012,
+				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
+				CLIENT_PARTY_LEAVE = 0x7061,
+				CLIENT_PARTY_MATCH_REQUEST = 0x706C,
+				CLIENT_PARTY_MATCH_JOIN = 0x706D,
+				CLIENT_ENTITY_SELECTION = 0x7045,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -28,20 +36,30 @@ namespace xBot.Network
 				SERVER_CHARACTER_DATA_BEGIN = 0x34A5,
 				SERVER_CHARACTER_DATA = 0x3013,
 				SERVER_CHARACTER_DATA_END = 0x34A6,
-				SERVER_CHARACTER_INFO_UPDATE = 0x303D,
+				SERVER_CHARACTER_STATS_UPDATE = 0x303D,
 				SERVER_CHARACTER_EXPERIENCE_UPDATE = 0x3056,
-
+				SERVER_CHARACTER_ADD_STR_RESPONSE = 0xB050,
+				SERVER_CHARACTER_ADD_INT_RESPONSE = 0xB051,
+				SERVER_CHARACTER_INFO_UPDATE = 0x304E,
 				SERVER_ENTITY_SPAWN = 0x3015,
 				SERVER_ENTITY_DESPAWN = 0x3016,
 				SERVER_ENTITY_GROUPSPAWN_BEGIN = 0x3017,
 				SERVER_ENTITY_GROUPSPAWN_END = 0x3018,
 				SERVER_ENTITY_GROUPSPAWN_DATA = 0x3019,
-				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
 				SERVER_ENTITY_MOVEMENT = 0xB021,
-				SERVER_CHAT_UPDATE = 0x3026,
-				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
 				SERVER_ENTITY_LEVEL_UP = 0x3054,
-				SERVER_ENTITY_BAR_UPDATE = 0x3057,
+				SERVER_ENTITY_STATE_UPDATE = 0x3057,
+				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
+				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
+				SERVER_ENVIROMENT_WHEATER_UPDATE = 0x3809,
+				SERVER_CHAT_UPDATE = 0x3026,
+				SERVER_UNIQUE_UPDATE = 0x300C,
+				SERVER_PLAYER_INVITATION_REQUEST = 0x3080,
+				SERVER_PARTY_INVITATION_RESPONSE = 0xB060,
+				SERVER_PARTY_DATA = 0x3065,
+				SERVER_PARTY_UPDATE = 0x3864,
+				SERVER_ENTITY_SELECTION = 0xB045,
+				SERVER_PARTY_MATCH_RESPONSE = 0xB06C,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -68,10 +86,16 @@ namespace xBot.Network
 			// Setup cycle : (Client < > Proxy < > Server)
 			Remote.RelaySecurity = Local.Security; // Client < Proxy < Server
 			Local.RelaySecurity = Remote.Security; // Client > Proxy > Server
-																						 // ignore list
-			IgnoreOpcodeClient = new List<ushort>(new ushort[] { Opcode.GLOBAL_HANDSHAKE, Opcode.GLOBAL_HANDSHAKE_OK });
+																						 
+			IgnoreOpcodeClient = new List<ushort>(); // ignore list
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_HANDSHAKE);
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_HANDSHAKE_OK);
 			IgnoreOpcodeClient.Add(Opcode.GLOBAL_IDENTIFICATION); // proxy to remote is handled by API
-			IgnoreOpcodeServer = new List<ushort>(new ushort[] { Opcode.GLOBAL_HANDSHAKE, Opcode.GLOBAL_HANDSHAKE_OK });
+			IgnoreOpcodeClient.Add(Opcode.GLOBAL_PING); // handling ping manually
+
+			IgnoreOpcodeServer = new List<ushort>(); // ignore list
+			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE);
+			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE_OK);
 		}
 		public bool ClientlessMode { get { return Local.Socket == null; } }
 		public bool IgnoreOpcode(ushort opcode, Context c)
@@ -91,9 +115,9 @@ namespace xBot.Network
 			if (context == Local)
 			{
 				// HWID setup (saving/updating data from client)
-				if (packet.Opcode == Opcode.CLIENT_HWID)
+				if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
 				{
-					if (Bot.Get.SaveHWIDFrom == "Agent" || Bot.Get.SaveHWIDFrom == "Both")
+					if (Bot.Get.HWIDSaveFrom == "Agent" || Bot.Get.HWIDSaveFrom == "Both")
 					{
 						Bot.Get.SaveHWID(packet.GetBytes());
 					}
@@ -101,15 +125,15 @@ namespace xBot.Network
 				return Local_PacketHandler(packet);
 			}
 			// HWID setup (sending data to server)
-			if (packet.Opcode == Opcode.SERVER_HWID && ClientlessMode && Bot.Get.hasHWID)
+			if (packet.Opcode == Opcode.SERVER_HWID_REQUEST && ClientlessMode)
 			{
-				if (Bot.Get.SendHWIDTo == "Agent" || Bot.Get.SaveHWIDFrom == "Both")
+				if (Bot.Get.HWIDSendTo == "Agent" || Bot.Get.HWIDSendTo == "Both")
 				{
 					byte[] hwidData = Bot.Get.LoadHWID();
 					if (hwidData != null)
 					{
-						Packet p = new Packet(Opcode.CLIENT_HWID, false, false, hwidData);
-						Bot.Get.Proxy.Agent.InjectToServer(p);
+						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
+						InjectToServer(p);
 						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
 					}
 				}
@@ -133,9 +157,19 @@ namespace xBot.Network
 				Window w = Window.Get;
 				w.EnableControl(w.Login_btnStart, false);
 			}
-			else if (packet.Opcode == Opcode.CLIENT_CONFIRM_SPAWN && !ClientlessMode)
+			else if (packet.Opcode == Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN && !ClientlessMode)
 			{
 				Bot.Get._Event_Teleported();
+			}
+			else if (packet.Opcode == Opcode.CLIENT_CHAT_REQUEST)
+			{
+				// Keep on track all private messages sent
+				if(packet.ReadByte() == (byte)Types.Chat.Private)
+				{
+					packet.ReadByte(); // chat index
+					Window w = Window.Get;
+					w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
+				}
 			}
 			return false;
 		}
@@ -168,14 +202,14 @@ namespace xBot.Network
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					// Generating Bot Event to keep this method clean
-					Bot.Get._Event_Connected();
-
 					w.Log("Logged successfully!");
 					w.LogProcess("Logged");
 					w.EnableControl(w.Login_btnStart, false);
 					if (ClientlessMode)
 						PacketBuilder.RequestCharacterList();
+
+					// Generating Bot Event to keep this method clean
+					Bot.Get._Event_Connected();
 				}
 				else
 				{
@@ -193,7 +227,7 @@ namespace xBot.Network
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					w.LogProcess("Loading...");
+					w.Log("Character selected ["+Info.Get.Charname+"]");
 				}
 				else
 				{
@@ -205,6 +239,7 @@ namespace xBot.Network
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_BEGIN)
 			{
 				PacketParser.CharacterDataBegin(packet);
+				Bot.Get._Event_Teleporting();
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA)
 			{
@@ -215,33 +250,37 @@ namespace xBot.Network
 				PacketParser.CharacterDataEnd(packet);
 				if (ClientlessMode)
 				{
+					// Confirm spawn after loading with some delay
+					Packet protocol = new Packet(Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN);
+					InjectToServer(protocol);
+
 					// Generating Bot Events to keep methods clean
 					Bot.Get._Event_Teleported();
 
-					// Confirm spawn after loading
-					Packet protocol = new Packet(Opcode.CLIENT_CONFIRM_SPAWN);
-					InjectToServer(protocol);
-
-					protocol = new Packet(Opcode.CLIENT_CONFIRM_UNKNOWN);
+					protocol = new Packet(Opcode.CLIENT_ENVIROMENT_WEATHER_REQUEST);
 					InjectToServer(protocol);
 				}
 			}
-			else if (packet.Opcode == Opcode.SERVER_CHARACTER_INFO_UPDATE)
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_STATS_UPDATE)
 			{
-				PacketParser.CharacterInfoUpdate(packet);
+				PacketParser.CharacterStatsUpdate(packet);
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_EXPERIENCE_UPDATE)
 			{
 				PacketParser.CharacterExperienceUpdate(packet);
 			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_INFO_UPDATE)
+			{
+				PacketParser.CharacterInfoUpdate(packet);
+			}
 			else if (packet.Opcode == Opcode.GLOBAL_XTRAP_IDENTIFICATION && ClientlessMode)
 			{
-				Packet p = new Packet(Opcode.GLOBAL_XTRAP_IDENTIFICATION);
-				p.WriteUInt8(2);
-				p.WriteUInt8(2);
+				Packet protocol = new Packet(Opcode.GLOBAL_XTRAP_IDENTIFICATION);
+				protocol.WriteUInt8(2);
+				protocol.WriteUInt8(2);
 				//p.WriteUInt8Array(new byte[1024]);
-				p.WriteUInt64Array(new ulong[128]);
-				InjectToServer(p);
+				protocol.WriteUInt64Array(new ulong[128]);
+				InjectToServer(protocol);
 			}
 			else if (packet.Opcode == Opcode.SERVER_ENTITY_SPAWN)
 			{
@@ -283,15 +322,66 @@ namespace xBot.Network
 			{
 				PacketParser.EntityLevelUp(packet);
 			}
-			else if (packet.Opcode == Opcode.SERVER_ENTITY_BAR_UPDATE)
+			else if (packet.Opcode == Opcode.SERVER_ENTITY_STATE_UPDATE)
 			{
-				PacketParser.EntityBarUpdate(packet);
+				PacketParser.EntityStateUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_ENVIROMENT_WHEATER_UPDATE)
+			{
+				PacketParser.EnviromentWheaterUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_UNIQUE_UPDATE)
+			{
+				PacketParser.UniqueUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PLAYER_INVITATION_REQUEST)
+			{
+				PacketParser.PlayerInvitationRequest(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PARTY_DATA)
+			{
+				PacketParser.PartyData(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PARTY_UPDATE)
+			{
+				PacketParser.PartyUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PARTY_MATCH_RESPONSE)
+			{
+				PacketParser.PartyMatchResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_ENTITY_SELECTION)
+			{
+				PacketParser.EntitySelection(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_ADD_INT_RESPONSE)
+			{
+				PacketParser.CharacterAddStatPointResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_ADD_STR_RESPONSE)
+			{
+				PacketParser.CharacterAddStatPointResponse(packet);
 			}
 			return false;
 		}
-		public void InjectToServer(Packet p)
+		/// <summary>
+		/// Inject a packet to the server. The delay is used to no lock the main thread.
+		/// </summary>
+		/// <param name="p">Packet with the info</param>
+		/// <param name="delay">Delay in miliseconds to be executed in other thread</param>
+		public void InjectToServer(Packet p, int delay = 0)
 		{
-			Remote.Security.Send(p);
+			if(delay > 0)
+			{
+				(new Thread((ThreadStart)delegate{
+					Thread.Sleep(delay);
+					Remote.Security.Send(p);
+				})).Start();
+			}
+			else
+			{
+				Remote.Security.Send(p);
+			}
 		}
 		public void InjectToClient(Packet p)
 		{

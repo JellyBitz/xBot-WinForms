@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace xGraphics
@@ -81,7 +82,7 @@ namespace xGraphics
 				}
       }
 
-			string text = DisplayStyle == ProgressBarDisplayText.Percentage ?(Math.Round(ValuePercentage,2)+"%"):(DisplayStyle == ProgressBarDisplayText.Values?this.Value+" / "+this.Maximum:DisplayText);
+			string text = GetDisplayText();
 
 			SizeF len = g.MeasureString(text, TextFont);
 			int px = Convert.ToInt32((Width / 2) - len.Width / 2);
@@ -89,14 +90,34 @@ namespace xGraphics
 
 			if (TextShadowBrush.Color != TextColorBrush.Color)
 			{
-				g.DrawString(text, TextFont, TextShadowBrush, px + 1, py + 1);
-				g.DrawString(text, TextFont, TextShadowBrush, px - 1, py - 1);
-				g.DrawString(text, TextFont, TextShadowBrush, px - 1, py);
-				g.DrawString(text, TextFont, TextShadowBrush, px, py + 1);
-				g.DrawString(text, TextFont, TextShadowBrush, px - 1, py + 1);
-				g.DrawString(text, TextFont, TextShadowBrush, px + 1, py - 1);
+				for (sbyte i = -1; i < 2; i++)
+					for (sbyte j = -1; j < 2; j++)
+						g.DrawString(text, TextFont, TextShadowBrush, px + i, py + j);
 			}
 			g.DrawString(text, TextFont, TextColorBrush, px, py);
+		}
+		private string GetDisplayText()
+		{
+			StringBuilder text = new StringBuilder();
+			switch (DisplayStyle)
+			{
+				case ProgressBarDisplayText.Percentage:
+					if (Maximum > 0)
+						text.Append(Math.Round(ValuePercentage, 2));
+					else
+						text.Append("0");
+					text.Append("%");
+          break;
+				case ProgressBarDisplayText.Values:
+					text.Append(Value);
+					text.Append(" / ");
+					text.Append(Maximum);
+					break;
+				case ProgressBarDisplayText.Text:
+				default:
+					return DisplayText;
+      }
+			return text.ToString();
 		}
 	}
 }

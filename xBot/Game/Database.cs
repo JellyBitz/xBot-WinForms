@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SQLite;
 using System.IO;
@@ -117,6 +118,7 @@ namespace xBot.Game
 		{
 			if (db != null && db.State != System.Data.ConnectionState.Closed)
 			{
+				q.Dispose();
 				db.Close();
 				db = null;
       }
@@ -129,7 +131,10 @@ namespace xBot.Game
 		{
 			try
 			{
-				File.Delete("Data\\" + Name + ".db");
+				if (Exists(Name))
+				{
+					File.Delete("Data\\" + Name + ".db");
+				}
 				return true;
 			}
 			catch { return false; }

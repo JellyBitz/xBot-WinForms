@@ -82,15 +82,6 @@ namespace PK2ReaderAPI
 			writer.Write(data);
 
 		}
-		public void ExtractFile(string Name, string OutputPath)
-		{
-			byte[] data = GetFileBytes(Name);
-			FileStream stream = new FileStream(OutputPath, FileMode.OpenOrCreate);
-			BinaryWriter writer = new BinaryWriter(stream);
-			writer.Write(data);
-
-		}
-
 		public string GetFileExtension(PK2File File)
 		{
 			int Offset = File.Name.LastIndexOf('.');
@@ -142,90 +133,105 @@ namespace PK2ReaderAPI
 			}
 			return ObjToReturn;
 		}
-
+		/// <summary>
+		/// Check if a file name exists into the PK2Files loaded.
+		/// </summary>
+		/// <param name="Name">PK2File name</param>
 		public bool FileExists(string Name)
 		{
-			PK2File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
-			if (file != null && file.Position != 0)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			PK2File file = m_Files.Find(item => item.Name.Equals(Name, StringComparison.OrdinalIgnoreCase));
+			return file != null && file.Position != 0;
 		}
-
-		public byte[] GetFileBytes(string Name)
-		{
-			if (FileExists(Name))
-			{
-				BinaryReader reader = new BinaryReader(m_FileStream);
-				PK2File file = m_Files.Find(item => item.Name.ToLower() == Name.ToLower());
-				reader.BaseStream.Position = file.Position;
-				return reader.ReadBytes((int)file.Size);
-			}
-			else
-			{
-				//throw new Exception(string.Format("pk2Reader: File not found: {0}", Name));
-				return null;
-			}
-		}
+		/// <summary>
+		/// Extract the bytes from the PK2 File.
+		/// </summary>
 		public byte[] GetFileBytes(PK2File File)
 		{
-			if (FileExists(File.Name))
-			{
-				BinaryReader reader = new BinaryReader(m_FileStream);
-				PK2File file = m_Files.Find(item => item.Name.ToLower() == File.Name.ToLower());
-				reader.BaseStream.Position = file.Position;
-				return reader.ReadBytes((int)file.Size);
-			}
-			else
-			{
-				//throw new Exception(string.Format("pk2Reader: File not found: {0}", Name));
-				return null;
-			}
+			BinaryReader reader = new BinaryReader(m_FileStream);
+			reader.BaseStream.Position = File.Position;
+			return reader.ReadBytes((int)File.Size);
 		}
+		/// <summary>
+		/// Extract the bytes from the PK2 File name in the path specified.
+		/// </summary>
+		public byte[] GetFileBytes(string Name, string Path="")
+		{
+			BinaryReader reader = new BinaryReader(m_FileStream);
+			PK2File file = GetFile(Name, Path);
+			reader.BaseStream.Position = file.Position;
+			return reader.ReadBytes((int)file.Size);
+		}
+		/// <summary>
+		/// Extract the stream from the PK2File.
+		/// </summary>
+		public Stream GetFileStream(PK2File File)
+		{
+			return new MemoryStream(GetFileBytes(File));
+		}
+		/// <summary>
+		/// Extract the stream from the PK2File name in the path specified.
+		/// </summary>
+		/// <param name="File"></param>
+		public Stream GetFileStream(string Name,string Path="")
+		{
+			return new MemoryStream(GetFileBytes(Name,Path));
+		}
+		/// <summary>
+		/// Look for the PK2File name in the path specified.
+		/// </summary>
+		/// <param name="Name">PK2File name</param>
+		/// <param name="Path">PK2Folders Path separated by "/" or Empty to specify the root</param>
+		public PK2File GetFile(string Name, string Path="")
+		{
+			if (Path == "")
+				return GetRootFiles().Find(f => f.Name.Equals(Name,StringComparison.OrdinalIgnoreCase));
 
-		public string GetFileText(string Name)
-		{
-			if (FileExists(Name))
-			{
-				byte[] tempBuffer = GetFileBytes(Name);
-				if (tempBuffer != null)
-				{
-					TextReader txtReader = new StreamReader(new MemoryStream(tempBuffer));
-					return txtReader.ReadToEnd();
-				}
-				else
-					return null;
-			}
-			else
-				throw new Exception("File does not exsist!");
+			List<string> Route = new List<string>();
+			Route.AddRange(Path.Split('/')); // split path
+
+			return SearchFileFromPath(Name,GetRootFolders(),Route);
 		}
-		public string GetFileText(PK2File File)
+		/// <summary>
+		/// Search recursively the exact pk2 path.
+		/// </summary>
+		private PK2File SearchFileFromPath(string Name,List<PK2Folder> Folders, List<string> Path)
 		{
-			byte[] tempBuffer = GetFileBytes(File.Name);
+			PK2File File = null;
+			foreach (PK2Folder Folder in Folders)
+			{
+				if (Folder.Name.Equals(Path[0], StringComparison.OrdinalIgnoreCase))
+				{
+					if (Path.Count == 1)
+					{
+						return Folder.Files.Find(f => f.Name.Equals(Name, StringComparison.OrdinalIgnoreCase) );
+					}
+					else
+					{
+						List<string> copyPath = new List<string>(Path);
+						copyPath.Remove(Folder.Name);
+						File = SearchFileFromPath(Name, Folder.SubFolders, copyPath);
+						if (File != null)
+							break;
+					}
+				}
+			}
+			return File;
+    }
+		/// <summary>
+		/// Look for the PK2File name in the path specified.
+		/// </summary>
+		/// <param name="Name">PK2File name</param>
+		/// <param name="Path">PK2Folders Path separated by "/" or Empty to specify the root</param>
+		public string GetFileText(string Name, string Path="")
+		{
+			byte[] tempBuffer = GetFileBytes(GetFile(Name,Path));
 			if (tempBuffer != null)
 			{
 				TextReader txtReader = new StreamReader(new MemoryStream(tempBuffer));
 				return txtReader.ReadToEnd();
 			}
-			else
-				return null;
+			return null;
 		}
-
-		public System.IO.Stream GetFileStream(string Name)
-		{
-			MemoryStream ObjToReturn = new MemoryStream(GetFileBytes(Name));
-			return ObjToReturn;
-		}
-		public System.IO.Stream GetFileStream(PK2File File)
-		{
-			MemoryStream ObjToReturn = new MemoryStream(GetFileBytes(File.Name));
-			return ObjToReturn;
-		}
-
 		public List<string> GetFileNames()
 		{
 			List<string> tmpList = new List<string>();
@@ -241,9 +247,7 @@ namespace PK2ReaderAPI
 			reader.BaseStream.Position = Position;
 			List<PK2Folder> folders = new List<PK2Folder>();
 			sPk2EntryBlock entryBlock = (sPk2EntryBlock)BufferToStruct(m_Blowfish.Decode(reader.ReadBytes(Marshal.SizeOf(typeof(sPk2EntryBlock)))), typeof(sPk2EntryBlock));
-
-
-
+			
 			for (int i = 0; i < 20; i++)
 			{
 				sPk2Entry entry = entryBlock.Entries[i]; //.....
@@ -280,7 +284,6 @@ namespace PK2ReaderAPI
 				Read(entryBlock.Entries[19].NextChain);
 			}
 
-
 			foreach (PK2Folder folder in folders)
 			{
 				m_CurrentFolder = folder;
@@ -294,7 +297,6 @@ namespace PK2ReaderAPI
 				}
 				Read(folder.Position);
 			}
-
 		}
 		#endregion
 
@@ -304,7 +306,6 @@ namespace PK2ReaderAPI
 			// Using the default Base_Key
 			return GenerateFinalBlowfishKey(ascii_key, new byte[] { 0x03, 0xF8, 0xE4, 0x44, 0x88, 0x99, 0x3F, 0x64, 0xFE, 0x35 });
 		}
-
 		private static byte[] GenerateFinalBlowfishKey(string ascii_key, byte[] base_key)
 		{
 			byte ascii_key_length = (byte)ascii_key.Length;

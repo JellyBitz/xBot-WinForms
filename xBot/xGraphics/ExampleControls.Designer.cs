@@ -28,26 +28,26 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewItem listViewItem61 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem62 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem63 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem64 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem65 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem66 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem67 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem68 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem69 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem70 = new System.Windows.Forms.ListViewItem("12313");
-			System.Windows.Forms.ListViewItem listViewItem71 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem72 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem73 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem74 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem75 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem76 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem77 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem78 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem79 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem80 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("12313");
 			this.TabPageV_Control01 = new System.Windows.Forms.Panel();
 			this.tabvOptionIcon10 = new System.Windows.Forms.Label();
 			this.TabPageV_Control01_Option10 = new System.Windows.Forms.Button();
@@ -93,15 +93,6 @@
 			this.textBox3 = new System.Windows.Forms.TextBox();
 			this.TabPageH_Control01_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Control01_Option04_Panel = new System.Windows.Forms.Panel();
-			this.Login_gbxAccount = new System.Windows.Forms.GroupBox();
-			this.Login_cmbxCharacter = new System.Windows.Forms.ComboBox();
-			this.Login_cmbxServer = new System.Windows.Forms.ComboBox();
-			this.Login_tbxPassword = new System.Windows.Forms.TextBox();
-			this.Login_lblPassword = new System.Windows.Forms.Label();
-			this.Login_lblCharacter = new System.Windows.Forms.Label();
-			this.Login_lblServer = new System.Windows.Forms.Label();
-			this.Login_tbxUsername = new System.Windows.Forms.TextBox();
-			this.Login_lblUsername = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.Party_lstvLeaders = new System.Windows.Forms.ListView();
 			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -123,13 +114,12 @@
 			this.TabPageH_Party_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Party_Option04_Panel = new System.Windows.Forms.Panel();
 			this.General_gbxPacketFilter = new System.Windows.Forms.GroupBox();
-			this.General_cbxShowPacketClient = new System.Windows.Forms.CheckBox();
 			this.General_cbxInjectEncrypted = new System.Windows.Forms.CheckBox();
+			this.General_cbxShowPacketClient = new System.Windows.Forms.CheckBox();
 			this.TabPageV_Control01.SuspendLayout();
 			this.TabPageH_Control01.SuspendLayout();
 			this.TabPageH_Control01_Option01_Panel.SuspendLayout();
 			this.TabPageH_Control01_Option02_Panel.SuspendLayout();
-			this.Login_gbxAccount.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.TabPageV_Control01_Option04_Panel.SuspendLayout();
 			this.TabPageH_Party.SuspendLayout();
@@ -807,128 +797,6 @@
 			this.TabPageH_Control01_Option04_Panel.TabIndex = 12;
 			this.TabPageH_Control01_Option04_Panel.Visible = false;
 			// 
-			// Login_gbxAccount
-			// 
-			this.Login_gbxAccount.Controls.Add(this.Login_cmbxCharacter);
-			this.Login_gbxAccount.Controls.Add(this.Login_cmbxServer);
-			this.Login_gbxAccount.Controls.Add(this.Login_tbxPassword);
-			this.Login_gbxAccount.Controls.Add(this.Login_lblPassword);
-			this.Login_gbxAccount.Controls.Add(this.Login_lblCharacter);
-			this.Login_gbxAccount.Controls.Add(this.Login_lblServer);
-			this.Login_gbxAccount.Controls.Add(this.Login_tbxUsername);
-			this.Login_gbxAccount.Controls.Add(this.Login_lblUsername);
-			this.Login_gbxAccount.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_gbxAccount.ForeColor = System.Drawing.Color.LightGray;
-			this.Login_gbxAccount.Location = new System.Drawing.Point(575, 24);
-			this.Login_gbxAccount.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
-			this.Login_gbxAccount.Name = "Login_gbxAccount";
-			this.Login_gbxAccount.Size = new System.Drawing.Size(214, 150);
-			this.Login_gbxAccount.TabIndex = 2;
-			this.Login_gbxAccount.TabStop = false;
-			this.Login_gbxAccount.Text = "Account";
-			// 
-			// Login_cmbxCharacter
-			// 
-			this.Login_cmbxCharacter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Login_cmbxCharacter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.Login_cmbxCharacter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Login_cmbxCharacter.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Login_cmbxCharacter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_cmbxCharacter.FormattingEnabled = true;
-			this.Login_cmbxCharacter.Location = new System.Drawing.Point(88, 113);
-			this.Login_cmbxCharacter.MaxDropDownItems = 5;
-			this.Login_cmbxCharacter.Name = "Login_cmbxCharacter";
-			this.Login_cmbxCharacter.Size = new System.Drawing.Size(116, 28);
-			this.Login_cmbxCharacter.TabIndex = 4;
-			// 
-			// Login_cmbxServer
-			// 
-			this.Login_cmbxServer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Login_cmbxServer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.Login_cmbxServer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Login_cmbxServer.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Login_cmbxServer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_cmbxServer.FormattingEnabled = true;
-			this.Login_cmbxServer.Location = new System.Drawing.Point(66, 81);
-			this.Login_cmbxServer.MaxDropDownItems = 5;
-			this.Login_cmbxServer.Name = "Login_cmbxServer";
-			this.Login_cmbxServer.Size = new System.Drawing.Size(138, 28);
-			this.Login_cmbxServer.TabIndex = 3;
-			// 
-			// Login_tbxPassword
-			// 
-			this.Login_tbxPassword.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Login_tbxPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Login_tbxPassword.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_tbxPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_tbxPassword.Location = new System.Drawing.Point(87, 49);
-			this.Login_tbxPassword.Name = "Login_tbxPassword";
-			this.Login_tbxPassword.PasswordChar = '*';
-			this.Login_tbxPassword.Size = new System.Drawing.Size(117, 28);
-			this.Login_tbxPassword.TabIndex = 2;
-			this.Login_tbxPassword.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
-			// Login_lblPassword
-			// 
-			this.Login_lblPassword.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_lblPassword.Location = new System.Drawing.Point(6, 49);
-			this.Login_lblPassword.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Login_lblPassword.Name = "Login_lblPassword";
-			this.Login_lblPassword.Size = new System.Drawing.Size(81, 28);
-			this.Login_lblPassword.TabIndex = 0;
-			this.Login_lblPassword.Text = "Password :";
-			this.Login_lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Login_lblCharacter
-			// 
-			this.Login_lblCharacter.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_lblCharacter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_lblCharacter.Location = new System.Drawing.Point(6, 113);
-			this.Login_lblCharacter.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Login_lblCharacter.Name = "Login_lblCharacter";
-			this.Login_lblCharacter.Size = new System.Drawing.Size(82, 28);
-			this.Login_lblCharacter.TabIndex = 0;
-			this.Login_lblCharacter.Text = "Character :";
-			this.Login_lblCharacter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Login_lblServer
-			// 
-			this.Login_lblServer.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_lblServer.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_lblServer.Location = new System.Drawing.Point(6, 81);
-			this.Login_lblServer.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Login_lblServer.Name = "Login_lblServer";
-			this.Login_lblServer.Size = new System.Drawing.Size(60, 28);
-			this.Login_lblServer.TabIndex = 0;
-			this.Login_lblServer.Text = "Server :";
-			this.Login_lblServer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Login_tbxUsername
-			// 
-			this.Login_tbxUsername.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Login_tbxUsername.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Login_tbxUsername.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
-			this.Login_tbxUsername.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_tbxUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_tbxUsername.Location = new System.Drawing.Point(91, 17);
-			this.Login_tbxUsername.Name = "Login_tbxUsername";
-			this.Login_tbxUsername.Size = new System.Drawing.Size(113, 28);
-			this.Login_tbxUsername.TabIndex = 1;
-			this.Login_tbxUsername.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
-			// Login_lblUsername
-			// 
-			this.Login_lblUsername.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Login_lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Login_lblUsername.Location = new System.Drawing.Point(6, 17);
-			this.Login_lblUsername.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Login_lblUsername.Name = "Login_lblUsername";
-			this.Login_lblUsername.Size = new System.Drawing.Size(85, 28);
-			this.Login_lblUsername.TabIndex = 0;
-			this.Login_lblUsername.Text = "Username :";
-			this.Login_lblUsername.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
 			// groupBox3
 			// 
 			this.groupBox3.Controls.Add(this.Party_lstvLeaders);
@@ -936,7 +804,7 @@
 			this.groupBox3.Controls.Add(this.Party_tbxLeader);
 			this.groupBox3.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.groupBox3.ForeColor = System.Drawing.Color.LightGray;
-			this.groupBox3.Location = new System.Drawing.Point(570, 182);
+			this.groupBox3.Location = new System.Drawing.Point(572, 16);
 			this.groupBox3.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(219, 205);
@@ -955,16 +823,16 @@
 			this.Party_lstvLeaders.FullRowSelect = true;
 			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.Party_lstvLeaders.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem61,
-            listViewItem62,
-            listViewItem63,
-            listViewItem64,
-            listViewItem65,
-            listViewItem66,
-            listViewItem67,
-            listViewItem68,
-            listViewItem69,
-            listViewItem70});
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5,
+            listViewItem6,
+            listViewItem7,
+            listViewItem8,
+            listViewItem9,
+            listViewItem10});
 			this.Party_lstvLeaders.Location = new System.Drawing.Point(10, 51);
 			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
 			this.Party_lstvLeaders.MultiSelect = false;
@@ -1154,16 +1022,16 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem71,
-            listViewItem72,
-            listViewItem73,
-            listViewItem74,
-            listViewItem75,
-            listViewItem76,
-            listViewItem77,
-            listViewItem78,
-            listViewItem79,
-            listViewItem80});
+            listViewItem11,
+            listViewItem12,
+            listViewItem13,
+            listViewItem14,
+            listViewItem15,
+            listViewItem16,
+            listViewItem17,
+            listViewItem18,
+            listViewItem19,
+            listViewItem20});
 			this.listView1.Location = new System.Drawing.Point(10, 51);
 			this.listView1.Margin = new System.Windows.Forms.Padding(0);
 			this.listView1.MultiSelect = false;
@@ -1233,7 +1101,7 @@
 			this.General_gbxPacketFilter.Controls.Add(this.General_cbxInjectEncrypted);
 			this.General_gbxPacketFilter.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.General_gbxPacketFilter.ForeColor = System.Drawing.Color.LightGray;
-			this.General_gbxPacketFilter.Location = new System.Drawing.Point(244, 190);
+			this.General_gbxPacketFilter.Location = new System.Drawing.Point(610, 240);
 			this.General_gbxPacketFilter.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
 			this.General_gbxPacketFilter.Name = "General_gbxPacketFilter";
 			this.General_gbxPacketFilter.Size = new System.Drawing.Size(181, 70);
@@ -1241,23 +1109,6 @@
 			this.General_gbxPacketFilter.TabStop = false;
 			this.General_gbxPacketFilter.Tag = "Source Sans Pro";
 			this.General_gbxPacketFilter.Text = "Groupbox";
-			// 
-			// General_cbxShowPacketClient
-			// 
-			this.General_cbxShowPacketClient.Cursor = System.Windows.Forms.Cursors.Default;
-			this.General_cbxShowPacketClient.FlatAppearance.BorderSize = 0;
-			this.General_cbxShowPacketClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.General_cbxShowPacketClient.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.General_cbxShowPacketClient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.General_cbxShowPacketClient.Location = new System.Drawing.Point(433, 223);
-			this.General_cbxShowPacketClient.Margin = new System.Windows.Forms.Padding(0);
-			this.General_cbxShowPacketClient.Name = "General_cbxShowPacketClient";
-			this.General_cbxShowPacketClient.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.General_cbxShowPacketClient.Size = new System.Drawing.Size(94, 24);
-			this.General_cbxShowPacketClient.TabIndex = 18;
-			this.General_cbxShowPacketClient.Tag = "Source Sans Pro";
-			this.General_cbxShowPacketClient.Text = "Client";
-			this.General_cbxShowPacketClient.UseVisualStyleBackColor = false;
 			// 
 			// General_cbxInjectEncrypted
 			// 
@@ -1276,6 +1127,23 @@
 			this.General_cbxInjectEncrypted.Text = "Encryped";
 			this.General_cbxInjectEncrypted.UseVisualStyleBackColor = false;
 			// 
+			// General_cbxShowPacketClient
+			// 
+			this.General_cbxShowPacketClient.Cursor = System.Windows.Forms.Cursors.Default;
+			this.General_cbxShowPacketClient.FlatAppearance.BorderSize = 0;
+			this.General_cbxShowPacketClient.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.General_cbxShowPacketClient.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.General_cbxShowPacketClient.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.General_cbxShowPacketClient.Location = new System.Drawing.Point(433, 223);
+			this.General_cbxShowPacketClient.Margin = new System.Windows.Forms.Padding(0);
+			this.General_cbxShowPacketClient.Name = "General_cbxShowPacketClient";
+			this.General_cbxShowPacketClient.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.General_cbxShowPacketClient.Size = new System.Drawing.Size(94, 24);
+			this.General_cbxShowPacketClient.TabIndex = 18;
+			this.General_cbxShowPacketClient.Tag = "Source Sans Pro";
+			this.General_cbxShowPacketClient.Text = "Client";
+			this.General_cbxShowPacketClient.UseVisualStyleBackColor = false;
+			// 
 			// ExampleControls
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1286,7 +1154,6 @@
 			this.Controls.Add(this.General_gbxPacketFilter);
 			this.Controls.Add(this.TabPageV_Control01_Option04_Panel);
 			this.Controls.Add(this.groupBox3);
-			this.Controls.Add(this.Login_gbxAccount);
 			this.Controls.Add(this.TabPageH_Control01);
 			this.Controls.Add(this.TabPageV_Control01);
 			this.Controls.Add(this.TabPageV_Control01_Option01_Panel);
@@ -1307,8 +1174,6 @@
 			this.TabPageH_Control01_Option01_Panel.PerformLayout();
 			this.TabPageH_Control01_Option02_Panel.ResumeLayout(false);
 			this.TabPageH_Control01_Option02_Panel.PerformLayout();
-			this.Login_gbxAccount.ResumeLayout(false);
-			this.Login_gbxAccount.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox3.PerformLayout();
 			this.TabPageV_Control01_Option04_Panel.ResumeLayout(false);
@@ -1368,15 +1233,6 @@
 		public System.Windows.Forms.TextBox textBox3;
 		private System.Windows.Forms.Panel TabPageH_Control01_Option03_Panel;
 		private System.Windows.Forms.Panel TabPageH_Control01_Option04_Panel;
-		public System.Windows.Forms.GroupBox Login_gbxAccount;
-		public System.Windows.Forms.ComboBox Login_cmbxCharacter;
-		public System.Windows.Forms.ComboBox Login_cmbxServer;
-		public System.Windows.Forms.TextBox Login_tbxPassword;
-		private System.Windows.Forms.Label Login_lblPassword;
-		private System.Windows.Forms.Label Login_lblCharacter;
-		private System.Windows.Forms.Label Login_lblServer;
-		public System.Windows.Forms.TextBox Login_tbxUsername;
-		private System.Windows.Forms.Label Login_lblUsername;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.ListView Party_lstvLeaders;
 		private System.Windows.Forms.ColumnHeader columnHeader1;

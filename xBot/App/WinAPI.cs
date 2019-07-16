@@ -46,7 +46,7 @@ namespace xBot
 		/// </summary>
 		public static string getDate()
 		{
-			return "[" + (DateTime.Now.Hour < 10 ? "0" : "") + DateTime.Now.Hour + ":" + (DateTime.Now.Minute < 10 ? "0" : "") + DateTime.Now.Minute + ":" + (DateTime.Now.Second < 10 ? "0" : "") + DateTime.Now.Second + "]";
+			return "[" + DateTime.Now.ToString("hh:mm:ss")+"]";
 		}
 		public static void InvokeIfRequired(Control control, MethodInvoker action)
 		{
@@ -57,32 +57,18 @@ namespace xBot
 				else
 					action();
 			}catch (System.ComponentModel.InvalidAsynchronousStateException){
-				// Window closed catch
+				// Window closed
 			}
 		}
 		/// <summary>
-		/// Returns SRO_Client process that is using the current agent/gateway port.
+		/// Return the process connected to the port specified.
 		/// </summary>
-		/// <returns></returns>
-		public static Process getSROCientProcess()
+		public static Process getProcess(int Port,bool SelfExclusion = true)
 		{
 			try
 			{
-				int gatewayPort = -1, agentPort = -1;
-				try
-				{
-					if (Bot.Get.Proxy.Gateway != null && Bot.Get.Proxy.Gateway.Local != null && Bot.Get.Proxy.Gateway.Local.Socket != null)
-						gatewayPort = int.Parse(Bot.Get.Proxy.Gateway.Local.Socket.RemoteEndPoint.ToString().Split(':')[1]);
-				}
-				catch{ }
-				try
-				{
-					if (Bot.Get.Proxy.Agent != null && Bot.Get.Proxy.Agent.Local != null && Bot.Get.Proxy.Agent.Local.Socket != null)
-						agentPort = int.Parse(Bot.Get.Proxy.Agent.Local.Socket.RemoteEndPoint.ToString().Split(':')[1]);
-				}
-				catch{ }
-				if (gatewayPort == -1 && agentPort == -1)
-					return null;
+				// How am I? Exclude it!
+				Process me = SelfExclusion ? Process.GetCurrentProcess() : null;
 
 				Process p = new Process();
 				ProcessStartInfo ps = new ProcessStartInfo();
@@ -108,11 +94,11 @@ namespace xBot
 					// Command Errored. Handle Here If Need Be
 				}
 
-				//Get The Rows
+				// Get The Rows
 				string[] rows = Regex.Split(content, "\r\n");
 				foreach (string row in rows)
 				{
-					//Split it baby
+					// Split it baby!
 					string[] tokens = Regex.Split(row, "\\s+");
 					if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
 					{
@@ -122,14 +108,15 @@ namespace xBot
 							int pID = tokens[1] == "UDP" ? Convert.ToInt16(tokens[4]) : Convert.ToInt16(tokens[5]);
 							Process process = Process.GetProcessById(pID);
 							int processPort = int.Parse(localAddress.Split(':')[1]);
-							if (!process.ProcessName.ToLower().StartsWith("xbot"))
+
+							if (processPort == Port)
 							{
-								if (processPort == gatewayPort || processPort == agentPort )
-								{
-									return process;
-								}
+								if(me != null && me.ProcessName == process.ProcessName)
+									continue;
+								return process;
 							}
-						}catch { }
+						}
+						catch { }
 					}
 				}
 			}

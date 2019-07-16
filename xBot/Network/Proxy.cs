@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -12,31 +11,51 @@ namespace xBot.Network
 {
 	public class Proxy
 	{
-		private Gateway _gateway;
+		/// <summary>
+		/// Gateway connection.
+		/// </summary>
 		public Gateway Gateway { get { return _gateway; } }
-		private Agent _agent;
+		private Gateway _gateway;
+		/// <summary>
+		/// Agent connection.
+		/// </summary>
 		public Agent Agent { get { return _agent; } }
-		private Thread ThreadWaitConnection;
-		private int _LocalReconnectionNumber;
-		private int _RemoteReconnectionNumber;
-		public bool ClientlessMode { get; }
-
-		private Thread PingHandler;
-		private bool _running;
-		public bool isRunning
-		{
-			get
-			{
-				return _running;
+		private Agent _agent;
+		/// <summary>
+		/// Gets the current Silkroad process connected to the proxy.
+		/// </summary>
+		public Process SRO_Client {
+			get {
+				if (sro_client != null)
+				{
+					sro_client.Refresh();
+					if (sro_client.HasExited)
+						sro_client = null;
+				}
+				return sro_client;
 			}
 		}
+		private Process sro_client;
+		public bool ClientlessMode { get { return sro_client == null; } }
+		/// <summary>
+		/// Check the current client mode.
+		/// </summary>
+		public bool LoginClientlessMode { get; }
+
+		private Thread ThreadWaitClientConnection;
+		private int _LocalReconnectionNumber;
+		private int _RemoteReconnectionNumber;
+		private Thread PingHandler;
+		public bool isRunning { get{ return _running; } }
+		private bool _running;
 		private int lastPortIndexSelected;
 		private int lastHostIndexSelected;
-		public List<ushort> GatewayPorts { get; }
-		public List<string> GatewayHosts { get; }
-		public Proxy(bool ClientlessMode, List<string> Hosts,List<ushort> Ports)
+		private List<ushort> GatewayPorts { get; }
+		private List<string> GatewayHosts { get; }
+		public Proxy(bool LoginClientlessMode, List<string> Hosts,List<ushort> Ports)
 		{
-      this.ClientlessMode = ClientlessMode;
+			this.LoginClientlessMode = LoginClientlessMode;
+			sro_client = null;
 			GatewayHosts = Hosts;
 			RandomHost = false;
 			GatewayPorts = Ports;
@@ -49,7 +68,8 @@ namespace xBot.Network
 		public bool RandomHost {
 			get {
 				return (rand != null);
-			} set {
+			}
+			set {
 				if (value && rand == null)
 				{
 					rand = new Random();
@@ -57,7 +77,7 @@ namespace xBot.Network
 				else if(!value && rand != null)
 				{
 					rand = null;
-        }
+				}
 			}
 		}
 		/// <summary>
@@ -93,51 +113,56 @@ namespace xBot.Network
 
 			Window w = Window.Get;
 			Socket SocketBinded = bindSocket("127.0.0.1", 20190);
-      if (!ClientlessMode)
+			if (!LoginClientlessMode)
 			{
 				Gateway.Local.Socket = SocketBinded;
 				try
 				{
 					w.LogProcess("Executing EdxLoader...");
 					EdxLoader loader = new EdxLoader(Bot.Get.ClientPath);
-					loader.SetPatches(true,true,false);
-					loader.StartClient(false, Info.Get.Locale,0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
-					
-					WaitConnection(60,ref _LocalReconnectionNumber, 10);
+					loader.SetPatches(true, true, false);
+					loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
+
+					WaitClientConnection(180, ref _LocalReconnectionNumber, 10);
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
 					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
 					w.LogProcess("Connected");
-					ThreadWaitConnection.Abort();
+					ThreadWaitClientConnection.Abort();
 					_LocalReconnectionNumber = 0;
-        }
-				catch { return; }
+					// Save client process
+					sro_client = WinAPI.getProcess(((IPEndPoint)Gateway.Local.Socket.RemoteEndPoint).Port);
+					sro_client.Exited += new EventHandler(this.Client_Closed);
+				}
+				catch{
+					return;
+				}
 			}
 			try
 			{
 				Gateway.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				w.Log("Connecting to Gateway server [" + Gateway.Host + ":" + Gateway.Port + "]");
 				w.LogProcess("Waiting server connection...");
-				
-				WaitConnection(60, ref _RemoteReconnectionNumber, 10);
+
+				WaitClientConnection(60, ref _RemoteReconnectionNumber, 10);
 				Gateway.Remote.Socket.Connect(Gateway.Host, Gateway.Port);
 				w.Log("Connected");
 				w.LogProcess("Connected");
-				ThreadWaitConnection.Abort();
+				ThreadWaitClientConnection.Abort();
 				_RemoteReconnectionNumber = 0;
 			}
 			catch { return; }
 			try
 			{
-				// Handle easily by iterating
+				// Handle it easily by iterating
 				List<Context> gws = new List<Context>();
 				gws.Add(Gateway.Remote);
-				if (!ClientlessMode){
+				if (!ClientlessMode)
+				{
 					gws.Add(Gateway.Local);
-				}else{
-					PingHandler = new Thread(ThreadPing);
-					PingHandler.Start();
 				}
+				PingHandler = new Thread(ThreadPing);
+				PingHandler.Start();
 				// Running process
 				while (_running)
 				{
@@ -163,18 +188,18 @@ namespace xBot.Network
 							foreach (Packet packet in packets)
 							{
 								// Show all incoming packets on analizer
-								if (context == Gateway.Remote && w.General_cbxShowPacketServer.Checked)
+								if (context == Gateway.Remote && w.Settings_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
+									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 									{
-										if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
+										if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 											opcodeFound = true;
 									});
-									if (opcodeFound && w.General_rbnPacketOnlyShow.Checked
-										|| !opcodeFound && !w.General_rbnPacketOnlyShow.Checked)
+									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
+										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
 									{
-										w.LogPacket(string.Format("[G][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}{6}", "S->C", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
+										w.LogPacket(string.Format("[G][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}", "S->C", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
 									}
 								}
 								// Switch from gateway to agent process
@@ -185,10 +210,14 @@ namespace xBot.Network
 									{
 										_agent = new Agent(packet.ReadUInt(), packet.ReadAscii(), packet.ReadUShort());
 
+										// Stop ping while switch
+										PingHandler.Abort();
+
 										string[] ip_port = SocketBinded.LocalEndPoint.ToString().Split(':');
-										Thread agThread = new Thread((ThreadStart)delegate() {
-											ThreadAgent(ip_port[0], int.Parse(ip_port[1])+1);
-                    });
+										Thread agThread = new Thread((ThreadStart)delegate ()
+										{
+											ThreadAgent(ip_port[0], int.Parse(ip_port[1]) + 1);
+										});
 										agThread.Priority = ThreadPriority.AboveNormal;
 										agThread.Start();
 
@@ -217,7 +246,7 @@ namespace xBot.Network
 												}
 											case 2:
 												byte blockType = packet.ReadByte();
-                        if (blockType == 1)
+												if (blockType == 1)
 												{
 													string blockedReason = packet.ReadAscii();
 													ushort endYear = packet.ReadUShort();
@@ -227,11 +256,15 @@ namespace xBot.Network
 													ushort endMinute = packet.ReadUShort();
 													ushort endSecond = packet.ReadUShort();
 													w.Log("Account banned till [" + endDay + "/" + endMonth + "/" + endYear + " " + endHour + "/" + endMinute + "/" + endSecond + "]. Reason: " + blockedReason);
+													w.LogProcess("Account banned", Window.ProcessState.Error);
 													w.EnableControl(w.Login_btnStart, true);
 												}
 												break;
+											case 3:
+												w.Log("This user is already connected. Please try again in 5 minutes");
+												break;
 											default:
-												w.Log("Login error [" + error+"]");
+												w.Log("Login error [" + error + "]");
 												break;
 										}
 										context.RelaySecurity.Send(packet);
@@ -261,18 +294,18 @@ namespace xBot.Network
 
 									byte[] packet_bytes = packet.GetBytes();
 									// Show outcoming packets on analizer
-									if (context == Gateway.Remote && w.General_cbxShowPacketClient.Checked)
+									if (context == Gateway.Remote && w.Settings_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
+										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
+											if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 												opcodeFound = true;
 										});
-										if (opcodeFound && w.General_rbnPacketOnlyShow.Checked
-											|| !opcodeFound && !w.General_rbnPacketOnlyShow.Checked)
+										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
+											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
 										{
-											w.LogPacket(string.Format("[G][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}{6}", "C->S", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
+											w.LogPacket(string.Format("[G][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}", "C->S", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
 										}
 									}
 									while (true)
@@ -304,6 +337,22 @@ namespace xBot.Network
 				}
 			}
 		}
+		public void CloseClient()
+		{
+			if (SRO_Client != null)
+			{
+				sro_client.Kill();
+				sro_client = null;
+			}
+		}
+		private void Client_Closed(object sender, EventArgs e)
+		{
+			if (Bot.Get.inGame)
+			{
+				Agent.Local.Socket.Close();
+				Window.Get.Log("Switched to clientless mode");
+			}
+		}
 		private void ThreadAgent(string Host, int Port)
 		{
 			Window w = Window.Get;
@@ -322,8 +371,10 @@ namespace xBot.Network
 			Agent.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			try
 			{
+				w.Log("Connecting to Agent server [" + Agent.Host + ":" + Agent.Port + "]");
 				w.LogProcess("Waiting server connection...");
 				Agent.Remote.Socket.Connect(Agent.Host, Agent.Port);
+				w.Log("Connected");
 			}
 			catch
 			{
@@ -332,14 +383,17 @@ namespace xBot.Network
 				Reset();
 				return;
 			}
-			List<Context> ags = new List<Context>();
-			if (!Agent.ClientlessMode)
-			{
-				ags.Add(Agent.Local);
-			}
-			ags.Add(Agent.Remote);
 			try
 			{
+				// Handle it easily by iterating
+				List<Context> ags = new List<Context>();
+				ags.Add(Agent.Remote);
+				if (!ClientlessMode)
+				{
+					ags.Add(Agent.Local);
+				}
+				PingHandler = new Thread(ThreadPing);
+				PingHandler.Start();
 				while (_running)
 				{
 					// Network input event processing
@@ -347,12 +401,24 @@ namespace xBot.Network
 					{
 						if (context.Socket.Poll(0, SelectMode.SelectRead))
 						{
-							int count = context.Socket.Receive(context.Buffer.Buffer);
-							if (count == 0)
+							try
 							{
-								throw new Exception("The remote connection has been lost");
+								int count = context.Socket.Receive(context.Buffer.Buffer);
+								if (count == 0)
+								{
+									throw new Exception("The remote connection has been lost.");
+								}
+								context.Security.Recv(context.Buffer.Buffer, 0, count);
 							}
-							context.Security.Recv(context.Buffer.Buffer, 0, count);
+							catch(Exception ex) {
+								if (context == Agent.Local)
+								{
+									// Try to continue without client
+									ags.Remove(context);
+									break;
+								}
+								else throw ex;
+							}
 						}
 					}
 					// Logic event processing
@@ -364,18 +430,18 @@ namespace xBot.Network
 							foreach (Packet packet in packets)
 							{
 								// Show all incoming packets on analizer
-								if (context == Agent.Remote && w.General_cbxShowPacketServer.Checked)
+								if (context == Agent.Remote && w.Settings_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
+									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 									{
-										if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
+										if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 											opcodeFound = true;
 									});
-									if (opcodeFound && w.General_rbnPacketOnlyShow.Checked
-										|| !opcodeFound && !w.General_rbnPacketOnlyShow.Checked)
+									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
+										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
 									{
-										w.LogPacket(string.Format("[A][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}{6}", "S->C", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
+										w.LogPacket(string.Format("[A][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}", "S->C", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
 									}
 								}
 								if (!Agent.PacketHandler(context, packet) && !Agent.IgnoreOpcode(packet.Opcode, context))
@@ -401,28 +467,40 @@ namespace xBot.Network
 
 									byte[] packet_bytes = packet.GetBytes();
 									// Show outcoming packets on analizer
-									if (context == Agent.Remote && w.General_cbxShowPacketClient.Checked)
+									if (context == Agent.Remote && w.Settings_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										WinAPI.InvokeIfRequired(w.General_lstvOpcodes, () =>
+										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											if (w.General_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
+											if (w.Settings_lstvOpcodes.Items.Find("0x" + packet.Opcode.ToString("X4"), false).Length != 0)
 												opcodeFound = true;
 										});
-										if (opcodeFound && w.General_rbnPacketOnlyShow.Checked
-											|| !opcodeFound && !w.General_rbnPacketOnlyShow.Checked)
+										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
+											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
 										{
-											w.LogPacket(string.Format("[A][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}{6}", "C->S", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
+											w.LogPacket(string.Format("[A][{0}][{1:X4}][{2} bytes]{3}{4}{6}{5}", "C->S", packet.Opcode, packet.GetBytes().Length, packet.Encrypted ? "[Encrypted]" : "", packet.Massive ? "[Massive]" : "", Utility.HexDump(packet.GetBytes()), Environment.NewLine));
 										}
 									}
+									
 									while (true)
 									{
-										int count = context.Socket.Send(buffer.Buffer, buffer.Offset, buffer.Size, SocketFlags.None);
+										int count;
+										try
+										{
+											count = context.Socket.Send(buffer.Buffer, buffer.Offset, buffer.Size, SocketFlags.None);
+										}
+										catch (Exception ex)
+										{
+											if (context == Agent.Local)
+											{
+												// Try to continue without send to client
+                        break;
+											}
+											else throw ex;
+										}
 										buffer.Offset += count;
 										if (buffer.Offset == buffer.Size)
-										{
 											break;
-										}
 										Thread.Sleep(1);
 									}
 								}
@@ -451,9 +529,7 @@ namespace xBot.Network
 					s.Listen(1);
 					return s;
 				}
-				catch (SocketException)
-				{ /* ignore and continue */
-				}
+				catch (SocketException) { /* ignore and continue */ }
 			}
 			return null;
 		}
@@ -463,29 +539,34 @@ namespace xBot.Network
 		/// <param name="seconds">Maximum time for waiting</param>
 		/// <param name="nReconnection">Current connection counter</param>
 		/// <param name="maxReconection">Max connections to stop</param>
-		private void WaitConnection(int seconds,ref int nReconnection,int maxReconection)
+		private void WaitClientConnection(int seconds,ref int nReconnection,int maxReconection)
 		{
 			int refnReconnection = nReconnection;
-      ThreadWaitConnection = (new Thread((ThreadStart)delegate {
+			int refmaxReconnection = maxReconection;
+			ThreadWaitClientConnection = (new Thread((ThreadStart)delegate {
 				while (true)
 				{
 					if (seconds == 0)
 					{
-						Reset();
-						Start();
-						refnReconnection++;
+						if(refnReconnection < refmaxReconnection)
+						{
+							Reset();
+							Start();
+							refnReconnection++;
+						}
 						return;
 					}
 					Thread.Sleep(1000);
 					seconds--;
 				}
 			}));
-      ThreadWaitConnection.Start();
+			ThreadWaitClientConnection.Start();
 		}
 		private void ThreadPing()
 		{
 			while (_running)
 			{
+				Thread.Sleep(6666);
 				// Keep only one connection alive at clientless mode
 				if (Agent != null)
 				{
@@ -496,7 +577,7 @@ namespace xBot.Network
 					}
 					catch { /*Connection closed*/ _agent = null; }
 				}
-			  if (Gateway != null)
+			  else if (Gateway != null)
 				{
 					try
 					{
@@ -505,7 +586,6 @@ namespace xBot.Network
 					}
 					catch { /*Connection closed*/ _gateway = null; }
 				}
-				Thread.Sleep(6666);
 			}
 		}
 		private void CloseGateway()
@@ -518,7 +598,6 @@ namespace xBot.Network
 					{
 						Gateway.Local.Socket.Disconnect(true);
 					}
-					Gateway.Local.Socket.Close();
 				}
 				if (Gateway.Remote.Socket != null)
 				{
@@ -549,24 +628,23 @@ namespace xBot.Network
 			_running = false;
 			if (PingHandler != null)
 				PingHandler.Abort();
-			Bot.Get.CloseSROClient();
+			CloseClient();
 			CloseGateway();
 			CloseAgent();
 		}
 		public void Stop()
 		{
-			if (ThreadWaitConnection != null)
-				ThreadWaitConnection.Abort();
+			if (ThreadWaitClientConnection != null)
+				ThreadWaitClientConnection.Abort();
 			Reset();
-			
-      Info.Get.Database.Close();
+			Info.Get.Database.Close();
 			Window w = Window.Get;
 			w.LogProcess("Disconnected");
 			// Reset locket controls
 			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
 				w.Login_cmbxSilkroad.Enabled = true;
 			});
-			w.EnableControl(w.General_btnAddSilkroad, true);
+			w.EnableControl(w.Settings_btnAddSilkroad, true);
 			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 				w.Login_btnStart.Text = "START";
 				w.EnableControl(w.Login_btnStart, true);
@@ -579,6 +657,11 @@ namespace xBot.Network
 			WinAPI.InvokeIfRequired(w.Login_gbxServers, () => {
 				w.Login_gbxServers.Visible = true;
 			});
+
+			if (Bot.Get.inGame)
+			{
+				Bot.Get._Event_Disconnected();
+			}
 		}
 		/// <summary>
 		/// Send packet to the server if exists connection (Gateway/Agent).

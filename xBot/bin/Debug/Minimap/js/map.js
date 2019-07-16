@@ -323,8 +323,23 @@ var SilkroadMap = function(){
 	var addMarker = function(iconType,html,x,y,z=0,r=0){
 		L.marker(SilkroadToMap(x,y,z,r),{icon:iconType,pmIgnore:true,virtual:true}).bindPopup(html).addTo(map);
 	};
+	var getPosition = function(x,y,z,r){
+		if( (r & 0x8000) == 0){
+			x = ( ( r & 255 ) - 135 ) * 192 + ( x / 10);
+			y = ( ( r >> 8 ) - 92 ) * 192 + ( y / 10);
+			return [x,y];
+		}else{
+			// Not implemented yet
+			return [0,0];
+		}
+	};
 	// Convert a Silkroad Coord to Map CRS
 	var SilkroadToMap = function (x,y,z=0,region=0){
+		if(z != 0 && region != 0){
+			p = getPosition(x,y,z,region);
+			x = p[0];
+			y = p[1];
+		}
 		// Map center [X]
 		x+=map_layer.options.center.x;
 		// Scale & DumbFix
@@ -353,7 +368,7 @@ var SilkroadMap = function(){
 	// All data about detect the dungeon is calculated here
 	var getLayer = function (x,y,z,region){
 		// it's on dungeon
-		if(region & 0x8000){
+		if(region & 0x8000 == 0){
 			switch(region){
 				case -32752:
 					return map_layer_jobtemple_1;
@@ -631,6 +646,14 @@ var SilkroadMap = function(){
 					popupAnchor:  [0,-15]
 				});
 			}
+			else if(servername.startsWith("ITEM_CH") || servername.startsWith("ITEM_EU")){
+				map_pointers[uniqueKey]["icon"] = new L.Icon({
+					iconUrl: b_url+'drop.png',
+					iconSize:     [18,18],
+					iconAnchor:   [9,10],
+					popupAnchor:  [0,-18]
+				});
+			}
 			// force marker update
 			updateMapLayer(map_layer);
 		},
@@ -642,8 +665,6 @@ var SilkroadMap = function(){
 				map_pointers[uniqueKey]["r"] = r;
 				// force marker update
 				updateMapLayer(map_layer);
-			}else{
-				console.log("Error: uniqueKey not found.")
 			}
 		},
 		RemoveExtraPointer(uniqueKey){

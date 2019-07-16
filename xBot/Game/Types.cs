@@ -1,174 +1,218 @@
-﻿namespace xBot.Game
+﻿using System;
+
+namespace xBot.Game
 {
-	// Class used to wrap all required to sync game action/types/states
+	/// <summary>
+	/// Class used to wrap all required to sync game actions/types/flags/states/etc ...
+	/// </summary>
 	public static class Types
 	{
-		public static class GuildMember
+		public enum GuildMember
 		{
-			public const byte
-				None = 0,
-				Member = 1,
-				Master = 2;
+			None = 0,
+			Member = 1,
+			Master = 2
 		}
-		public static class AcademyMember
+		public enum AcademyMember
 		{
-			public const byte
-				 None = 0;
+			None = 0
 		}
-		public static class Exp
+		public enum ExpIcon
 		{
-			public const byte
-				Beginner = 0,
-				Helpful = 1,
-				BeginnerAndHelpful = 2;
+			Beginner = 0,
+			Helpful = 1,
+			BeginnerAndHelpful = 2
 		}
-		public static class PVPCape
+		public enum PVPCape
 		{
-			public const byte
-				None = 0,
-				Red = 1,
-				Gray = 2,
-				Blue = 3,
-				White = 4,
-				Yellow = 5;
+			None = 0,
+			Red = 1,
+			Gray = 2,
+			Blue = 3,
+			White = 4,
+			Yellow = 5
 		}
-		public static class PetState
+		public enum PetState
 		{
-			public const byte
-				NotSummoned = 1,
-				Summoned = 2,
-				Alive = 3,
-				Dead = 4;
+			NeverSummoned = 1,
+			Summoned = 2,
+			Alive = 3,
+			Dead = 4
 		}
-		public static class MovementSource
+		public enum MovementAction
 		{
-			public const byte
-				Spinning = 0,
-				Sky = 1,
-				KeyWalking = 1;
+			Spinning = 0,
+			KeyWalking = 1
 		}
-		public static class LifeState
+		public enum LifeState
 		{
-			public const byte
-				Unborn = 0,
-				Alive = 1,
-				Dead = 2;
+			Unborn = 0,
+			Alive = 1,
+			Dead = 2
 		}
-		public static class MotionState
+		public enum MotionState
 		{
-			public const byte
-				None = 0,
-				Walking = 2,
-				Running = 3,
-				Sitting = 4;
+			None = 0,
+			Walking = 2,
+			Running = 3,
+			Sitting = 4
 		}
-		public static class PlayerState
+		public enum PlayerState
 		{
-			public const byte
-				None = 0,
-				Berserk = 1,
-				Untouchable = 2,
-				GameMasterInvincible = 3,
-				GameMasterInvisible = 5,
-				Stealth = 6,
-				Invisible = 7;
+			None = 0,
+			Berserk = 1,
+			Untouchable = 2,
+			GameMasterInvincible = 3,
+			GameMasterInvisible = 5,
+			Stealth = 6,
+			Invisible = 7
 		}
-		public static class Job
+		public enum Job
 		{
-			public const byte
-				None = 0,
-				Trader = 1,
-				Thief = 2,
-				Hunter = 3;
+			None = 0,
+			Trader = 1,
+			Thief = 2,
+			Hunter = 3
 		}
-		public static class PVPState
+		public enum PVPState
 		{
 			/// <summary>
 			/// Also known as Neutral.
 			/// </summary>
-			public const byte	White = 0;
+			White = 0,
 			/// <summary>
 			/// Also known as Assaulter.
 			/// </summary>
-			public const byte Purple = 1;
+			Purple = 1,
 			/// <summary>
 			/// PK or temporaly PK.
 			/// </summary>
-			public const byte Red = 2;
+			Red = 2
 		}
-		public static class CaptureTheFlag
+		public enum CaptureTheFlag
 		{
-			public const byte
-				None = 0xFF,
-				Red = 1,
-				Blue = 2;
+			None = 0xFF,
+			Red = 1,
+			Blue = 2
 		}
-		public static class Chat
+		public enum Chat
 		{
-			public const byte
-				All = 1,
-				Private = 2,
-				GM = 3,
-				Party = 4,
-				Guild = 5,
-				Global = 6,
-				Notice = 7,
-				Stall = 9,
-				Union = 11,
-				NPC = 13,
-				Academy = 16;
+			All = 1,
+			Private = 2,
+			GM = 3,
+			Party = 4,
+			Guild = 5,
+			Global = 6,
+			Notice = 7,
+			Stall = 9,
+			Union = 11,
+			NPC = 13,
+			Academy = 16
 		}
-		public static class BarUpdate	{
-			public const byte
-				HP = 1,
-				MP = 2,
-				HPMP = 3,
-				BadStatus = 4,
-				EntityHPMP = 5;
-    }
-		public static class CharacterSelectionAction
+		public enum EntityStateUpdate {
+			HP = 1,
+			MP = 2,
+			HPMP = 3,
+			BadStatus = 4,
+			EntityHPMP = 5
+		}
+		public enum CharacterSelectionAction
 		{
-			public const byte
-				Create = 1,
-				List = 2,
-				Delete = 3,
-				CheckName = 4,
-				Restore = 5;
+			Create = 1,
+			List = 2,
+			Delete = 3,
+			CheckName = 4,
+			Restore = 5
 		}
-		public static class Mob
+		public enum Mob
 		{
-			public const byte
-				General = 0,
-				Champion = 1,
-				Giant = 4,
-				Titan = 5,
-				Strong = 6,
-				Elite = 7,
-				Unique = 8,
-				Party = 0x10,
-				PartyChampion = 0x11,
-				PartyGiant = 0x14;
+			General = 0,
+			Champion = 1,
+			Giant = 4,
+			Titan = 5,
+			Strong = 6,
+			Elite = 7,
+			Unique = 8,
+			Party = 0x10,
+			PartyChampion = 0x11,
+			PartyGiant = 0x14
 		}
-		
-		public static class ScrollMode
+		public enum ScrollMode
 		{
-			public const byte
-				None = 0,
-				ReturnScroll = 1,
-				BanditReturnScroll = 2;
+			None = 0,
+			ReturnScroll = 1,
+			BanditReturnScroll = 2
 		}
-		public static class InteractMode
+		public enum InteractMode
 		{
-			public const byte
-				None = 0,
-				P2P = 2,
-				P2N_TALK = 4,
-				OPNMKT_DEAL = 6;
+			None = 0,
+			P2P = 2,
+			P2N_TALK = 4,
+			OPNMKT_DEAL = 6
 		}
-    public static class GuildMemberAuthority
+		public static class GuildMemberAuthority
 		{
 			public const byte
 			 None = 0xFF;
 		}
-  }
+		public static class Moonphase
+		{
+			public const ushort
+			 NewMoon = 0;
+		}
+		/// <summary>
+		/// Wheater displayed graphicaly.
+		/// </summary>
+		public enum Wheater
+		{
+			Clear = 1,
+			Rainy = 2,
+			Snow = 3
+		}
+		/// <summary>
+		/// Party basic setup.
+		/// <para>[Flags]</para>
+		/// </summary>
+		public static class PartySetup
+		{
+			public const byte
+				ExpShared = 1,
+				ItemShared = 2,
+				AnyoneCanInvite = 4;
+		}
+		/// <summary>
+		/// Party purpose.
+		/// </summary>
+		public enum PartyPurpose
+		{
+			Hunting = 0,
+			Quest = 1,
+			Trade = 2,
+			Thief = 3
+		}
+		public enum PartyUpdate
+		{
+			Dismissed = 1,
+      MemberJoined = 2,
+			MemberLeave = 3,
+			MemberUpdate = 6
+		}
+		public enum PlayerInvitation
+		{
+			PartyCreation = 2,
+			PartyInvitation = 3,
+			GuildInvitation = 5,
+			UnionInvitation = 6,
+			AcademyInvitation = 9
+		}
+		/// <summary>
+		/// Check if the current flag is on the data provided.
+		/// </summary>
+		/// <param name="data">Data to compare</param>
+		/// <param name="flag">Some flag taken from<seealso cref="Types"/></param>
+		public static bool HasFlag(int data, int flag)
+		{
+			return (data & flag) == flag;
+		}
+	}
 }

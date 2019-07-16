@@ -24,6 +24,11 @@ namespace xBot
 		/// Keep all name references from the game.
 		/// </summary>
 		private Dictionary<string, string> NameReferences;
+		private Dictionary<string, string> UITextReferences;
+		/// <summary>
+		///  Switch the language detected
+		/// </summary>
+		private byte LanguageIndex = 8; // English
 		/// <summary>
 		/// Keep all teleport data used for linking.
 		/// </summary>
@@ -42,6 +47,7 @@ namespace xBot
 			this.pk2FileName = pk2FileName;
 			this.dbName = dbName;
 			rtbxLogs.Text = WinAPI.getDate() + rtbxLogs.Text;
+			cmbxLanguage.SelectedIndex = 0;
 			LogState();
 		}
 		private void InitializeFonts(Control c)
@@ -123,9 +129,9 @@ namespace xBot
 				bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, versionLength);
 				byte[] versionDecoded = bf.Decode(versionBuffer);
 				uint version = uint.Parse(Encoding.ASCII.GetString(versionDecoded, 0, 4));
-				WinAPI.InvokeIfRequired(w.General_tbxVersion, () => {
-					w.General_tbxVersion.Tag = version;
-					w.General_tbxVersion.Text = version.ToString();
+				WinAPI.InvokeIfRequired(w.Settings_tbxVersion, () => {
+					w.Settings_tbxVersion.Tag = version;
+					w.Settings_tbxVersion.Text = version.ToString();
 				});
 				LogState();
 			}
@@ -144,9 +150,9 @@ namespace xBot
 				Log("Extracting Locale & Gateway");
 				LogState("Extracting...");
 				pReader = new PacketReader(pk2.GetFileBytes("DivisionInfo.txt"));
-				WinAPI.InvokeIfRequired(w.General_tbxLocale, () => {
-					w.General_tbxLocale.Tag = pReader.ReadByte();
-					w.General_tbxLocale.Text = w.General_tbxLocale.Tag.ToString();
+				WinAPI.InvokeIfRequired(w.Settings_tbxLocale, () => {
+					w.Settings_tbxLocale.Tag = pReader.ReadByte();
+					w.Settings_tbxLocale.Text = w.Settings_tbxLocale.Tag.ToString();
 				});
 				byte dvs = pReader.ReadByte();
 				for (int i = 0; i < dvs; i++)
@@ -155,11 +161,11 @@ namespace xBot
 					pReader.ReadByte(); // 0
 
 					byte gws = pReader.ReadByte();
-					WinAPI.InvokeIfRequired(w.General_lstvHost, () => {
-						w.General_lstvHost.Items.Clear();
+					WinAPI.InvokeIfRequired(w.Settings_lstvHost, () => {
+						w.Settings_lstvHost.Items.Clear();
 						for (int j = 0; j < gws; j++)
 						{
-							w.General_lstvHost.Items.Add(Encoding.ASCII.GetString(pReader.ReadBytes(pReader.ReadInt32())));
+							w.Settings_lstvHost.Items.Add(Encoding.ASCII.GetString(pReader.ReadBytes(pReader.ReadInt32())));
 							pReader.ReadByte(); // 0
 						}
 					});
@@ -180,9 +186,9 @@ namespace xBot
 			{
 				Log("Extracting Gateport");
 				LogState("Extracting...");
-				WinAPI.InvokeIfRequired(w.General_tbxPort, () => {
-					w.General_tbxPort.Text = pk2.GetFileText("Gateport.txt").Trim();
-					w.General_tbxPort.Tag = ushort.Parse(w.General_tbxPort.Text);
+				WinAPI.InvokeIfRequired(w.Settings_tbxPort, () => {
+					w.Settings_tbxPort.Text = pk2.GetFileText("Gateport.txt").Trim();
+					w.Settings_tbxPort.Tag = ushort.Parse(w.Settings_tbxPort.Text);
 				});
 				LogState();
 			}
@@ -236,17 +242,26 @@ namespace xBot
 
 			// Generating records
 			Log("Generating database (this may take a while)");
-			Log("Loading Language references (English)");
+			Thread.Sleep(CPU_BREAK);
+			Log("Loading Text references...");
 			LoadNameReferences();
 			Thread.Sleep(CPU_BREAK);
+			Log("Loading & adding System Text references...");
+			LoadUITextReferences();
+			AddTextUISystem();
+      Thread.Sleep(CPU_BREAK);
 			Log("Adding Items...");
 			AddItems();
 			Thread.Sleep(CPU_BREAK);
 			Log("Adding Characters & Mobs...");
 			AddModels();
 			Thread.Sleep(CPU_BREAK);
-			Log("Adding Skills...");
+			Log("Adding Masteries & Skills...");
+			AddMasteries();
 			AddSkills();
+			Thread.Sleep(CPU_BREAK);
+			Log("Adding Exp. & Levels...");
+			AddLevelExperience();
 			Thread.Sleep(CPU_BREAK);
 			Log("Loading Teleport references");
 			LoadTeleportData();
@@ -255,29 +270,29 @@ namespace xBot
 			AddTeleportBuildings();
 			AddTeleportLinks();
 			Thread.Sleep(CPU_BREAK);
-			Log("Adding Levels...");
-			AddLevels();
+			Log("Adding Regions...");
+			AddRegions();
 			Thread.Sleep(CPU_BREAK);
 			Log("Database \"" + db.Name + "\" has been generated sucessfully!");
 			LogState("Database generated sucessfully");
 			db.Close();
-			WinAPI.InvokeIfRequired(w.General_btnAddSilkroad, () => {
-				w.General_btnAddSilkroad.Font = new Font(w.General_btnAddSilkroad.Font, FontStyle.Regular);
-			});
+			pk2.Dispose();
+			w.EnableControl(w.Settings_btnAddSilkroad, true);
 			WinAPI.InvokeIfRequired(this, () => {
 				WinAPI.SetForegroundWindow(this.Handle);
 			});
 			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.General_btnLauncherPath, null);
+				w.Control_Click(w.Settings_btnLauncherPath, null);
 			});
 			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.General_btnClientPath, null);
+				w.Control_Click(w.Settings_btnClientPath, null);
 			});
 			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.General_btnAddSilkroad, null);
+				w.Control_Click(w.Settings_btnAddSilkroad, null);
+				WinAPI.SetForegroundWindow(w.Handle);
 			});
 			WinAPI.InvokeIfRequired(this, () => {
-				WinAPI.SetForegroundWindow(this.Handle);
+				Close();
 			});
 		}
 		private void LoadNameReferences()
@@ -288,15 +303,36 @@ namespace xBot
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
-			byte language = 8; // English
-			bool languageCheck = false; // Secure the switch at starting only
+
+			bool languageSelected = false;
+			// Select language
+			WinAPI.InvokeIfRequired(cmbxLanguage, ()=> {
+				if (cmbxLanguage.SelectedIndex != 0)
+				{
+					switch (cmbxLanguage.Text)
+					{
+						case "English":
+							LanguageIndex = 8;
+							break;
+						case "Vietnam":
+							LanguageIndex = 9;
+							break;
+						case "Korean":
+							LanguageIndex = 2;
+							break;
+					}
+					Log("Using "+ cmbxLanguage.Text + " as language index");
+					languageSelected = true;
+        }
+			});
+			
 
 			// short file, load all lines to memory
-			string[] files = pk2.GetFileText("TextDataName.txt").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			string[] files = pk2.GetFileText("TextDataName.txt", "server_dep/silkroad/textdata").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string file in files)
 			{
 				// Keep memory safe
-				using (StreamReader reader = new StreamReader(pk2.GetFileStream(file)))
+				using (StreamReader reader = new StreamReader(pk2.GetFileStream(file, "server_dep/silkroad/textdata")))
 				{
 					while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
 					{
@@ -305,34 +341,30 @@ namespace xBot
 						{
 							data = line.Split(split, StringSplitOptions.None);
 
-							// 15% display
-							if (rand.Next(1, 1000) <= 150)
-								LogState("Loading " + data[1]);
-
-							// Check if has translation
-							if (!languageCheck && language == 8 && (data[language] == "0" || data[language] == ""))
+							if (!languageSelected)
 							{
-								language++; // Vietnamese
-								Log("English not found. Switching language to Vietnamese");
-								try
+								if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
 								{
-									if (language == 9 && (data[language] == "0" || data[language] == ""))
+									Log("English language empty. Switching to Vietnam");
+                  LanguageIndex = 9; // Set Vietnam language
+									if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
 									{
-										Log("Vietnamese not found. Switching language to Korean");
-										language = 2; // Korean
+										Log("Vietnam language empty. Switching to Korean");
+										LanguageIndex = 2; // Set Korean language
 									}
 								}
-								catch {
-									Log("Languages not found. Contact me to add language support");
-									language = 1; // Korean
-									// Just save only references and fix specific server
-								}
-							}
-							if (!languageCheck)
-								languageCheck = true;
+								else {
+									Log("Using English as language");
+                }
+								languageSelected = true;
+              }
 							
-							if (data[language] != "0")
-								NameReferences[data[1]] = data[language];
+							// 10% display
+							if (rand.Next(1, 1000) <= 100)
+								LogState("Loading " + data[1]);
+							
+							if (data.Length > LanguageIndex && data[LanguageIndex] != "0")
+								NameReferences[data[1]] = data[LanguageIndex];
 
 							// CPU break
 							Thread.Sleep(1);
@@ -347,7 +379,91 @@ namespace xBot
 				return NameReferences[ServerName];
 			return "";
 		}
-		public void AddItems()
+		private void LoadUITextReferences()
+		{
+			UITextReferences = new Dictionary<string, string>();
+			// vars constantly used
+			Random rand = new Random();
+			string line;
+			char[] split = new char[] { '\t' };
+
+			string text;
+			string[] data, c_formats = new string[] { "%d", "%s", "%ld", "%u", "%08x", "%I64d" , "%l64d" };
+			int formatIndex, formatCount;
+
+			// Keep memory safe
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TextUISystem.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+
+						// 10% display
+						if (rand.Next(1, 1000) <= 100)
+							LogState("Loading " + data[1]);
+						
+						if (data.Length > LanguageIndex && data[LanguageIndex] != "0")
+						{
+							text = data[LanguageIndex];
+							formatCount = 0;
+							// Convert from C++ to C# format
+							foreach (string c_format in c_formats)
+							{
+								while ( (formatIndex = text.IndexOf(c_format)) != -1)
+								{
+									text = text.Remove(formatIndex) + "{"+ formatCount + "}"+ text.Substring(formatIndex + c_format.Length);
+									formatCount++;
+                }
+							}
+							UITextReferences[data[1]] = text;
+						}
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+		}
+		private string GetUIText(string UITextName)
+		{
+			if (UITextReferences.ContainsKey(UITextName))
+				return UITextReferences[UITextName];
+			return "";
+		}
+		public void AddTextUISystem()
+		{
+			string sql = "CREATE TABLE textuisystem (";
+			sql += "ID INTEGER PRIMARY KEY AUTOINCREMENT,";
+			sql += "servername VARCHAR(64) UNIQUE,";
+			sql += "text VARCHAR(256)";
+			sql += ");";
+			db.ExecuteQuery(sql);
+
+			// vars constantly used
+			Random rand = new Random();
+
+			// using faster sqlite performance
+			db.Begin();
+			foreach (string key in UITextReferences.Keys)
+			{
+				// 10% display
+				if (rand.Next(1, 1000) <= 100)
+					LogState("Adding " + key);
+				// INSERT
+				db.Prepare("INSERT INTO textuisystem (servername,text) VALUES (?,?);");
+				db.Bind("servername", key);
+				db.Bind("text", UITextReferences[key]);
+				db.ExecuteQuery();
+
+				// CPU break
+				Thread.Sleep(1);
+			}
+			db.End();
+		}
+		private void AddItems()
 		{
 			string sql = "CREATE TABLE items (";
 			sql += "id INTEGER PRIMARY KEY,";
@@ -367,7 +483,7 @@ namespace xBot
 			char[] split = new char[] { '\t' };
 			string[] data;
 
-			using (StreamReader sr = new StreamReader(pk2.GetFileStream("ItemData.txt")))
+			using (StreamReader sr = new StreamReader(pk2.GetFileStream("ItemData.txt", "server_dep/silkroad/textdata")))
 			{
 				while ((file = WinAPI.ReadToString(sr, "\r\n")) != null)
 				{
@@ -375,12 +491,12 @@ namespace xBot
 					if (file == "")
 						continue;
 					// Keep memory safe
-					using (StreamReader reader = new StreamReader(pk2.GetFileStream(file)))
+					using (StreamReader reader = new StreamReader(pk2.GetFileStream(file, "server_dep/silkroad/textdata")))
 					{
 						// using faster sqlite performance
 						db.Begin();
 
-						while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+						while ((line = WinAPI.ReadToString(reader, "\n")) != null)
 						{
 							// Data is enabled in game
 							if (line.StartsWith("1\t"))
@@ -391,15 +507,23 @@ namespace xBot
 								name = "";
                 if (data[5] != "xxx")
 									name = GetName(data[5]);
-								if (name == "")
-									name = data[2];
 
 								// 15% display
 								if (rand.Next(1, 1000) <= 150)
 									LogState("Adding " + data[2]);
-								// INSERT 
-								db.Prepare("INSERT INTO items (id,servername,name,stack,tid2,tid3,tid4,icon) VALUES (?,?,?,?,?,?,?,?);");
-								db.Bind("id", data[1]);
+								// INSERT OR UPDATE
+								db.ExecuteQuery("SELECT id FROM items WHERE id=" + data[1]);
+								if (db.getResult().Count == 0)
+								{
+									// New
+									db.Prepare("INSERT INTO items (id,servername,name,stack,tid2,tid3,tid4,icon) VALUES (?,?,?,?,?,?,?,?);");
+									db.Bind("id", data[1]);
+								}
+								else
+								{
+									// Override
+									db.Prepare("UPDATE items SET servername=?,name=?,stack=?,tid2=?,tid3=?,tid4=?,icon=? WHERE id=" + data[1]);
+								}
 								db.Bind("servername", data[2]);
 								db.Bind("name", name);
 								db.Bind("stack", data[57]);
@@ -441,19 +565,19 @@ namespace xBot
 			byte index;
 
 			// short file, load all lines to memory
-			string[] files = pk2.GetFileText("CharacterData.txt").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			string[] files = pk2.GetFileText("CharacterData.txt", "server_dep/silkroad/textdata").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < files.Length; i++)
 			{
 				files[i] = files[i].Trim();
 				if (files[i] == "")
 					continue;
 				// Keep memory safe
-				using (StreamReader reader = new StreamReader(pk2.GetFileStream(files[i])))
+				using (StreamReader reader = new StreamReader(pk2.GetFileStream(files[i], "server_dep/silkroad/textdata")))
 				{
 					// using faster sqlite performance
 					db.Begin();
 
-					while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+					while ((line = WinAPI.ReadToString(reader, "\n")) != null)
 					{
 						// Data is enabled in game
 						if (line.StartsWith("1\t"))
@@ -479,9 +603,20 @@ namespace xBot
 							// 15% display
 							if (rand.Next(1, 1000) <= 150)
 								LogState("Adding " + data[2]);
-							// INSERT
-							db.Prepare("INSERT INTO models (id,servername,name,tid2,tid3,tid4,hp,level,skills) VALUES (?,?,?,?,?,?,?,?,?)");
-							db.Bind("id", data[1]);
+							
+							// INSERT OR UPDATE
+							db.ExecuteQuery("SELECT id FROM models WHERE id=" + data[1]);
+							if (db.getResult().Count == 0)
+							{
+								// New
+								db.Prepare("INSERT INTO models (id,servername,name,tid2,tid3,tid4,hp,level,skills) VALUES (?,?,?,?,?,?,?,?,?)");
+								db.Bind("id", data[1]);
+							}
+							else
+							{
+								// Override
+								db.Prepare("UPDATE models SET servername=?,name=?,tid2=?,tid3=?,tid4=?,hp=?,level=?,skills=? WHERE id=" + data[1]);
+							}
 							db.Bind("servername", data[2]);
 							db.Bind("name", name);
 							db.Bind("tid2", data[10]);
@@ -498,6 +633,199 @@ namespace xBot
 					}
 					db.End();
 				}
+			}
+		}
+		public void AddMasteries()
+		{
+			string sql = "CREATE TABLE masteries (";
+			sql += "id INTEGER PRIMARY KEY,";
+			sql += "name VARCHAR(64),";
+			sql += "description VARCHAR(256),";
+			sql += "type VARCHAR(64),";
+			sql += "weapons VARCHAR(12),";
+			sql += "icon VARCHAR(64)";
+			sql += ");";
+			db.ExecuteQuery(sql);
+
+			// vars constantly used
+			string line, name, desc, type;
+			char[] split = new char[] { '\t' };
+			string[] data;
+
+			// Keep memory safe
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("SkillMasteryData.txt", "server_dep/silkroad/textdata")))
+			{
+				// using faster sqlite performance
+				db.Begin();
+
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					if (line.StartsWith("//"))
+						continue;
+
+					data = line.Split(split, StringSplitOptions.None);
+					// Avoid wrong data
+					if (data.Length == 13 && data[2] != "xxx")
+					{
+						// Extract name if has one
+						name = GetUIText(data[2]);
+						if (name == "")
+							name = GetName(data[2]);
+						if (name == "")
+							name = data[2];
+						// Extract description if has one
+						desc = GetUIText(data[4]);
+						if (desc == "")
+							desc = GetName(data[4]);
+						if (desc == "")
+							desc = data[4];
+						// Extract type if has one
+						type = GetUIText(data[5]);
+						if (desc == "")
+							type = GetName(data[5]);
+						if (type == "")
+							type = data[5];
+
+						// 100% display
+						LogState("Adding " + name);
+
+						// INSERT 
+						db.Prepare("INSERT INTO masteries (id,name,description,type,weapons,icon) VALUES (?,?,?,?,?,?)");
+						db.Bind("id", data[0]);
+						db.Bind("name", name);
+						db.Bind("description", desc);
+						db.Bind("type", type);
+						db.Bind("weapons", data[8] + "," + data[9] + "," + data[10]);
+						db.Bind("icon", data[11]);
+						db.ExecuteQuery();
+
+						// CPU long break
+						Thread.Sleep(10);
+					}
+				}
+				db.End();
+			}
+		}
+		public void AddSkills()
+		{
+			string sql = "CREATE TABLE skills (";
+			sql += "id INTEGER PRIMARY KEY,";
+			sql += "servername VARCHAR(64), ";
+			sql += "name VARCHAR(64),";
+			sql += "description VARCHAR(1024),";
+			sql += "cooldown INTEGER,";
+			sql += "duration INTEGER,";
+			sql += "casttime INTEGER,";
+			sql += "level INTEGER,";
+			sql += "mastery_id INTEGER,";
+			sql += "sp INTEGER,";
+			sql += "mana INTEGER,";
+			sql += "icon VARCHAR(64),";
+			sql += "target_required BOOLEAN,";
+			sql += "attributes VARCHAR (256)";
+			sql += ");";
+			db.ExecuteQuery(sql);
+
+			// vars constantly used
+			Random rand = new Random();
+			string line, name, desc, duration, attributes;
+			int index;
+			char[] split = new char[] { '\t' };
+			string[] data;
+
+			// short file, load all lines to memory
+			string[] files = pk2.GetFileText("SkillDataEnc.txt", "server_dep/silkroad/textdata").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < files.Length; i++)
+			{
+				files[i] = files[i].Trim();
+				if (files[i] == "")
+					continue;
+
+				LogState("Decoding " + files[i]);
+				// Decrypt and save the file to be used as stream
+				File.WriteAllBytes("Data//"+ files[i] + ".tmp",DecryptSkillData(pk2.GetFileStream(files[i],"server_dep/silkroad/textdata")));
+				
+				// Keep memory safe
+				using (StreamReader reader = new StreamReader("Data//" + files[i] + ".tmp"))
+				{
+					// using faster sqlite performance
+					db.Begin();
+
+					while ((line = WinAPI.ReadToString(reader, "\n")) != null)
+					{
+						// Data is enabled in game
+						if (line.StartsWith("1\t"))
+						{
+							data = line.Split(split, StringSplitOptions.None);
+							// Extract name if has one
+							name = "";
+							if (data[62] != "xxx")
+								name = GetName(data[62]);
+							if (name == "")
+								name = data[3];
+							// Extract descriptione if has one
+							if (data[64] != "xxx")
+								desc = GetName(data[64]);
+							else
+								desc = "";
+							// Check if is an buff/debuff
+							if (data[68] == "3")
+								duration = data[70];
+							else
+								duration = "0";
+							// Extract values
+							attributes = "";
+							index = 69;
+							while (data[index] != "0")
+							{
+								attributes += data[index] + "|";
+								index++;
+							}
+							if (index != 69)
+								attributes = attributes.Remove(attributes.Length - 1);
+
+							// 15% display
+							if (rand.Next(1, 1000) <= 150)
+								LogState("Adding " + data[3]);
+							// INSERT
+
+							// INSERT OR UPDATE
+							db.ExecuteQuery("SELECT id FROM skills WHERE id=" + data[1]);
+							if (db.getResult().Count == 0)
+							{
+								// New
+								db.Prepare("INSERT INTO skills (id,servername,name,description,casttime,cooldown,duration,mana,level,sp,icon,mastery_id,target_required,attributes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+								db.Bind("id", data[1]);
+							}
+							else
+							{
+								// Override
+								db.Prepare("UPDATE skills SET servername=?,name=?,description=?,casttime=?,cooldown=?,duration=?,mana=?,level=?,sp=?,icon=?,mastery_id=?,target_required=?,attributes=? WHERE id=" + data[1]);
+							}
+							db.Bind("servername", data[3]);
+							db.Bind("name", name);
+							db.Bind("description", desc);
+							db.Bind("casttime", data[13]);
+							db.Bind("cooldown", data[14]);
+							db.Bind("duration", duration);
+							db.Bind("mana", data[53]);
+							db.Bind("level", data[36]);
+							db.Bind("sp", data[46]);
+							db.Bind("icon", data[61]);
+							db.Bind("mastery_id", data[34]);
+							db.Bind("target_required", data[22]);
+							db.Bind("attributes", attributes);
+							db.ExecuteQuery();
+
+							// CPU break
+							Thread.Sleep(1);
+						}
+					}
+					db.End();
+				}
+				
+				//  Delete temporal skilldata decoded
+				File.Delete("Data//" + files[i] + ".tmp");
 			}
 		}
 		public byte[] DecryptSkillData(Stream SkillDataEncrypted)
@@ -554,17 +882,17 @@ namespace xBot
 				0x9D, 0x5D, 0x57, 0xAD, 0xD4, 0xC6, 0x40, 0x93, 0x8D, 0xE9, 0xD3, 0x35, 0x9D, 0xC6, 0xD3, 0x00
 			};
 			uint key = 0x8C1F;
-      bool encrypted = false;
+			bool encrypted = false;
 
 			// Data decoded
-			byte[] buffer = new byte[SkillDataEncrypted.Length+1];
+			byte[] buffer = new byte[SkillDataEncrypted.Length + 1];
 			SkillDataEncrypted.Read(buffer, 0, 2);
 			SkillDataEncrypted.Seek(0, SeekOrigin.Begin);
 
 			// Check if the data is truly encoded
-      if (buffer[0] == 0xE2 && buffer[1] == 0xB0)
+			if (buffer[0] == 0xE2 && buffer[1] == 0xB0)
 				encrypted = true;
-			
+
 			if (encrypted)
 			{
 				byte buff;
@@ -574,140 +902,75 @@ namespace xBot
 					key++;
 					buffer[i] = (byte)(SkillDataEncrypted.ReadByte() + buff);
 				}
-      }
+			}
 			else
 			{
-				SkillDataEncrypted.Read(buffer, 0,(int)SkillDataEncrypted.Length);
+				SkillDataEncrypted.Read(buffer, 0, (int)SkillDataEncrypted.Length);
 			}
 			return buffer;
 		}
-		public void AddSkills()
+		private void AddLevelExperience()
 		{
-			string sql = "CREATE TABLE skills (";
-			sql += "id INTEGER PRIMARY KEY,";
-			sql += "servername VARCHAR(64), ";
-			sql += "name VARCHAR(64),";
-			sql += "description VARCHAR(1024),";
-			sql += "cooldown INTEGER,";
-			sql += "duration INTEGER,";
-			sql += "casttime INTEGER,";
-			sql += "level INTEGER,";
-			sql += "mastery_id INTEGER,";
+			string sql = "CREATE TABLE leveldata (";
+			sql += "level INTEGER PRIMARY KEY,";
+			sql += "player INTEGER,";
 			sql += "sp INTEGER,";
-			sql += "mana INTEGER,";
-			sql += "icon VARCHAR(64),";
-			sql += "target_required BOOLEAN,";
-			sql += "attributes VARCHAR (256)";
+			sql += "pet INTEGER,";
+			sql += "trader INTEGER,";
+			sql += "thief INTEGER,";
+			sql += "hunter INTEGER";
 			sql += ");";
 			db.ExecuteQuery(sql);
 
-			// vars constantly used
-			Random rand = new Random();
-			string line, name, desc, duration, attributes;
-			int index;
-			char[] split = new char[] { '\t' };
-			string[] data;
-
-			// short file, load all lines to memory
-			string[] files = pk2.GetFileText("SkillDataEnc.txt").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-			for (int i = 0; i < files.Length; i++)
-			{
-				files[i] = files[i].Trim();
-				if (files[i] == "")
-					continue;
-
-				LogState("Decoding " + files[i]);
-				// Decrypt and save the file to be used as stream
-				File.WriteAllBytes("Data//"+ files[i] + ".tmp",DecryptSkillData(pk2.GetFileStream(files[i])));
-				
-				// Keep memory safe
-				using (StreamReader reader = new StreamReader("Data//" + files[i] + ".tmp"))
-				{
-					// using faster sqlite performance
-					db.Begin();
-
-					while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
-					{
-						// Data is enabled in game
-						if (line.StartsWith("1\t"))
-						{
-							data = line.Split(split, StringSplitOptions.None);
-							// Extract name if has one
-							name = "";
-							if (data[62] != "xxx")
-								name = GetName(data[62]);
-							if (name == "")
-								name = data[3];
-							// Extract descriptione if has one
-							if (data[64] != "xxx")
-								desc = GetName(data[64]);
-							else
-								desc = "";
-							// Check if is an buff/debuff
-							if (data[68] == "3")
-								duration = data[70];
-							else
-								duration = "0";
-							// Extract values
-							attributes = "";
-							index = 69;
-							while (data[index] != "0")
-							{
-								attributes += data[index] + "|";
-								index++;
-							}
-							if (index != 69)
-								attributes = attributes.Remove(attributes.Length - 1);
-
-							// 15% display
-							if (rand.Next(1, 1000) <= 150)
-								LogState("Adding " + data[3]);
-							// INSERT
-							db.Prepare("INSERT INTO skills (id,servername,name,description,casttime,cooldown,duration,mana,level,sp,icon,mastery_id,target_required,attributes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-							db.Bind("id", data[1]);
-							db.Bind("servername", data[3]);
-							db.Bind("name", name);
-							db.Bind("description", desc);
-							db.Bind("casttime", data[13]);
-							db.Bind("cooldown", data[14]);
-							db.Bind("duration", duration);
-							db.Bind("mana", data[53]);
-							db.Bind("level", data[36]);
-							db.Bind("sp", data[46]);
-							db.Bind("icon", data[61]);
-							db.Bind("mastery_id", data[34]);
-							db.Bind("target_required", data[22]);
-							db.Bind("attributes", attributes);
-							db.ExecuteQuery();
-
-							// CPU break
-							Thread.Sleep(1);
-						}
-					}
-					db.End();
-				}
-				
-				//  Delete temporal skilldata decoded
-				File.Delete("Data//" + files[i] + ".tmp");
-			}
-		}
-		public void AddMasteries()
-		{
-
-		}
-		/// <summary>
-		/// Used to join teleport link table (since will be required always).
-		/// </summary>
-		private void LoadTeleportData()
-		{
 			// vars constantly used
 			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
 
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("LevelData.txt", "server_dep/silkroad/textdata")))
+			{
+				// using faster sqlite performance
+				db.Begin();
+
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					if (!line.StartsWith("//"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+						
+						// 100% display
+						LogState("Adding Lv." + data[0]);
+						db.Prepare("INSERT INTO leveldata (level,player,sp,pet,trader,thief,hunter) VALUES (?,?,?,?,?,?,?)");
+						db.Bind("level", data[0]);
+						db.Bind("player", data[1]);
+						db.Bind("sp", data[2]);
+						db.Bind("pet", data[5]);
+						db.Bind("trader",data[6] == "-1" ? "0" : data[6]); // safe ulong casting
+						db.Bind("thief", data[7] == "-1" ? "0" : data[7]);
+						db.Bind("hunter", data[8] == "-1" ? "0" : data[8]);
+						db.ExecuteQuery();
+
+						// CPU Break
+						Thread.Sleep(1);
+					}
+				}
+				db.End();
+			}
+		}
+		/// <summary>
+		/// Used to join teleport link table (since will be required always).
+		/// </summary>
+		private void LoadTeleportData()
+		{
 			TeleportData = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportData.txt")))
+			// vars constantly used
+			Random rand = new Random();
+			string line;
+			char[] split = new char[] { '\t' };
+			string[] data;
+
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportData.txt", "server_dep/silkroad/textdata")))
 			{
 				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
 				{
@@ -727,7 +990,7 @@ namespace xBot
 				}
 			}
 			TeleportBuildings = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportBuilding.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportBuilding.txt", "server_dep/silkroad/textdata")))
 			{
 				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
 				{
@@ -767,7 +1030,7 @@ namespace xBot
 			string[] data;
 
 			TeleportBuildings = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportBuilding.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportBuilding.txt", "server_dep/silkroad/textdata")))
 			{
 				// using faster sqlite performance
 				db.Begin();
@@ -837,7 +1100,7 @@ namespace xBot
 			string[] data;
 			SRObject tp = new SRObject();
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportLink.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TeleportLink.txt", "server_dep/silkroad/textdata")))
 			{
 				// using faster sqlite performance
 				db.Begin();
@@ -894,16 +1157,16 @@ namespace xBot
 						}
 
 						// Calculating game coords
-						tp[SRAttribute.Region] = (ushort)short.Parse(TeleportData[data[1]][5]);
-						tp[SRAttribute.X] = float.Parse(TeleportData[data[1]][6]);
-						tp[SRAttribute.Y] = float.Parse(TeleportData[data[1]][8]);
-						tp[SRAttribute.Z] = 0f;
-						Point pSpawn = tp.getPosition();
-						tp[SRAttribute.Region] = (ushort)short.Parse(TeleportData[data[2]][5]);
-						tp[SRAttribute.X] = float.Parse(TeleportData[data[2]][6]);
-						tp[SRAttribute.Y] = float.Parse(TeleportData[data[2]][8]);
-						tp[SRAttribute.Z] = 0f;
-						Point pLoc = tp.getPosition();
+						ushort region = (ushort)short.Parse(TeleportData[data[1]][5]);
+						int x = int.Parse(TeleportData[data[1]][6]);
+						int z = int.Parse(TeleportData[data[1]][7]);
+						int y = int.Parse(TeleportData[data[1]][8]);
+						Point pSpawn = tp.GetPosition(region,x,y,z);
+						region = (ushort)short.Parse(TeleportData[data[2]][5]);
+						x = int.Parse(TeleportData[data[2]][6]);
+						y = int.Parse(TeleportData[data[2]][7]);
+						z = int.Parse(TeleportData[data[2]][8]);
+						Point pLoc = tp.GetPosition(region, x, y, z);
 
 						// 30% display
 						if (rand.Next(1, 1000) <= 300)
@@ -936,39 +1199,91 @@ namespace xBot
 				db.End();
 			}
 		}
-		private void AddLevels()
+		private void AddRegions()
 		{
-			string sql = "CREATE TABLE levels (";
-			sql += "level INTEGER PRIMARY KEY,";
-			sql += "exp INTEGER";
-			sql += ");";
-			db.ExecuteQuery(sql);
-
 			// vars constantly used
 			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("LevelData.txt")))
+			// Load Region names
+			Dictionary<string, string> RegionReferences = new Dictionary<string, string>();
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("TextZoneName.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled on the game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+						
+						// 15% display
+						if (rand.Next(1, 1000) <= 150)
+							LogState("Loading " + data[1]);
+
+						if (data[LanguageIndex] != "0")
+							RegionReferences[data[1]] = data[LanguageIndex];
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+
+			// Add Region names
+			string sql = "CREATE TABLE regions (";
+			sql += "id INTEGER PRIMARY KEY,";
+			sql += "name VARCHAR(64)";
+			sql += ");";
+			db.ExecuteQuery(sql);
+
+			string name;
+      using (StreamReader reader = new StreamReader(pk2.GetFileStream("RegionCode.txt", "server_dep/silkroad/textdata")))
 			{
 				// using faster sqlite performance
 				db.Begin();
 
 				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
 				{
-					if (!line.StartsWith("//"))
+					// Data is enabled on the game
+					if (line.StartsWith("1\t"))
 					{
 						data = line.Split(split, StringSplitOptions.None);
 
-						// 100% display
-						LogState("Adding Lv." + data[0]);
-						db.Prepare("INSERT INTO levels (level,exp) VALUES (?,?)");
-						db.Bind("level", data[0]);
-						db.Bind("exp", data[1]);
-						db.ExecuteQuery();
+						// Extract region name
+						name = "";
+						if (data[2] != "xxx" && RegionReferences.ContainsKey(data[2] + "_01"))
+						{
+							// _01 = Name; _02 = Description; _03 = Monster lvls.
+							name = RegionReferences[data[2] + "_01"];
+						}
+						else if (RegionReferences.ContainsKey(data[1]))
+						{
+							name = RegionReferences[data[1]];
+						}
 
-						// CPU Break
+						// 15% display
+						if (rand.Next(1, 1000) <= 150)
+							LogState("Adding " + data[1]);
+
+						// INSERT OR UPDATE
+						db.ExecuteQuery("SELECT id FROM regions WHERE id=" + data[1]);
+						if (db.getResult().Count == 0)
+						{
+							// New
+							db.Prepare("INSERT INTO regions (id,name) VALUES (?,?)");
+							db.Bind("id", data[1]);
+						}
+						else
+						{
+							// Override
+							db.Prepare("UPDATE regions SET name=? WHERE id=" + data[1]);
+						}
+						db.Bind("name", name);
+						db.ExecuteQuery();
+						
+						// CPU break
 						Thread.Sleep(1);
 					}
 				}
@@ -986,19 +1301,19 @@ namespace xBot
 			switch (c.Name)
 			{
 				case "btnWinExit":
-					if (tGenerator != null
-						&& tGenerator.ThreadState == ThreadState.Running
-						&& MessageBox.Show(this, "The process still running. Are you sure?", "xBot - PK2 Extractor", MessageBoxButtons.YesNo) != DialogResult.Yes)
-					{
-						return;
-					}
-					if (db != null)
-					{
-						db.Close();
-						Database.Delete(db.Name);
-					}
 					if (tGenerator != null)
+					{
+						if(tGenerator.ThreadState == ThreadState.WaitSleepJoin || tGenerator.ThreadState == ThreadState.Running){
+							if(MessageBox.Show(this, "The process still running. Are you sure?", "xBot - PK2 Extractor", MessageBoxButtons.YesNo) != DialogResult.Yes)
+								return;
+						}
 						tGenerator.Abort();
+						if (db != null)
+						{
+							db.Close();
+							Database.Delete(db.Name);
+						}
+					}
 					this.Close();
 					break;
 				case "btnStart":

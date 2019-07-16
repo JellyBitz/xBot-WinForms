@@ -19,6 +19,8 @@ xBot/bin/Debug/GPUCache/
 
 # Bot data generated
 xBot/bin/Debug/Data/
+xBot/bin/Debug/Config/
+
 
 # Packages can be restored via NuGet
 packages/
