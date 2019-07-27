@@ -28,26 +28,26 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("12313");
-			System.Windows.Forms.ListViewItem listViewItem11 = new System.Windows.Forms.ListViewItem("1");
-			System.Windows.Forms.ListViewItem listViewItem12 = new System.Windows.Forms.ListViewItem("2");
-			System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("23");
-			System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem15 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem16 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem19 = new System.Windows.Forms.ListViewItem("txt");
-			System.Windows.Forms.ListViewItem listViewItem20 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem21 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem22 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem23 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem24 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem25 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem26 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem27 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem28 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem29 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem30 = new System.Windows.Forms.ListViewItem("12313");
+			System.Windows.Forms.ListViewItem listViewItem31 = new System.Windows.Forms.ListViewItem("1");
+			System.Windows.Forms.ListViewItem listViewItem32 = new System.Windows.Forms.ListViewItem("2");
+			System.Windows.Forms.ListViewItem listViewItem33 = new System.Windows.Forms.ListViewItem("23");
+			System.Windows.Forms.ListViewItem listViewItem34 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem35 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem36 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem37 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem38 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem39 = new System.Windows.Forms.ListViewItem("txt");
+			System.Windows.Forms.ListViewItem listViewItem40 = new System.Windows.Forms.ListViewItem("12313");
 			this.TabPageV_Control01 = new System.Windows.Forms.Panel();
 			this.tabvOptionIcon10 = new System.Windows.Forms.Label();
 			this.TabPageV_Control01_Option10 = new System.Windows.Forms.Button();
@@ -823,16 +823,16 @@
 			this.Party_lstvLeaders.FullRowSelect = true;
 			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.Party_lstvLeaders.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5,
-            listViewItem6,
-            listViewItem7,
-            listViewItem8,
-            listViewItem9,
-            listViewItem10});
+            listViewItem21,
+            listViewItem22,
+            listViewItem23,
+            listViewItem24,
+            listViewItem25,
+            listViewItem26,
+            listViewItem27,
+            listViewItem28,
+            listViewItem29,
+            listViewItem30});
 			this.Party_lstvLeaders.Location = new System.Drawing.Point(10, 51);
 			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
 			this.Party_lstvLeaders.MultiSelect = false;
@@ -1022,16 +1022,16 @@
 			this.listView1.FullRowSelect = true;
 			this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem11,
-            listViewItem12,
-            listViewItem13,
-            listViewItem14,
-            listViewItem15,
-            listViewItem16,
-            listViewItem17,
-            listViewItem18,
-            listViewItem19,
-            listViewItem20});
+            listViewItem31,
+            listViewItem32,
+            listViewItem33,
+            listViewItem34,
+            listViewItem35,
+            listViewItem36,
+            listViewItem37,
+            listViewItem38,
+            listViewItem39,
+            listViewItem40});
 			this.listView1.Location = new System.Drawing.Point(10, 51);
 			this.listView1.Margin = new System.Windows.Forms.Padding(0);
 			this.listView1.MultiSelect = false;

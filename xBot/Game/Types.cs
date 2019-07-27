@@ -7,23 +7,23 @@ namespace xBot.Game
 	/// </summary>
 	public static class Types
 	{
-		public enum GuildMember
+		public enum GuildMember : byte
 		{
 			None = 0,
 			Member = 1,
 			Master = 2
 		}
-		public enum AcademyMember
+		public enum AcademyMember : byte
 		{
 			None = 0
 		}
-		public enum ExpIcon
+		public enum ExpIcon : byte
 		{
 			Beginner = 0,
 			Helpful = 1,
 			BeginnerAndHelpful = 2
 		}
-		public enum PVPCape
+		public enum PVPCape : byte
 		{
 			None = 0,
 			Red = 1,
@@ -32,32 +32,35 @@ namespace xBot.Game
 			White = 4,
 			Yellow = 5
 		}
-		public enum PetState
+		public enum PetState : byte
 		{
 			NeverSummoned = 1,
 			Summoned = 2,
 			Alive = 3,
 			Dead = 4
 		}
-		public enum MovementAction
+		public enum MovementAction : byte
 		{
 			Spinning = 0,
 			KeyWalking = 1
 		}
-		public enum LifeState
+		public enum LifeState : byte
 		{
+			/// <summary>
+			/// The character never has been connected.
+			/// </summary>
 			Unborn = 0,
 			Alive = 1,
 			Dead = 2
 		}
-		public enum MotionState
+		public enum MotionState : byte
 		{
 			None = 0,
 			Walking = 2,
 			Running = 3,
 			Sitting = 4
 		}
-		public enum PlayerState
+		public enum PlayerState : byte
 		{
 			None = 0,
 			Berserk = 1,
@@ -67,14 +70,14 @@ namespace xBot.Game
 			Stealth = 6,
 			Invisible = 7
 		}
-		public enum Job
+		public enum Job : byte
 		{
 			None = 0,
 			Trader = 1,
 			Thief = 2,
 			Hunter = 3
 		}
-		public enum PVPState
+		public enum PVPState : byte
 		{
 			/// <summary>
 			/// Also known as Neutral.
@@ -89,13 +92,13 @@ namespace xBot.Game
 			/// </summary>
 			Red = 2
 		}
-		public enum CaptureTheFlag
+		public enum CaptureTheFlag : byte
 		{
 			None = 0xFF,
 			Red = 1,
 			Blue = 2
 		}
-		public enum Chat
+		public enum Chat : byte
 		{
 			All = 1,
 			Private = 2,
@@ -105,18 +108,19 @@ namespace xBot.Game
 			Global = 6,
 			Notice = 7,
 			Stall = 9,
-			Union = 11,
-			NPC = 13,
-			Academy = 16
+			Union = 0xB,
+			NPC = 0xD,
+			Academy = 0x10
 		}
-		public enum EntityStateUpdate {
+		public enum EntityStateUpdate : byte
+		{
 			HP = 1,
 			MP = 2,
 			HPMP = 3,
 			BadStatus = 4,
 			EntityHPMP = 5
 		}
-		public enum CharacterSelectionAction
+		public enum CharacterSelectionAction : byte
 		{
 			Create = 1,
 			List = 2,
@@ -124,7 +128,7 @@ namespace xBot.Game
 			CheckName = 4,
 			Restore = 5
 		}
-		public enum Mob
+		public enum Mob : byte
 		{
 			General = 0,
 			Champion = 1,
@@ -150,15 +154,9 @@ namespace xBot.Game
 			P2N_TALK = 4,
 			OPNMKT_DEAL = 6
 		}
-		public static class GuildMemberAuthority
+		public enum GuildMemberAuthority
 		{
-			public const byte
-			 None = 0xFF;
-		}
-		public static class Moonphase
-		{
-			public const ushort
-			 NewMoon = 0;
+			None = 0xFF
 		}
 		/// <summary>
 		/// Wheater displayed graphicaly.
@@ -171,48 +169,74 @@ namespace xBot.Game
 		}
 		/// <summary>
 		/// Party basic setup.
-		/// <para>[Flags]</para>
+		/// <para>Flags</para>
 		/// </summary>
-		public static class PartySetup
+		[Flags]
+		public enum PartySetup : byte
 		{
-			public const byte
-				ExpShared = 1,
-				ItemShared = 2,
-				AnyoneCanInvite = 4;
+			ExpShared = 1,
+			ItemShared = 2,
+			AnyoneCanInvite = 4
 		}
 		/// <summary>
 		/// Party purpose.
 		/// </summary>
-		public enum PartyPurpose
+		public enum PartyPurpose : byte
 		{
 			Hunting = 0,
 			Quest = 1,
-			Trade = 2,
+			Trader = 2,
 			Thief = 3
 		}
-		public enum PartyUpdate
-		{
-			Dismissed = 1,
-      MemberJoined = 2,
-			MemberLeave = 3,
-			MemberUpdate = 6
-		}
-		public enum PlayerInvitation
+		public enum PlayerPetition : byte
 		{
 			PartyCreation = 2,
 			PartyInvitation = 3,
-			GuildInvitation = 5,
-			UnionInvitation = 6,
-			AcademyInvitation = 9
+			Resurrection = 4,
+			GuildInvitation = 5, // Not confirmed
+			UnionInvitation = 6, // Not confirmed
+			AcademyInvitation = 9, // Not confirmed
 		}
 		/// <summary>
-		/// Check if the current flag is on the data provided.
+		/// All possible bad status types.
+		/// <para>Flags</para>
 		/// </summary>
-		/// <param name="data">Data to compare</param>
-		/// <param name="flag">Some flag taken from<seealso cref="Types"/></param>
-		public static bool HasFlag(int data, int flag)
+		[Flags]
+		public enum BadStatus : uint
 		{
-			return (data & flag) == flag;
+			None = 0,
+			Freezing = 1, // universal
+			Frostbite = 2, // universal
+			ElectricShock = 4, // universal
+			Burn = 8, // universal
+			Poisoning = 16, // universal
+			Unk02 = 32,
+			Sleep = 64, // nope
+			Bind = 128, // ??
+			Dull = 256, // ??
+			Fear = 512, // purification
+			Unk07 = 1024,
+			Bleed = 2048, // universal
+			Unk09 = 4096,
+			Unk10 = 8192,
+			Stun = 16384, // nope
+			Disease = 32768, // ??
+			Unk13 = 65536,
+			Decay = 131072, // ??
+			Weaken = 262144, // ??
+			Impotent = 524288, // ??
+			Division = 1048576, // ??
+			Unk18 = 2097152,
+			Combustion = 4194304, // ??
+			Unk20 = 8388608,
+			Unk21 = 16777216,
+			Unk22 = 33554432,
+			Unk23 = 67108864,
+			Unk24 = 134217728,
+			Unk25 = 268435456,
+			Unk26 = 536870912,
+			Unk27 = 1073741824,
+			Unk28 = 2147483648
 		}
 	}
 }

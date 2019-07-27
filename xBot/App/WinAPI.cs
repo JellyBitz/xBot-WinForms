@@ -40,6 +40,8 @@ namespace xBot
 		private static extern IntPtr FindWindowEx(IntPtr parentWindow, IntPtr previousChildWindow, string windowClass, string windowTitle);
 		[DllImport("user32.dll")]
 		private static extern IntPtr GetWindowThreadProcessId(IntPtr window, out int process);
+		[DllImport("user32.dll")]
+		public static extern int SetWindowText(IntPtr hWnd, string text);
 		#endregion
 		/// <summary>
 		/// Gets the current date in constant format like "[hh:mm:ss]".
@@ -63,7 +65,7 @@ namespace xBot
 		/// <summary>
 		/// Return the process connected to the port specified.
 		/// </summary>
-		public static Process getProcess(int Port,bool SelfExclusion = true)
+		public static Process GetProcess(int Port,bool SelfExclusion = true)
 		{
 			try
 			{

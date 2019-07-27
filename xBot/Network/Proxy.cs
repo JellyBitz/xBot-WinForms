@@ -42,9 +42,8 @@ namespace xBot.Network
 		/// </summary>
 		public bool LoginClientlessMode { get; }
 
-		private Thread ThreadWaitClientConnection;
-		private int _LocalReconnectionNumber;
-		private int _RemoteReconnectionNumber;
+		private Thread ThreadProxyReconnection;
+		private int CurrentAttemptReconnections;
 		private Thread PingHandler;
 		public bool isRunning { get{ return _running; } }
 		private bool _running;
@@ -118,20 +117,22 @@ namespace xBot.Network
 				Gateway.Local.Socket = SocketBinded;
 				try
 				{
+					// Loader setup
 					w.LogProcess("Executing EdxLoader...");
-					EdxLoader loader = new EdxLoader(Bot.Get.ClientPath);
+					EdxLoader loader = new EdxLoader(Info.Get.ClientPath);
 					loader.SetPatches(true, true, false);
 					loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
 
-					WaitClientConnection(180, ref _LocalReconnectionNumber, 10);
+					int dummy = 0;
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
 					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
+					ProxyReconnection(180, ref dummy, int.MaxValue); // Wait 3min. Infinity attempts
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
-					w.LogProcess("Connected");
-					ThreadWaitClientConnection.Abort();
-					_LocalReconnectionNumber = 0;
+					ProxyReconnectionStop();
+          w.LogProcess("Connected");
+
 					// Save client process
-					sro_client = WinAPI.getProcess(((IPEndPoint)Gateway.Local.Socket.RemoteEndPoint).Port);
+					sro_client = WinAPI.GetProcess(((IPEndPoint)Gateway.Local.Socket.RemoteEndPoint).Port);
 					sro_client.Exited += new EventHandler(this.Client_Closed);
 				}
 				catch{
@@ -144,12 +145,12 @@ namespace xBot.Network
 				w.Log("Connecting to Gateway server [" + Gateway.Host + ":" + Gateway.Port + "]");
 				w.LogProcess("Waiting server connection...");
 
-				WaitClientConnection(60, ref _RemoteReconnectionNumber, 10);
+				ProxyReconnection(60, ref CurrentAttemptReconnections, 10); // Wait 1min. max 10 attempts
 				Gateway.Remote.Socket.Connect(Gateway.Host, Gateway.Port);
+				ProxyReconnectionStop();
+				CurrentAttemptReconnections = 0;
 				w.Log("Connected");
 				w.LogProcess("Connected");
-				ThreadWaitClientConnection.Abort();
-				_RemoteReconnectionNumber = 0;
 			}
 			catch { return; }
 			try
@@ -214,14 +215,13 @@ namespace xBot.Network
 										PingHandler.Abort();
 
 										string[] ip_port = SocketBinded.LocalEndPoint.ToString().Split(':');
-										Thread agThread = new Thread((ThreadStart)delegate ()
+										Thread agThread = new Thread((ThreadStart)delegate
 										{
 											ThreadAgent(ip_port[0], int.Parse(ip_port[1]) + 1);
 										});
 										agThread.Priority = ThreadPriority.AboveNormal;
 										agThread.Start();
-
-										Thread.Sleep(100);
+										
 										// Send packet about client listeninig
 										Packet agPacket = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
 										agPacket.WriteUInt8(result);
@@ -267,6 +267,9 @@ namespace xBot.Network
 												w.Log("Login error [" + error + "]");
 												break;
 										}
+										// Client bugfix reset
+										Bot.Get.LoggedFromBot = false;
+
 										context.RelaySecurity.Send(packet);
 									}
 								}
@@ -360,21 +363,29 @@ namespace xBot.Network
 			if (!ClientlessMode)
 			{
 				Agent.Local.Socket = bindSocket(Host, Port);
-				w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
 				try
 				{
+
+					int dummy = 0;
+					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
+					ProxyReconnection(10, ref dummy, int.MaxValue);
 					Agent.Local.Socket = Agent.Local.Socket.Accept();
-					w.LogProcess();
+					ProxyReconnectionStop();
+					w.LogProcess("Connected");
 				}
 				catch { Reset(); return; }
 			}
 			Agent.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			try
 			{
+				int dummy = 0;
 				w.Log("Connecting to Agent server [" + Agent.Host + ":" + Agent.Port + "]");
 				w.LogProcess("Waiting server connection...");
+				ProxyReconnection(10, ref dummy, int.MaxValue);
 				Agent.Remote.Socket.Connect(Agent.Host, Agent.Port);
+				ProxyReconnectionStop();
 				w.Log("Connected");
+				w.LogProcess("Connected");
 			}
 			catch
 			{
@@ -534,33 +545,38 @@ namespace xBot.Network
 			return null;
 		}
 		/// <summary>
-		/// Wait a connection and try to reconnect the proxy if is necessary.
+		/// Wait the time specified and try to reconnect the proxy if is necessary.
 		/// </summary>
-		/// <param name="seconds">Maximum time for waiting</param>
-		/// <param name="nReconnection">Current connection counter</param>
-		/// <param name="maxReconection">Max connections to stop</param>
-		private void WaitClientConnection(int seconds,ref int nReconnection,int maxReconection)
+		/// <param name="Seconds">Maximum time for waiting</param>
+		/// <param name="CurrentAttempts">Current connection counter</param>
+		/// <param name="MaxAttempts">Max connections to stop</param>
+		private void ProxyReconnection(int Seconds,ref int CurrentAttempts,int MaxAttempts)
 		{
-			int refnReconnection = nReconnection;
-			int refmaxReconnection = maxReconection;
-			ThreadWaitClientConnection = (new Thread((ThreadStart)delegate {
+			int refCurrentAttempts = CurrentAttempts;
+			int refMaxAttempts = MaxAttempts;
+			ThreadProxyReconnection = (new Thread((ThreadStart)delegate {
 				while (true)
 				{
-					if (seconds == 0)
+					if (Seconds == 0)
 					{
-						if(refnReconnection < refmaxReconnection)
+						if(refCurrentAttempts < refMaxAttempts)
 						{
 							Reset();
 							Start();
-							refnReconnection++;
+							refCurrentAttempts++;
 						}
 						return;
 					}
 					Thread.Sleep(1000);
-					seconds--;
+					Seconds--;
 				}
 			}));
-			ThreadWaitClientConnection.Start();
+			ThreadProxyReconnection.Start();
+		}
+		private void ProxyReconnectionStop()
+		{
+			if (ThreadProxyReconnection != null)
+				ThreadProxyReconnection.Abort();
 		}
 		private void ThreadPing()
 		{
@@ -568,23 +584,23 @@ namespace xBot.Network
 			{
 				Thread.Sleep(6666);
 				// Keep only one connection alive at clientless mode
-				if (Agent != null)
+				if (Agent != null && Agent.Remote.Socket.Connected)
 				{
 					try
 					{
 						Packet p = new Packet(Agent.Opcode.GLOBAL_PING);
 						Agent.InjectToServer(p);
 					}
-					catch { /*Connection closed*/ _agent = null; }
+					catch { /*Connection closed*/}
 				}
-			  else if (Gateway != null)
+			  else if (Gateway != null && Gateway.Remote.Socket.Connected)
 				{
 					try
 					{
 						Packet p = new Packet(Gateway.Opcode.GLOBAL_PING);
 						Gateway.InjectToServer(p);
 					}
-					catch { /*Connection closed*/ _gateway = null; }
+					catch { /*Connection closed*/ }
 				}
 			}
 		}
@@ -594,16 +610,20 @@ namespace xBot.Network
 			{
 				if (Gateway.Local.Socket != null)
 				{
-					if (Gateway.Local.Socket.Connected)
+					try
 					{
-						Gateway.Local.Socket.Disconnect(true);
+						Gateway.Local.Socket.Close();
 					}
+					catch { }
 				}
 				if (Gateway.Remote.Socket != null)
 				{
-					Gateway.Remote.Socket.Close();
+					try
+					{
+						Gateway.Remote.Socket.Close();
+					}
+					catch { }
 				}
-				_gateway = null;
 			}
 		}
 		private void CloseAgent()
@@ -612,15 +632,20 @@ namespace xBot.Network
 			{
 				if (Agent.Local.Socket != null)
 				{
-					_agent.Local.Socket.Close();
-					_agent.Local.Socket = null;
+					try
+					{
+						Agent.Local.Socket.Close();
+					}
+					catch { }
 				}
 				if (Agent.Remote.Socket != null)
 				{
-					_agent.Remote.Socket.Close();
-					_agent.Remote.Socket = null;
+					try
+					{
+						Agent.Remote.Socket.Close();
+					}
+					catch { }
 				}
-				_agent = null;
 			}
 		}
 		private void Reset()
@@ -634,8 +659,7 @@ namespace xBot.Network
 		}
 		public void Stop()
 		{
-			if (ThreadWaitClientConnection != null)
-				ThreadWaitClientConnection.Abort();
+			ProxyReconnectionStop();
 			Reset();
 			Info.Get.Database.Close();
 			Window w = Window.Get;
@@ -659,9 +683,7 @@ namespace xBot.Network
 			});
 
 			if (Bot.Get.inGame)
-			{
 				Bot.Get._Event_Disconnected();
-			}
 		}
 		/// <summary>
 		/// Send packet to the server if exists connection (Gateway/Agent).
@@ -684,13 +706,13 @@ namespace xBot.Network
 		/// <param name="p">Packet to inject</param>
 		public void InjectToClient(Packet packet)
 		{
-			if (Agent != null && Agent.Remote != null && Agent.Remote.Socket.Connected)
+			if (Agent != null && Agent.Local != null && Agent.Local.Socket.Connected)
 			{
-				Agent.InjectToServer(packet);
+				Agent.InjectToClient(packet);
 			}
-			else if (Gateway != null && Gateway.Remote != null && Gateway.Remote.Socket.Connected)
+			else if (Gateway != null && Gateway.Local != null && Gateway.Local.Socket.Connected)
 			{
-				Gateway.InjectToServer(packet);
+				Gateway.InjectToClient(packet);
 			}
 		}
 	}

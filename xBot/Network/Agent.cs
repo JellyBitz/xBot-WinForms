@@ -29,6 +29,7 @@ namespace xBot.Network
 				CLIENT_PARTY_MATCH_REQUEST = 0x706C,
 				CLIENT_PARTY_MATCH_JOIN = 0x706D,
 				CLIENT_ENTITY_SELECTION = 0x7045,
+				CLIENT_INVENTORY_USE_ITEM = 0x704C,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -53,8 +54,8 @@ namespace xBot.Network
 				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
 				SERVER_ENVIROMENT_WHEATER_UPDATE = 0x3809,
 				SERVER_CHAT_UPDATE = 0x3026,
-				SERVER_UNIQUE_UPDATE = 0x300C,
-				SERVER_PLAYER_INVITATION_REQUEST = 0x3080,
+				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
+				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
 				SERVER_PARTY_INVITATION_RESPONSE = 0xB060,
 				SERVER_PARTY_DATA = 0x3065,
 				SERVER_PARTY_UPDATE = 0x3864,
@@ -147,7 +148,7 @@ namespace xBot.Network
 		/// <returns>True if the packet won't be sent to the server</returns>
 		private bool Local_PacketHandler(Packet packet)
 		{
-			if (packet.Opcode == Opcode.CLIENT_AUTH_REQUEST && Bot.Get.LoginFromBot)
+			if (packet.Opcode == Opcode.CLIENT_AUTH_REQUEST && Bot.Get.LoggedFromBot)
 			{
 				return true;
 			}
@@ -180,7 +181,7 @@ namespace xBot.Network
 		/// <returns>True if the packet will be ignored by the client</returns>
 		private bool Remote_PacketHandler(Packet packet)
 		{
-			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && Bot.Get.LoginFromBot)
+			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && Bot.Get.LoggedFromBot)
 			{
 				string service = packet.ReadAscii();
 				if (service == "AgentServer")
@@ -330,13 +331,13 @@ namespace xBot.Network
 			{
 				PacketParser.EnviromentWheaterUpdate(packet);
 			}
-			else if (packet.Opcode == Opcode.SERVER_UNIQUE_UPDATE)
+			else if (packet.Opcode == Opcode.SERVER_NOTICE_UNIQUE_UPDATE)
 			{
-				PacketParser.UniqueUpdate(packet);
+				PacketParser.NoticeUniqueUpdate(packet);
 			}
-			else if (packet.Opcode == Opcode.SERVER_PLAYER_INVITATION_REQUEST)
+			else if (packet.Opcode == Opcode.SERVER_PLAYER_PETITION_REQUEST)
 			{
-				PacketParser.PlayerInvitationRequest(packet);
+				PacketParser.PlayerPetitionRequest(packet);
 			}
 			else if (packet.Opcode == Opcode.SERVER_PARTY_DATA)
 			{
@@ -385,7 +386,7 @@ namespace xBot.Network
 		}
 		public void InjectToClient(Packet p)
 		{
-			Local.Security.Send(p);
+			this.Remote.RelaySecurity.Send(p);
 		}
 	}
 }

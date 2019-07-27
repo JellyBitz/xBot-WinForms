@@ -59,13 +59,13 @@ namespace xBot
 		private void InitializeFonts(Control c)
 		{
 			Fonts f = Fonts.Get;
-      for (int i = 0; i < c.Controls.Count; i++)
+			for (int i = 0; i < c.Controls.Count; i++)
 			{
 				if (c.Controls[i].GetType().Name == "xProgressBar")
 				{
 					xProgressBar pgb = (xProgressBar)c.Controls[i];
-					pgb.TextFont = Fonts.Get.Load(pgb.TextFont, (string)pgb.Tag);
-        }
+					pgb.DisplayFont = Fonts.Get.Load(pgb.DisplayFont, (string)pgb.Tag);
+				}
 				else
 				{
 					// Using fontName as TAG to be selected from WinForms
@@ -73,7 +73,7 @@ namespace xBot
 					InitializeFonts(c.Controls[i]);
 				}
 				c.Controls[i].Tag = null;
-      }
+			}
 		}
 		/// <summary>
 		/// Initialize tab pages and options selected on GUI by default.
@@ -145,7 +145,7 @@ namespace xBot
 			{
 				args[i] = args[i].ToLower();
 				// Check data
-        if (args[i].StartsWith("-silkroad="))
+				if (args[i].StartsWith("-silkroad="))
 				{
 					Login_cmbxSilkroad.Text = args[i].Substring(10);
 				}
@@ -182,7 +182,7 @@ namespace xBot
 				&& Login_tbxPassword.Text != ""
 				&& Login_cmbxServer.Tag != null)
 			{
-				Bot.Get.isAutoLogin = true;
+				Bot.Get.isAutoLoginMode = true;
 				Control_Click(Login_btnStart, null);
 			}
 		}
@@ -297,7 +297,10 @@ namespace xBot
 			{
 				if (c.Name.Contains(t))
 				{
-					c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
+					if(c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
+					}
 					break;
 				}
 			}
@@ -313,7 +316,10 @@ namespace xBot
 			{
 				if (c.Name.Contains(t))
 				{
-					c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
+					}
 					break;
 				}
 			}
@@ -382,7 +388,7 @@ namespace xBot
 			try
 			{
 				WinAPI.InvokeIfRequired(Character_rtbxMessageFilter, () => {
-					if (Character_rtbxMessageFilter.Lines.Length > 256)
+					if (Character_rtbxMessageFilter.Lines.Length > 2048)
 						Character_rtbxMessageFilter.Text = Character_rtbxMessageFilter.Text.Substring(Character_rtbxMessageFilter.Text.IndexOf("\n")) + WinAPI.getDate() + " " + message + Environment.NewLine;
 					else
 						Character_rtbxMessageFilter.Text += WinAPI.getDate() + " " + message + Environment.NewLine;
@@ -390,17 +396,22 @@ namespace xBot
 			}
 			catch { }
 		}
-		public void LogPacket(string packet)
+		public void LogPacket(string text)
 		{
-			try
+      try
 			{
-				WinAPI.InvokeIfRequired(Settings_rtbxPackets, () => {
+				StringBuilder sb = new StringBuilder();
+				if (Menu_rtbxPackets_AddTimestamp.Checked)
+					sb.Append(WinAPI.getDate());
+				sb.AppendLine(text);
+        WinAPI.InvokeIfRequired(Settings_rtbxPackets, () => {
 					// Keep 2048 lines as max capacity
 					if (Settings_rtbxPackets.Lines.Length > 2048)
-						Settings_rtbxPackets.Text = Settings_rtbxPackets.Text.Substring(Settings_rtbxPackets.Text.IndexOf("\n")) + WinAPI.getDate()+ packet + Environment.NewLine;
+						sb.Insert(0,Settings_rtbxPackets.Text.Substring(Settings_rtbxPackets.Text.IndexOf("\n")));
 					else
-						Settings_rtbxPackets.Text += WinAPI.getDate() + packet + Environment.NewLine;
-				});
+						sb.Insert(0,Settings_rtbxPackets.Text);
+					Settings_rtbxPackets.Text = sb.ToString();
+        });
 			}
 			catch { }
 		}
@@ -514,7 +525,7 @@ namespace xBot
 									TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 									return;
 								}
-								Bot.Get.ClientPath = (string)silkroad.Nodes["ClientPath"].Tag;
+								Info.Get.ClientPath = (string)silkroad.Nodes["ClientPath"].Tag;
 							}
 
 							// Add possibles Gateways/Ports
@@ -558,7 +569,7 @@ namespace xBot
 							Info.Get.Server = Login_cmbxServer.Text;
 							EnableControl(c, false);
 							LogProcess("Login...");
-							Bot.Get.LoginFromBot = true;
+							Bot.Get.LoggedFromBot = true;
 							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text,Convert.ToUInt16(Info.Get.ServerID));
 							break;
 						case "SELECT":
@@ -682,10 +693,10 @@ namespace xBot
 						foreach (SRObject obj in objects)
 							GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
-            GameInfo_tbxWheaterTime.Text = i.GetWheaterTime()+" "+ i.GetWheater() + " | " +i.GetMoonphase();
+						GameInfo_tbxWheaterTime.Text = i.GetWheaterTime()+" "+ i.GetWheater() + " | " +i.GetMoonphase();
 					}
-          break;
-        case "Settings_btnPK2Path":
+					break;
+				case "Settings_btnPK2Path":
 					if (!Directory.Exists("Data"))
 						Directory.CreateDirectory("Data");
 					if (!Database.Exists(Settings_tbxSilkroadName.Text) || Database.Exists(Settings_tbxSilkroadName.Text) && MessageBox.Show(this, "The database \"" + Settings_tbxSilkroadName.Text + "\" already exists, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -913,12 +924,17 @@ namespace xBot
 										return;
 									}
 								}
-								Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
-								if (Settings_cmbxInjectTo.SelectedIndex == 0)
-									Bot.Get.Proxy.InjectToServer(p);
-								else
-									Bot.Get.Proxy.InjectToClient(p);
 								LogPacket("Packet injected 0x" + opcode.ToString("X4"));
+
+								Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
+								if (Settings_cmbxInjectTo.SelectedIndex == 0) {
+									Bot.Get.Proxy.InjectToServer(p);
+								}
+								else
+								{
+									LogPacket(Utility.HexDump(p.GetBytes())+Environment.NewLine);
+									Bot.Get.Proxy.InjectToClient(p);
+								}
 							}
 							else
 							{
@@ -1025,20 +1041,27 @@ namespace xBot
 					break;
 				case "Settings_cbxInjectEncrypted":
 					if (Settings_cbxInjectEncrypted.Checked && Settings_cbxInjectMassive.Checked)
-					{
 						Settings_cbxInjectMassive.Checked = false;
-					}
 					break;
 				case "Settings_cbxInjectMassive":
 					if (Settings_cbxInjectMassive.Checked && Settings_cbxInjectEncrypted.Checked)
-					{
 						Settings_cbxInjectEncrypted.Checked = false;
-					}
 					break;
 				case "Character_cbxMessageExp":
-				case "Character_cbxMessagePick":
-				case "Character_cbxMessageUnique":
-				case "Party_rbnSetupExpFree":
+				case "Character_cbxMessageUniques":
+				case "Character_cbxMessageEvents":
+				case "Character_cbxMessagePicks":
+				case "Character_cbxUseHP":
+				case "Character_cbxUseHPGrain":
+				case "Character_cbxUseHPVigor":
+				case "Character_cbxUseMP":
+				case "Character_cbxUseMPGrain":
+				case "Character_cbxUseMPVigor":
+				case "Character_cbxUsePillUniversal":
+				case "Character_cbxUsePillPurification":
+				case "Character_cbxAcceptRess":
+        case "Character_cbxAcceptRessPartyOnly":
+        case "Party_rbnSetupExpFree":
 				case "Party_rbnSetupItemFree":
 				case "Party_cbxSetupMasterInvite":
 				case "Party_cbxAcceptOnlyPartySetup":
@@ -1047,18 +1070,50 @@ namespace xBot
 				case "Party_cbxAcceptLeaderList":
 				case "Party_cbxLeavePartyNoneLeader":
 				case "Party_cbxRefusePartys":
-          if (Bot.Get.inGame)
-					{
-						Settings.SaveCharacterSettings();
-					}
+					Settings.SaveCharacterSettings();
 					break;
-      }
+			}
 		}
 		private void TextBox_TextChanged(object sender, EventArgs e)
 		{
 			TextBox t = (TextBox)sender;
 			switch (t.Name)
 			{
+				case "Character_tbxUseHP":
+				case "Character_tbxUseHPVigor":
+				case "Character_tbxUseMP":
+				case "Character_tbxUseMPVigor":
+					// Percentage only
+					if (t.Text != "")
+					{
+						ushort value;
+						if (ushort.TryParse(t.Text,out value))
+						{
+							if (value > 100)
+							{
+								t.Text = "100"; // Max
+							}
+						}
+						else
+						{
+							string fixedText = FixTextRestriction(t.Text.Trim(), "[0-9]*");
+							if (fixedText != t.Text)
+							{
+								t.Text = fixedText;
+							}
+						}
+					}
+					else
+					{
+						t.Text = "0"; // Min
+					}
+					if (Bot.Get.inGame)
+					{
+						// Force check about potions right there
+						Bot.Get._Event_StateUpdated();
+					}
+					Settings.SaveCharacterSettings();
+					break;
 				case "Party_tbxJoinToNumber":
 					if (t.Text != "")
 					{
@@ -1182,7 +1237,7 @@ namespace xBot
 					{
 						Party_tbxPlayer.Text = Party_lstvMembers.SelectedItems[0].Text;
 						Control_Click(Party_btnAddPlayer, null);
-          }
+					}
 					break;
 				case "Menu_lstvMembers_AddToLeaderList":
 					if (Party_lstvMembers.SelectedItems.Count == 1)
@@ -1211,13 +1266,13 @@ namespace xBot
 						Settings.SaveBotSettings();
 					}
 					break;
-				case "Menu_rtbxPackets_scroll":
+				case "Menu_rtbxPackets_AutoScroll":
 					if (t.Checked)
 						Settings_rtbxPackets.TextChanged += new EventHandler(RichTextBox_TextChanged_AutoScroll);
 					else
 						Settings_rtbxPackets.TextChanged -= new EventHandler(RichTextBox_TextChanged_AutoScroll);
 					break;
-				case "Menu_rtbxPackets_clear":
+				case "Menu_rtbxPackets_Clear":
 					Settings_rtbxPackets.Clear();
 					break;
 				case "Menu_lstrSilkroads_remove":
@@ -1289,18 +1344,31 @@ namespace xBot
 		{
 			// 1000000 to 1.000.000
 			string Text = gold.ToString("#,0");
-			// Given respective color
-			int countDots = Text.Length - Text.Replace(".", "").Length;
-			Color ForeColor = Color.White;
-			switch (countDots)
+			int GoldDigits = gold.ToString().Length;
+			// Visual color
+			Color ForeColor = Color.White; // Default
+			if (GoldDigits > 4)
 			{
-				case 2:
-					ForeColor = Color.FromArgb(255,173,92);
-          break;
+				if (GoldDigits < 6)
+				{
+					ForeColor = Color.FromArgb(255, 250, 133);
+				}
+				else if (GoldDigits < 7)
+				{
+					ForeColor = Color.FromArgb(255, 211, 72);
+				}
+				else if (GoldDigits < 10)
+				{
+					ForeColor = Color.FromArgb(255, 173, 92);
+				}
+				else if (GoldDigits < 13)
+				{
+					
+				}
 			}
 			WinAPI.InvokeIfRequired(Character_lblGold, () => {
 				Character_lblGold.ForeColor = ForeColor;
-        Character_lblGold.Text = Text;
+				Character_lblGold.Text = Text;
 			});
 		}
 		public void Party_Clear()

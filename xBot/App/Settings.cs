@@ -6,12 +6,19 @@ using xBot.Game;
 namespace xBot
 {
 	public static class Settings{
+		/// <summary>
+		/// Avoid loading overload
+		/// </summary>
+		private static bool LoadingBotSettings = true;
 		private static readonly object BotSettingsLock = new object();
-		private static bool isLoading = true; // Avoid loading overload
+		/// <summary>
+		/// Avoid saving settings while is loading
+		/// </summary>
+		private static bool LoadingCharacterSettings;
 		private static readonly object CharacterSettingsLock = new object();
 		public static void SaveBotSettings()
 		{
-			if (!isLoading)
+			if (!LoadingBotSettings)
 			{
 				lock (BotSettingsLock)
 				{
@@ -107,13 +114,14 @@ namespace xBot
 			{
 				try
 				{
+					LoadingBotSettings = true;
 					LoadBotSettings(path);
-					isLoading = false;
+					LoadingBotSettings = false;
 				}
 				catch
 				{
-					isLoading = false;
-					Window.Get.Log("Error loading bot settings. A new one has been generated!");
+					LoadingBotSettings = false;
+					Window.Get.Log("Error loading bot settings.. using the settings partially loaded");
 					File.Move(path, path+".bkp");
 					SaveBotSettings();
 				}
@@ -123,6 +131,9 @@ namespace xBot
 				SaveBotSettings();
 			}
 		}
+		/// <summary>
+		/// Load bot settings if exists.
+		/// </summary>
 		private static void LoadBotSettings(string path)
 		{
 			lock (BotSettingsLock)
@@ -257,60 +268,88 @@ namespace xBot
 				#endregion
 			}
 		}
+		/// <summary>
+		/// Save the character settings if it's in game.
+		/// </summary>
 		public static void SaveCharacterSettings()
 		{
-			lock (CharacterSettingsLock)
+			if (!LoadingCharacterSettings && Bot.Get.inGame)
 			{
-				Window w = Window.Get;
+				lock (CharacterSettingsLock)
+				{
+					Window w = Window.Get;
 
-				// Generating nodes manually
-				JObject root = new JObject();
+					// Generating nodes manually
+					JObject root = new JObject();
 
-				#region (Character Tab)
-				JObject Character = new JObject();
-				root["Character"] = Character;
+					#region (Character Tab)
+					JObject Character = new JObject();
+					root["Character"] = Character;
 
-				JObject Basic = new JObject();
-				Character["Basic"] = Basic;
+					JObject Inf = new JObject();
+					Character["Info"] = Inf;
+					Inf["ShowExp"] = w.Character_cbxMessageExp.Checked;
+					Inf["ShowUniques"] = w.Character_cbxMessageUniques.Checked;
+					Inf["ShowEvents"] = w.Character_cbxMessageEvents.Checked;
+					Inf["ShowPicks"] = w.Character_cbxMessagePicks.Checked;
 
-				Basic["ShowExp"] = w.Character_cbxMessageExp.Checked;
-				Basic["ShowPicks"] = w.Character_cbxMessagePick.Checked;
-				Basic["ShowUniques"] = w.Character_cbxMessageUnique.Checked;
-				#endregion
+					JObject Potions = new JObject();
+					Character["Potions"] = Potions;
+					Potions["UseHP"] = w.Character_cbxUseHP.Checked;
+					Potions["UseHPPercent"] = w.Character_tbxUseHP.Text;
+					Potions["UseHPGrain"] = w.Character_cbxUseHPGrain.Checked;
+					Potions["UseHPVigor"] = w.Character_cbxUseHPVigor.Checked;
+					Potions["UseMP"] = w.Character_cbxUseMP.Checked;
+					Potions["UseMPPercent"] = w.Character_tbxUseMP.Text;
+					Potions["UseMPGrain"] = w.Character_cbxUseMPGrain.Checked;
+					Potions["UseMPVigor"] = w.Character_cbxUseMPVigor.Checked;
+					Potions["UseUniversalPills"] = w.Character_cbxUsePillUniversal.Checked;
+					Potions["UsePurificationPills"] = w.Character_cbxUsePillPurification.Checked;
 
-				#region (Party Tab)
-				JObject Party = new JObject();
-				root["Party"] = Party;
 
-				JObject Options = new JObject();
-				Party["Options"] = Options;
+					JObject Misc = new JObject();
+					Character["Misc"] = Misc;
+					Misc["AcceptRess"] = w.Character_cbxAcceptRess.Checked;
+					Misc["AcceptRessPartyOnly"] = w.Character_cbxAcceptRessPartyOnly.Checked;
+					#endregion
 
-				Options["ExpFree"] = w.Party_rbnSetupExpFree.Checked;
-				Options["ItemFree"] = w.Party_rbnSetupItemFree.Checked;
-				Options["OnlyMasterInvite"] = w.Party_cbxSetupMasterInvite.Checked;
-				Options["AcceptOnlyPartySetup"] = w.Party_cbxAcceptOnlyPartySetup.Checked;
-				Options["AcceptAll"] = w.Party_cbxAcceptAll.Checked;
-				Options["AcceptPlayerList"] = w.Party_cbxAcceptPlayerList.Checked;
-				Options["AcceptLeaderList"] = w.Party_cbxAcceptLeaderList.Checked;
-				Options["LeavePartyLeaderNotFound"] = w.Party_cbxLeavePartyNoneLeader.Checked;
-				Options["RefusePartys"] = w.Party_cbxRefusePartys.Checked;
+					#region (Party Tab)
+					JObject Party = new JObject();
+					root["Party"] = Party;
 
-				JArray players = new JArray();
-				foreach (ListViewItem item in w.Party_lstvPlayers.Items)
-          players.Add(item.Text);
-				Options["PlayerList"] = players;
-        JArray leaders = new JArray();
-				foreach (ListViewItem item in w.Party_lstvLeaders.Items)
-					leaders.Add(item.Text);
-				Options["LeaderList"] = leaders;
+					JObject Options = new JObject();
+					Party["Options"] = Options;
 
-				#endregion
+					Options["ExpFree"] = w.Party_rbnSetupExpFree.Checked;
+					Options["ItemFree"] = w.Party_rbnSetupItemFree.Checked;
+					Options["OnlyMasterInvite"] = w.Party_cbxSetupMasterInvite.Checked;
+					Options["AcceptOnlyPartySetup"] = w.Party_cbxAcceptOnlyPartySetup.Checked;
+					Options["AcceptAll"] = w.Party_cbxAcceptAll.Checked;
+					Options["AcceptPlayerList"] = w.Party_cbxAcceptPlayerList.Checked;
+					Options["AcceptLeaderList"] = w.Party_cbxAcceptLeaderList.Checked;
+					Options["LeavePartyLeaderNotFound"] = w.Party_cbxLeavePartyNoneLeader.Checked;
+					Options["RefusePartys"] = w.Party_cbxRefusePartys.Checked;
 
-				// Saving
-				Info i = Info.Get;
-				File.WriteAllText("Config\\" + i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json", root.ToString());
+					JArray players = new JArray();
+					foreach (ListViewItem item in w.Party_lstvPlayers.Items)
+						players.Add(item.Text);
+					Options["PlayerList"] = players;
+					JArray leaders = new JArray();
+					foreach (ListViewItem item in w.Party_lstvLeaders.Items)
+						leaders.Add(item.Text);
+					Options["LeaderList"] = leaders;
+
+					#endregion
+
+					// Saving
+					Info i = Info.Get;
+					File.WriteAllText("Config\\" + i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json", root.ToString());
+				}
 			}
 		}
+		/// <summary>
+		/// Load character settings if exists or load default if it's required.
+		/// </summary>
 		public static void LoadCharacterSettings()
 		{
 			// Check folder
@@ -322,18 +361,23 @@ namespace xBot
 			// Check config path
 			string cfgPath = "Config\\"+i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json";
 			WinAPI.InvokeIfRequired(w,()=> {
-				if (File.Exists(cfgPath))
-				{
-					LoadCharacterSettings(cfgPath);
+				try {
+					LoadingCharacterSettings = true;
+          if (File.Exists(cfgPath))
+					{
+						LoadCharacterSettings(cfgPath);
+					}
+					else if (w.Settings_cbxLoadDefaultConfigs.Checked && File.Exists("Config\\Default.json"))
+					{
+						LoadCharacterSettings("Config\\Default.json");
+					}
+					LoadingCharacterSettings = false;
 				}
-				else if (w.Settings_cbxLoadDefaultConfigs.Checked && File.Exists("Config\\default.json"))
+				catch
 				{
-					LoadCharacterSettings("Config\\default.json");
-				}
-				else
-				{
-					// TO DO :
-					// RESET GUI TO SAVE CLEAN CHARACTER SETTINGS
+					LoadingCharacterSettings = false;
+					w.Log("Error loading bot settings.. using the settings partially loaded");
+					File.Move(cfgPath, cfgPath + ".bkp");
 					SaveCharacterSettings();
 				}
 			});
@@ -342,34 +386,125 @@ namespace xBot
 		{
 			lock (CharacterSettingsLock)
 			{
+				LoadingCharacterSettings = true;
 				JObject root = JObject.Parse(File.ReadAllText(path));
 
 				Window w = Window.Get;
-
 				#region (Character Tab)
 				JObject Character = (JObject)root["Character"];
 
-				JObject Basic = (JObject)Character["Basic"];
-				w.Character_cbxMessageExp.Checked = (bool)Basic["ShowExp"];
-				w.Character_cbxMessagePick.Checked = (bool)Basic["ShowPicks"];
-				w.Character_cbxMessageUnique.Checked = (bool)Basic["ShowUniques"];
+				JObject Inf = (JObject)Character["Info"];
+				if (Inf.ContainsKey("ShowExp"))
+					w.Character_cbxMessageExp.Checked = (bool)Inf["ShowExp"];
+				else
+					w.Character_cbxMessageExp.Checked = false;
+				if (Inf.ContainsKey("ShowUniques"))
+					w.Character_cbxMessageUniques.Checked = (bool)Inf["ShowUniques"];
+				else
+					w.Character_cbxMessageUniques.Checked = false;
+				if (Inf.ContainsKey("ShowEvents"))
+					w.Character_cbxMessageEvents.Checked = (bool)Inf["ShowEvents"];
+				else
+					w.Character_cbxMessageEvents.Checked = false;
+				if (Inf.ContainsKey("ShowPicks"))
+					w.Character_cbxMessagePicks.Checked = (bool)Inf["ShowPicks"];
+				else
+					w.Character_cbxMessagePicks.Checked = false;
+
+				JObject Potions = (JObject)Character["Potions"];
+				if (Potions.ContainsKey("UseHP"))
+					w.Character_cbxUseHP.Checked = (bool)Potions["UseHP"];
+				else
+					w.Character_cbxUseHP.Checked = false;
+				if (Potions.ContainsKey("UseHPPercent"))
+					w.Character_tbxUseHP.Text = (string)Potions["UseHPPercent"];
+				else
+					w.Character_tbxUseHP.Text = "50";
+        if (Potions.ContainsKey("UseHPGrain"))
+					w.Character_cbxUseHPGrain.Checked = (bool)Potions["UseHPGrain"];
+				else
+					w.Character_cbxUseHPGrain.Checked = false;
+				if (Potions.ContainsKey("UseHPVigor"))
+					w.Character_cbxUseHPVigor.Checked = (bool)Potions["UseHPVigor"];
+				else
+					w.Character_cbxUseHPVigor.Checked = false;
+				if (Potions.ContainsKey("UseMP"))
+					w.Character_cbxUseMP.Checked = (bool)Potions["UseMP"];
+				else
+					w.Character_cbxUseHPVigor.Checked = false;
+				if (Potions.ContainsKey("UseMPPercent"))
+					w.Character_tbxUseMP.Text = (string)Potions["UseMPPercent"];
+				else
+					w.Character_tbxUseMP.Text = "50";
+				if (Potions.ContainsKey("UseMPGrain"))
+					w.Character_cbxUseMPGrain.Checked = (bool)Potions["UseMPGrain"];
+				else
+					w.Character_cbxUseMPGrain.Checked = false;
+				if (Potions.ContainsKey("UseMPVigor"))
+					w.Character_cbxUseMPVigor.Checked = (bool)Potions["UseMPVigor"];
+				else
+					w.Character_cbxUseMPVigor.Checked = false;
+				if (Potions.ContainsKey("UseUniversalPills"))
+					w.Character_cbxUsePillUniversal.Checked = (bool)Potions["UseUniversalPills"];
+				else
+					w.Character_cbxUsePillUniversal.Checked = false;
+				if (Potions.ContainsKey("UsePurificationPills"))
+					w.Character_cbxUsePillPurification.Checked = (bool)Potions["UsePurificationPills"];
+				else
+					w.Character_cbxUsePillPurification.Checked = false;
+
+
+				JObject Misc = (JObject)Character["Misc"];
+				if (Misc.ContainsKey("AcceptRess"))
+					w.Character_cbxAcceptRess.Checked = (bool)Misc["AcceptRess"];
+				else
+					w.Character_cbxAcceptRess.Checked = false;
+				if (Misc.ContainsKey("AcceptRessPartyOnly"))
+					w.Character_cbxAcceptRessPartyOnly.Checked = (bool)Misc["AcceptRessPartyOnly"];
+				else
+					w.Character_cbxAcceptRessPartyOnly.Checked = false;
 				#endregion
 
 				#region (Party Tab)
 				JObject Party = (JObject)root["Party"];
 				
 				JObject Options = (JObject)Party["Options"];
-				w.Party_rbnSetupExpFree.Checked = (bool)Options["ExpFree"];
-				w.Party_rbnSetupItemFree.Checked = (bool)Options["ItemFree"];
-				w.Party_cbxSetupMasterInvite.Checked = (bool)Options["OnlyMasterInvite"];
-				w.Party_cbxAcceptOnlyPartySetup.Checked = (bool)Options["AcceptOnlyPartySetup"];
-				w.Party_cbxAcceptAll.Checked = (bool)Options["AcceptAll"];
-				w.Party_cbxAcceptPlayerList.Checked = (bool)Options["AcceptPlayerList"];
-				w.Party_cbxAcceptLeaderList.Checked = (bool)Options["AcceptLeaderList"];
-				if(Options.ContainsKey("LeavePartyLeaderNotFound"))
+				if (Options.ContainsKey("ExpFree"))
+					w.Party_rbnSetupExpFree.Checked = (bool)Options["ExpFree"];
+				else
+					w.Party_rbnSetupExpFree.Checked = false;
+        if (Options.ContainsKey("ItemFree"))
+					w.Party_rbnSetupItemFree.Checked = (bool)Options["ItemFree"];
+				else
+					w.Party_rbnSetupItemFree.Checked = false;
+				if (Options.ContainsKey("OnlyMasterInvite"))
+					w.Party_cbxSetupMasterInvite.Checked = (bool)Options["OnlyMasterInvite"];
+				else
+					w.Party_cbxSetupMasterInvite.Checked = false;
+				if (Options.ContainsKey("AcceptOnlyPartySetup"))
+					w.Party_cbxAcceptOnlyPartySetup.Checked = (bool)Options["AcceptOnlyPartySetup"];
+				else
+					w.Party_cbxAcceptOnlyPartySetup.Checked = false;
+				if (Options.ContainsKey("AcceptAll"))
+					w.Party_cbxAcceptAll.Checked = (bool)Options["AcceptAll"];
+				else
+					w.Party_cbxAcceptAll.Checked = false;
+				if (Options.ContainsKey("AcceptPlayerList"))
+					w.Party_cbxAcceptPlayerList.Checked = (bool)Options["AcceptPlayerList"];
+				else
+					w.Party_cbxAcceptPlayerList.Checked = false;
+				if (Options.ContainsKey("AcceptLeaderList"))
+					w.Party_cbxAcceptLeaderList.Checked = (bool)Options["AcceptLeaderList"];
+				else
+					w.Party_cbxAcceptLeaderList.Checked = false;
+				if (Options.ContainsKey("LeavePartyLeaderNotFound"))
 					w.Party_cbxLeavePartyNoneLeader.Checked = (bool)Options["LeavePartyLeaderNotFound"];
+				else
+					w.Party_cbxLeavePartyNoneLeader.Checked = false;
 				if (Options.ContainsKey("RefusePartys"))
 					w.Party_cbxRefusePartys.Checked = (bool)Options["RefusePartys"];
+				else
+					w.Party_cbxRefusePartys.Checked = false;
 
 				foreach (JToken player in (JArray)Options["PlayerList"])
 				{
@@ -384,6 +519,7 @@ namespace xBot
 					w.Party_lstvLeaders.Items.Add(item);
 				}
 				#endregion
+				LoadingCharacterSettings = false;
 			}
 		}
 	}

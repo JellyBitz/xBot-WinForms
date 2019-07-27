@@ -3,6 +3,7 @@ using SecurityAPI;
 using System.Windows.Forms;
 using System.Drawing;
 using xBot.Network;
+using System.Collections.Generic;
 
 namespace xBot.Game
 {
@@ -13,7 +14,6 @@ namespace xBot.Game
 		public static void ShardListResponse(Packet packet)
 		{
 			Window w = Window.Get;
-			Info i = Info.Get;
 			WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
 				w.Login_lstvServers.Items.Clear();
 				//Window.get.Login_lstvServers.Groups.Clear();
@@ -29,6 +29,7 @@ namespace xBot.Game
 				//	Window.get.Login_lstvServers.Groups.Add(farmID.ToString(), farmName);
 				//});
 			}
+			Info i = Info.Get;
 			i.ServerID = "";
 			while (packet.ReadByte() == 1)
 			{
@@ -53,9 +54,9 @@ namespace xBot.Game
 					WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
 						w.Login_cmbxServer.Items.Add(serverName);
 						// Select Server if is AutoLogin
-						if (Bot.Get.isAutoLogin
+						if (Bot.Get.isAutoLoginMode
 						&& w.Login_cmbxServer.Tag != null
-						&& ((string)w.Login_cmbxServer.Tag).ToLower().Contains(serverName.ToLower()))
+						&& serverName.Equals((string)w.Login_cmbxServer.Tag, StringComparison.OrdinalIgnoreCase))
 						{
 							w.Login_cmbxServer.Text = serverName;
 							i.ServerID = serverID.ToString();
@@ -64,7 +65,8 @@ namespace xBot.Game
 				}
 			}
 			// Unlock button
-			if (w.Login_btnStart.Text == "STOP" && Bot.Get.Proxy.ClientlessMode)
+			if (w.Login_btnStart.Text == "STOP" && Bot.Get.Proxy.ClientlessMode
+				|| Bot.Get.isAutoLoginMode)
 			{
 				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 					w.Login_btnStart.Text = "LOGIN";
@@ -73,7 +75,7 @@ namespace xBot.Game
 			w.LogProcess("Server selection");
 
 			// AutoLogin
-			if (Bot.Get.isAutoLogin) {
+			if (Bot.Get.isAutoLoginMode) {
 				// Server found
 				if (i.ServerID != "") {
 					WinAPI.InvokeIfRequired(w, () => {
@@ -207,7 +209,7 @@ namespace xBot.Game
 								WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
 									w.Login_cmbxCharacter.Items.Add(l.Name);
 									// Select Charname if AutoLogin is activated
-									if (b.isAutoLogin
+									if (b.isAutoLoginMode
 									&& w.Login_cmbxCharacter.Tag != null
 									&& ((string)w.Login_cmbxCharacter.Tag).ToLower() == l.Name.ToLower())
 									{
@@ -231,7 +233,7 @@ namespace xBot.Game
 						w.LogProcess("Character selection");
 
 						// AutoLogin
-						if (b.isAutoLogin)
+						if (b.isAutoLoginMode)
 						{
 							WinAPI.InvokeIfRequired(w, () => {
 								if (w.Login_cmbxCharacter.Text != "")
@@ -705,26 +707,26 @@ namespace xBot.Game
 
 			#region (Character)
 			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
-				w.Character_pgbHP.Maximum = (int)((uint)character[SRAttribute.HPMax]);
-				w.Character_pgbHP.Value = w.Character_pgbHP.Maximum;
+				w.Character_pgbHP.ValueMaximum = (uint)character[SRAttribute.HPMax];
+				w.Character_pgbHP.Value = w.Character_pgbHP.ValueMaximum;
 			});
 			WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-				w.Character_pgbMP.Maximum = (int)((uint)character[SRAttribute.MPMax]);
-				w.Character_pgbMP.Value = w.Character_pgbMP.Maximum;
+				w.Character_pgbMP.ValueMaximum = (uint)character[SRAttribute.MPMax];
+				w.Character_pgbMP.Value = w.Character_pgbMP.ValueMaximum;
 			});
 			WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
 				w.Character_lblLevel.Text = "Lv. " + character[SRAttribute.Level];
 			});
 			WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
-				w.Character_pgbExp.Maximum = (int)((ulong)character[SRAttribute.ExpMax]);
-				w.Character_pgbExp.Value = (int)((ulong)character[SRAttribute.Exp]);
+				w.Character_pgbExp.ValueMaximum = (ulong)character[SRAttribute.ExpMax];
+				w.Character_pgbExp.Value = (ulong)character[SRAttribute.Exp];
 			});
 			WinAPI.InvokeIfRequired(w.Character_lblJobLevel, () => {
 				w.Character_lblJobLevel.Text = "Job Lv. " + character[SRAttribute.JobLevel];
 			});
 			WinAPI.InvokeIfRequired(w.Character_pgbJobExp, () => {
-				w.Character_pgbJobExp.Maximum = (int)((uint)character[SRAttribute.JobExpMax]);
-				w.Character_pgbJobExp.Value = (int)((uint)character[SRAttribute.JobExp]);
+				w.Character_pgbJobExp.ValueMaximum = (uint)character[SRAttribute.JobExpMax];
+				w.Character_pgbJobExp.Value = (uint)character[SRAttribute.JobExp];
 			});
 			w.SetSROGold((ulong)character[SRAttribute.Gold]);
 			WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
@@ -776,23 +778,23 @@ namespace xBot.Game
 			// Update GUI & game logic
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
-				w.Character_pgbHP.Maximum = (int)((uint)i.Character[SRAttribute.HPMax]);
+				w.Character_pgbHP.ValueMaximum = (uint)i.Character[SRAttribute.HPMax];
 			});
 			WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-				w.Character_pgbMP.Maximum = (int)((uint)i.Character[SRAttribute.MPMax]);
+				w.Character_pgbMP.ValueMaximum = (uint)i.Character[SRAttribute.MPMax];
 			});
 			if ((uint)i.Character[SRAttribute.HP] > (uint)i.Character[SRAttribute.HPMax])
 			{
 				i.Character[SRAttribute.HP] = i.Character[SRAttribute.HPMax];
 				WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
-					w.Character_pgbHP.Value = (int)((uint)i.Character[SRAttribute.HP]);
+					w.Character_pgbHP.Value = (uint)i.Character[SRAttribute.HP];
 				});
 			}
 			if ((uint)i.Character[SRAttribute.MP] > (uint)i.Character[SRAttribute.MPMax])
 			{
 				i.Character[SRAttribute.MP] = i.Character[SRAttribute.MPMax];
 				WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-					w.Character_pgbMP.Value = (int)((uint)i.Character[SRAttribute.MP]);
+					w.Character_pgbMP.Value = (uint)i.Character[SRAttribute.MP];
 				});
 			}
 			WinAPI.InvokeIfRequired(w.Character_lblSTR, () => {
@@ -845,7 +847,7 @@ namespace xBot.Game
 				// Update new ExpMax
 				i.Character[SRAttribute.ExpMax] = i.GetExpMax((byte)i.Character[SRAttribute.Level]);
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
-					w.Character_pgbExp.Maximum = (int)((ulong)i.Character[SRAttribute.ExpMax]);
+					w.Character_pgbExp.ValueMaximum = (ulong)i.Character[SRAttribute.ExpMax];
 				});
 				// Update max. level reached
 				if ((byte)i.Character[SRAttribute.Level] > (byte)i.Character[SRAttribute.LevelMax])
@@ -872,7 +874,7 @@ namespace xBot.Game
 				// Update new ExpMax
 				i.Character[SRAttribute.ExpMax] = i.GetExpMax((byte)i.Character[SRAttribute.Level]);
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
-					w.Character_pgbExp.Maximum = (int)((ulong)i.Character[SRAttribute.ExpMax]);
+					w.Character_pgbExp.ValueMaximum = (ulong)i.Character[SRAttribute.ExpMax];
 				});
 				CalculateExp(Exp + ExpReceived, (long)((ulong)i.Character[SRAttribute.ExpMax]), (long)((ulong)i.Character[SRAttribute.ExpMax]), (byte)(level - 1));
 			}
@@ -881,7 +883,7 @@ namespace xBot.Game
 				// Increase/Decrease Exp
 				i.Character[SRAttribute.Exp] = (ulong)(Exp + ExpReceived);
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
-					w.Character_pgbExp.Value = (int)((ulong)i.Character[SRAttribute.Exp]);
+					w.Character_pgbExp.Value = (ulong)i.Character[SRAttribute.Exp];
 				});
 			}
 		}
@@ -1034,6 +1036,7 @@ namespace xBot.Game
 						entity[SRAttribute.MovementOffsetZ] = packet.ReadInt();
 						entity[SRAttribute.MovementOffsetY] = packet.ReadInt();
 					}
+					entity[SRAttribute.MovementDate] = DateTime.Now;
 				}
 				else
 				{
@@ -1068,7 +1071,7 @@ namespace xBot.Game
 					entity[SRAttribute.unkByte03] = packet.ReadByte();
 					entity[SRAttribute.unkByte04] = packet.ReadByte();
 					entity[SRAttribute.MobType] = (Types.Mob)packet.ReadByte();
-        }
+				}
 				else if (entity.ID2 == 1)
 				{
 					// CHARACTER
@@ -1253,7 +1256,7 @@ namespace xBot.Game
 				SRObject Skill = new SRObject(packet.ReadUInt(), SRObject.Type.Skill);
 				entity[SRAttribute.Skill] = Skill;
 
-        entity[SRAttribute.UniqueID] = packet.ReadUInt();
+				entity[SRAttribute.UniqueID] = packet.ReadUInt();
 				entity[SRAttribute.Region] = packet.ReadUShort();
 				entity[SRAttribute.X] = (int)packet.ReadSingle();
 				entity[SRAttribute.Z] = (int)packet.ReadSingle();
@@ -1320,6 +1323,7 @@ namespace xBot.Game
 				packet.ReadUShort(); // ???
 			}
 			// End of Packet
+			entity[SRAttribute.MovementDate] = DateTime.Now;
 
 			// Keep the track of the entity
 			SRObject e = Info.Get.GetEntity((uint)entity[SRAttribute.UniqueID]);
@@ -1373,10 +1377,10 @@ namespace xBot.Game
 				case Types.Chat.NPC:
 					uint playerID = packet.ReadUInt();
 					SRObject p = Info.Get.GetEntity(playerID);
-					if (p != null && p.Contains(SRAttribute.Name))
+					if (p != null)
 						player = (string)p[SRAttribute.Name];
 					else
-						player = "[UID:" + playerID + "]";
+						player = "[UID:" + playerID + "]"; // Just in case
 					break;
 				case Types.Chat.Private:
 				case Types.Chat.Party:
@@ -1450,7 +1454,7 @@ namespace xBot.Game
 			//uint uniqueID = packet.ReadUInt();
 			//// End of Packet
 
-			// Possibly used later when is on party for kicking players
+			// "Possibly" used later when is on party for kicking players
 		}
 		public static void EntityStateUpdate(Packet packet)
 		{
@@ -1464,8 +1468,8 @@ namespace xBot.Game
 				return;
 
 			Window w = Window.Get;
-			Types.EntityStateUpdate barType = (Types.EntityStateUpdate)packet.ReadByte();
-			switch (barType)
+			Types.EntityStateUpdate UpdateType = (Types.EntityStateUpdate)packet.ReadByte();
+			switch (UpdateType)
 			{
 				case Types.EntityStateUpdate.HP:
 					entity[SRAttribute.HP] = packet.ReadUInt();
@@ -1479,27 +1483,39 @@ namespace xBot.Game
 					entity[SRAttribute.MP] = packet.ReadUInt();
 					break;
 				case Types.EntityStateUpdate.BadStatus:
-					entity[SRAttribute.hasBadStatus] = packet.ReadByte() == 1;
+					entity[SRAttribute.BadStatusType] = (Types.BadStatus)packet.ReadUInt();
+					w.LogMessageFilter("BadStatus:"+entity[SRAttribute.BadStatusType]+"|"+ entity[SRAttribute.UniqueID]);
 					break;
 			}
 			// End of Packet
 
+			// Update dead/alive state
+			if (entity.Contains(SRAttribute.HP) && (uint)entity[SRAttribute.HP] == 0)
+			{
+				entity[SRAttribute.LifeState] = Types.LifeState.Dead;
+			}
+			else if ((Types.LifeState)entity[SRAttribute.LifeState] != Types.LifeState.Alive)
+			{
+				entity[SRAttribute.LifeState] = Types.LifeState.Alive;
+			}
+
+			// Update GUI
 			if (entity == i.Character)
 			{
-				if (barType == Types.EntityStateUpdate.HP || barType == Types.EntityStateUpdate.HPMP)
+				if (UpdateType == Types.EntityStateUpdate.HP || UpdateType == Types.EntityStateUpdate.HPMP)
 				{
 					WinAPI.InvokeIfRequired(w.Character_pgbHP, () =>{
-						w.Character_pgbHP.Value = (int)((uint)entity[SRAttribute.HP]);
+						w.Character_pgbHP.Value = (uint)entity[SRAttribute.HP];
 					});
-					Bot.Get.Event_StateUpdated();
 				}
-				if (barType == Types.EntityStateUpdate.MP || barType == Types.EntityStateUpdate.HPMP)
+				if (UpdateType == Types.EntityStateUpdate.MP || UpdateType == Types.EntityStateUpdate.HPMP)
 				{
 					WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-						w.Character_pgbMP.Value = (int)((uint)entity[SRAttribute.MP]);
+						w.Character_pgbMP.Value = (uint)entity[SRAttribute.MP];
 					});
-					Bot.Get.Event_StateUpdated();
 				}
+				// Generating bot event to keep this method clean
+				Bot.Get._Event_StateUpdated();
 			}
 		}
 		public static void EnviromentWheaterUpdate(Packet packet)
@@ -1508,7 +1524,7 @@ namespace xBot.Game
 			i.WheaterType = packet.ReadByte();
 			i.WheaterIntensity = packet.ReadByte();
 		}
-		public static void UniqueUpdate(Packet packet)
+		public static void NoticeUniqueUpdate(Packet packet)
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
@@ -1517,7 +1533,7 @@ namespace xBot.Game
 			switch (type)
 			{
 				case 5:
-					if (w.Character_cbxMessageUnique.Checked)
+					if (w.Character_cbxMessageUniques.Checked)
 					{
 						byte unkByte01 = packet.ReadByte();
 						uint modelID = packet.ReadUInt();
@@ -1527,7 +1543,7 @@ namespace xBot.Game
 					}
 					break;
 				case 6:
-					if (w.Character_cbxMessageUnique.Checked)
+					if (w.Character_cbxMessageUniques.Checked)
 					{
 						byte unkByte01 = packet.ReadByte();
 						uint modelID = packet.ReadUInt();
@@ -1539,24 +1555,27 @@ namespace xBot.Game
 					break;
 			}
 		}
-		public static void PlayerInvitationRequest(Packet packet)
+		public static void PlayerPetitionRequest(Packet packet)
 		{
 			byte type = packet.ReadByte();
 			uint uniqueID = packet.ReadUInt32();
-			switch ((Types.PlayerInvitation)type)
+			switch ((Types.PlayerPetition)type)
 			{
-				case Types.PlayerInvitation.PartyCreation: // Party - Not created yet
-				case Types.PlayerInvitation.PartyInvitation: // Party
+				case Types.PlayerPetition.PartyCreation:
+				case Types.PlayerPetition.PartyInvitation: 
 					byte partySetupFlags = packet.ReadByte();
 					Bot.Get.Event_PartyInvitation(uniqueID, partySetupFlags);
 					break;
-				case Types.PlayerInvitation.GuildInvitation: // Guild - Not confirmed
+				case Types.PlayerPetition.Resurrection:
+					Bot.Get.Event_Resurrection(uniqueID);
+					break;
+				case Types.PlayerPetition.GuildInvitation:
 
 					break;
-				case Types.PlayerInvitation.UnionInvitation: // Union - Not confirmed
+				case Types.PlayerPetition.UnionInvitation:
 
 					break;
-				case Types.PlayerInvitation.AcademyInvitation: // Academy - Not confirmed
+				case Types.PlayerPetition.AcademyInvitation:
 
 					break;
 			}
@@ -1569,14 +1588,13 @@ namespace xBot.Game
 			byte partySetupType = packet.ReadByte();
 			byte playerCount = packet.ReadByte();
 			for (int j = 0; j < playerCount; j++)
-			{
 				PartyAddPlayer(packet);
-			}
-			
+
 			// Party Setup to boolean
-			bool ExpShared =  Types.HasFlag(partySetupType, Types.PartySetup.ExpShared);
-			bool ItemShared = Types.HasFlag(partySetupType, Types.PartySetup.ItemShared);
-			bool AnyoneCanInvite = Types.HasFlag(partySetupType, Types.PartySetup.AnyoneCanInvite);
+			Types.PartySetup partySetupFlags = (Types.PartySetup)partySetupType;
+			bool ExpShared = partySetupFlags.HasFlag(Types.PartySetup.ExpShared);
+			bool ItemShared = partySetupFlags.HasFlag(Types.PartySetup.ItemShared);
+			bool AnyoneCanInvite = partySetupFlags.HasFlag(Types.PartySetup.AnyoneCanInvite);
 
 			// Update GUI with current party setup
 			Window w = Window.Get;
@@ -1589,7 +1607,7 @@ namespace xBot.Game
 				w.ToolTips.SetToolTip(w.Party_lblCurrentSetup, ((Types.PartyPurpose)partyPurposeType).ToString());
 			});
 
-			// Generating Bot Event
+			// Event hook
 			Bot.Get.Event_PartyJoined(partySetupType,partyPurposeType);
 		}
 		private static void PartyAddPlayer(Packet packet)
@@ -1601,7 +1619,7 @@ namespace xBot.Game
 			player.Load(packet.ReadUInt(), SRObject.Type.Model);
 			player[SRAttribute.Name] = name;
 			player[SRAttribute.Level] = packet.ReadByte();
-			player[SRAttribute.unkByte02] = packet.ReadByte();
+			player[SRAttribute.HPMP] = packet.ReadByte();
 			player[SRAttribute.Region] = packet.ReadUShort();
 			if (player.inDungeon((ushort)player[SRAttribute.Region]))
 			{
@@ -1640,7 +1658,15 @@ namespace xBot.Game
 			item.Name = player[SRAttribute.ID].ToString();
 			item.SubItems.Add((string)player[SRAttribute.GuildName]);
 			item.SubItems.Add(player[SRAttribute.Level].ToString());
-			item.SubItems.Add("");
+			if (i.Charname.Equals(name))
+			{
+				item.SubItems.Add("- - -");
+			}
+			else
+			{
+				byte HPMP = (byte)player[SRAttribute.HPMP];
+				item.SubItems.Add(string.Format("{0}% / {1}%", (HPMP & 15) * 10, (HPMP >> 4) * 10));
+			}
 			item.SubItems.Add(i.GetRegion((ushort)player[SRAttribute.Region]));
 
 			Window w = Window.Get;
@@ -1656,28 +1682,26 @@ namespace xBot.Game
 			byte type = packet.ReadByte();
 
 			uint memberID;
-			switch ((Types.PartyUpdate)type)
+			SRObject player;
+			switch (type)
 			{
-				case Types.PartyUpdate.Dismissed: // No members left on party
+				case 1: // Dismissed
 					ushort unkUShort = packet.ReadUShort();
-					// Clear GUI
-					w.Party_Clear();
 					// Event hook
 					Bot.Get._Event_PartyLeaved();
 					break;
-				case Types.PartyUpdate.MemberJoined:
+				case 2: // Member joined
 					PartyAddPlayer(packet);
 					break;
-				case Types.PartyUpdate.MemberLeave:
+				case 3: // Member leaved
 					memberID = packet.ReadUInt();
 					byte reason = packet.ReadByte();
-					
-					SRObject player = i.GetPartyMember(memberID);
+
+					player = i.GetPartyMember(memberID);
 					if ((string)player[SRAttribute.Name] == i.Charname)
 					{
-						w.Party_Clear();
 						// Event hook
-						Bot.Get.Event_PartyLeaved();
+						Bot.Get._Event_PartyLeaved();
 					}
 					else
 					{
@@ -1687,23 +1711,25 @@ namespace xBot.Game
 						});
 					}
 					break;
-				case Types.PartyUpdate.MemberUpdate:
+				case 6: // Member update
 					memberID = packet.ReadUInt();
+					player = i.GetPartyMember(memberID);
+
 					byte updateType = packet.ReadByte();
 					switch (updateType)
 					{
 						case 4: // HP & MP
 							byte HPMP = packet.ReadByte();
-							int HP = (HPMP & 15) * 100 / 0xB; // Converted to percentage
-							int MP = (HPMP >> 4) * 100 / 0xA; // Converted to percentage
-
+							player[SRAttribute.HPMP] = HPMP;
+							string PercentHPMP = string.Format("{0}% / {1}%", (HPMP & 15) * 10, (HPMP >> 4) * 10);
+							// Weird : sometimes hp is wrong (by +1), giving as result 110% or 10% in dead state
 							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
-								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[3].Text = string.Format("{0}% / {1}%", HP, MP);
+								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[3].Text = PercentHPMP;
 							});
 							break;
 						case 0x20: // Map position
 							string region = i.GetRegion(packet.ReadUShort());
-							// X,Y,Z .. not important, only for minimap
+							// X,Y,Z .. not important atm, only for minimap
 							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
 								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[4].Text = region;
 							});
@@ -1716,7 +1742,7 @@ namespace xBot.Game
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch,()=> {
 				w.Party_lstvPartyMatch.Items.Clear();
-      });
+			});
 			
 			byte success = packet.ReadByte();
 			if (success == 1)
@@ -1725,11 +1751,11 @@ namespace xBot.Game
 				byte pageIndex = packet.ReadByte();
 				byte partyCount = packet.ReadByte();
 
-				ListViewItem[] partys = new ListViewItem[partyCount];
-        for (int j = 0; j < partyCount; j++)
+				Dictionary<string, ListViewItem> PartyMatches = new Dictionary<string, ListViewItem>();
+				for (int j = 0; j < partyCount; j++)
 				{
 					uint number = packet.ReadUInt();
-					uint unkUInt01 = packet.ReadUInt(); // Unique ID ?
+					uint unkUInt01 = packet.ReadUInt(); // Possibly UniqueID?
 					string master = packet.ReadAscii();
 					byte unkByte01 = packet.ReadByte();
 					byte playersCount = packet.ReadByte();
@@ -1740,25 +1766,37 @@ namespace xBot.Game
 					string title = packet.ReadAscii();
 
 					// Party setup to boolean
-					bool ExpShared = Types.HasFlag(setupType, Types.PartySetup.ExpShared);
-					bool ItemShared = Types.HasFlag(setupType, Types.PartySetup.ItemShared);
-					bool AnyoneCanInvite = Types.HasFlag(setupType, Types.PartySetup.AnyoneCanInvite);
+					Types.PartySetup setupFlags = (Types.PartySetup)setupType;
+					bool ExpShared = setupFlags.HasFlag(Types.PartySetup.ExpShared);
+					bool ItemShared = setupFlags.HasFlag(Types.PartySetup.ItemShared);
+					bool AnyoneCanInvite = setupFlags.HasFlag(Types.PartySetup.AnyoneCanInvite);
+					
+					if (PartyMatches.ContainsKey(number.ToString()))
+					{
+						PartyMatches[number.ToString()].BackColor = Color.FromArgb(120, 120, 120);
+					}
+					else
+					{
+						ListViewItem Party = new ListViewItem(number.ToString());
+						Party.Name = number.ToString();
+						bool isJob = (Types.PartyPurpose)purposeType == Types.PartyPurpose.Thief || (Types.PartyPurpose)purposeType == Types.PartyPurpose.Trader;
+						Party.SubItems.Add((isJob ? "*" : "") + master);
+						Party.SubItems.Add(title);
+						Party.SubItems.Add(levelMin + "~" + levelMax);
+						Party.SubItems.Add(playersCount + "/" + (ExpShared ? "8" : "4"));
+						Party.SubItems.Add(((Types.PartyPurpose)purposeType).ToString());
+						Party.ToolTipText = "Exp. " + (ExpShared ? "Shared" : "Free - For - All") + "\nItem " + (ItemShared ? "Shared" : "Free-For-All") + "\n" + (AnyoneCanInvite ? "Anyone" : "Only Master") + "Can Invite";
 
-					ListViewItem party = new ListViewItem(number.ToString());
-					party.Name = unkUInt01.ToString(); // Try to confirm Unique ID while testing
-					party.SubItems.Add(master);
-					party.SubItems.Add(title);
-					party.SubItems.Add(levelMin + "~"+levelMax);
-					party.SubItems.Add(playersCount +"/"+(ExpShared?"8":"4"));
-					party.SubItems.Add(((Types.PartyPurpose)purposeType).ToString());
-					party.ToolTipText = "Exp. "+ (ExpShared ? "Shared" : "Free - For - All") + "\nItem " + (ItemShared ? "Shared" : "Free-For-All") + "\n" + (AnyoneCanInvite ? "Anyone" : "Only Master") + "Can Invite";
-					partys[j] = party;
+						PartyMatches[Party.Name] = Party;
+					}
 				}
 				if (partyCount > 0)
 				{
+					ListViewItem[] array = new ListViewItem[PartyMatches.Count];
+					PartyMatches.Values.CopyTo(array, 0);
 					// Add partys
 					WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch, () => {
-						w.Party_lstvPartyMatch.Items.AddRange(partys);
+						w.Party_lstvPartyMatch.Items.AddRange(array);
 					});
 				}
 
@@ -1768,7 +1806,7 @@ namespace xBot.Game
 				});
 				WinAPI.InvokeIfRequired(w.Party_btnLastPage, () => {
 					w.Party_btnLastPage.Enabled = pageIndex != 0;
-        });
+				});
 				WinAPI.InvokeIfRequired(w.Party_btnNextPage, () => {
 					w.Party_btnNextPage.Enabled = pageCount != pageIndex + 1;
 				});
@@ -1779,16 +1817,8 @@ namespace xBot.Game
 			bool sucess = packet.ReadByte() == 1;
 			if (sucess)
 			{
-				Bot.Get.SelectedUID = packet.ReadUInt();
-				byte flag = packet.ReadByte();
-				if(flag == 0){
-					// NPC
-					byte[] talkOptions = packet.ReadUInt8Array(packet.ReadByte());
-					byte unkByte01 = packet.ReadByte();
-				}
-				else if(flag == 1){
-
-				}
+				uint uniqueID = packet.ReadUInt();
+				Bot.Get._Event_EntitySelected(uniqueID);
 			}
 		}
 		public static void CharacterAddStatPointResponse(Packet packet)
@@ -1801,12 +1831,12 @@ namespace xBot.Game
 				Info i = Info.Get;
 
 				ushort StatPoints = (ushort)i.Character[SRAttribute.StatPoints];
-        if (StatPoints > 0)
+				if (StatPoints > 0)
 				{
 					i.Character[SRAttribute.StatPoints] = (ushort)(StatPoints - 1);
 					WinAPI.InvokeIfRequired(w.Character_lblStatPoints,()=> {
 						w.Character_lblStatPoints.Text = i.Character[SRAttribute.StatPoints].ToString();
-          });
+					});
 					if ((ushort)i.Character[SRAttribute.StatPoints] == 0)
 					{
 						// lock buttons
@@ -1814,7 +1844,7 @@ namespace xBot.Game
 							w.Character_btnAddINT.Enabled = w.Character_btnAddSTR.Enabled = false;
 						});
 					}
-        }
+				}
 			}
 			else
 			{

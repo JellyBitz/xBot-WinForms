@@ -25,7 +25,7 @@ namespace xBot.Network
 				GLOBAL_HANDSHAKE_OK = 0x9000,
 				GLOBAL_IDENTIFICATION = 0x2001,
 				GLOBAL_PING = 0x2002;
-    }
+		}
 		public Context Local { get; }
 		public Context Remote { get; }
 		public List<ushort> IgnoreOpcodeClient { get; }
@@ -169,7 +169,6 @@ namespace xBot.Network
 			}
 			else if (packet.Opcode == Opcode.SERVER_SHARD_LIST_RESPONSE)
 			{
-				Bot.Get.LoginFromBot = false;
 				PacketParser.ShardListResponse(packet);
 			}
 			return false;
@@ -180,7 +179,7 @@ namespace xBot.Network
 		}
 		public void InjectToClient(Packet p)
 		{
-			this.Local.Security.Send(p);
+			this.Remote.RelaySecurity.Send(p);
 		}
 	}
 }

@@ -182,7 +182,7 @@ namespace xBot.Game
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ADD_STR_REQUEST);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void PlayerInvitationResponse(bool accept)
+		public static void PlayerPetitionResponse(bool accept, Types.PlayerPetition t)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_PLAYER_INVITATION_RESPONSE);
 			if (accept)
@@ -192,14 +192,29 @@ namespace xBot.Game
 			}
 			else
 			{
-				p.WriteUInt8(2);
-				p.WriteUInt8(0xC);
-				p.WriteUInt8(0x2C);
+				switch (t)
+				{
+					case Types.PlayerPetition.PartyInvitation:
+					case Types.PlayerPetition.PartyCreation:
+						p.WriteUInt8(2);
+						p.WriteUInt8(0xC);
+						p.WriteUInt8(0x2C);
+						break;
+					case Types.PlayerPetition.Resurrection:
+						p.WriteUInt8(1);
+						p.WriteUInt8(0);
+						break;
+				}
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void InviteToParty(uint uniqueID)
 		{
+
+
+
+
+
 
 		}
 		public static void LeaveParty()
@@ -223,6 +238,15 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_ENTITY_SELECTION);
 			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void UseItem(SRObject item,byte slot,uint uniqueID=0)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_USE_ITEM,true);
+			p.WriteByte(slot);
+			p.WriteUShort((ushort)((uint)item[SRAttribute.RentType] + ((item).ID1 << 2) + ((item).ID2 << 5) + ((item).ID3 << 7) + ((item).ID4 << 11)));
+			if (uniqueID != 0)
+				p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 	}

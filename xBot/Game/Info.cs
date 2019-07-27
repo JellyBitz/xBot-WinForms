@@ -46,6 +46,10 @@ namespace xBot.Game
 		public Database Database { get { return db; } }
 		private Database db;
 		/// <summary>
+		/// The current path to the SR_Client.
+		/// </summary>
+		public string ClientPath { get; set; }
+		/// <summary>
 		/// Reference to the selected character for playing.
 		/// </summary>
 		public SRObject Character { get; set; }
@@ -354,9 +358,19 @@ namespace xBot.Game
 				return Character;
 			return EntityList.Find(spawn => ((uint)spawn[SRAttribute.UniqueID] == uniqueID));
 		}
+		/// <summary>
+		/// Find a party member using his member identifier number. Returns null if is not found.
+		/// </summary>
 		public SRObject GetPartyMember(uint memberID)
 		{
 			return PartyList.Find(member => ((uint)member[SRAttribute.ID] == memberID));
+		}
+		/// <summary>
+		/// Find a party member using his nickname. Returns null if is not found.
+		/// </summary>
+		public SRObject GetPartyMember(string name)
+		{
+			return PartyList.Find(member => (name.Equals((string)member[SRAttribute.Name],StringComparison.OrdinalIgnoreCase)));
 		}
 	}
 }

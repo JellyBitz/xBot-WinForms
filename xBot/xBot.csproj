@@ -76,6 +76,8 @@
     <Compile Include="App\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
+    <Compile Include="App\Bot\Events.cs" />
+    <Compile Include="App\Bot\System.cs" />
     <Compile Include="App\PK2Extractor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -94,7 +96,7 @@
     <Compile Include="Game\PacketParser.cs" />
     <Compile Include="Game\Types.cs" />
     <Compile Include="Network\Proxy.cs" />
-    <Compile Include="App\Bot.cs" />
+    <Compile Include="App\Bot\Bot.cs" />
     <Compile Include="App\WinAPI.cs" />
     <Compile Include="App\Fonts.cs" />
     <Compile Include="PK2ReaderAPI\PK2File.cs" />

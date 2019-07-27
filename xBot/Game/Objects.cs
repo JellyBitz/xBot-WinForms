@@ -577,10 +577,10 @@ namespace xBot.Game
 		/// </summary>
 		DropUniqueID,
 		/// <summary>
-		/// Bad status check from universal pills.
-		/// <para>Data type : <see cref="bool"/></para>
+		/// Check the current Bad status.
+		/// <para>Data type : <see cref="Types.BadStatus"/></para>
 		/// </summary>
-		hasBadStatus,
+		BadStatusType,
 		/// <summary>
 		/// Short description for users.
 		/// <para>Data type : <see cref="string"/></para>
@@ -676,8 +676,16 @@ namespace xBot.Game
 		/// <para>Data type : <see cref="SRObject"/></para>
 		/// </summary>
 		Skill,
-
-
+		/// <summary>
+		/// Last movement date. Used to calculate the position with accuracy.
+		/// <para>Data type : <see cref="DateTime"/></para>
+		/// </summary>
+		MovementDate,
+		/// <summary>
+		/// Health and Mana in percentage into a byte. (4/4 bits)
+		/// <para>Data type : <see cref="byte"/></para>
+		/// </summary>
+		HPMP,
 
 
 		DropSource,
@@ -691,7 +699,6 @@ namespace xBot.Game
 		hasOwner,
 		OwnerJID,
 		
-
 
 		unkByte01,
 		unkByte02,
@@ -722,7 +729,7 @@ namespace xBot.Game
 			Mastery,
 			Skill,
 			Quest,
-			EventZone
+			BuffZone
 		}
 		private Dictionary<string, object> _attributes;
 		private uint id;
@@ -792,7 +799,7 @@ namespace xBot.Game
 					}
 					if(id == uint.MaxValue)
 					{
-						_type = Type.EventZone;
+						_type = Type.BuffZone;
 					}
 					break;
 				case Type.Model:
@@ -808,11 +815,6 @@ namespace xBot.Game
 				case Type.Item:
 					if (data == null)
 						data = Info.Get.GetItem(ID);
-					if (data == null)
-					{
-						int xx = 0;
-						xx++;
-					}
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 3;
@@ -897,6 +899,10 @@ namespace xBot.Game
 				}
 			}
 		}
+		public bool Equals(byte ID1, byte ID2, byte ID3, byte ID4)
+		{
+			return (this.ID1 == ID1) && (this.ID2 == ID2) && (this.ID3 == ID3) && (this.ID4 == ID4);
+		}
 		/// <summary>
 		///  Clone all objects attributes keeping a new object reference.
 		/// </summary>
@@ -948,15 +954,41 @@ namespace xBot.Game
 		}
 		#region Methods that depends on object type
 		/// <summary>
-		/// Gets the current experience at percent of the character.
+		/// Return the ountry type of the item
+		/// </summary>
+		/// <returns></returns>
+		public string GetCountry()
+		{
+			if (((string)this[SRAttribute.Servername]).Contains("_CH_"))
+			{
+				return "CH";
+			}
+			else if (((string)this[SRAttribute.Servername]).Contains("_EU_"))
+			{
+				return "EU";
+      }
+			return "";
+		}
+		/// <summary>
+		/// Gets the current experience at percent.
 		/// </summary>
 		public double GetExpPercent()
 		{
-			if (this.Contains(SRAttribute.Exp) && this.Contains(SRAttribute.ExpMax))
-			{
-				return (ulong)this[SRAttribute.Exp] * 100d / (ulong)this[SRAttribute.ExpMax];
-			}
-			return 0;
+			return (ulong)this[SRAttribute.Exp] * 100d / (ulong)this[SRAttribute.ExpMax];
+		}
+		/// <summary>
+		/// Gets the current health points at percentage.
+		/// </summary>
+		public double GetHPPercent()
+		{
+			return (uint)this[SRAttribute.HP] * 100d / (uint)this[SRAttribute.HPMax];
+		}
+		/// <summary>
+		/// Gets the current mana points at percentage.
+		/// </summary>
+		public double GetMPPercent()
+		{
+			return (uint)this[SRAttribute.MP] * 100d / (uint)this[SRAttribute.MPMax];
 		}
 		/// <summary>
 		/// Check if <see cref="Type.Skill"/> has auto transfer effect like Recovery division.
@@ -1122,6 +1154,13 @@ namespace xBot.Game
 					nodes.Add(obj.ToNode());
 			}
 			return nodes.ToArray();
+		}
+		/// <summary>
+		///  Clone all objects attributes keeping a new object reference.
+		/// </summary>
+		public SRObjectCollection Clone()
+		{
+			return (SRObjectCollection)MemberwiseClone();
 		}
 		/// <summary>
 		/// Check if the list has some job equipment
