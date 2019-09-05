@@ -121,8 +121,8 @@
 			this.Settings_lstvOpcodes = new System.Windows.Forms.ListView();
 			this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.Menu_lstvOpcodes = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_lstvOpcodes_remove = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_lstvOpcodes_removeAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvOpcodes_Remove = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvOpcodes_RemoveAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.Settings_btnAddOpcode = new System.Windows.Forms.Button();
 			this.Settings_tbxFilterOpcode = new System.Windows.Forms.TextBox();
 			this.Settings_lblFilterOpcode = new System.Windows.Forms.Label();
@@ -150,12 +150,66 @@
 			this.Settings_lblCustomName = new System.Windows.Forms.Label();
 			this.TabPageH_Settings_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option03_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Inventory = new System.Windows.Forms.Panel();
+			this.TabPageH_Inventory_Option04 = new System.Windows.Forms.Button();
+			this.TabPageH_Inventory_Option03 = new System.Windows.Forms.Button();
+			this.TabPageH_Inventory_Option02 = new System.Windows.Forms.Button();
+			this.TabPageH_Inventory_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_Inventory_Option01_Panel = new System.Windows.Forms.Panel();
+			this.Inventory_lblCapacity = new System.Windows.Forms.Label();
+			this.Inventory_btnRefresh = new System.Windows.Forms.Button();
+			this.Inventory_lstvItems = new System.Windows.Forms.ListView();
+			this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader26 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.columnHeader27 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.TabPageH_Inventory_Option03_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Inventory_Option02_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Inventory_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Party = new System.Windows.Forms.Panel();
 			this.TabPageH_Party_Option04 = new System.Windows.Forms.Button();
 			this.TabPageH_Party_Option03 = new System.Windows.Forms.Button();
 			this.TabPageH_Party_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_Party_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_Party_Option02_Panel = new System.Windows.Forms.Panel();
+			this.Party_gbxLeaderList = new System.Windows.Forms.GroupBox();
+			this.Party_lstvLeaderList = new System.Windows.Forms.ListView();
+			this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvLeaderList = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvLeaderList_Remove = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvLeaderList_RemoveAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.Party_btnAddLeader = new System.Windows.Forms.Button();
+			this.Party_tbxLeader = new System.Windows.Forms.TextBox();
+			this.Party_gbxSetup = new System.Windows.Forms.GroupBox();
+			this.Party_cbxSetupMasterInvite = new System.Windows.Forms.CheckBox();
+			this.Party_pnlSetupItem = new System.Windows.Forms.Panel();
+			this.Party_gbxSetupItem = new System.Windows.Forms.GroupBox();
+			this.Party_rbnSetupItemShared = new System.Windows.Forms.RadioButton();
+			this.Party_rbnSetupItemFree = new System.Windows.Forms.RadioButton();
+			this.Party_pnlSetupExp = new System.Windows.Forms.Panel();
+			this.Party_gbxSetupExp = new System.Windows.Forms.GroupBox();
+			this.Party_rbnSetupExpShared = new System.Windows.Forms.RadioButton();
+			this.Party_rbnSetupExpFree = new System.Windows.Forms.RadioButton();
+			this.Party_gbxAccepting = new System.Windows.Forms.GroupBox();
+			this.Party_cbxLeavePartyNoneLeader = new System.Windows.Forms.CheckBox();
+			this.Party_cbxAcceptOnlyPartySetup = new System.Windows.Forms.CheckBox();
+			this.Party_cbxInviteOnlyPartySetup = new System.Windows.Forms.CheckBox();
+			this.Party_cbxRefusePartys = new System.Windows.Forms.CheckBox();
+			this.Party_cbxInviteAll = new System.Windows.Forms.CheckBox();
+			this.Party_cbxInvitePartyList = new System.Windows.Forms.CheckBox();
+			this.Party_cbxAcceptLeaderList = new System.Windows.Forms.CheckBox();
+			this.Party_cbxAcceptAll = new System.Windows.Forms.CheckBox();
+			this.Party_cbxAcceptPartyList = new System.Windows.Forms.CheckBox();
+			this.Party_gbxPlayerList = new System.Windows.Forms.GroupBox();
+			this.Party_lstvPartyList = new System.Windows.Forms.ListView();
+			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvPartyList = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvPartyList_Remove = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvPartyList_RemoveAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.Party_btnAddPlayer = new System.Windows.Forms.Button();
+			this.Party_tbxPlayer = new System.Windows.Forms.TextBox();
 			this.TabPageH_Party_Option03_Panel = new System.Windows.Forms.Panel();
 			this.Party_btnJoinMatch = new System.Windows.Forms.Button();
 			this.Party_tbxJoinToNumber = new System.Windows.Forms.TextBox();
@@ -171,84 +225,54 @@
 			this.columnHeader20 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader21 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvPartyMatch = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvPartyMatch_JoinToParty = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvPartyMatch_PrivateMsg = new System.Windows.Forms.ToolStripMenuItem();
 			this.TabPageH_Party_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Party_lblCurrentSetup = new System.Windows.Forms.Label();
 			this.Party_cbxShowFGWInvites = new System.Windows.Forms.CheckBox();
-			this.Party_lstvMembers = new System.Windows.Forms.ListView();
+			this.Party_lstvPartyMembers = new System.Windows.Forms.ListView();
 			this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Menu_lstvMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_lstvMembers_AddTo = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_lstvMembers_AddToPlayerList = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_lstvMembers_AddToLeaderList = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_lstvMembers_LeaveParty = new System.Windows.Forms.ToolStripMenuItem();
-			this.TabPageH_Party_Option02_Panel = new System.Windows.Forms.Panel();
-			this.Party_gbxLeaderList = new System.Windows.Forms.GroupBox();
-			this.Party_lstvLeaders = new System.Windows.Forms.ListView();
-			this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Party_btnAddLeader = new System.Windows.Forms.Button();
-			this.Party_tbxLeader = new System.Windows.Forms.TextBox();
-			this.Party_gbxSetup = new System.Windows.Forms.GroupBox();
-			this.Party_cbxSetupMasterInvite = new System.Windows.Forms.CheckBox();
-			this.Party_pnlSetupItem = new System.Windows.Forms.Panel();
-			this.Party_gbxSetupItem = new System.Windows.Forms.GroupBox();
-			this.Party_rbnSetupItemShared = new System.Windows.Forms.RadioButton();
-			this.Party_rbnSetupItemFree = new System.Windows.Forms.RadioButton();
-			this.Party_pnlSetupExp = new System.Windows.Forms.Panel();
-			this.Party_gbxSetupExp = new System.Windows.Forms.GroupBox();
-			this.Party_rbnSetupExpShared = new System.Windows.Forms.RadioButton();
-			this.Party_rbnSetupExpFree = new System.Windows.Forms.RadioButton();
-			this.Party_gbxAccepting = new System.Windows.Forms.GroupBox();
-			this.checkBox7 = new System.Windows.Forms.CheckBox();
-			this.Party_cbxLeavePartyNoneLeader = new System.Windows.Forms.CheckBox();
-			this.Party_cbxAcceptOnlyPartySetup = new System.Windows.Forms.CheckBox();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
-			this.Party_cbxRefusePartys = new System.Windows.Forms.CheckBox();
-			this.checkBox11 = new System.Windows.Forms.CheckBox();
-			this.checkBox12 = new System.Windows.Forms.CheckBox();
-			this.Party_cbxAcceptLeaderList = new System.Windows.Forms.CheckBox();
-			this.Party_cbxAcceptAll = new System.Windows.Forms.CheckBox();
-			this.Party_cbxAcceptPlayerList = new System.Windows.Forms.CheckBox();
-			this.Party_gbxPlayerList = new System.Windows.Forms.GroupBox();
-			this.Party_lstvPlayers = new System.Windows.Forms.ListView();
-			this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Party_btnAddPlayer = new System.Windows.Forms.Button();
-			this.Party_tbxPlayer = new System.Windows.Forms.TextBox();
+			this.Menu_lstvPartyMembers = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvPartyMembers_AddTo = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvPartyMembers_AddToPartyList = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvPartyMembers_AddToLeaderList = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_lstvPartyMembers_LeaveParty = new System.Windows.Forms.ToolStripMenuItem();
 			this.TabPageH_Party_Option04_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option05_Panel = new System.Windows.Forms.Panel();
 			this.pnlWindow = new System.Windows.Forms.Panel();
-			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
-			this.GameInfo_tbxWheaterTime = new System.Windows.Forms.TextBox();
-			this.GameInfo_lblWheaterTime = new System.Windows.Forms.Label();
-			this.GameInfo_btnRefresh = new System.Windows.Forms.Button();
-			this.GameInfo_tbxServerTime = new System.Windows.Forms.TextBox();
-			this.GameInfo_lblServerTime = new System.Windows.Forms.Label();
-			this.GameInfo_lstrObjects = new System.Windows.Forms.TreeView();
 			this.TabPageV_Control01_Option02_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Character = new System.Windows.Forms.Panel();
 			this.TabPageH_Character_Option04 = new System.Windows.Forms.Button();
 			this.TabPageH_Character_Option03 = new System.Windows.Forms.Button();
 			this.TabPageH_Character_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_Character_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
+			this.Character_gbxPotionPet = new System.Windows.Forms.GroupBox();
+			this.Character_tbxUseTransportHP = new System.Windows.Forms.TextBox();
+			this.Character_cbxUseTransportHP = new System.Windows.Forms.CheckBox();
+			this.Character_tbxUsePetHP = new System.Windows.Forms.TextBox();
+			this.Character_cbxUsePetHP = new System.Windows.Forms.CheckBox();
+			this.Character_gbxPotionsPlayer = new System.Windows.Forms.GroupBox();
+			this.Character_tbxUseHP = new System.Windows.Forms.TextBox();
+			this.Character_tbxUseMP = new System.Windows.Forms.TextBox();
+			this.Character_cbxUsePillPurification = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUseMPGrain = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUsePillUniversal = new System.Windows.Forms.CheckBox();
+			this.Character_tbxUseMPVigor = new System.Windows.Forms.TextBox();
+			this.Character_tbxUseHPVigor = new System.Windows.Forms.TextBox();
+			this.Character_cbxUseMPVigor = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUseHP = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUseHPGrain = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUseHPVigor = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUseMP = new System.Windows.Forms.CheckBox();
 			this.TabPageH_Character_Option04_Panel = new System.Windows.Forms.Panel();
 			this.Character_cbxAcceptRessPartyOnly = new System.Windows.Forms.CheckBox();
 			this.Character_cbxAcceptRess = new System.Windows.Forms.CheckBox();
-			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
-			this.Character_tbxUseHP = new System.Windows.Forms.TextBox();
-			this.Character_cbxUsePillPurification = new System.Windows.Forms.CheckBox();
-			this.Character_cbxUsePillUniversal = new System.Windows.Forms.CheckBox();
-			this.Character_tbxUseMPVigor = new System.Windows.Forms.TextBox();
-			this.Character_cbxUseMPVigor = new System.Windows.Forms.CheckBox();
-			this.Character_tbxUseHPVigor = new System.Windows.Forms.TextBox();
-			this.Character_cbxUseHPVigor = new System.Windows.Forms.CheckBox();
-			this.Character_cbxUseMPGrain = new System.Windows.Forms.CheckBox();
-			this.Character_tbxUseMP = new System.Windows.Forms.TextBox();
-			this.Character_cbxUseMP = new System.Windows.Forms.CheckBox();
-			this.Character_cbxUseHPGrain = new System.Windows.Forms.CheckBox();
-			this.Character_cbxUseHP = new System.Windows.Forms.CheckBox();
 			this.TabPageH_Character_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Character_lblLocation = new System.Windows.Forms.Label();
 			this.Character_lblLocationText = new System.Windows.Forms.Label();
@@ -354,8 +378,15 @@
 			this.Minimap_lblRegion = new System.Windows.Forms.Label();
 			this.Minimap_lblZ = new System.Windows.Forms.Label();
 			this.Minimap_tbxZ = new System.Windows.Forms.TextBox();
-			this.TabPageV_Control01_Option09_Panel = new System.Windows.Forms.Panel();
+			this.TabPageV_Control01_Option13_Panel = new System.Windows.Forms.Panel();
+			this.GameInfo_tbxWheaterTime = new System.Windows.Forms.TextBox();
+			this.GameInfo_lblWheaterTime = new System.Windows.Forms.Label();
+			this.GameInfo_btnRefresh = new System.Windows.Forms.Button();
+			this.GameInfo_tbxServerTime = new System.Windows.Forms.TextBox();
+			this.GameInfo_lblServerTime = new System.Windows.Forms.Label();
+			this.GameInfo_lstrObjects = new System.Windows.Forms.TreeView();
 			this.TabPageV_Control01_Option10_Panel = new System.Windows.Forms.Panel();
+			this.TabPageV_Control01_Option09_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option08_Panel = new System.Windows.Forms.Panel();
 			this.btnShowHideClient = new System.Windows.Forms.Button();
 			this.btnBotStart = new System.Windows.Forms.Button();
@@ -386,13 +417,14 @@
 			this.Menu_rtbxPackets.SuspendLayout();
 			this.TabPageH_Settings_Option02_Panel.SuspendLayout();
 			this.Settings_gbxCharacterSelection.SuspendLayout();
+			this.TabPageV_Control01_Option03_Panel.SuspendLayout();
+			this.TabPageH_Inventory.SuspendLayout();
+			this.TabPageH_Inventory_Option01_Panel.SuspendLayout();
 			this.TabPageV_Control01_Option04_Panel.SuspendLayout();
 			this.TabPageH_Party.SuspendLayout();
-			this.TabPageH_Party_Option03_Panel.SuspendLayout();
-			this.TabPageH_Party_Option01_Panel.SuspendLayout();
-			this.Menu_lstvMembers.SuspendLayout();
 			this.TabPageH_Party_Option02_Panel.SuspendLayout();
 			this.Party_gbxLeaderList.SuspendLayout();
+			this.Menu_lstvLeaderList.SuspendLayout();
 			this.Party_gbxSetup.SuspendLayout();
 			this.Party_pnlSetupItem.SuspendLayout();
 			this.Party_gbxSetupItem.SuspendLayout();
@@ -400,12 +432,18 @@
 			this.Party_gbxSetupExp.SuspendLayout();
 			this.Party_gbxAccepting.SuspendLayout();
 			this.Party_gbxPlayerList.SuspendLayout();
+			this.Menu_lstvPartyList.SuspendLayout();
+			this.TabPageH_Party_Option03_Panel.SuspendLayout();
+			this.Menu_lstvPartyMatch.SuspendLayout();
+			this.TabPageH_Party_Option01_Panel.SuspendLayout();
+			this.Menu_lstvPartyMembers.SuspendLayout();
 			this.pnlWindow.SuspendLayout();
-			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
 			this.TabPageV_Control01_Option02_Panel.SuspendLayout();
 			this.TabPageH_Character.SuspendLayout();
-			this.TabPageH_Character_Option04_Panel.SuspendLayout();
 			this.TabPageH_Character_Option02_Panel.SuspendLayout();
+			this.Character_gbxPotionPet.SuspendLayout();
+			this.Character_gbxPotionsPlayer.SuspendLayout();
+			this.TabPageH_Character_Option04_Panel.SuspendLayout();
 			this.TabPageH_Character_Option01_Panel.SuspendLayout();
 			this.Character_gbxStatPoints.SuspendLayout();
 			this.Character_gbxMessageFilter.SuspendLayout();
@@ -429,6 +467,7 @@
 			this.Minimap_panelMap.SuspendLayout();
 			this.Minimap_panelGameCoords.SuspendLayout();
 			this.Minimap_panelCoords.SuspendLayout();
+			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
 			this.Menu_NotifyIcon.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -1026,15 +1065,16 @@
 			// 
 			// lblHeaderText01
 			// 
+			this.lblHeaderText01.AutoSize = true;
 			this.lblHeaderText01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lblHeaderText01.Font = new System.Drawing.Font("Source Sans Pro", 23F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.lblHeaderText01.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
 			this.lblHeaderText01.Location = new System.Drawing.Point(48, 4);
 			this.lblHeaderText01.Margin = new System.Windows.Forms.Padding(0);
 			this.lblHeaderText01.Name = "lblHeaderText01";
-			this.lblHeaderText01.Size = new System.Drawing.Size(130, 35);
+			this.lblHeaderText01.Size = new System.Drawing.Size(69, 35);
 			this.lblHeaderText01.TabIndex = 9;
-			this.lblHeaderText01.Text = "xBot - Proje";
+			this.lblHeaderText01.Text = "xBot -";
 			this.lblHeaderText01.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblHeaderText01.UseCompatibleTextRendering = true;
 			// 
@@ -1114,12 +1154,12 @@
 			this.lblHeaderText02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lblHeaderText02.Font = new System.Drawing.Font("Source Sans Pro", 23F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.lblHeaderText02.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(190)))), ((int)(((byte)(255)))));
-			this.lblHeaderText02.Location = new System.Drawing.Point(175, 4);
+			this.lblHeaderText02.Location = new System.Drawing.Point(114, 4);
 			this.lblHeaderText02.Margin = new System.Windows.Forms.Padding(0);
 			this.lblHeaderText02.Name = "lblHeaderText02";
-			this.lblHeaderText02.Size = new System.Drawing.Size(62, 35);
+			this.lblHeaderText02.Size = new System.Drawing.Size(99, 35);
 			this.lblHeaderText02.TabIndex = 6;
-			this.lblHeaderText02.Text = "xNET";
+			this.lblHeaderText02.Text = "JellyBitz";
 			this.lblHeaderText02.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.lblHeaderText02.UseCompatibleTextRendering = true;
 			this.lblHeaderText02.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Window_Drag_MouseDown);
@@ -1964,24 +2004,24 @@
 			// 
 			this.Menu_lstvOpcodes.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.Menu_lstvOpcodes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_lstvOpcodes_remove,
-            this.Menu_lstvOpcodes_removeAll});
+            this.Menu_lstvOpcodes_Remove,
+            this.Menu_lstvOpcodes_RemoveAll});
 			this.Menu_lstvOpcodes.Name = "Menu_lstvOpcodes";
 			this.Menu_lstvOpcodes.Size = new System.Drawing.Size(165, 48);
 			// 
-			// Menu_lstvOpcodes_remove
+			// Menu_lstvOpcodes_Remove
 			// 
-			this.Menu_lstvOpcodes_remove.Name = "Menu_lstvOpcodes_remove";
-			this.Menu_lstvOpcodes_remove.Size = new System.Drawing.Size(164, 22);
-			this.Menu_lstvOpcodes_remove.Text = "Remove Selected";
-			this.Menu_lstvOpcodes_remove.Click += new System.EventHandler(this.Menu_Click);
+			this.Menu_lstvOpcodes_Remove.Name = "Menu_lstvOpcodes_Remove";
+			this.Menu_lstvOpcodes_Remove.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvOpcodes_Remove.Text = "Remove Selected";
+			this.Menu_lstvOpcodes_Remove.Click += new System.EventHandler(this.Menu_Click);
 			// 
-			// Menu_lstvOpcodes_removeAll
+			// Menu_lstvOpcodes_RemoveAll
 			// 
-			this.Menu_lstvOpcodes_removeAll.Name = "Menu_lstvOpcodes_removeAll";
-			this.Menu_lstvOpcodes_removeAll.Size = new System.Drawing.Size(164, 22);
-			this.Menu_lstvOpcodes_removeAll.Text = "Remove All";
-			this.Menu_lstvOpcodes_removeAll.Click += new System.EventHandler(this.Menu_Click);
+			this.Menu_lstvOpcodes_RemoveAll.Name = "Menu_lstvOpcodes_RemoveAll";
+			this.Menu_lstvOpcodes_RemoveAll.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvOpcodes_RemoveAll.Text = "Remove All";
+			this.Menu_lstvOpcodes_RemoveAll.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Settings_btnAddOpcode
 			// 
@@ -2386,19 +2426,241 @@
 			// 
 			// TabPageV_Control01_Option03_Panel
 			// 
-			this.TabPageV_Control01_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageV_Control01_Option03_Panel.Controls.Add(this.TabPageH_Inventory);
+			this.TabPageV_Control01_Option03_Panel.Controls.Add(this.TabPageH_Inventory_Option01_Panel);
+			this.TabPageV_Control01_Option03_Panel.Controls.Add(this.TabPageH_Inventory_Option03_Panel);
+			this.TabPageV_Control01_Option03_Panel.Controls.Add(this.TabPageH_Inventory_Option02_Panel);
+			this.TabPageV_Control01_Option03_Panel.Controls.Add(this.TabPageH_Inventory_Option04_Panel);
 			this.TabPageV_Control01_Option03_Panel.Location = new System.Drawing.Point(135, 45);
 			this.TabPageV_Control01_Option03_Panel.Name = "TabPageV_Control01_Option03_Panel";
-			this.TabPageV_Control01_Option03_Panel.Size = new System.Drawing.Size(657, 251);
+			this.TabPageV_Control01_Option03_Panel.Size = new System.Drawing.Size(657, 342);
 			this.TabPageV_Control01_Option03_Panel.TabIndex = 7;
 			this.TabPageV_Control01_Option03_Panel.Visible = false;
+			// 
+			// TabPageH_Inventory
+			// 
+			this.TabPageH_Inventory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Inventory.Controls.Add(this.TabPageH_Inventory_Option04);
+			this.TabPageH_Inventory.Controls.Add(this.TabPageH_Inventory_Option03);
+			this.TabPageH_Inventory.Controls.Add(this.TabPageH_Inventory_Option02);
+			this.TabPageH_Inventory.Controls.Add(this.TabPageH_Inventory_Option01);
+			this.TabPageH_Inventory.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Inventory.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Inventory.Name = "TabPageH_Inventory";
+			this.TabPageH_Inventory.Size = new System.Drawing.Size(657, 28);
+			this.TabPageH_Inventory.TabIndex = 9;
+			// 
+			// TabPageH_Inventory_Option04
+			// 
+			this.TabPageH_Inventory_Option04.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Inventory_Option04.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Inventory_Option04.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option04.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Inventory_Option04.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Inventory_Option04.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option04.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Inventory_Option04.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Inventory_Option04.Location = new System.Drawing.Point(493, 0);
+			this.TabPageH_Inventory_Option04.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Inventory_Option04.Name = "TabPageH_Inventory_Option04";
+			this.TabPageH_Inventory_Option04.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Inventory_Option04.TabIndex = 15;
+			this.TabPageH_Inventory_Option04.Text = ". . .";
+			this.TabPageH_Inventory_Option04.UseVisualStyleBackColor = false;
+			this.TabPageH_Inventory_Option04.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Inventory_Option03
+			// 
+			this.TabPageH_Inventory_Option03.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Inventory_Option03.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Inventory_Option03.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option03.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Inventory_Option03.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Inventory_Option03.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option03.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Inventory_Option03.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Inventory_Option03.Location = new System.Drawing.Point(329, 0);
+			this.TabPageH_Inventory_Option03.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Inventory_Option03.Name = "TabPageH_Inventory_Option03";
+			this.TabPageH_Inventory_Option03.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Inventory_Option03.TabIndex = 14;
+			this.TabPageH_Inventory_Option03.Text = ". . .";
+			this.TabPageH_Inventory_Option03.UseVisualStyleBackColor = false;
+			this.TabPageH_Inventory_Option03.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Inventory_Option02
+			// 
+			this.TabPageH_Inventory_Option02.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Inventory_Option02.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Inventory_Option02.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option02.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Inventory_Option02.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Inventory_Option02.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Inventory_Option02.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Inventory_Option02.Location = new System.Drawing.Point(165, 0);
+			this.TabPageH_Inventory_Option02.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Inventory_Option02.Name = "TabPageH_Inventory_Option02";
+			this.TabPageH_Inventory_Option02.Size = new System.Drawing.Size(164, 26);
+			this.TabPageH_Inventory_Option02.TabIndex = 13;
+			this.TabPageH_Inventory_Option02.Text = ". . .";
+			this.TabPageH_Inventory_Option02.UseVisualStyleBackColor = false;
+			this.TabPageH_Inventory_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Inventory_Option01
+			// 
+			this.TabPageH_Inventory_Option01.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Inventory_Option01.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Inventory_Option01.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option01.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Inventory_Option01.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Inventory_Option01.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Inventory_Option01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Inventory_Option01.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Inventory_Option01.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Inventory_Option01.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Inventory_Option01.Name = "TabPageH_Inventory_Option01";
+			this.TabPageH_Inventory_Option01.Size = new System.Drawing.Size(165, 26);
+			this.TabPageH_Inventory_Option01.TabIndex = 12;
+			this.TabPageH_Inventory_Option01.Text = "Info";
+			this.TabPageH_Inventory_Option01.UseVisualStyleBackColor = false;
+			this.TabPageH_Inventory_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Inventory_Option01_Panel
+			// 
+			this.TabPageH_Inventory_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Inventory_Option01_Panel.Controls.Add(this.Inventory_lblCapacity);
+			this.TabPageH_Inventory_Option01_Panel.Controls.Add(this.Inventory_btnRefresh);
+			this.TabPageH_Inventory_Option01_Panel.Controls.Add(this.Inventory_lstvItems);
+			this.TabPageH_Inventory_Option01_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Inventory_Option01_Panel.Name = "TabPageH_Inventory_Option01_Panel";
+			this.TabPageH_Inventory_Option01_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Inventory_Option01_Panel.TabIndex = 10;
+			this.TabPageH_Inventory_Option01_Panel.Visible = false;
+			// 
+			// Inventory_lblCapacity
+			// 
+			this.Inventory_lblCapacity.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Inventory_lblCapacity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Inventory_lblCapacity.Location = new System.Drawing.Point(6, 281);
+			this.Inventory_lblCapacity.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.Inventory_lblCapacity.Name = "Inventory_lblCapacity";
+			this.Inventory_lblCapacity.Size = new System.Drawing.Size(130, 28);
+			this.Inventory_lblCapacity.TabIndex = 13;
+			this.Inventory_lblCapacity.Tag = "Source Sans Pro";
+			this.Inventory_lblCapacity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Inventory_btnRefresh
+			// 
+			this.Inventory_btnRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Inventory_btnRefresh.FlatAppearance.BorderSize = 0;
+			this.Inventory_btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Inventory_btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Inventory_btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Inventory_btnRefresh.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Inventory_btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Inventory_btnRefresh.Location = new System.Drawing.Point(621, 281);
+			this.Inventory_btnRefresh.Margin = new System.Windows.Forms.Padding(0);
+			this.Inventory_btnRefresh.Name = "Inventory_btnRefresh";
+			this.Inventory_btnRefresh.Size = new System.Drawing.Size(28, 28);
+			this.Inventory_btnRefresh.TabIndex = 12;
+			this.Inventory_btnRefresh.Tag = "Font Awesome 5 Pro Light";
+			this.Inventory_btnRefresh.Text = "";
+			this.Inventory_btnRefresh.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.ToolTips.SetToolTip(this.Inventory_btnRefresh, "Refresh");
+			this.Inventory_btnRefresh.UseCompatibleTextRendering = true;
+			this.Inventory_btnRefresh.UseVisualStyleBackColor = false;
+			this.Inventory_btnRefresh.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Inventory_lstvItems
+			// 
+			this.Inventory_lstvItems.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Inventory_lstvItems.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Inventory_lstvItems.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader23,
+            this.columnHeader24,
+            this.columnHeader25,
+            this.columnHeader26,
+            this.columnHeader27});
+			this.Inventory_lstvItems.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Inventory_lstvItems.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Inventory_lstvItems.FullRowSelect = true;
+			this.Inventory_lstvItems.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.Inventory_lstvItems.HideSelection = false;
+			this.Inventory_lstvItems.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Inventory_lstvItems.Location = new System.Drawing.Point(6, 7);
+			this.Inventory_lstvItems.Margin = new System.Windows.Forms.Padding(0);
+			this.Inventory_lstvItems.MultiSelect = false;
+			this.Inventory_lstvItems.Name = "Inventory_lstvItems";
+			this.Inventory_lstvItems.ShowGroups = false;
+			this.Inventory_lstvItems.ShowItemToolTips = true;
+			this.Inventory_lstvItems.Size = new System.Drawing.Size(643, 270);
+			this.Inventory_lstvItems.TabIndex = 3;
+			this.Inventory_lstvItems.Tag = "Source Sans Pro";
+			this.Inventory_lstvItems.TileSize = new System.Drawing.Size(201, 50);
+			this.Inventory_lstvItems.UseCompatibleStateImageBehavior = false;
+			this.Inventory_lstvItems.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader23
+			// 
+			this.columnHeader23.Text = "Slot";
+			this.columnHeader23.Width = 39;
+			// 
+			// columnHeader24
+			// 
+			this.columnHeader24.Text = "Icon";
+			// 
+			// columnHeader25
+			// 
+			this.columnHeader25.Text = "Name";
+			this.columnHeader25.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader25.Width = 200;
+			// 
+			// columnHeader26
+			// 
+			this.columnHeader26.Text = "Quantity";
+			this.columnHeader26.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader26.Width = 80;
+			// 
+			// columnHeader27
+			// 
+			this.columnHeader27.Text = "Servername";
+			this.columnHeader27.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader27.Width = 245;
+			// 
+			// TabPageH_Inventory_Option03_Panel
+			// 
+			this.TabPageH_Inventory_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Inventory_Option03_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Inventory_Option03_Panel.Name = "TabPageH_Inventory_Option03_Panel";
+			this.TabPageH_Inventory_Option03_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Inventory_Option03_Panel.TabIndex = 11;
+			this.TabPageH_Inventory_Option03_Panel.Visible = false;
+			// 
+			// TabPageH_Inventory_Option02_Panel
+			// 
+			this.TabPageH_Inventory_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Inventory_Option02_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Inventory_Option02_Panel.Name = "TabPageH_Inventory_Option02_Panel";
+			this.TabPageH_Inventory_Option02_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Inventory_Option02_Panel.TabIndex = 13;
+			this.TabPageH_Inventory_Option02_Panel.Visible = false;
+			// 
+			// TabPageH_Inventory_Option04_Panel
+			// 
+			this.TabPageH_Inventory_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Inventory_Option04_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Inventory_Option04_Panel.Name = "TabPageH_Inventory_Option04_Panel";
+			this.TabPageH_Inventory_Option04_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Inventory_Option04_Panel.TabIndex = 12;
+			this.TabPageH_Inventory_Option04_Panel.Visible = false;
 			// 
 			// TabPageV_Control01_Option04_Panel
 			// 
 			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party);
+			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party_Option02_Panel);
 			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party_Option03_Panel);
 			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party_Option01_Panel);
-			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party_Option02_Panel);
 			this.TabPageV_Control01_Option04_Panel.Controls.Add(this.TabPageH_Party_Option04_Panel);
 			this.TabPageV_Control01_Option04_Panel.Location = new System.Drawing.Point(135, 45);
 			this.TabPageV_Control01_Option04_Panel.Name = "TabPageV_Control01_Option04_Panel";
@@ -2495,360 +2757,6 @@
 			this.TabPageH_Party_Option01.UseVisualStyleBackColor = false;
 			this.TabPageH_Party_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
 			// 
-			// TabPageH_Party_Option03_Panel
-			// 
-			this.TabPageH_Party_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnJoinMatch);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_tbxJoinToNumber);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lblJoinToNumber);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnLastPage);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnNextPage);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lblPageNumber);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnRefreshMatch);
-			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lstvPartyMatch);
-			this.TabPageH_Party_Option03_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Party_Option03_Panel.Name = "TabPageH_Party_Option03_Panel";
-			this.TabPageH_Party_Option03_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Party_Option03_Panel.TabIndex = 7;
-			this.TabPageH_Party_Option03_Panel.Visible = false;
-			// 
-			// Party_btnJoinMatch
-			// 
-			this.Party_btnJoinMatch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Party_btnJoinMatch.FlatAppearance.BorderSize = 0;
-			this.Party_btnJoinMatch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Party_btnJoinMatch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Party_btnJoinMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_btnJoinMatch.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_btnJoinMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_btnJoinMatch.Location = new System.Drawing.Point(197, 281);
-			this.Party_btnJoinMatch.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_btnJoinMatch.Name = "Party_btnJoinMatch";
-			this.Party_btnJoinMatch.Size = new System.Drawing.Size(28, 28);
-			this.Party_btnJoinMatch.TabIndex = 19;
-			this.Party_btnJoinMatch.Tag = "Font Awesome 5 Pro Light";
-			this.Party_btnJoinMatch.Text = "";
-			this.Party_btnJoinMatch.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.ToolTips.SetToolTip(this.Party_btnJoinMatch, "Join to Party Match");
-			this.Party_btnJoinMatch.UseCompatibleTextRendering = true;
-			this.Party_btnJoinMatch.UseVisualStyleBackColor = false;
-			this.Party_btnJoinMatch.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Party_tbxJoinToNumber
-			// 
-			this.Party_tbxJoinToNumber.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Party_tbxJoinToNumber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Party_tbxJoinToNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_tbxJoinToNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_tbxJoinToNumber.Location = new System.Drawing.Point(104, 281);
-			this.Party_tbxJoinToNumber.MaxLength = 10;
-			this.Party_tbxJoinToNumber.Name = "Party_tbxJoinToNumber";
-			this.Party_tbxJoinToNumber.Size = new System.Drawing.Size(90, 28);
-			this.Party_tbxJoinToNumber.TabIndex = 17;
-			this.Party_tbxJoinToNumber.Tag = "Source Sans Pro";
-			this.Party_tbxJoinToNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Party_tbxJoinToNumber.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-			this.Party_tbxJoinToNumber.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.Party_tbxJoinToNumber.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// Party_lblJoinToNumber
-			// 
-			this.Party_lblJoinToNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_lblJoinToNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lblJoinToNumber.Location = new System.Drawing.Point(37, 281);
-			this.Party_lblJoinToNumber.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Party_lblJoinToNumber.Name = "Party_lblJoinToNumber";
-			this.Party_lblJoinToNumber.Size = new System.Drawing.Size(67, 28);
-			this.Party_lblJoinToNumber.TabIndex = 16;
-			this.Party_lblJoinToNumber.Tag = "Source Sans Pro";
-			this.Party_lblJoinToNumber.Text = "Join to #";
-			this.Party_lblJoinToNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Party_btnLastPage
-			// 
-			this.Party_btnLastPage.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Party_btnLastPage.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Party_btnLastPage.Enabled = false;
-			this.Party_btnLastPage.FlatAppearance.BorderSize = 0;
-			this.Party_btnLastPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Party_btnLastPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Party_btnLastPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_btnLastPage.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_btnLastPage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_btnLastPage.Location = new System.Drawing.Point(573, 281);
-			this.Party_btnLastPage.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_btnLastPage.Name = "Party_btnLastPage";
-			this.Party_btnLastPage.Size = new System.Drawing.Size(20, 28);
-			this.Party_btnLastPage.TabIndex = 15;
-			this.Party_btnLastPage.Tag = "Font Awesome 5 Pro Solid";
-			this.Party_btnLastPage.Text = "";
-			this.Party_btnLastPage.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.ToolTips.SetToolTip(this.Party_btnLastPage, "Last Page");
-			this.Party_btnLastPage.UseCompatibleTextRendering = true;
-			this.Party_btnLastPage.UseVisualStyleBackColor = false;
-			this.Party_btnLastPage.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Party_btnNextPage
-			// 
-			this.Party_btnNextPage.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Party_btnNextPage.Enabled = false;
-			this.Party_btnNextPage.FlatAppearance.BorderSize = 0;
-			this.Party_btnNextPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Party_btnNextPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Party_btnNextPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_btnNextPage.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_btnNextPage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_btnNextPage.Location = new System.Drawing.Point(626, 281);
-			this.Party_btnNextPage.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_btnNextPage.Name = "Party_btnNextPage";
-			this.Party_btnNextPage.Size = new System.Drawing.Size(20, 28);
-			this.Party_btnNextPage.TabIndex = 14;
-			this.Party_btnNextPage.Tag = "Font Awesome 5 Pro Solid";
-			this.Party_btnNextPage.Text = "";
-			this.Party_btnNextPage.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.ToolTips.SetToolTip(this.Party_btnNextPage, "Next Page");
-			this.Party_btnNextPage.UseCompatibleTextRendering = true;
-			this.Party_btnNextPage.UseVisualStyleBackColor = false;
-			this.Party_btnNextPage.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Party_lblPageNumber
-			// 
-			this.Party_lblPageNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_lblPageNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lblPageNumber.Location = new System.Drawing.Point(593, 281);
-			this.Party_lblPageNumber.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Party_lblPageNumber.Name = "Party_lblPageNumber";
-			this.Party_lblPageNumber.Size = new System.Drawing.Size(33, 28);
-			this.Party_lblPageNumber.TabIndex = 12;
-			this.Party_lblPageNumber.Tag = "Source Sans Pro";
-			this.Party_lblPageNumber.Text = "0";
-			this.Party_lblPageNumber.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.ToolTips.SetToolTip(this.Party_lblPageNumber, "Current Page");
-			this.Party_lblPageNumber.UseMnemonic = false;
-			// 
-			// Party_btnRefreshMatch
-			// 
-			this.Party_btnRefreshMatch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Party_btnRefreshMatch.FlatAppearance.BorderSize = 0;
-			this.Party_btnRefreshMatch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Party_btnRefreshMatch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Party_btnRefreshMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_btnRefreshMatch.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_btnRefreshMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_btnRefreshMatch.Location = new System.Drawing.Point(6, 281);
-			this.Party_btnRefreshMatch.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_btnRefreshMatch.Name = "Party_btnRefreshMatch";
-			this.Party_btnRefreshMatch.Size = new System.Drawing.Size(28, 28);
-			this.Party_btnRefreshMatch.TabIndex = 11;
-			this.Party_btnRefreshMatch.Tag = "Font Awesome 5 Pro Light";
-			this.Party_btnRefreshMatch.Text = "";
-			this.Party_btnRefreshMatch.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.ToolTips.SetToolTip(this.Party_btnRefreshMatch, "Refresh Party Match");
-			this.Party_btnRefreshMatch.UseCompatibleTextRendering = true;
-			this.Party_btnRefreshMatch.UseVisualStyleBackColor = false;
-			this.Party_btnRefreshMatch.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Party_lstvPartyMatch
-			// 
-			this.Party_lstvPartyMatch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Party_lstvPartyMatch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Party_lstvPartyMatch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader17,
-            this.columnHeader18,
-            this.columnHeader19,
-            this.columnHeader20,
-            this.columnHeader21,
-            this.columnHeader22});
-			this.Party_lstvPartyMatch.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_lstvPartyMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lstvPartyMatch.FullRowSelect = true;
-			this.Party_lstvPartyMatch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.Party_lstvPartyMatch.HideSelection = false;
-			this.Party_lstvPartyMatch.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.Party_lstvPartyMatch.Location = new System.Drawing.Point(6, 7);
-			this.Party_lstvPartyMatch.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_lstvPartyMatch.MultiSelect = false;
-			this.Party_lstvPartyMatch.Name = "Party_lstvPartyMatch";
-			this.Party_lstvPartyMatch.ShowGroups = false;
-			this.Party_lstvPartyMatch.ShowItemToolTips = true;
-			this.Party_lstvPartyMatch.Size = new System.Drawing.Size(641, 270);
-			this.Party_lstvPartyMatch.TabIndex = 2;
-			this.Party_lstvPartyMatch.Tag = "Source Sans Pro";
-			this.Party_lstvPartyMatch.TileSize = new System.Drawing.Size(201, 50);
-			this.Party_lstvPartyMatch.UseCompatibleStateImageBehavior = false;
-			this.Party_lstvPartyMatch.View = System.Windows.Forms.View.Details;
-			// 
-			// columnHeader17
-			// 
-			this.columnHeader17.Text = "#";
-			this.columnHeader17.Width = 55;
-			// 
-			// columnHeader18
-			// 
-			this.columnHeader18.Text = "Master";
-			this.columnHeader18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader18.Width = 110;
-			// 
-			// columnHeader19
-			// 
-			this.columnHeader19.Text = "Title";
-			this.columnHeader19.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader19.Width = 262;
-			// 
-			// columnHeader20
-			// 
-			this.columnHeader20.Text = "Level";
-			this.columnHeader20.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader20.Width = 62;
-			// 
-			// columnHeader21
-			// 
-			this.columnHeader21.Text = "Capacity";
-			this.columnHeader21.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader21.Width = 68;
-			// 
-			// columnHeader22
-			// 
-			this.columnHeader22.Text = "Purpose";
-			this.columnHeader22.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader22.Width = 65;
-			// 
-			// TabPageH_Party_Option01_Panel
-			// 
-			this.TabPageH_Party_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_lblCurrentSetup);
-			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_cbxShowFGWInvites);
-			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_lstvMembers);
-			this.TabPageH_Party_Option01_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Party_Option01_Panel.Name = "TabPageH_Party_Option01_Panel";
-			this.TabPageH_Party_Option01_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Party_Option01_Panel.TabIndex = 5;
-			this.TabPageH_Party_Option01_Panel.Visible = false;
-			// 
-			// Party_lblCurrentSetup
-			// 
-			this.Party_lblCurrentSetup.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_lblCurrentSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-			this.Party_lblCurrentSetup.Location = new System.Drawing.Point(6, 281);
-			this.Party_lblCurrentSetup.Name = "Party_lblCurrentSetup";
-			this.Party_lblCurrentSetup.Size = new System.Drawing.Size(400, 26);
-			this.Party_lblCurrentSetup.TabIndex = 15;
-			this.Party_lblCurrentSetup.Tag = "Source Sans Pro";
-			this.Party_lblCurrentSetup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// Party_cbxShowFGWInvites
-			// 
-			this.Party_cbxShowFGWInvites.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Party_cbxShowFGWInvites.FlatAppearance.BorderSize = 0;
-			this.Party_cbxShowFGWInvites.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_cbxShowFGWInvites.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_cbxShowFGWInvites.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_cbxShowFGWInvites.Location = new System.Drawing.Point(406, 281);
-			this.Party_cbxShowFGWInvites.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_cbxShowFGWInvites.Name = "Party_cbxShowFGWInvites";
-			this.Party_cbxShowFGWInvites.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Party_cbxShowFGWInvites.Size = new System.Drawing.Size(241, 26);
-			this.Party_cbxShowFGWInvites.TabIndex = 4;
-			this.Party_cbxShowFGWInvites.Tag = "Source Sans Pro";
-			this.Party_cbxShowFGWInvites.Text = "Show forgotten world invitations";
-			this.Party_cbxShowFGWInvites.UseVisualStyleBackColor = false;
-			// 
-			// Party_lstvMembers
-			// 
-			this.Party_lstvMembers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Party_lstvMembers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Party_lstvMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader11,
-            this.columnHeader12,
-            this.columnHeader13,
-            this.columnHeader14,
-            this.columnHeader16});
-			this.Party_lstvMembers.ContextMenuStrip = this.Menu_lstvMembers;
-			this.Party_lstvMembers.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_lstvMembers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lstvMembers.FullRowSelect = true;
-			this.Party_lstvMembers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.Party_lstvMembers.HideSelection = false;
-			this.Party_lstvMembers.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.Party_lstvMembers.Location = new System.Drawing.Point(6, 7);
-			this.Party_lstvMembers.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_lstvMembers.MultiSelect = false;
-			this.Party_lstvMembers.Name = "Party_lstvMembers";
-			this.Party_lstvMembers.ShowGroups = false;
-			this.Party_lstvMembers.Size = new System.Drawing.Size(641, 270);
-			this.Party_lstvMembers.TabIndex = 1;
-			this.Party_lstvMembers.Tag = "Source Sans Pro";
-			this.Party_lstvMembers.TileSize = new System.Drawing.Size(201, 50);
-			this.Party_lstvMembers.UseCompatibleStateImageBehavior = false;
-			this.Party_lstvMembers.View = System.Windows.Forms.View.Details;
-			// 
-			// columnHeader11
-			// 
-			this.columnHeader11.Text = "Name";
-			this.columnHeader11.Width = 150;
-			// 
-			// columnHeader12
-			// 
-			this.columnHeader12.Text = "Guild";
-			this.columnHeader12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader12.Width = 150;
-			// 
-			// columnHeader13
-			// 
-			this.columnHeader13.Text = "Level";
-			this.columnHeader13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader13.Width = 50;
-			// 
-			// columnHeader14
-			// 
-			this.columnHeader14.Text = "Health / Mana";
-			this.columnHeader14.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader14.Width = 110;
-			// 
-			// columnHeader16
-			// 
-			this.columnHeader16.Text = "Location";
-			this.columnHeader16.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader16.Width = 178;
-			// 
-			// Menu_lstvMembers
-			// 
-			this.Menu_lstvMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_lstvMembers_AddTo,
-            this.Menu_lstvMembers_LeaveParty});
-			this.Menu_lstvMembers.Name = "Menu_lstvMembers";
-			this.Menu_lstvMembers.Size = new System.Drawing.Size(141, 48);
-			// 
-			// Menu_lstvMembers_AddTo
-			// 
-			this.Menu_lstvMembers_AddTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_lstvMembers_AddToPlayerList,
-            this.Menu_lstvMembers_AddToLeaderList});
-			this.Menu_lstvMembers_AddTo.Name = "Menu_lstvMembers_AddTo";
-			this.Menu_lstvMembers_AddTo.Size = new System.Drawing.Size(140, 22);
-			this.Menu_lstvMembers_AddTo.Text = "Add to Party";
-			// 
-			// Menu_lstvMembers_AddToPlayerList
-			// 
-			this.Menu_lstvMembers_AddToPlayerList.Name = "Menu_lstvMembers_AddToPlayerList";
-			this.Menu_lstvMembers_AddToPlayerList.Size = new System.Drawing.Size(127, 22);
-			this.Menu_lstvMembers_AddToPlayerList.Text = "Player list";
-			this.Menu_lstvMembers_AddToPlayerList.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// Menu_lstvMembers_AddToLeaderList
-			// 
-			this.Menu_lstvMembers_AddToLeaderList.Name = "Menu_lstvMembers_AddToLeaderList";
-			this.Menu_lstvMembers_AddToLeaderList.Size = new System.Drawing.Size(127, 22);
-			this.Menu_lstvMembers_AddToLeaderList.Text = "Leader list";
-			this.Menu_lstvMembers_AddToLeaderList.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// Menu_lstvMembers_LeaveParty
-			// 
-			this.Menu_lstvMembers_LeaveParty.Name = "Menu_lstvMembers_LeaveParty";
-			this.Menu_lstvMembers_LeaveParty.Size = new System.Drawing.Size(140, 22);
-			this.Menu_lstvMembers_LeaveParty.Text = "Leave Party";
-			this.Menu_lstvMembers_LeaveParty.Click += new System.EventHandler(this.Menu_Click);
-			// 
 			// TabPageH_Party_Option02_Panel
 			// 
 			this.TabPageH_Party_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2864,7 +2772,7 @@
 			// 
 			// Party_gbxLeaderList
 			// 
-			this.Party_gbxLeaderList.Controls.Add(this.Party_lstvLeaders);
+			this.Party_gbxLeaderList.Controls.Add(this.Party_lstvLeaderList);
 			this.Party_gbxLeaderList.Controls.Add(this.Party_btnAddLeader);
 			this.Party_gbxLeaderList.Controls.Add(this.Party_tbxLeader);
 			this.Party_gbxLeaderList.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
@@ -2877,30 +2785,54 @@
 			this.Party_gbxLeaderList.TabStop = false;
 			this.Party_gbxLeaderList.Text = "Leader list";
 			// 
-			// Party_lstvLeaders
+			// Party_lstvLeaderList
 			// 
-			this.Party_lstvLeaders.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Party_lstvLeaders.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Party_lstvLeaders.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.Party_lstvLeaderList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Party_lstvLeaderList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Party_lstvLeaderList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader15});
-			this.Party_lstvLeaders.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_lstvLeaders.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lstvLeaders.FullRowSelect = true;
-			this.Party_lstvLeaders.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Party_lstvLeaders.Location = new System.Drawing.Point(2, 51);
-			this.Party_lstvLeaders.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_lstvLeaders.MultiSelect = false;
-			this.Party_lstvLeaders.Name = "Party_lstvLeaders";
-			this.Party_lstvLeaders.Size = new System.Drawing.Size(207, 99);
-			this.Party_lstvLeaders.TabIndex = 10;
-			this.Party_lstvLeaders.TileSize = new System.Drawing.Size(201, 30);
-			this.Party_lstvLeaders.UseCompatibleStateImageBehavior = false;
-			this.Party_lstvLeaders.View = System.Windows.Forms.View.Details;
+			this.Party_lstvLeaderList.ContextMenuStrip = this.Menu_lstvLeaderList;
+			this.Party_lstvLeaderList.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_lstvLeaderList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lstvLeaderList.FullRowSelect = true;
+			this.Party_lstvLeaderList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Party_lstvLeaderList.Location = new System.Drawing.Point(2, 51);
+			this.Party_lstvLeaderList.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_lstvLeaderList.MultiSelect = false;
+			this.Party_lstvLeaderList.Name = "Party_lstvLeaderList";
+			this.Party_lstvLeaderList.Size = new System.Drawing.Size(207, 99);
+			this.Party_lstvLeaderList.TabIndex = 10;
+			this.Party_lstvLeaderList.TileSize = new System.Drawing.Size(201, 30);
+			this.Party_lstvLeaderList.UseCompatibleStateImageBehavior = false;
+			this.Party_lstvLeaderList.View = System.Windows.Forms.View.Details;
 			// 
 			// columnHeader15
 			// 
 			this.columnHeader15.Text = "Charname";
 			this.columnHeader15.Width = 188;
+			// 
+			// Menu_lstvLeaderList
+			// 
+			this.Menu_lstvLeaderList.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.Menu_lstvLeaderList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvLeaderList_Remove,
+            this.Menu_lstvLeaderList_RemoveAll});
+			this.Menu_lstvLeaderList.Name = "Menu_lstvOpcodes";
+			this.Menu_lstvLeaderList.Size = new System.Drawing.Size(165, 48);
+			// 
+			// Menu_lstvLeaderList_Remove
+			// 
+			this.Menu_lstvLeaderList_Remove.Name = "Menu_lstvLeaderList_Remove";
+			this.Menu_lstvLeaderList_Remove.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvLeaderList_Remove.Text = "Remove Selected";
+			this.Menu_lstvLeaderList_Remove.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvLeaderList_RemoveAll
+			// 
+			this.Menu_lstvLeaderList_RemoveAll.Name = "Menu_lstvLeaderList_RemoveAll";
+			this.Menu_lstvLeaderList_RemoveAll.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvLeaderList_RemoveAll.Text = "Remove All";
+			this.Menu_lstvLeaderList_RemoveAll.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Party_btnAddLeader
 			// 
@@ -3062,16 +2994,15 @@
 			// 
 			// Party_gbxAccepting
 			// 
-			this.Party_gbxAccepting.Controls.Add(this.checkBox7);
 			this.Party_gbxAccepting.Controls.Add(this.Party_cbxLeavePartyNoneLeader);
 			this.Party_gbxAccepting.Controls.Add(this.Party_cbxAcceptOnlyPartySetup);
-			this.Party_gbxAccepting.Controls.Add(this.checkBox1);
+			this.Party_gbxAccepting.Controls.Add(this.Party_cbxInviteOnlyPartySetup);
 			this.Party_gbxAccepting.Controls.Add(this.Party_cbxRefusePartys);
-			this.Party_gbxAccepting.Controls.Add(this.checkBox11);
-			this.Party_gbxAccepting.Controls.Add(this.checkBox12);
+			this.Party_gbxAccepting.Controls.Add(this.Party_cbxInviteAll);
+			this.Party_gbxAccepting.Controls.Add(this.Party_cbxInvitePartyList);
 			this.Party_gbxAccepting.Controls.Add(this.Party_cbxAcceptLeaderList);
 			this.Party_gbxAccepting.Controls.Add(this.Party_cbxAcceptAll);
-			this.Party_gbxAccepting.Controls.Add(this.Party_cbxAcceptPlayerList);
+			this.Party_gbxAccepting.Controls.Add(this.Party_cbxAcceptPartyList);
 			this.Party_gbxAccepting.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
 			this.Party_gbxAccepting.ForeColor = System.Drawing.Color.LightGray;
 			this.Party_gbxAccepting.Location = new System.Drawing.Point(6, 73);
@@ -3082,22 +3013,6 @@
 			this.Party_gbxAccepting.TabStop = false;
 			this.Party_gbxAccepting.Tag = "Source Sans Pro";
 			this.Party_gbxAccepting.Text = "Accept / Invite";
-			// 
-			// checkBox7
-			// 
-			this.checkBox7.Cursor = System.Windows.Forms.Cursors.Default;
-			this.checkBox7.FlatAppearance.BorderSize = 0;
-			this.checkBox7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.checkBox7.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
-			this.checkBox7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.checkBox7.Location = new System.Drawing.Point(8, 199);
-			this.checkBox7.Margin = new System.Windows.Forms.Padding(0);
-			this.checkBox7.Name = "checkBox7";
-			this.checkBox7.Size = new System.Drawing.Size(194, 25);
-			this.checkBox7.TabIndex = 19;
-			this.checkBox7.Tag = "Source Sans Pro";
-			this.checkBox7.Text = "Lorem ipsum dolor sit amet";
-			this.checkBox7.UseVisualStyleBackColor = false;
 			// 
 			// Party_cbxLeavePartyNoneLeader
 			// 
@@ -3112,7 +3027,7 @@
 			this.Party_cbxLeavePartyNoneLeader.Size = new System.Drawing.Size(194, 40);
 			this.Party_cbxLeavePartyNoneLeader.TabIndex = 18;
 			this.Party_cbxLeavePartyNoneLeader.Tag = "Source Sans Pro";
-			this.Party_cbxLeavePartyNoneLeader.Text = "Leave party if none Leader is found";
+			this.Party_cbxLeavePartyNoneLeader.Text = "Leave party if there is none Leader found";
 			this.Party_cbxLeavePartyNoneLeader.UseVisualStyleBackColor = false;
 			this.Party_cbxLeavePartyNoneLeader.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
@@ -3133,21 +3048,22 @@
 			this.Party_cbxAcceptOnlyPartySetup.UseVisualStyleBackColor = false;
 			this.Party_cbxAcceptOnlyPartySetup.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
-			// checkBox1
+			// Party_cbxInviteOnlyPartySetup
 			// 
-			this.checkBox1.Cursor = System.Windows.Forms.Cursors.Default;
-			this.checkBox1.FlatAppearance.BorderSize = 0;
-			this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.checkBox1.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
-			this.checkBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.checkBox1.Location = new System.Drawing.Point(214, 15);
-			this.checkBox1.Margin = new System.Windows.Forms.Padding(0);
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(194, 40);
-			this.checkBox1.TabIndex = 17;
-			this.checkBox1.Tag = "Source Sans Pro";
-			this.checkBox1.Text = "Invite only using the current party setup";
-			this.checkBox1.UseVisualStyleBackColor = false;
+			this.Party_cbxInviteOnlyPartySetup.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_cbxInviteOnlyPartySetup.FlatAppearance.BorderSize = 0;
+			this.Party_cbxInviteOnlyPartySetup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_cbxInviteOnlyPartySetup.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_cbxInviteOnlyPartySetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_cbxInviteOnlyPartySetup.Location = new System.Drawing.Point(214, 15);
+			this.Party_cbxInviteOnlyPartySetup.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_cbxInviteOnlyPartySetup.Name = "Party_cbxInviteOnlyPartySetup";
+			this.Party_cbxInviteOnlyPartySetup.Size = new System.Drawing.Size(194, 40);
+			this.Party_cbxInviteOnlyPartySetup.TabIndex = 17;
+			this.Party_cbxInviteOnlyPartySetup.Tag = "Source Sans Pro";
+			this.Party_cbxInviteOnlyPartySetup.Text = "Invite only using the current party setup";
+			this.Party_cbxInviteOnlyPartySetup.UseVisualStyleBackColor = false;
+			this.Party_cbxInviteOnlyPartySetup.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
 			// Party_cbxRefusePartys
 			// 
@@ -3162,41 +3078,43 @@
 			this.Party_cbxRefusePartys.Size = new System.Drawing.Size(194, 25);
 			this.Party_cbxRefusePartys.TabIndex = 15;
 			this.Party_cbxRefusePartys.Tag = "Source Sans Pro";
-			this.Party_cbxRefusePartys.Text = "Refuse if no option is found";
+			this.Party_cbxRefusePartys.Text = "Refuse if there is no option";
 			this.Party_cbxRefusePartys.UseVisualStyleBackColor = false;
 			this.Party_cbxRefusePartys.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
-			// checkBox11
+			// Party_cbxInviteAll
 			// 
-			this.checkBox11.Cursor = System.Windows.Forms.Cursors.Default;
-			this.checkBox11.FlatAppearance.BorderSize = 0;
-			this.checkBox11.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.checkBox11.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
-			this.checkBox11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.checkBox11.Location = new System.Drawing.Point(214, 56);
-			this.checkBox11.Margin = new System.Windows.Forms.Padding(0);
-			this.checkBox11.Name = "checkBox11";
-			this.checkBox11.Size = new System.Drawing.Size(194, 25);
-			this.checkBox11.TabIndex = 5;
-			this.checkBox11.Tag = "Source Sans Pro";
-			this.checkBox11.Text = "Invite all";
-			this.checkBox11.UseVisualStyleBackColor = false;
+			this.Party_cbxInviteAll.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_cbxInviteAll.FlatAppearance.BorderSize = 0;
+			this.Party_cbxInviteAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_cbxInviteAll.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_cbxInviteAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_cbxInviteAll.Location = new System.Drawing.Point(214, 56);
+			this.Party_cbxInviteAll.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_cbxInviteAll.Name = "Party_cbxInviteAll";
+			this.Party_cbxInviteAll.Size = new System.Drawing.Size(194, 25);
+			this.Party_cbxInviteAll.TabIndex = 5;
+			this.Party_cbxInviteAll.Tag = "Source Sans Pro";
+			this.Party_cbxInviteAll.Text = "Invite all";
+			this.Party_cbxInviteAll.UseVisualStyleBackColor = false;
+			this.Party_cbxInviteAll.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
-			// checkBox12
+			// Party_cbxInvitePartyList
 			// 
-			this.checkBox12.Cursor = System.Windows.Forms.Cursors.Default;
-			this.checkBox12.FlatAppearance.BorderSize = 0;
-			this.checkBox12.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.checkBox12.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
-			this.checkBox12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.checkBox12.Location = new System.Drawing.Point(214, 80);
-			this.checkBox12.Margin = new System.Windows.Forms.Padding(0);
-			this.checkBox12.Name = "checkBox12";
-			this.checkBox12.Size = new System.Drawing.Size(194, 25);
-			this.checkBox12.TabIndex = 3;
-			this.checkBox12.Tag = "Source Sans Pro";
-			this.checkBox12.Text = "Invite all from Player list";
-			this.checkBox12.UseVisualStyleBackColor = false;
+			this.Party_cbxInvitePartyList.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_cbxInvitePartyList.FlatAppearance.BorderSize = 0;
+			this.Party_cbxInvitePartyList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_cbxInvitePartyList.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_cbxInvitePartyList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_cbxInvitePartyList.Location = new System.Drawing.Point(214, 80);
+			this.Party_cbxInvitePartyList.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_cbxInvitePartyList.Name = "Party_cbxInvitePartyList";
+			this.Party_cbxInvitePartyList.Size = new System.Drawing.Size(194, 25);
+			this.Party_cbxInvitePartyList.TabIndex = 3;
+			this.Party_cbxInvitePartyList.Tag = "Source Sans Pro";
+			this.Party_cbxInvitePartyList.Text = "Invite all from Party list";
+			this.Party_cbxInvitePartyList.UseVisualStyleBackColor = false;
+			this.Party_cbxInvitePartyList.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
 			// Party_cbxAcceptLeaderList
 			// 
@@ -3232,26 +3150,26 @@
 			this.Party_cbxAcceptAll.UseVisualStyleBackColor = false;
 			this.Party_cbxAcceptAll.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
-			// Party_cbxAcceptPlayerList
+			// Party_cbxAcceptPartyList
 			// 
-			this.Party_cbxAcceptPlayerList.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Party_cbxAcceptPlayerList.FlatAppearance.BorderSize = 0;
-			this.Party_cbxAcceptPlayerList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Party_cbxAcceptPlayerList.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Party_cbxAcceptPlayerList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_cbxAcceptPlayerList.Location = new System.Drawing.Point(8, 80);
-			this.Party_cbxAcceptPlayerList.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_cbxAcceptPlayerList.Name = "Party_cbxAcceptPlayerList";
-			this.Party_cbxAcceptPlayerList.Size = new System.Drawing.Size(194, 25);
-			this.Party_cbxAcceptPlayerList.TabIndex = 3;
-			this.Party_cbxAcceptPlayerList.Tag = "Source Sans Pro";
-			this.Party_cbxAcceptPlayerList.Text = "Accept all from Player list";
-			this.Party_cbxAcceptPlayerList.UseVisualStyleBackColor = false;
-			this.Party_cbxAcceptPlayerList.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			this.Party_cbxAcceptPartyList.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_cbxAcceptPartyList.FlatAppearance.BorderSize = 0;
+			this.Party_cbxAcceptPartyList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_cbxAcceptPartyList.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_cbxAcceptPartyList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_cbxAcceptPartyList.Location = new System.Drawing.Point(8, 80);
+			this.Party_cbxAcceptPartyList.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_cbxAcceptPartyList.Name = "Party_cbxAcceptPartyList";
+			this.Party_cbxAcceptPartyList.Size = new System.Drawing.Size(194, 25);
+			this.Party_cbxAcceptPartyList.TabIndex = 3;
+			this.Party_cbxAcceptPartyList.Tag = "Source Sans Pro";
+			this.Party_cbxAcceptPartyList.Text = "Accept all from Party list";
+			this.Party_cbxAcceptPartyList.UseVisualStyleBackColor = false;
+			this.Party_cbxAcceptPartyList.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
 			// Party_gbxPlayerList
 			// 
-			this.Party_gbxPlayerList.Controls.Add(this.Party_lstvPlayers);
+			this.Party_gbxPlayerList.Controls.Add(this.Party_lstvPartyList);
 			this.Party_gbxPlayerList.Controls.Add(this.Party_btnAddPlayer);
 			this.Party_gbxPlayerList.Controls.Add(this.Party_tbxPlayer);
 			this.Party_gbxPlayerList.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
@@ -3262,32 +3180,56 @@
 			this.Party_gbxPlayerList.Size = new System.Drawing.Size(211, 152);
 			this.Party_gbxPlayerList.TabIndex = 1;
 			this.Party_gbxPlayerList.TabStop = false;
-			this.Party_gbxPlayerList.Text = "Player list";
+			this.Party_gbxPlayerList.Text = "Party list";
 			// 
-			// Party_lstvPlayers
+			// Party_lstvPartyList
 			// 
-			this.Party_lstvPlayers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Party_lstvPlayers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Party_lstvPlayers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.Party_lstvPartyList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Party_lstvPartyList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Party_lstvPartyList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
-			this.Party_lstvPlayers.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Party_lstvPlayers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Party_lstvPlayers.FullRowSelect = true;
-			this.Party_lstvPlayers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Party_lstvPlayers.Location = new System.Drawing.Point(2, 51);
-			this.Party_lstvPlayers.Margin = new System.Windows.Forms.Padding(0);
-			this.Party_lstvPlayers.MultiSelect = false;
-			this.Party_lstvPlayers.Name = "Party_lstvPlayers";
-			this.Party_lstvPlayers.Size = new System.Drawing.Size(207, 99);
-			this.Party_lstvPlayers.TabIndex = 10;
-			this.Party_lstvPlayers.TileSize = new System.Drawing.Size(201, 30);
-			this.Party_lstvPlayers.UseCompatibleStateImageBehavior = false;
-			this.Party_lstvPlayers.View = System.Windows.Forms.View.Details;
+			this.Party_lstvPartyList.ContextMenuStrip = this.Menu_lstvPartyList;
+			this.Party_lstvPartyList.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_lstvPartyList.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lstvPartyList.FullRowSelect = true;
+			this.Party_lstvPartyList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Party_lstvPartyList.Location = new System.Drawing.Point(2, 51);
+			this.Party_lstvPartyList.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_lstvPartyList.MultiSelect = false;
+			this.Party_lstvPartyList.Name = "Party_lstvPartyList";
+			this.Party_lstvPartyList.Size = new System.Drawing.Size(207, 99);
+			this.Party_lstvPartyList.TabIndex = 10;
+			this.Party_lstvPartyList.TileSize = new System.Drawing.Size(201, 30);
+			this.Party_lstvPartyList.UseCompatibleStateImageBehavior = false;
+			this.Party_lstvPartyList.View = System.Windows.Forms.View.Details;
 			// 
 			// columnHeader1
 			// 
 			this.columnHeader1.Text = "Charname";
 			this.columnHeader1.Width = 188;
+			// 
+			// Menu_lstvPartyList
+			// 
+			this.Menu_lstvPartyList.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.Menu_lstvPartyList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvPartyList_Remove,
+            this.Menu_lstvPartyList_RemoveAll});
+			this.Menu_lstvPartyList.Name = "Menu_lstvOpcodes";
+			this.Menu_lstvPartyList.Size = new System.Drawing.Size(165, 48);
+			// 
+			// Menu_lstvPartyList_Remove
+			// 
+			this.Menu_lstvPartyList_Remove.Name = "Menu_lstvPartyList_Remove";
+			this.Menu_lstvPartyList_Remove.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvPartyList_Remove.Text = "Remove Selected";
+			this.Menu_lstvPartyList_Remove.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvPartyList_RemoveAll
+			// 
+			this.Menu_lstvPartyList_RemoveAll.Name = "Menu_lstvPartyList_RemoveAll";
+			this.Menu_lstvPartyList_RemoveAll.Size = new System.Drawing.Size(164, 22);
+			this.Menu_lstvPartyList_RemoveAll.Text = "Remove All";
+			this.Menu_lstvPartyList_RemoveAll.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Party_btnAddPlayer
 			// 
@@ -3321,6 +3263,383 @@
 			this.Party_tbxPlayer.TabIndex = 1;
 			this.Party_tbxPlayer.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
+			// TabPageH_Party_Option03_Panel
+			// 
+			this.TabPageH_Party_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnJoinMatch);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_tbxJoinToNumber);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lblJoinToNumber);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnLastPage);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnNextPage);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lblPageNumber);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_btnRefreshMatch);
+			this.TabPageH_Party_Option03_Panel.Controls.Add(this.Party_lstvPartyMatch);
+			this.TabPageH_Party_Option03_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Party_Option03_Panel.Name = "TabPageH_Party_Option03_Panel";
+			this.TabPageH_Party_Option03_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Party_Option03_Panel.TabIndex = 7;
+			this.TabPageH_Party_Option03_Panel.Visible = false;
+			// 
+			// Party_btnJoinMatch
+			// 
+			this.Party_btnJoinMatch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Party_btnJoinMatch.FlatAppearance.BorderSize = 0;
+			this.Party_btnJoinMatch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Party_btnJoinMatch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Party_btnJoinMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_btnJoinMatch.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_btnJoinMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_btnJoinMatch.Location = new System.Drawing.Point(166, 281);
+			this.Party_btnJoinMatch.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_btnJoinMatch.Name = "Party_btnJoinMatch";
+			this.Party_btnJoinMatch.Size = new System.Drawing.Size(28, 28);
+			this.Party_btnJoinMatch.TabIndex = 19;
+			this.Party_btnJoinMatch.Tag = "Font Awesome 5 Pro Light";
+			this.Party_btnJoinMatch.Text = "";
+			this.Party_btnJoinMatch.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.ToolTips.SetToolTip(this.Party_btnJoinMatch, "Join to Party Match");
+			this.Party_btnJoinMatch.UseCompatibleTextRendering = true;
+			this.Party_btnJoinMatch.UseVisualStyleBackColor = false;
+			this.Party_btnJoinMatch.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Party_tbxJoinToNumber
+			// 
+			this.Party_tbxJoinToNumber.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Party_tbxJoinToNumber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Party_tbxJoinToNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_tbxJoinToNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_tbxJoinToNumber.Location = new System.Drawing.Point(73, 281);
+			this.Party_tbxJoinToNumber.MaxLength = 10;
+			this.Party_tbxJoinToNumber.Name = "Party_tbxJoinToNumber";
+			this.Party_tbxJoinToNumber.Size = new System.Drawing.Size(90, 28);
+			this.Party_tbxJoinToNumber.TabIndex = 17;
+			this.Party_tbxJoinToNumber.Tag = "Source Sans Pro";
+			this.Party_tbxJoinToNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Party_tbxJoinToNumber.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			this.Party_tbxJoinToNumber.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.Party_tbxJoinToNumber.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// Party_lblJoinToNumber
+			// 
+			this.Party_lblJoinToNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_lblJoinToNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lblJoinToNumber.Location = new System.Drawing.Point(6, 281);
+			this.Party_lblJoinToNumber.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.Party_lblJoinToNumber.Name = "Party_lblJoinToNumber";
+			this.Party_lblJoinToNumber.Size = new System.Drawing.Size(67, 28);
+			this.Party_lblJoinToNumber.TabIndex = 16;
+			this.Party_lblJoinToNumber.Tag = "Source Sans Pro";
+			this.Party_lblJoinToNumber.Text = "Join to #";
+			this.Party_lblJoinToNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Party_btnLastPage
+			// 
+			this.Party_btnLastPage.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Party_btnLastPage.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_btnLastPage.Enabled = false;
+			this.Party_btnLastPage.FlatAppearance.BorderSize = 0;
+			this.Party_btnLastPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Party_btnLastPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Party_btnLastPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_btnLastPage.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_btnLastPage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_btnLastPage.Location = new System.Drawing.Point(544, 281);
+			this.Party_btnLastPage.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_btnLastPage.Name = "Party_btnLastPage";
+			this.Party_btnLastPage.Size = new System.Drawing.Size(20, 28);
+			this.Party_btnLastPage.TabIndex = 15;
+			this.Party_btnLastPage.Tag = "Font Awesome 5 Pro Solid";
+			this.Party_btnLastPage.Text = "";
+			this.Party_btnLastPage.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.ToolTips.SetToolTip(this.Party_btnLastPage, "Last Page");
+			this.Party_btnLastPage.UseCompatibleTextRendering = true;
+			this.Party_btnLastPage.UseVisualStyleBackColor = false;
+			this.Party_btnLastPage.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Party_btnNextPage
+			// 
+			this.Party_btnNextPage.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Party_btnNextPage.Enabled = false;
+			this.Party_btnNextPage.FlatAppearance.BorderSize = 0;
+			this.Party_btnNextPage.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Party_btnNextPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Party_btnNextPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_btnNextPage.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_btnNextPage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_btnNextPage.Location = new System.Drawing.Point(597, 281);
+			this.Party_btnNextPage.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_btnNextPage.Name = "Party_btnNextPage";
+			this.Party_btnNextPage.Size = new System.Drawing.Size(20, 28);
+			this.Party_btnNextPage.TabIndex = 14;
+			this.Party_btnNextPage.Tag = "Font Awesome 5 Pro Solid";
+			this.Party_btnNextPage.Text = "";
+			this.Party_btnNextPage.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.ToolTips.SetToolTip(this.Party_btnNextPage, "Next Page");
+			this.Party_btnNextPage.UseCompatibleTextRendering = true;
+			this.Party_btnNextPage.UseVisualStyleBackColor = false;
+			this.Party_btnNextPage.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Party_lblPageNumber
+			// 
+			this.Party_lblPageNumber.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_lblPageNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lblPageNumber.Location = new System.Drawing.Point(564, 281);
+			this.Party_lblPageNumber.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.Party_lblPageNumber.Name = "Party_lblPageNumber";
+			this.Party_lblPageNumber.Size = new System.Drawing.Size(33, 28);
+			this.Party_lblPageNumber.TabIndex = 12;
+			this.Party_lblPageNumber.Tag = "Source Sans Pro";
+			this.Party_lblPageNumber.Text = "0";
+			this.Party_lblPageNumber.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.ToolTips.SetToolTip(this.Party_lblPageNumber, "Current Page");
+			this.Party_lblPageNumber.UseMnemonic = false;
+			// 
+			// Party_btnRefreshMatch
+			// 
+			this.Party_btnRefreshMatch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Party_btnRefreshMatch.FlatAppearance.BorderSize = 0;
+			this.Party_btnRefreshMatch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Party_btnRefreshMatch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Party_btnRefreshMatch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_btnRefreshMatch.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_btnRefreshMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_btnRefreshMatch.Location = new System.Drawing.Point(621, 281);
+			this.Party_btnRefreshMatch.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_btnRefreshMatch.Name = "Party_btnRefreshMatch";
+			this.Party_btnRefreshMatch.Size = new System.Drawing.Size(28, 28);
+			this.Party_btnRefreshMatch.TabIndex = 11;
+			this.Party_btnRefreshMatch.Tag = "Font Awesome 5 Pro Light";
+			this.Party_btnRefreshMatch.Text = "";
+			this.Party_btnRefreshMatch.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.ToolTips.SetToolTip(this.Party_btnRefreshMatch, "Refresh Party Match");
+			this.Party_btnRefreshMatch.UseCompatibleTextRendering = true;
+			this.Party_btnRefreshMatch.UseVisualStyleBackColor = false;
+			this.Party_btnRefreshMatch.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Party_lstvPartyMatch
+			// 
+			this.Party_lstvPartyMatch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Party_lstvPartyMatch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Party_lstvPartyMatch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader17,
+            this.columnHeader18,
+            this.columnHeader19,
+            this.columnHeader20,
+            this.columnHeader21,
+            this.columnHeader22});
+			this.Party_lstvPartyMatch.ContextMenuStrip = this.Menu_lstvPartyMatch;
+			this.Party_lstvPartyMatch.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_lstvPartyMatch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lstvPartyMatch.FullRowSelect = true;
+			this.Party_lstvPartyMatch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.Party_lstvPartyMatch.HideSelection = false;
+			this.Party_lstvPartyMatch.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Party_lstvPartyMatch.Location = new System.Drawing.Point(6, 7);
+			this.Party_lstvPartyMatch.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_lstvPartyMatch.MultiSelect = false;
+			this.Party_lstvPartyMatch.Name = "Party_lstvPartyMatch";
+			this.Party_lstvPartyMatch.ShowGroups = false;
+			this.Party_lstvPartyMatch.ShowItemToolTips = true;
+			this.Party_lstvPartyMatch.Size = new System.Drawing.Size(643, 270);
+			this.Party_lstvPartyMatch.TabIndex = 2;
+			this.Party_lstvPartyMatch.Tag = "Source Sans Pro";
+			this.Party_lstvPartyMatch.TileSize = new System.Drawing.Size(201, 50);
+			this.Party_lstvPartyMatch.UseCompatibleStateImageBehavior = false;
+			this.Party_lstvPartyMatch.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader17
+			// 
+			this.columnHeader17.Text = "#";
+			this.columnHeader17.Width = 55;
+			// 
+			// columnHeader18
+			// 
+			this.columnHeader18.Text = "Master";
+			this.columnHeader18.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader18.Width = 110;
+			// 
+			// columnHeader19
+			// 
+			this.columnHeader19.Text = "Title";
+			this.columnHeader19.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader19.Width = 262;
+			// 
+			// columnHeader20
+			// 
+			this.columnHeader20.Text = "Level";
+			this.columnHeader20.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader20.Width = 62;
+			// 
+			// columnHeader21
+			// 
+			this.columnHeader21.Text = "Capacity";
+			this.columnHeader21.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader21.Width = 68;
+			// 
+			// columnHeader22
+			// 
+			this.columnHeader22.Text = "Purpose";
+			this.columnHeader22.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader22.Width = 65;
+			// 
+			// Menu_lstvPartyMatch
+			// 
+			this.Menu_lstvPartyMatch.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvPartyMatch_JoinToParty,
+            this.Menu_lstvPartyMatch_PrivateMsg});
+			this.Menu_lstvPartyMatch.Name = "Menu_lstvHost";
+			this.Menu_lstvPartyMatch.Size = new System.Drawing.Size(160, 48);
+			// 
+			// Menu_lstvPartyMatch_JoinToParty
+			// 
+			this.Menu_lstvPartyMatch_JoinToParty.Name = "Menu_lstvPartyMatch_JoinToParty";
+			this.Menu_lstvPartyMatch_JoinToParty.Size = new System.Drawing.Size(159, 22);
+			this.Menu_lstvPartyMatch_JoinToParty.Text = "Join to Party";
+			this.Menu_lstvPartyMatch_JoinToParty.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvPartyMatch_PrivateMsg
+			// 
+			this.Menu_lstvPartyMatch_PrivateMsg.Name = "Menu_lstvPartyMatch_PrivateMsg";
+			this.Menu_lstvPartyMatch_PrivateMsg.Size = new System.Drawing.Size(159, 22);
+			this.Menu_lstvPartyMatch_PrivateMsg.Text = "Private Message";
+			this.Menu_lstvPartyMatch_PrivateMsg.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// TabPageH_Party_Option01_Panel
+			// 
+			this.TabPageH_Party_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_lblCurrentSetup);
+			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_cbxShowFGWInvites);
+			this.TabPageH_Party_Option01_Panel.Controls.Add(this.Party_lstvPartyMembers);
+			this.TabPageH_Party_Option01_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Party_Option01_Panel.Name = "TabPageH_Party_Option01_Panel";
+			this.TabPageH_Party_Option01_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Party_Option01_Panel.TabIndex = 5;
+			this.TabPageH_Party_Option01_Panel.Visible = false;
+			// 
+			// Party_lblCurrentSetup
+			// 
+			this.Party_lblCurrentSetup.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Party_lblCurrentSetup.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+			this.Party_lblCurrentSetup.Location = new System.Drawing.Point(6, 281);
+			this.Party_lblCurrentSetup.Name = "Party_lblCurrentSetup";
+			this.Party_lblCurrentSetup.Size = new System.Drawing.Size(400, 26);
+			this.Party_lblCurrentSetup.TabIndex = 15;
+			this.Party_lblCurrentSetup.Tag = "Source Sans Pro";
+			this.Party_lblCurrentSetup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// Party_cbxShowFGWInvites
+			// 
+			this.Party_cbxShowFGWInvites.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Party_cbxShowFGWInvites.FlatAppearance.BorderSize = 0;
+			this.Party_cbxShowFGWInvites.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Party_cbxShowFGWInvites.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_cbxShowFGWInvites.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_cbxShowFGWInvites.Location = new System.Drawing.Point(406, 281);
+			this.Party_cbxShowFGWInvites.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_cbxShowFGWInvites.Name = "Party_cbxShowFGWInvites";
+			this.Party_cbxShowFGWInvites.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Party_cbxShowFGWInvites.Size = new System.Drawing.Size(241, 26);
+			this.Party_cbxShowFGWInvites.TabIndex = 4;
+			this.Party_cbxShowFGWInvites.Tag = "Source Sans Pro";
+			this.Party_cbxShowFGWInvites.Text = "Show forgotten world invitations";
+			this.Party_cbxShowFGWInvites.UseVisualStyleBackColor = false;
+			// 
+			// Party_lstvPartyMembers
+			// 
+			this.Party_lstvPartyMembers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Party_lstvPartyMembers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Party_lstvPartyMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader11,
+            this.columnHeader12,
+            this.columnHeader13,
+            this.columnHeader14,
+            this.columnHeader16});
+			this.Party_lstvPartyMembers.ContextMenuStrip = this.Menu_lstvPartyMembers;
+			this.Party_lstvPartyMembers.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Party_lstvPartyMembers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Party_lstvPartyMembers.FullRowSelect = true;
+			this.Party_lstvPartyMembers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.Party_lstvPartyMembers.HideSelection = false;
+			this.Party_lstvPartyMembers.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Party_lstvPartyMembers.Location = new System.Drawing.Point(6, 7);
+			this.Party_lstvPartyMembers.Margin = new System.Windows.Forms.Padding(0);
+			this.Party_lstvPartyMembers.MultiSelect = false;
+			this.Party_lstvPartyMembers.Name = "Party_lstvPartyMembers";
+			this.Party_lstvPartyMembers.ShowGroups = false;
+			this.Party_lstvPartyMembers.Size = new System.Drawing.Size(643, 270);
+			this.Party_lstvPartyMembers.TabIndex = 1;
+			this.Party_lstvPartyMembers.Tag = "Source Sans Pro";
+			this.Party_lstvPartyMembers.TileSize = new System.Drawing.Size(201, 50);
+			this.Party_lstvPartyMembers.UseCompatibleStateImageBehavior = false;
+			this.Party_lstvPartyMembers.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader11
+			// 
+			this.columnHeader11.Text = "Name";
+			this.columnHeader11.Width = 150;
+			// 
+			// columnHeader12
+			// 
+			this.columnHeader12.Text = "Guild";
+			this.columnHeader12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader12.Width = 150;
+			// 
+			// columnHeader13
+			// 
+			this.columnHeader13.Text = "Level";
+			this.columnHeader13.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader13.Width = 50;
+			// 
+			// columnHeader14
+			// 
+			this.columnHeader14.Text = "Health / Mana";
+			this.columnHeader14.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader14.Width = 110;
+			// 
+			// columnHeader16
+			// 
+			this.columnHeader16.Text = "Location";
+			this.columnHeader16.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader16.Width = 178;
+			// 
+			// Menu_lstvPartyMembers
+			// 
+			this.Menu_lstvPartyMembers.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvPartyMembers_AddTo,
+            this.Menu_lstvPartyMembers_LeaveParty});
+			this.Menu_lstvPartyMembers.Name = "Menu_lstvMembers";
+			this.Menu_lstvPartyMembers.Size = new System.Drawing.Size(141, 48);
+			// 
+			// Menu_lstvPartyMembers_AddTo
+			// 
+			this.Menu_lstvPartyMembers_AddTo.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Menu_lstvPartyMembers_AddToPartyList,
+            this.Menu_lstvPartyMembers_AddToLeaderList});
+			this.Menu_lstvPartyMembers_AddTo.Name = "Menu_lstvPartyMembers_AddTo";
+			this.Menu_lstvPartyMembers_AddTo.Size = new System.Drawing.Size(140, 22);
+			this.Menu_lstvPartyMembers_AddTo.Text = "Add to Party";
+			// 
+			// Menu_lstvPartyMembers_AddToPartyList
+			// 
+			this.Menu_lstvPartyMembers_AddToPartyList.Name = "Menu_lstvPartyMembers_AddToPartyList";
+			this.Menu_lstvPartyMembers_AddToPartyList.Size = new System.Drawing.Size(127, 22);
+			this.Menu_lstvPartyMembers_AddToPartyList.Text = "Party list";
+			this.Menu_lstvPartyMembers_AddToPartyList.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvPartyMembers_AddToLeaderList
+			// 
+			this.Menu_lstvPartyMembers_AddToLeaderList.Name = "Menu_lstvPartyMembers_AddToLeaderList";
+			this.Menu_lstvPartyMembers_AddToLeaderList.Size = new System.Drawing.Size(127, 22);
+			this.Menu_lstvPartyMembers_AddToLeaderList.Text = "Leader list";
+			this.Menu_lstvPartyMembers_AddToLeaderList.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_lstvPartyMembers_LeaveParty
+			// 
+			this.Menu_lstvPartyMembers_LeaveParty.Name = "Menu_lstvPartyMembers_LeaveParty";
+			this.Menu_lstvPartyMembers_LeaveParty.Size = new System.Drawing.Size(140, 22);
+			this.Menu_lstvPartyMembers_LeaveParty.Text = "Leave Party";
+			this.Menu_lstvPartyMembers_LeaveParty.Click += new System.EventHandler(this.Menu_Click);
+			// 
 			// TabPageH_Party_Option04_Panel
 			// 
 			this.TabPageH_Party_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -3345,13 +3664,14 @@
 			this.pnlWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option02_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option01_Panel);
-			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option13_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option04_Panel);
-			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option14_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option11_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option12_Panel);
-			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option09_Panel);
+			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option13_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option10_Panel);
+			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option03_Panel);
+			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option14_Panel);
+			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option09_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option05_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option08_Panel);
 			this.pnlWindow.Controls.Add(this.btnShowHideClient);
@@ -3360,7 +3680,6 @@
 			this.pnlWindow.Controls.Add(this.pnlHeader);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01);
 			this.pnlWindow.Controls.Add(this.rtbxLogs);
-			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option03_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Option07_Panel);
 			this.pnlWindow.Controls.Add(this.btnAnalyzer);
 			this.pnlWindow.Location = new System.Drawing.Point(1, 1);
@@ -3369,119 +3688,11 @@
 			this.pnlWindow.Size = new System.Drawing.Size(798, 471);
 			this.pnlWindow.TabIndex = 1;
 			// 
-			// TabPageV_Control01_Option13_Panel
-			// 
-			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_tbxWheaterTime);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lblWheaterTime);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_btnRefresh);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_tbxServerTime);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lblServerTime);
-			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lstrObjects);
-			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
-			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 342);
-			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
-			this.TabPageV_Control01_Option13_Panel.Visible = false;
-			// 
-			// GameInfo_tbxWheaterTime
-			// 
-			this.GameInfo_tbxWheaterTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.GameInfo_tbxWheaterTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.GameInfo_tbxWheaterTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.GameInfo_tbxWheaterTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_tbxWheaterTime.Location = new System.Drawing.Point(390, 308);
-			this.GameInfo_tbxWheaterTime.Name = "GameInfo_tbxWheaterTime";
-			this.GameInfo_tbxWheaterTime.ReadOnly = true;
-			this.GameInfo_tbxWheaterTime.Size = new System.Drawing.Size(229, 28);
-			this.GameInfo_tbxWheaterTime.TabIndex = 7;
-			this.GameInfo_tbxWheaterTime.Tag = "Source Sans Pro";
-			this.GameInfo_tbxWheaterTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.GameInfo_tbxWheaterTime.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.GameInfo_tbxWheaterTime.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// GameInfo_lblWheaterTime
-			// 
-			this.GameInfo_lblWheaterTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.GameInfo_lblWheaterTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_lblWheaterTime.Location = new System.Drawing.Point(274, 308);
-			this.GameInfo_lblWheaterTime.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.GameInfo_lblWheaterTime.Name = "GameInfo_lblWheaterTime";
-			this.GameInfo_lblWheaterTime.Size = new System.Drawing.Size(116, 28);
-			this.GameInfo_lblWheaterTime.TabIndex = 6;
-			this.GameInfo_lblWheaterTime.Tag = "Source Sans Pro";
-			this.GameInfo_lblWheaterTime.Text = "Wheater & Time";
-			this.GameInfo_lblWheaterTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.GameInfo_lblWheaterTime.UseMnemonic = false;
-			// 
-			// GameInfo_btnRefresh
-			// 
-			this.GameInfo_btnRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.GameInfo_btnRefresh.FlatAppearance.BorderSize = 0;
-			this.GameInfo_btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.GameInfo_btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.GameInfo_btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.GameInfo_btnRefresh.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.GameInfo_btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_btnRefresh.Location = new System.Drawing.Point(623, 308);
-			this.GameInfo_btnRefresh.Margin = new System.Windows.Forms.Padding(0);
-			this.GameInfo_btnRefresh.Name = "GameInfo_btnRefresh";
-			this.GameInfo_btnRefresh.Size = new System.Drawing.Size(28, 28);
-			this.GameInfo_btnRefresh.TabIndex = 5;
-			this.GameInfo_btnRefresh.Tag = "Font Awesome 5 Pro Light";
-			this.GameInfo_btnRefresh.Text = "";
-			this.GameInfo_btnRefresh.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.ToolTips.SetToolTip(this.GameInfo_btnRefresh, "Refresh");
-			this.GameInfo_btnRefresh.UseCompatibleTextRendering = true;
-			this.GameInfo_btnRefresh.UseVisualStyleBackColor = false;
-			this.GameInfo_btnRefresh.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// GameInfo_tbxServerTime
-			// 
-			this.GameInfo_tbxServerTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.GameInfo_tbxServerTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.GameInfo_tbxServerTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.GameInfo_tbxServerTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_tbxServerTime.Location = new System.Drawing.Point(91, 308);
-			this.GameInfo_tbxServerTime.Name = "GameInfo_tbxServerTime";
-			this.GameInfo_tbxServerTime.ReadOnly = true;
-			this.GameInfo_tbxServerTime.Size = new System.Drawing.Size(180, 28);
-			this.GameInfo_tbxServerTime.TabIndex = 4;
-			this.GameInfo_tbxServerTime.Tag = "Source Sans Pro";
-			this.GameInfo_tbxServerTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.GameInfo_tbxServerTime.Enter += new System.EventHandler(this.Control_FocusEnter);
-			this.GameInfo_tbxServerTime.Leave += new System.EventHandler(this.Control_FocusLeave);
-			// 
-			// GameInfo_lblServerTime
-			// 
-			this.GameInfo_lblServerTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.GameInfo_lblServerTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_lblServerTime.Location = new System.Drawing.Point(4, 308);
-			this.GameInfo_lblServerTime.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.GameInfo_lblServerTime.Name = "GameInfo_lblServerTime";
-			this.GameInfo_lblServerTime.Size = new System.Drawing.Size(87, 28);
-			this.GameInfo_lblServerTime.TabIndex = 3;
-			this.GameInfo_lblServerTime.Tag = "Source Sans Pro";
-			this.GameInfo_lblServerTime.Text = "ServerTime";
-			this.GameInfo_lblServerTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// GameInfo_lstrObjects
-			// 
-			this.GameInfo_lstrObjects.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.GameInfo_lstrObjects.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.GameInfo_lstrObjects.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.GameInfo_lstrObjects.FullRowSelect = true;
-			this.GameInfo_lstrObjects.HideSelection = false;
-			this.GameInfo_lstrObjects.Location = new System.Drawing.Point(-1, -1);
-			this.GameInfo_lstrObjects.Name = "GameInfo_lstrObjects";
-			this.GameInfo_lstrObjects.Size = new System.Drawing.Size(657, 305);
-			this.GameInfo_lstrObjects.TabIndex = 2;
-			// 
 			// TabPageV_Control01_Option02_Panel
 			// 
 			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character);
-			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option04_Panel);
 			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option02_Panel);
+			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option04_Panel);
 			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option01_Panel);
 			this.TabPageV_Control01_Option02_Panel.Controls.Add(this.TabPageH_Character_Option03_Panel);
 			this.TabPageV_Control01_Option02_Panel.Location = new System.Drawing.Point(135, 45);
@@ -3583,6 +3794,341 @@
 			this.TabPageH_Character_Option01.UseVisualStyleBackColor = false;
 			this.TabPageH_Character_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
 			// 
+			// TabPageH_Character_Option02_Panel
+			// 
+			this.TabPageH_Character_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_gbxPotionPet);
+			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_gbxPotionsPlayer);
+			this.TabPageH_Character_Option02_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Character_Option02_Panel.Name = "TabPageH_Character_Option02_Panel";
+			this.TabPageH_Character_Option02_Panel.Size = new System.Drawing.Size(657, 315);
+			this.TabPageH_Character_Option02_Panel.TabIndex = 11;
+			this.TabPageH_Character_Option02_Panel.Visible = false;
+			// 
+			// Character_gbxPotionPet
+			// 
+			this.Character_gbxPotionPet.Controls.Add(this.Character_tbxUseTransportHP);
+			this.Character_gbxPotionPet.Controls.Add(this.Character_cbxUseTransportHP);
+			this.Character_gbxPotionPet.Controls.Add(this.Character_tbxUsePetHP);
+			this.Character_gbxPotionPet.Controls.Add(this.Character_cbxUsePetHP);
+			this.Character_gbxPotionPet.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_gbxPotionPet.ForeColor = System.Drawing.Color.LightGray;
+			this.Character_gbxPotionPet.Location = new System.Drawing.Point(182, 0);
+			this.Character_gbxPotionPet.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
+			this.Character_gbxPotionPet.Name = "Character_gbxPotionPet";
+			this.Character_gbxPotionPet.Size = new System.Drawing.Size(216, 216);
+			this.Character_gbxPotionPet.TabIndex = 23;
+			this.Character_gbxPotionPet.TabStop = false;
+			this.Character_gbxPotionPet.Tag = "Source Sans Pro";
+			this.Character_gbxPotionPet.Text = "Pet";
+			// 
+			// Character_tbxUseTransportHP
+			// 
+			this.Character_tbxUseTransportHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUseTransportHP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUseTransportHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUseTransportHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUseTransportHP.Location = new System.Drawing.Point(156, 39);
+			this.Character_tbxUseTransportHP.MaxLength = 3;
+			this.Character_tbxUseTransportHP.Name = "Character_tbxUseTransportHP";
+			this.Character_tbxUseTransportHP.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUseTransportHP.TabIndex = 23;
+			this.Character_tbxUseTransportHP.Tag = "Source Sans Pro";
+			this.Character_tbxUseTransportHP.Text = "0";
+			this.Character_tbxUseTransportHP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUseTransportHP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_cbxUseTransportHP
+			// 
+			this.Character_cbxUseTransportHP.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseTransportHP.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseTransportHP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseTransportHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseTransportHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseTransportHP.Location = new System.Drawing.Point(2, 39);
+			this.Character_cbxUseTransportHP.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseTransportHP.Name = "Character_cbxUseTransportHP";
+			this.Character_cbxUseTransportHP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseTransportHP.Size = new System.Drawing.Size(212, 25);
+			this.Character_cbxUseTransportHP.TabIndex = 22;
+			this.Character_cbxUseTransportHP.Tag = "Source Sans Pro";
+			this.Character_cbxUseTransportHP.Text = "Use HP on transport               %";
+			this.ToolTips.SetToolTip(this.Character_cbxUseTransportHP, "Use health potion when HP from transport is less or equal than");
+			this.Character_cbxUseTransportHP.UseVisualStyleBackColor = false;
+			this.Character_cbxUseTransportHP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_tbxUsePetHP
+			// 
+			this.Character_tbxUsePetHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUsePetHP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUsePetHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUsePetHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUsePetHP.Location = new System.Drawing.Point(118, 14);
+			this.Character_tbxUsePetHP.MaxLength = 3;
+			this.Character_tbxUsePetHP.Name = "Character_tbxUsePetHP";
+			this.Character_tbxUsePetHP.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUsePetHP.TabIndex = 21;
+			this.Character_tbxUsePetHP.Tag = "Source Sans Pro";
+			this.Character_tbxUsePetHP.Text = "0";
+			this.Character_tbxUsePetHP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUsePetHP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_cbxUsePetHP
+			// 
+			this.Character_cbxUsePetHP.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUsePetHP.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUsePetHP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUsePetHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUsePetHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUsePetHP.Location = new System.Drawing.Point(2, 14);
+			this.Character_cbxUsePetHP.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUsePetHP.Name = "Character_cbxUsePetHP";
+			this.Character_cbxUsePetHP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUsePetHP.Size = new System.Drawing.Size(175, 25);
+			this.Character_cbxUsePetHP.TabIndex = 20;
+			this.Character_cbxUsePetHP.Tag = "Source Sans Pro";
+			this.Character_cbxUsePetHP.Text = "Use HP on pet               %";
+			this.ToolTips.SetToolTip(this.Character_cbxUsePetHP, "Use health potion when HP from pet is less or equal than");
+			this.Character_cbxUsePetHP.UseVisualStyleBackColor = false;
+			this.Character_cbxUsePetHP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_gbxPotionsPlayer
+			// 
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_tbxUseHP);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_tbxUseMP);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUsePillPurification);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseMPGrain);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUsePillUniversal);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_tbxUseMPVigor);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_tbxUseHPVigor);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseMPVigor);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseHP);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseHPGrain);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseHPVigor);
+			this.Character_gbxPotionsPlayer.Controls.Add(this.Character_cbxUseMP);
+			this.Character_gbxPotionsPlayer.Font = new System.Drawing.Font("Source Sans Pro", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_gbxPotionsPlayer.ForeColor = System.Drawing.Color.LightGray;
+			this.Character_gbxPotionsPlayer.Location = new System.Drawing.Point(6, 0);
+			this.Character_gbxPotionsPlayer.Margin = new System.Windows.Forms.Padding(8, 0, 8, 8);
+			this.Character_gbxPotionsPlayer.Name = "Character_gbxPotionsPlayer";
+			this.Character_gbxPotionsPlayer.Size = new System.Drawing.Size(169, 216);
+			this.Character_gbxPotionsPlayer.TabIndex = 22;
+			this.Character_gbxPotionsPlayer.TabStop = false;
+			this.Character_gbxPotionsPlayer.Tag = "Source Sans Pro";
+			this.Character_gbxPotionsPlayer.Text = "Player";
+			// 
+			// Character_tbxUseHP
+			// 
+			this.Character_tbxUseHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUseHP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUseHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUseHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUseHP.Location = new System.Drawing.Point(77, 14);
+			this.Character_tbxUseHP.MaxLength = 3;
+			this.Character_tbxUseHP.Name = "Character_tbxUseHP";
+			this.Character_tbxUseHP.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUseHP.TabIndex = 9;
+			this.Character_tbxUseHP.Tag = "Source Sans Pro";
+			this.Character_tbxUseHP.Text = "0";
+			this.Character_tbxUseHP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUseHP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_tbxUseMP
+			// 
+			this.Character_tbxUseMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUseMP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUseMP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUseMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUseMP.Location = new System.Drawing.Point(77, 64);
+			this.Character_tbxUseMP.MaxLength = 3;
+			this.Character_tbxUseMP.Name = "Character_tbxUseMP";
+			this.Character_tbxUseMP.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUseMP.TabIndex = 12;
+			this.Character_tbxUseMP.Tag = "Source Sans Pro";
+			this.Character_tbxUseMP.Text = "0";
+			this.Character_tbxUseMP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUseMP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_cbxUsePillPurification
+			// 
+			this.Character_cbxUsePillPurification.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUsePillPurification.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUsePillPurification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUsePillPurification.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUsePillPurification.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUsePillPurification.Location = new System.Drawing.Point(2, 189);
+			this.Character_cbxUsePillPurification.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUsePillPurification.Name = "Character_cbxUsePillPurification";
+			this.Character_cbxUsePillPurification.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUsePillPurification.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUsePillPurification.TabIndex = 19;
+			this.Character_cbxUsePillPurification.Tag = "Source Sans Pro";
+			this.Character_cbxUsePillPurification.Text = "Use purification pills";
+			this.Character_cbxUsePillPurification.UseVisualStyleBackColor = false;
+			this.Character_cbxUsePillPurification.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUseMPGrain
+			// 
+			this.Character_cbxUseMPGrain.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseMPGrain.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseMPGrain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseMPGrain.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseMPGrain.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseMPGrain.Location = new System.Drawing.Point(2, 89);
+			this.Character_cbxUseMPGrain.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseMPGrain.Name = "Character_cbxUseMPGrain";
+			this.Character_cbxUseMPGrain.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseMPGrain.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseMPGrain.TabIndex = 13;
+			this.Character_cbxUseMPGrain.Tag = "Source Sans Pro";
+			this.Character_cbxUseMPGrain.Text = "Use MP grains";
+			this.ToolTips.SetToolTip(this.Character_cbxUseMPGrain, "Use mana potion grain if is available");
+			this.Character_cbxUseMPGrain.UseVisualStyleBackColor = false;
+			this.Character_cbxUseMPGrain.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUsePillUniversal
+			// 
+			this.Character_cbxUsePillUniversal.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUsePillUniversal.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUsePillUniversal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUsePillUniversal.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUsePillUniversal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUsePillUniversal.Location = new System.Drawing.Point(2, 164);
+			this.Character_cbxUsePillUniversal.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUsePillUniversal.Name = "Character_cbxUsePillUniversal";
+			this.Character_cbxUsePillUniversal.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUsePillUniversal.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUsePillUniversal.TabIndex = 18;
+			this.Character_cbxUsePillUniversal.Tag = "Source Sans Pro";
+			this.Character_cbxUsePillUniversal.Text = "Use universal pills";
+			this.Character_cbxUsePillUniversal.UseVisualStyleBackColor = false;
+			this.Character_cbxUsePillUniversal.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_tbxUseMPVigor
+			// 
+			this.Character_tbxUseMPVigor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUseMPVigor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUseMPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUseMPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUseMPVigor.Location = new System.Drawing.Point(108, 139);
+			this.Character_tbxUseMPVigor.MaxLength = 3;
+			this.Character_tbxUseMPVigor.Name = "Character_tbxUseMPVigor";
+			this.Character_tbxUseMPVigor.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUseMPVigor.TabIndex = 17;
+			this.Character_tbxUseMPVigor.Tag = "Source Sans Pro";
+			this.Character_tbxUseMPVigor.Text = "0";
+			this.Character_tbxUseMPVigor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUseMPVigor.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_tbxUseHPVigor
+			// 
+			this.Character_tbxUseHPVigor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUseHPVigor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUseHPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUseHPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUseHPVigor.Location = new System.Drawing.Point(108, 114);
+			this.Character_tbxUseHPVigor.MaxLength = 3;
+			this.Character_tbxUseHPVigor.Name = "Character_tbxUseHPVigor";
+			this.Character_tbxUseHPVigor.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUseHPVigor.TabIndex = 15;
+			this.Character_tbxUseHPVigor.Tag = "Source Sans Pro";
+			this.Character_tbxUseHPVigor.Text = "0";
+			this.Character_tbxUseHPVigor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUseHPVigor.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_cbxUseMPVigor
+			// 
+			this.Character_cbxUseMPVigor.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseMPVigor.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseMPVigor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseMPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseMPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseMPVigor.Location = new System.Drawing.Point(2, 139);
+			this.Character_cbxUseMPVigor.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseMPVigor.Name = "Character_cbxUseMPVigor";
+			this.Character_cbxUseMPVigor.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseMPVigor.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseMPVigor.TabIndex = 16;
+			this.Character_cbxUseMPVigor.Tag = "Source Sans Pro";
+			this.Character_cbxUseMPVigor.Text = "Use vigor MP              %";
+			this.Character_cbxUseMPVigor.UseVisualStyleBackColor = false;
+			this.Character_cbxUseMPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUseHP
+			// 
+			this.Character_cbxUseHP.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseHP.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseHP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseHP.Location = new System.Drawing.Point(2, 14);
+			this.Character_cbxUseHP.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseHP.Name = "Character_cbxUseHP";
+			this.Character_cbxUseHP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseHP.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseHP.TabIndex = 8;
+			this.Character_cbxUseHP.Tag = "Source Sans Pro";
+			this.Character_cbxUseHP.Text = "Use HP               %";
+			this.ToolTips.SetToolTip(this.Character_cbxUseHP, "Use health potion when HP less or equal than");
+			this.Character_cbxUseHP.UseVisualStyleBackColor = false;
+			this.Character_cbxUseHP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUseHPGrain
+			// 
+			this.Character_cbxUseHPGrain.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseHPGrain.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseHPGrain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseHPGrain.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseHPGrain.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseHPGrain.Location = new System.Drawing.Point(2, 39);
+			this.Character_cbxUseHPGrain.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseHPGrain.Name = "Character_cbxUseHPGrain";
+			this.Character_cbxUseHPGrain.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseHPGrain.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseHPGrain.TabIndex = 10;
+			this.Character_cbxUseHPGrain.Tag = "Source Sans Pro";
+			this.Character_cbxUseHPGrain.Text = "Use HP grains";
+			this.ToolTips.SetToolTip(this.Character_cbxUseHPGrain, "Use health potion grain if is available");
+			this.Character_cbxUseHPGrain.UseVisualStyleBackColor = false;
+			this.Character_cbxUseHPGrain.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUseHPVigor
+			// 
+			this.Character_cbxUseHPVigor.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseHPVigor.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseHPVigor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseHPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseHPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseHPVigor.Location = new System.Drawing.Point(2, 114);
+			this.Character_cbxUseHPVigor.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseHPVigor.Name = "Character_cbxUseHPVigor";
+			this.Character_cbxUseHPVigor.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseHPVigor.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseHPVigor.TabIndex = 14;
+			this.Character_cbxUseHPVigor.Tag = "Source Sans Pro";
+			this.Character_cbxUseHPVigor.Text = "Use vigor HP              %";
+			this.Character_cbxUseHPVigor.UseVisualStyleBackColor = false;
+			this.Character_cbxUseHPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUseMP
+			// 
+			this.Character_cbxUseMP.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUseMP.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUseMP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUseMP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUseMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUseMP.Location = new System.Drawing.Point(2, 64);
+			this.Character_cbxUseMP.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUseMP.Name = "Character_cbxUseMP";
+			this.Character_cbxUseMP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUseMP.Size = new System.Drawing.Size(165, 25);
+			this.Character_cbxUseMP.TabIndex = 11;
+			this.Character_cbxUseMP.Tag = "Source Sans Pro";
+			this.Character_cbxUseMP.Text = "Use MP               %";
+			this.ToolTips.SetToolTip(this.Character_cbxUseMP, "Use mana potion when MP less or equal than");
+			this.Character_cbxUseMP.UseVisualStyleBackColor = false;
+			this.Character_cbxUseMP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
 			// TabPageH_Character_Option04_Panel
 			// 
 			this.TabPageH_Character_Option04_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -3629,239 +4175,6 @@
 			this.Character_cbxAcceptRess.Text = "Accept resurrection";
 			this.Character_cbxAcceptRess.UseVisualStyleBackColor = false;
 			this.Character_cbxAcceptRess.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// TabPageH_Character_Option02_Panel
-			// 
-			this.TabPageH_Character_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_tbxUseHP);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUsePillPurification);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUsePillUniversal);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_tbxUseMPVigor);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseMPVigor);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_tbxUseHPVigor);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseHPVigor);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseMPGrain);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_tbxUseMP);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseMP);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseHPGrain);
-			this.TabPageH_Character_Option02_Panel.Controls.Add(this.Character_cbxUseHP);
-			this.TabPageH_Character_Option02_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Character_Option02_Panel.Name = "TabPageH_Character_Option02_Panel";
-			this.TabPageH_Character_Option02_Panel.Size = new System.Drawing.Size(657, 315);
-			this.TabPageH_Character_Option02_Panel.TabIndex = 11;
-			this.TabPageH_Character_Option02_Panel.Visible = false;
-			// 
-			// Character_tbxUseHP
-			// 
-			this.Character_tbxUseHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Character_tbxUseHP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_tbxUseHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_tbxUseHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_tbxUseHP.Location = new System.Drawing.Point(75, 0);
-			this.Character_tbxUseHP.MaxLength = 3;
-			this.Character_tbxUseHP.Name = "Character_tbxUseHP";
-			this.Character_tbxUseHP.Size = new System.Drawing.Size(35, 25);
-			this.Character_tbxUseHP.TabIndex = 9;
-			this.Character_tbxUseHP.Tag = "Source Sans Pro";
-			this.Character_tbxUseHP.Text = "0";
-			this.Character_tbxUseHP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Character_tbxUseHP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-			// 
-			// Character_cbxUsePillPurification
-			// 
-			this.Character_cbxUsePillPurification.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUsePillPurification.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUsePillPurification.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUsePillPurification.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUsePillPurification.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUsePillPurification.Location = new System.Drawing.Point(0, 175);
-			this.Character_cbxUsePillPurification.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUsePillPurification.Name = "Character_cbxUsePillPurification";
-			this.Character_cbxUsePillPurification.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUsePillPurification.Size = new System.Drawing.Size(155, 25);
-			this.Character_cbxUsePillPurification.TabIndex = 19;
-			this.Character_cbxUsePillPurification.Tag = "Source Sans Pro";
-			this.Character_cbxUsePillPurification.Text = "Use purification pills";
-			this.Character_cbxUsePillPurification.UseVisualStyleBackColor = false;
-			this.Character_cbxUsePillPurification.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_cbxUsePillUniversal
-			// 
-			this.Character_cbxUsePillUniversal.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUsePillUniversal.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUsePillUniversal.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUsePillUniversal.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUsePillUniversal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUsePillUniversal.Location = new System.Drawing.Point(0, 150);
-			this.Character_cbxUsePillUniversal.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUsePillUniversal.Name = "Character_cbxUsePillUniversal";
-			this.Character_cbxUsePillUniversal.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUsePillUniversal.Size = new System.Drawing.Size(155, 25);
-			this.Character_cbxUsePillUniversal.TabIndex = 18;
-			this.Character_cbxUsePillUniversal.Tag = "Source Sans Pro";
-			this.Character_cbxUsePillUniversal.Text = "Use universal pills";
-			this.Character_cbxUsePillUniversal.UseVisualStyleBackColor = false;
-			this.Character_cbxUsePillUniversal.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_tbxUseMPVigor
-			// 
-			this.Character_tbxUseMPVigor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Character_tbxUseMPVigor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_tbxUseMPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_tbxUseMPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_tbxUseMPVigor.Location = new System.Drawing.Point(106, 125);
-			this.Character_tbxUseMPVigor.MaxLength = 3;
-			this.Character_tbxUseMPVigor.Name = "Character_tbxUseMPVigor";
-			this.Character_tbxUseMPVigor.Size = new System.Drawing.Size(35, 25);
-			this.Character_tbxUseMPVigor.TabIndex = 17;
-			this.Character_tbxUseMPVigor.Tag = "Source Sans Pro";
-			this.Character_tbxUseMPVigor.Text = "0";
-			this.Character_tbxUseMPVigor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Character_tbxUseMPVigor.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-			// 
-			// Character_cbxUseMPVigor
-			// 
-			this.Character_cbxUseMPVigor.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseMPVigor.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseMPVigor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseMPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseMPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseMPVigor.Location = new System.Drawing.Point(0, 125);
-			this.Character_cbxUseMPVigor.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseMPVigor.Name = "Character_cbxUseMPVigor";
-			this.Character_cbxUseMPVigor.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseMPVigor.Size = new System.Drawing.Size(165, 25);
-			this.Character_cbxUseMPVigor.TabIndex = 16;
-			this.Character_cbxUseMPVigor.Tag = "Source Sans Pro";
-			this.Character_cbxUseMPVigor.Text = "Use vigor MP              %";
-			this.Character_cbxUseMPVigor.UseVisualStyleBackColor = false;
-			this.Character_cbxUseMPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_tbxUseHPVigor
-			// 
-			this.Character_tbxUseHPVigor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Character_tbxUseHPVigor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_tbxUseHPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_tbxUseHPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_tbxUseHPVigor.Location = new System.Drawing.Point(106, 100);
-			this.Character_tbxUseHPVigor.MaxLength = 3;
-			this.Character_tbxUseHPVigor.Name = "Character_tbxUseHPVigor";
-			this.Character_tbxUseHPVigor.Size = new System.Drawing.Size(35, 25);
-			this.Character_tbxUseHPVigor.TabIndex = 15;
-			this.Character_tbxUseHPVigor.Tag = "Source Sans Pro";
-			this.Character_tbxUseHPVigor.Text = "0";
-			this.Character_tbxUseHPVigor.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Character_tbxUseHPVigor.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-			// 
-			// Character_cbxUseHPVigor
-			// 
-			this.Character_cbxUseHPVigor.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseHPVigor.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseHPVigor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseHPVigor.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseHPVigor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseHPVigor.Location = new System.Drawing.Point(0, 100);
-			this.Character_cbxUseHPVigor.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseHPVigor.Name = "Character_cbxUseHPVigor";
-			this.Character_cbxUseHPVigor.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseHPVigor.Size = new System.Drawing.Size(165, 25);
-			this.Character_cbxUseHPVigor.TabIndex = 14;
-			this.Character_cbxUseHPVigor.Tag = "Source Sans Pro";
-			this.Character_cbxUseHPVigor.Text = "Use vigor HP              %";
-			this.Character_cbxUseHPVigor.UseVisualStyleBackColor = false;
-			this.Character_cbxUseHPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_cbxUseMPGrain
-			// 
-			this.Character_cbxUseMPGrain.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseMPGrain.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseMPGrain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseMPGrain.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseMPGrain.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseMPGrain.Location = new System.Drawing.Point(0, 75);
-			this.Character_cbxUseMPGrain.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseMPGrain.Name = "Character_cbxUseMPGrain";
-			this.Character_cbxUseMPGrain.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseMPGrain.Size = new System.Drawing.Size(118, 25);
-			this.Character_cbxUseMPGrain.TabIndex = 13;
-			this.Character_cbxUseMPGrain.Tag = "Source Sans Pro";
-			this.Character_cbxUseMPGrain.Text = "Use MP grains";
-			this.ToolTips.SetToolTip(this.Character_cbxUseMPGrain, "Use mana potion grain if is available");
-			this.Character_cbxUseMPGrain.UseVisualStyleBackColor = false;
-			this.Character_cbxUseMPGrain.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_tbxUseMP
-			// 
-			this.Character_tbxUseMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Character_tbxUseMP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_tbxUseMP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_tbxUseMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_tbxUseMP.Location = new System.Drawing.Point(75, 50);
-			this.Character_tbxUseMP.MaxLength = 3;
-			this.Character_tbxUseMP.Name = "Character_tbxUseMP";
-			this.Character_tbxUseMP.Size = new System.Drawing.Size(35, 25);
-			this.Character_tbxUseMP.TabIndex = 12;
-			this.Character_tbxUseMP.Tag = "Source Sans Pro";
-			this.Character_tbxUseMP.Text = "0";
-			this.Character_tbxUseMP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Character_tbxUseMP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-			// 
-			// Character_cbxUseMP
-			// 
-			this.Character_cbxUseMP.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseMP.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseMP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseMP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseMP.Location = new System.Drawing.Point(0, 50);
-			this.Character_cbxUseMP.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseMP.Name = "Character_cbxUseMP";
-			this.Character_cbxUseMP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseMP.Size = new System.Drawing.Size(135, 25);
-			this.Character_cbxUseMP.TabIndex = 11;
-			this.Character_cbxUseMP.Tag = "Source Sans Pro";
-			this.Character_cbxUseMP.Text = "Use MP               %";
-			this.ToolTips.SetToolTip(this.Character_cbxUseMP, "Use mana potion when MP less than");
-			this.Character_cbxUseMP.UseVisualStyleBackColor = false;
-			this.Character_cbxUseMP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_cbxUseHPGrain
-			// 
-			this.Character_cbxUseHPGrain.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseHPGrain.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseHPGrain.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseHPGrain.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseHPGrain.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseHPGrain.Location = new System.Drawing.Point(0, 25);
-			this.Character_cbxUseHPGrain.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseHPGrain.Name = "Character_cbxUseHPGrain";
-			this.Character_cbxUseHPGrain.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseHPGrain.Size = new System.Drawing.Size(118, 25);
-			this.Character_cbxUseHPGrain.TabIndex = 10;
-			this.Character_cbxUseHPGrain.Tag = "Source Sans Pro";
-			this.Character_cbxUseHPGrain.Text = "Use HP grains";
-			this.ToolTips.SetToolTip(this.Character_cbxUseHPGrain, "Use health potion grain if is available");
-			this.Character_cbxUseHPGrain.UseVisualStyleBackColor = false;
-			this.Character_cbxUseHPGrain.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_cbxUseHP
-			// 
-			this.Character_cbxUseHP.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Character_cbxUseHP.FlatAppearance.BorderSize = 0;
-			this.Character_cbxUseHP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Character_cbxUseHP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_cbxUseHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_cbxUseHP.Location = new System.Drawing.Point(0, 0);
-			this.Character_cbxUseHP.Margin = new System.Windows.Forms.Padding(0);
-			this.Character_cbxUseHP.Name = "Character_cbxUseHP";
-			this.Character_cbxUseHP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.Character_cbxUseHP.Size = new System.Drawing.Size(135, 25);
-			this.Character_cbxUseHP.TabIndex = 8;
-			this.Character_cbxUseHP.Tag = "Source Sans Pro";
-			this.Character_cbxUseHP.Text = "Use HP               %";
-			this.ToolTips.SetToolTip(this.Character_cbxUseHP, "Use health potion when HP less than");
-			this.Character_cbxUseHP.UseVisualStyleBackColor = false;
-			this.Character_cbxUseHP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
 			// TabPageH_Character_Option01_Panel
 			// 
@@ -3957,7 +4270,7 @@
 			this.Character_lblGoldText.TabIndex = 25;
 			this.Character_lblGoldText.Tag = "Source Sans Pro";
 			this.Character_lblGoldText.Text = "Gold :";
-			this.ToolTips.SetToolTip(this.Character_lblGoldText, "Gold coins");
+			this.ToolTips.SetToolTip(this.Character_lblGoldText, "Gold at inventory");
 			// 
 			// Character_lblJobLevel
 			// 
@@ -4732,13 +5045,13 @@
 			// 
 			this.columnHeader3.Text = "Capacity";
 			this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader3.Width = 105;
+			this.columnHeader3.Width = 125;
 			// 
 			// columnHeader4
 			// 
 			this.columnHeader4.Text = "State";
 			this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader4.Width = 110;
+			this.columnHeader4.Width = 90;
 			// 
 			// TabPageV_Control01_Option11_Panel
 			// 
@@ -4792,7 +5105,7 @@
 			this.TabPageH_Chat_Option08.TabIndex = 19;
 			this.TabPageH_Chat_Option08.Text = "Global";
 			this.TabPageH_Chat_Option08.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option08.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option08.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option07
 			// 
@@ -4811,7 +5124,7 @@
 			this.TabPageH_Chat_Option07.TabIndex = 18;
 			this.TabPageH_Chat_Option07.Text = "Stall";
 			this.TabPageH_Chat_Option07.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option07.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option07.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option06
 			// 
@@ -4830,7 +5143,7 @@
 			this.TabPageH_Chat_Option06.TabIndex = 17;
 			this.TabPageH_Chat_Option06.Text = "Academy";
 			this.TabPageH_Chat_Option06.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option06.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option06.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option05
 			// 
@@ -4849,7 +5162,7 @@
 			this.TabPageH_Chat_Option05.TabIndex = 16;
 			this.TabPageH_Chat_Option05.Text = "Union";
 			this.TabPageH_Chat_Option05.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option05.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option05.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option04
 			// 
@@ -4868,7 +5181,7 @@
 			this.TabPageH_Chat_Option04.TabIndex = 15;
 			this.TabPageH_Chat_Option04.Text = "Guild";
 			this.TabPageH_Chat_Option04.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option04.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option04.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option03
 			// 
@@ -4887,7 +5200,7 @@
 			this.TabPageH_Chat_Option03.TabIndex = 14;
 			this.TabPageH_Chat_Option03.Text = "Party";
 			this.TabPageH_Chat_Option03.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option03.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option03.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option02
 			// 
@@ -4906,7 +5219,7 @@
 			this.TabPageH_Chat_Option02.TabIndex = 13;
 			this.TabPageH_Chat_Option02.Text = "Private";
 			this.TabPageH_Chat_Option02.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option02.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option01
 			// 
@@ -4925,7 +5238,7 @@
 			this.TabPageH_Chat_Option01.TabIndex = 12;
 			this.TabPageH_Chat_Option01.Text = "All";
 			this.TabPageH_Chat_Option01.UseVisualStyleBackColor = false;
-			this.TabPageH_Chat_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			this.TabPageH_Chat_Option01.Click += new System.EventHandler(this.TabPageH_ChatOption_Click);
 			// 
 			// TabPageH_Chat_Option01_Panel
 			// 
@@ -4993,7 +5306,8 @@
             "Party",
             "Guild",
             "Union",
-            "Academy"});
+            "Academy",
+            "Stall"});
 			this.Chat_cmbxMsgType.Location = new System.Drawing.Point(5, 4);
 			this.Chat_cmbxMsgType.Margin = new System.Windows.Forms.Padding(0);
 			this.Chat_cmbxMsgType.MaxDropDownItems = 5;
@@ -5435,14 +5749,113 @@
 			this.Minimap_tbxZ.Enter += new System.EventHandler(this.Control_FocusEnter);
 			this.Minimap_tbxZ.Leave += new System.EventHandler(this.Control_FocusLeave);
 			// 
-			// TabPageV_Control01_Option09_Panel
+			// TabPageV_Control01_Option13_Panel
 			// 
-			this.TabPageV_Control01_Option09_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageV_Control01_Option09_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Option09_Panel.Name = "TabPageV_Control01_Option09_Panel";
-			this.TabPageV_Control01_Option09_Panel.Size = new System.Drawing.Size(657, 342);
-			this.TabPageV_Control01_Option09_Panel.TabIndex = 16;
-			this.TabPageV_Control01_Option09_Panel.Visible = false;
+			this.TabPageV_Control01_Option13_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_tbxWheaterTime);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lblWheaterTime);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_btnRefresh);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_tbxServerTime);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lblServerTime);
+			this.TabPageV_Control01_Option13_Panel.Controls.Add(this.GameInfo_lstrObjects);
+			this.TabPageV_Control01_Option13_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Option13_Panel.Name = "TabPageV_Control01_Option13_Panel";
+			this.TabPageV_Control01_Option13_Panel.Size = new System.Drawing.Size(657, 342);
+			this.TabPageV_Control01_Option13_Panel.TabIndex = 20;
+			this.TabPageV_Control01_Option13_Panel.Visible = false;
+			// 
+			// GameInfo_tbxWheaterTime
+			// 
+			this.GameInfo_tbxWheaterTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.GameInfo_tbxWheaterTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.GameInfo_tbxWheaterTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.GameInfo_tbxWheaterTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_tbxWheaterTime.Location = new System.Drawing.Point(390, 308);
+			this.GameInfo_tbxWheaterTime.Name = "GameInfo_tbxWheaterTime";
+			this.GameInfo_tbxWheaterTime.ReadOnly = true;
+			this.GameInfo_tbxWheaterTime.Size = new System.Drawing.Size(229, 28);
+			this.GameInfo_tbxWheaterTime.TabIndex = 7;
+			this.GameInfo_tbxWheaterTime.Tag = "Source Sans Pro";
+			this.GameInfo_tbxWheaterTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.GameInfo_tbxWheaterTime.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.GameInfo_tbxWheaterTime.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// GameInfo_lblWheaterTime
+			// 
+			this.GameInfo_lblWheaterTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.GameInfo_lblWheaterTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_lblWheaterTime.Location = new System.Drawing.Point(274, 308);
+			this.GameInfo_lblWheaterTime.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.GameInfo_lblWheaterTime.Name = "GameInfo_lblWheaterTime";
+			this.GameInfo_lblWheaterTime.Size = new System.Drawing.Size(116, 28);
+			this.GameInfo_lblWheaterTime.TabIndex = 6;
+			this.GameInfo_lblWheaterTime.Tag = "Source Sans Pro";
+			this.GameInfo_lblWheaterTime.Text = "Wheater & Time";
+			this.GameInfo_lblWheaterTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.GameInfo_lblWheaterTime.UseMnemonic = false;
+			// 
+			// GameInfo_btnRefresh
+			// 
+			this.GameInfo_btnRefresh.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.GameInfo_btnRefresh.FlatAppearance.BorderSize = 0;
+			this.GameInfo_btnRefresh.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.GameInfo_btnRefresh.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.GameInfo_btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.GameInfo_btnRefresh.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.GameInfo_btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_btnRefresh.Location = new System.Drawing.Point(623, 308);
+			this.GameInfo_btnRefresh.Margin = new System.Windows.Forms.Padding(0);
+			this.GameInfo_btnRefresh.Name = "GameInfo_btnRefresh";
+			this.GameInfo_btnRefresh.Size = new System.Drawing.Size(28, 28);
+			this.GameInfo_btnRefresh.TabIndex = 5;
+			this.GameInfo_btnRefresh.Tag = "Font Awesome 5 Pro Light";
+			this.GameInfo_btnRefresh.Text = "";
+			this.GameInfo_btnRefresh.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.ToolTips.SetToolTip(this.GameInfo_btnRefresh, "Refresh");
+			this.GameInfo_btnRefresh.UseCompatibleTextRendering = true;
+			this.GameInfo_btnRefresh.UseVisualStyleBackColor = false;
+			this.GameInfo_btnRefresh.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// GameInfo_tbxServerTime
+			// 
+			this.GameInfo_tbxServerTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.GameInfo_tbxServerTime.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.GameInfo_tbxServerTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.GameInfo_tbxServerTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_tbxServerTime.Location = new System.Drawing.Point(91, 308);
+			this.GameInfo_tbxServerTime.Name = "GameInfo_tbxServerTime";
+			this.GameInfo_tbxServerTime.ReadOnly = true;
+			this.GameInfo_tbxServerTime.Size = new System.Drawing.Size(180, 28);
+			this.GameInfo_tbxServerTime.TabIndex = 4;
+			this.GameInfo_tbxServerTime.Tag = "Source Sans Pro";
+			this.GameInfo_tbxServerTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.GameInfo_tbxServerTime.Enter += new System.EventHandler(this.Control_FocusEnter);
+			this.GameInfo_tbxServerTime.Leave += new System.EventHandler(this.Control_FocusLeave);
+			// 
+			// GameInfo_lblServerTime
+			// 
+			this.GameInfo_lblServerTime.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.GameInfo_lblServerTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_lblServerTime.Location = new System.Drawing.Point(4, 308);
+			this.GameInfo_lblServerTime.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.GameInfo_lblServerTime.Name = "GameInfo_lblServerTime";
+			this.GameInfo_lblServerTime.Size = new System.Drawing.Size(87, 28);
+			this.GameInfo_lblServerTime.TabIndex = 3;
+			this.GameInfo_lblServerTime.Tag = "Source Sans Pro";
+			this.GameInfo_lblServerTime.Text = "ServerTime";
+			this.GameInfo_lblServerTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// GameInfo_lstrObjects
+			// 
+			this.GameInfo_lstrObjects.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.GameInfo_lstrObjects.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.GameInfo_lstrObjects.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.GameInfo_lstrObjects.FullRowSelect = true;
+			this.GameInfo_lstrObjects.HideSelection = false;
+			this.GameInfo_lstrObjects.Location = new System.Drawing.Point(-1, -1);
+			this.GameInfo_lstrObjects.Name = "GameInfo_lstrObjects";
+			this.GameInfo_lstrObjects.Size = new System.Drawing.Size(657, 305);
+			this.GameInfo_lstrObjects.TabIndex = 2;
 			// 
 			// TabPageV_Control01_Option10_Panel
 			// 
@@ -5452,6 +5865,15 @@
 			this.TabPageV_Control01_Option10_Panel.Size = new System.Drawing.Size(657, 342);
 			this.TabPageV_Control01_Option10_Panel.TabIndex = 18;
 			this.TabPageV_Control01_Option10_Panel.Visible = false;
+			// 
+			// TabPageV_Control01_Option09_Panel
+			// 
+			this.TabPageV_Control01_Option09_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageV_Control01_Option09_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Option09_Panel.Name = "TabPageV_Control01_Option09_Panel";
+			this.TabPageV_Control01_Option09_Panel.Size = new System.Drawing.Size(657, 342);
+			this.TabPageV_Control01_Option09_Panel.TabIndex = 16;
+			this.TabPageV_Control01_Option09_Panel.Visible = false;
 			// 
 			// TabPageV_Control01_Option08_Panel
 			// 
@@ -5561,7 +5983,6 @@
 			// 
 			this.NotifyIcon.ContextMenuStrip = this.Menu_NotifyIcon;
 			this.NotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("NotifyIcon.Icon")));
-			this.NotifyIcon.Text = "xBot";
 			this.NotifyIcon.Visible = true;
 			// 
 			// Menu_NotifyIcon
@@ -5641,15 +6062,15 @@
 			this.TabPageH_Settings_Option02_Panel.ResumeLayout(false);
 			this.Settings_gbxCharacterSelection.ResumeLayout(false);
 			this.Settings_gbxCharacterSelection.PerformLayout();
+			this.TabPageV_Control01_Option03_Panel.ResumeLayout(false);
+			this.TabPageH_Inventory.ResumeLayout(false);
+			this.TabPageH_Inventory_Option01_Panel.ResumeLayout(false);
 			this.TabPageV_Control01_Option04_Panel.ResumeLayout(false);
 			this.TabPageH_Party.ResumeLayout(false);
-			this.TabPageH_Party_Option03_Panel.ResumeLayout(false);
-			this.TabPageH_Party_Option03_Panel.PerformLayout();
-			this.TabPageH_Party_Option01_Panel.ResumeLayout(false);
-			this.Menu_lstvMembers.ResumeLayout(false);
 			this.TabPageH_Party_Option02_Panel.ResumeLayout(false);
 			this.Party_gbxLeaderList.ResumeLayout(false);
 			this.Party_gbxLeaderList.PerformLayout();
+			this.Menu_lstvLeaderList.ResumeLayout(false);
 			this.Party_gbxSetup.ResumeLayout(false);
 			this.Party_pnlSetupItem.ResumeLayout(false);
 			this.Party_gbxSetupItem.ResumeLayout(false);
@@ -5658,14 +6079,21 @@
 			this.Party_gbxAccepting.ResumeLayout(false);
 			this.Party_gbxPlayerList.ResumeLayout(false);
 			this.Party_gbxPlayerList.PerformLayout();
+			this.Menu_lstvPartyList.ResumeLayout(false);
+			this.TabPageH_Party_Option03_Panel.ResumeLayout(false);
+			this.TabPageH_Party_Option03_Panel.PerformLayout();
+			this.Menu_lstvPartyMatch.ResumeLayout(false);
+			this.TabPageH_Party_Option01_Panel.ResumeLayout(false);
+			this.Menu_lstvPartyMembers.ResumeLayout(false);
 			this.pnlWindow.ResumeLayout(false);
-			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
-			this.TabPageV_Control01_Option13_Panel.PerformLayout();
 			this.TabPageV_Control01_Option02_Panel.ResumeLayout(false);
 			this.TabPageH_Character.ResumeLayout(false);
-			this.TabPageH_Character_Option04_Panel.ResumeLayout(false);
 			this.TabPageH_Character_Option02_Panel.ResumeLayout(false);
-			this.TabPageH_Character_Option02_Panel.PerformLayout();
+			this.Character_gbxPotionPet.ResumeLayout(false);
+			this.Character_gbxPotionPet.PerformLayout();
+			this.Character_gbxPotionsPlayer.ResumeLayout(false);
+			this.Character_gbxPotionsPlayer.PerformLayout();
+			this.TabPageH_Character_Option04_Panel.ResumeLayout(false);
 			this.TabPageH_Character_Option01_Panel.ResumeLayout(false);
 			this.TabPageH_Character_Option01_Panel.PerformLayout();
 			this.Character_gbxStatPoints.ResumeLayout(false);
@@ -5694,6 +6122,8 @@
 			this.Minimap_panelGameCoords.PerformLayout();
 			this.Minimap_panelCoords.ResumeLayout(false);
 			this.Minimap_panelCoords.PerformLayout();
+			this.TabPageV_Control01_Option13_Panel.ResumeLayout(false);
+			this.TabPageV_Control01_Option13_Panel.PerformLayout();
 			this.Menu_NotifyIcon.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -5710,7 +6140,6 @@
 		private System.Windows.Forms.Button btnWinMinimize;
 		private System.Windows.Forms.Button btnWinRestore;
 		private System.Windows.Forms.Button btnWinExit;
-		private System.Windows.Forms.Label lblHeaderText02;
 		private System.Windows.Forms.Label TabPageV_Control01_Option04_Icon;
 		private System.Windows.Forms.Button TabPageV_Control01_Option04;
 		private System.Windows.Forms.Label TabPageV_Control01_Option05_Icon;
@@ -5802,17 +6231,9 @@
 		private System.Windows.Forms.Panel TabPageV_Control01_Option10_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option01_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat;
-		private System.Windows.Forms.Button TabPageH_Chat_Option04;
-		private System.Windows.Forms.Button TabPageH_Chat_Option03;
-		private System.Windows.Forms.Button TabPageH_Chat_Option02;
-		private System.Windows.Forms.Button TabPageH_Chat_Option01;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option02_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option03_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option04_Panel;
-		private System.Windows.Forms.Button TabPageH_Chat_Option06;
-		private System.Windows.Forms.Button TabPageH_Chat_Option05;
-		private System.Windows.Forms.Button TabPageH_Chat_Option08;
-		private System.Windows.Forms.Button TabPageH_Chat_Option07;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option08_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option05_Panel;
 		private System.Windows.Forms.Panel TabPageH_Chat_Option07_Panel;
@@ -5840,8 +6261,8 @@
 		private System.Windows.Forms.RadioButton Settings_rbnPacketNotShow;
 		private System.Windows.Forms.Label Settings_lblFilterOpcode;
 		private System.Windows.Forms.ContextMenuStrip Menu_lstvOpcodes;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvOpcodes_remove;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvOpcodes_removeAll;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvOpcodes_Remove;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvOpcodes_RemoveAll;
 		private System.Windows.Forms.GroupBox Settings_gbxHWID;
 		public System.Windows.Forms.TextBox Settings_tbxHWIDServerOp;
 		private System.Windows.Forms.Label Settings_lblHWIDServerOp;
@@ -5932,7 +6353,7 @@
 		public System.Windows.Forms.CheckBox Character_cbxMessageUniques;
 		public System.Windows.Forms.CheckBox Character_cbxMessagePicks;
 		public System.Windows.Forms.Button Settings_btnLauncherPath;
-		public System.Windows.Forms.ListView Party_lstvMembers;
+		public System.Windows.Forms.ListView Party_lstvPartyMembers;
 		private System.Windows.Forms.ColumnHeader columnHeader11;
 		private System.Windows.Forms.ColumnHeader columnHeader12;
 		private System.Windows.Forms.ColumnHeader columnHeader13;
@@ -5959,7 +6380,7 @@
 		private System.Windows.Forms.Label GameInfo_lblWheaterTime;
 		private System.Windows.Forms.GroupBox Party_gbxAccepting;
 		public System.Windows.Forms.CheckBox Party_cbxAcceptAll;
-		public System.Windows.Forms.CheckBox Party_cbxAcceptPlayerList;
+		public System.Windows.Forms.CheckBox Party_cbxAcceptPartyList;
 		public System.Windows.Forms.CheckBox Party_cbxAcceptLeaderList;
 		private System.Windows.Forms.GroupBox Party_gbxSetup;
 		public System.Windows.Forms.CheckBox Party_cbxRefusePartys;
@@ -5969,28 +6390,27 @@
 		public System.Windows.Forms.TextBox Party_tbxLeader;
 		private System.Windows.Forms.Panel Party_pnlSetupExp;
 		private System.Windows.Forms.GroupBox Party_gbxSetupExp;
-		public System.Windows.Forms.CheckBox checkBox1;
-		public System.Windows.Forms.CheckBox checkBox11;
-		public System.Windows.Forms.CheckBox checkBox12;
+		public System.Windows.Forms.CheckBox Party_cbxInviteOnlyPartySetup;
+		public System.Windows.Forms.CheckBox Party_cbxInviteAll;
+		public System.Windows.Forms.CheckBox Party_cbxInvitePartyList;
 		private System.Windows.Forms.Panel Party_pnlSetupItem;
 		private System.Windows.Forms.GroupBox Party_gbxSetupItem;
 		public System.Windows.Forms.CheckBox Party_cbxSetupMasterInvite;
 		public System.Windows.Forms.CheckBox Party_cbxLeavePartyNoneLeader;
-		public System.Windows.Forms.CheckBox checkBox7;
 		public System.Windows.Forms.RadioButton Party_rbnSetupExpFree;
 		public System.Windows.Forms.RadioButton Party_rbnSetupItemFree;
 		public System.Windows.Forms.RadioButton Party_rbnSetupExpShared;
 		public System.Windows.Forms.RadioButton Party_rbnSetupItemShared;
 		public System.Windows.Forms.Button Party_btnAddPlayer;
 		public System.Windows.Forms.Button Party_btnAddLeader;
-		public System.Windows.Forms.ListView Party_lstvPlayers;
-		public System.Windows.Forms.ListView Party_lstvLeaders;
+		public System.Windows.Forms.ListView Party_lstvPartyList;
+		public System.Windows.Forms.ListView Party_lstvLeaderList;
 		public System.Windows.Forms.NotifyIcon NotifyIcon;
 		public System.Windows.Forms.Label Party_lblCurrentSetup;
-		private System.Windows.Forms.ContextMenuStrip Menu_lstvMembers;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvMembers_AddTo;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvMembers_AddToPlayerList;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvMembers_AddToLeaderList;
+		private System.Windows.Forms.ContextMenuStrip Menu_lstvPartyMembers;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMembers_AddTo;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMembers_AddToPartyList;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMembers_AddToLeaderList;
 		private System.Windows.Forms.ColumnHeader columnHeader16;
 		public System.Windows.Forms.ListView Party_lstvPartyMatch;
 		private System.Windows.Forms.ColumnHeader columnHeader17;
@@ -6006,7 +6426,7 @@
 		public System.Windows.Forms.TextBox Party_tbxJoinToNumber;
 		private System.Windows.Forms.Label Party_lblJoinToNumber;
 		public System.Windows.Forms.Button Party_btnJoinMatch;
-		private System.Windows.Forms.ToolStripMenuItem Menu_lstvMembers_LeaveParty;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMembers_LeaveParty;
 		public System.Windows.Forms.CheckBox Login_cbxGoClientless;
 		public System.Windows.Forms.Label Character_lblAddINT;
 		public System.Windows.Forms.Label Character_lblAddSTR;
@@ -6040,6 +6460,47 @@
 		public System.Windows.Forms.CheckBox Character_cbxAcceptRessPartyOnly;
 		public System.Windows.Forms.CheckBox Character_cbxAcceptRess;
 		private System.Windows.Forms.ToolStripMenuItem Menu_rtbxPackets_AddTimestamp;
+		private System.Windows.Forms.ContextMenuStrip Menu_lstvPartyList;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyList_Remove;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyList_RemoveAll;
+		private System.Windows.Forms.ContextMenuStrip Menu_lstvLeaderList;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvLeaderList_Remove;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvLeaderList_RemoveAll;
+		private System.Windows.Forms.Panel TabPageH_Inventory;
+		private System.Windows.Forms.Button TabPageH_Inventory_Option04;
+		private System.Windows.Forms.Button TabPageH_Inventory_Option03;
+		private System.Windows.Forms.Button TabPageH_Inventory_Option02;
+		private System.Windows.Forms.Button TabPageH_Inventory_Option01;
+		private System.Windows.Forms.Panel TabPageH_Inventory_Option01_Panel;
+		private System.Windows.Forms.Panel TabPageH_Inventory_Option03_Panel;
+		private System.Windows.Forms.Panel TabPageH_Inventory_Option02_Panel;
+		private System.Windows.Forms.Panel TabPageH_Inventory_Option04_Panel;
+		public System.Windows.Forms.ListView Inventory_lstvItems;
+		private System.Windows.Forms.ColumnHeader columnHeader23;
+		private System.Windows.Forms.ColumnHeader columnHeader24;
+		private System.Windows.Forms.ColumnHeader columnHeader26;
+		private System.Windows.Forms.ColumnHeader columnHeader25;
+		private System.Windows.Forms.ColumnHeader columnHeader27;
+		public System.Windows.Forms.Button Inventory_btnRefresh;
+		private System.Windows.Forms.Label Inventory_lblCapacity;
+		private System.Windows.Forms.ContextMenuStrip Menu_lstvPartyMatch;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMatch_JoinToParty;
+		private System.Windows.Forms.ToolStripMenuItem Menu_lstvPartyMatch_PrivateMsg;
+		public System.Windows.Forms.Button TabPageH_Chat_Option01;
+		public System.Windows.Forms.Button TabPageH_Chat_Option04;
+		public System.Windows.Forms.Button TabPageH_Chat_Option03;
+		public System.Windows.Forms.Button TabPageH_Chat_Option02;
+		public System.Windows.Forms.Button TabPageH_Chat_Option06;
+		public System.Windows.Forms.Button TabPageH_Chat_Option05;
+		public System.Windows.Forms.Button TabPageH_Chat_Option08;
+		public System.Windows.Forms.Button TabPageH_Chat_Option07;
+		public System.Windows.Forms.Label lblHeaderText02;
+		public System.Windows.Forms.TextBox Character_tbxUsePetHP;
+		public System.Windows.Forms.CheckBox Character_cbxUsePetHP;
+		public System.Windows.Forms.GroupBox Character_gbxPotionsPlayer;
+		public System.Windows.Forms.GroupBox Character_gbxPotionPet;
+		public System.Windows.Forms.TextBox Character_tbxUseTransportHP;
+		public System.Windows.Forms.CheckBox Character_cbxUseTransportHP;
 	}
 }
 

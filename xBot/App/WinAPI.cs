@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using xBot.Network;
 
 namespace xBot
 {
@@ -43,13 +40,18 @@ namespace xBot
 		[DllImport("user32.dll")]
 		public static extern int SetWindowText(IntPtr hWnd, string text);
 		#endregion
+
+		#region (Utility methods)
 		/// <summary>
 		/// Gets the current date in constant format like "[hh:mm:ss]".
 		/// </summary>
-		public static string getDate()
+		public static string GetDate()
 		{
 			return "[" + DateTime.Now.ToString("hh:mm:ss")+"]";
 		}
+		/// <summary>
+		/// Invoque the control if is required, then do the action specified.
+		/// </summary>
 		public static void InvokeIfRequired(Control control, MethodInvoker action)
 		{
 			try
@@ -58,74 +60,11 @@ namespace xBot
 					control.Invoke(action);
 				else
 					action();
-			}catch (System.ComponentModel.InvalidAsynchronousStateException){
-				// Window closed
+			}catch{
+				// Control closed
 			}
 		}
-		/// <summary>
-		/// Return the process connected to the port specified.
-		/// </summary>
-		public static Process GetProcess(int Port,bool SelfExclusion = true)
-		{
-			try
-			{
-				// How am I? Exclude it!
-				Process me = SelfExclusion ? Process.GetCurrentProcess() : null;
-
-				Process p = new Process();
-				ProcessStartInfo ps = new ProcessStartInfo();
-				ps.FileName = "netstat.exe";
-				ps.Arguments = "-a -n -o";
-				ps.UseShellExecute = false;
-				ps.CreateNoWindow = true;
-				ps.WindowStyle = ProcessWindowStyle.Hidden;
-				ps.RedirectStandardInput = true;
-				ps.RedirectStandardOutput = true;
-				ps.RedirectStandardError = true;
-				p.StartInfo = ps;
-				p.Start();
-
-				StreamReader stdOutput = p.StandardOutput;
-				StreamReader stdError = p.StandardError;
-
-				string content = stdOutput.ReadToEnd() + stdError.ReadToEnd();
-				string exitStatus = p.ExitCode.ToString();
-
-				if (exitStatus != "0")
-				{
-					// Command Errored. Handle Here If Need Be
-				}
-
-				// Get The Rows
-				string[] rows = Regex.Split(content, "\r\n");
-				foreach (string row in rows)
-				{
-					// Split it baby!
-					string[] tokens = Regex.Split(row, "\\s+");
-					if (tokens.Length > 4 && (tokens[1].Equals("UDP") || tokens[1].Equals("TCP")))
-					{
-						try
-						{
-							string localAddress = Regex.Replace(tokens[2], @"\[(.*?)\]", "1.1.1.1");
-							int pID = tokens[1] == "UDP" ? Convert.ToInt16(tokens[4]) : Convert.ToInt16(tokens[5]);
-							Process process = Process.GetProcessById(pID);
-							int processPort = int.Parse(localAddress.Split(':')[1]);
-
-							if (processPort == Port)
-							{
-								if(me != null && me.ProcessName == process.ProcessName)
-									continue;
-								return process;
-							}
-						}
-						catch { }
-					}
-				}
-			}
-			catch { }
-			return null;
-		}
-		public static IntPtr[] GetProcessWindows(int process)
+		public static IntPtr[] GetProcessWindows(int ProcessId)
 		{
 			IntPtr[] apRet = (new IntPtr[256]);
 			int iCount = 0;
@@ -135,12 +74,17 @@ namespace xBot
 				pLast = FindWindowEx(IntPtr.Zero, pLast, null, null);
 				int iProcess_;
 				GetWindowThreadProcessId(pLast, out iProcess_);
-				if (iProcess_ == process) apRet[iCount++] = pLast;
+				if (iProcess_ == ProcessId)
+					apRet[iCount++] = pLast;
 			} while (pLast != IntPtr.Zero);
-			System.Array.Resize(ref apRet, iCount);
+			Array.Resize(ref apRet, iCount);
 			return apRet;
 		}
-		public static string BytesToHexString(byte[] bytes)
+		/// <summary>
+		/// Converts the byte array to hexadecimal string.
+		/// </summary>
+		/// <para>Example: "00 00 00 00" </para>
+		public static string ToHexString(byte[] bytes)
 		{
 			if (bytes.Length == 0)
 				return "";
@@ -150,12 +94,15 @@ namespace xBot
 			// remove the last empty space
 			return hexData.Remove(hexData.Length - 1, 1).ToString();
 		}
-		public static byte[] HexStringToBytes(string hex)
+		/// <summary>
+		/// Converts the hexadecimal string to byte array.
+		/// </summary>
+		public static byte[] ToByteArray(string hexString)
 		{
-			hex = hex.Replace(" ", "");
-			return Enumerable.Range(0, hex.Length)
+			hexString = hexString.Replace(" ", "");
+			return Enumerable.Range(0, hexString.Length)
 											 .Where(x => x % 2 == 0)
-											 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+											 .Select(x => Convert.ToByte(hexString.Substring(x, 2), 16))
 											 .ToArray();
 		}
 		/// <summary>
@@ -188,5 +135,22 @@ namespace xBot
 			}
 			return line.Length == 0 ? null : line.ToString();
 		}
+		/// <summary>
+		/// Shuffle a list using Fisher-Yates algorithm.
+		/// </summary>
+		public static List<T> GetShuffle<T>(List<T> List,Random randomize)
+		{
+			int n = List.Count;
+			while (n > 1)
+			{
+				n--;
+				int k = randomize.Next(n + 1);
+				T value = List[k];
+				List[k] = List[n];
+				List[n] = value;
+			}
+			return List;
+    }
+		#endregion
 	}
 }

@@ -54,15 +54,15 @@ namespace xBot.Game
 		/// </summary>
 		public SRObject Character { get; set; }
 		/// <summary>
-		/// All characters displayed on character selection.
+		/// Gets all pets from character.
 		/// </summary>
-		public List<SRObject> CharacterList { get; }
+		public Dictionary<uint, SRObject> Pets { get; }
 		/// <summary>
-		/// Track any entity that spawn closer.
+		/// Gets all entity that spawn closer.
 		/// </summary>
-		public List<SRObject> EntityList { get; }
+		public Dictionary<uint,SRObject> EntityList { get; }
 		/// <summary>
-		/// All characters currently in party.
+		/// Gets all party members. The master will be at the first position.
 		/// </summary>
 		public List<SRObject> PartyList { get; }
 		/// <summary>
@@ -102,8 +102,8 @@ namespace xBot.Game
 		private Info()
 		{
 			Character = null;
-			CharacterList = new List<SRObject>();
-			EntityList = new List<SRObject>();
+			Pets = new Dictionary<uint, SRObject>();
+			EntityList = new Dictionary<uint, SRObject>();
 			PartyList = new List<SRObject>();
 			db = null;
     }
@@ -206,7 +206,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT player FROM leveldata WHERE level=" + level;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if(result.Count > 0)
 				return ulong.Parse(result[0]["player"]);
 			return 0;
@@ -222,7 +222,7 @@ namespace xBot.Game
 				return 0;
 			string sql = "SELECT * FROM leveldata WHERE level=" + level;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return uint.Parse(result[0][type.ToString().ToLower()]);
 			return 0;
@@ -234,11 +234,11 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM models WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
-    }
+		}
 		/// <summary>
 		/// Get model by servername, using the current database loaded.
 		/// </summary>
@@ -246,7 +246,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM models WHERE servername='" + servername+"'";
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -258,7 +258,19 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM teleportbuildings WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+				return result[0];
+			return null;
+		}
+		/// <summary>
+		/// Get teleportlink by servername, using the current database loaded.
+		/// </summary>
+		public NameValueCollection GetTeleport(string servername)
+		{
+			string sql = "SELECT * FROM teleportbuildings WHERE servername='" + servername+"'";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -270,7 +282,19 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM teleportlinks WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+				return result[0];
+			return null;
+		}
+		/// <summary>
+		/// Get teleportlink by servername, using the current database loaded.
+		/// </summary>
+		public NameValueCollection GetTeleportLink(string servername)
+		{
+			string sql = "SELECT * FROM teleportlinks WHERE servername='" + servername + "'";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -282,7 +306,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM items WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -294,7 +318,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM items WHERE servername='" + servername+"'";
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -306,7 +330,19 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM skills WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+				return result[0];
+			return null;
+		}
+		/// <summary>
+		/// Get skill by servername, using the current database loaded.
+		/// </summary>
+		public NameValueCollection GetSkill(string servername)
+		{
+			string sql = "SELECT * FROM skills WHERE servername='" + servername + "'";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -318,7 +354,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT * FROM masteries WHERE id=" + id;
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -330,7 +366,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT name FROM regions WHERE id=" + id + " LIMIT 1";
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return result[0]["name"];
 			return "";
@@ -342,7 +378,7 @@ namespace xBot.Game
 		{
 			string sql = "SELECT text FROM textuisystem WHERE servername='" + servername + "'";
 			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.getResult();
+			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 				return string.Format(result[0]["text"], args);
 			return "";
@@ -356,7 +392,32 @@ namespace xBot.Game
 		{
 			if ((uint)Character[SRAttribute.UniqueID] == uniqueID)
 				return Character;
-			return EntityList.Find(spawn => ((uint)spawn[SRAttribute.UniqueID] == uniqueID));
+			if (EntityList.ContainsKey(uniqueID))
+				return EntityList[uniqueID];
+			// If pet is not near
+			if (Pets.ContainsKey(uniqueID))
+				return Pets[uniqueID];
+			return null;
+		}
+		/// <summary>
+		/// Returns all near players.
+		/// </summary>
+		public List<SRObject> GetPlayers()
+		{
+			List<SRObject> result = new List<SRObject>();
+			foreach (uint uniqueID in EntityList.Keys)
+			{
+				if (EntityList[uniqueID].ID2 == 1)
+					result.Add(EntityList[uniqueID]);
+      }
+			return result;
+    }
+		/// <summary>
+		/// Returns all summoned pets players.
+		/// </summary>
+		public List<SRObject> GetPets()
+		{
+			return new List<SRObject>(Pets.Values);
 		}
 		/// <summary>
 		/// Find a party member using his member identifier number. Returns null if is not found.
@@ -371,6 +432,39 @@ namespace xBot.Game
 		public SRObject GetPartyMember(string name)
 		{
 			return PartyList.Find(member => (name.Equals((string)member[SRAttribute.Name],StringComparison.OrdinalIgnoreCase)));
+		}
+		/// <summary>
+		/// Get's an item object from the shop at slot specified.
+		/// </summary>
+		public SRObject GetItemFromShop(string npc_servername,byte tabNumber, byte tabSlot)
+		{
+			string sql = "SELECT * FROM shops WHERE model_servername='"+ npc_servername + "' AND tab="+ tabNumber+ " AND slot="+tabSlot;
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+			{
+				SRObject item = new SRObject(result[0]["item_servername"], SRObject.Type.Item);
+				if (item.ID1 == 3 && item.ID2 == 1)
+				{
+					item[SRAttribute.Plus] = byte.Parse(result[0]["plus"]);
+					item[SRAttribute.Durability] = uint.Parse(result[0]["durability"]);
+				}
+				if(result[0]["magic_params"] != "0")
+				{
+					string[] mParams = result[0]["magic_params"].Split('|');
+					SRObjectCollection MagicParams = new SRObjectCollection((uint)mParams.Length);
+					for (byte j = 0; j < mParams.Length; j++)
+					{
+						ulong param = ulong.Parse(mParams[j]);
+						MagicParams[j] = new SRObject();
+						MagicParams[j][SRAttribute.Type] = (uint)(param & uint.MaxValue);
+						MagicParams[j][SRAttribute.Value] = (uint)(param >> 32);
+					}
+					item[SRAttribute.MagicParams] = MagicParams;
+				}
+				return item;
+			}
+			return null;
 		}
 	}
 }

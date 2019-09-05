@@ -35,16 +35,16 @@ namespace xBot.Game
 			{
 				ushort serverID = packet.ReadUShort();
 				string serverName = packet.ReadAscii();
-				ushort onlineCount = packet.ReadUShort();
-				ushort maxCapacity = packet.ReadUShort();
+				ushort players = packet.ReadUShort();
+				ushort maxPlayers = packet.ReadUShort();
 				bool isAvailable = packet.ReadByte() == 1;
 				byte farm_ID = packet.ReadByte();
 
 				// Generate server list
 				ListViewItem server = new ListViewItem(serverName);
 				server.Name = serverID.ToString();
-				server.SubItems.Add(onlineCount + " / " + maxCapacity);
-				server.SubItems.Add((isAvailable ? "Available" : "Not available"));
+				server.SubItems.Add(players + " / " + maxPlayers + " ("+Math.Round(players*100d/maxPlayers,2)+"%)");
+				server.SubItems.Add((isAvailable ? "Online" : "Offline"));
 				WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
 					//i.Group = w.Login_lstvServers.Groups[serverID_farmID.ToString()];
 					w.Login_lstvServers.Items.Add(server);
@@ -54,7 +54,7 @@ namespace xBot.Game
 					WinAPI.InvokeIfRequired(w.Login_cmbxServer, () => {
 						w.Login_cmbxServer.Items.Add(serverName);
 						// Select Server if is AutoLogin
-						if (Bot.Get.isAutoLoginMode
+						if (Bot.Get.hasAutoLoginMode
 						&& w.Login_cmbxServer.Tag != null
 						&& serverName.Equals((string)w.Login_cmbxServer.Tag, StringComparison.OrdinalIgnoreCase))
 						{
@@ -66,7 +66,7 @@ namespace xBot.Game
 			}
 			// Unlock button
 			if (w.Login_btnStart.Text == "STOP" && Bot.Get.Proxy.ClientlessMode
-				|| Bot.Get.isAutoLoginMode)
+				|| Bot.Get.hasAutoLoginMode)
 			{
 				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 					w.Login_btnStart.Text = "LOGIN";
@@ -75,7 +75,7 @@ namespace xBot.Game
 			w.LogProcess("Server selection");
 
 			// AutoLogin
-			if (Bot.Get.isAutoLoginMode) {
+			if (Bot.Get.hasAutoLoginMode) {
 				// Server found
 				if (i.ServerID != "") {
 					WinAPI.InvokeIfRequired(w, () => {
@@ -114,29 +114,15 @@ namespace xBot.Game
 						PacketBuilder.RequestCharacterList();
 					break;
 				case Types.CharacterSelectionAction.CheckName:
-					if (result == 1)
-					{
-						if (Bot.Get.isCreatingCharacter)
-						{
-							Window.Get.Log("Nickname available!");
-							Bot.Get.CreateCharacter();
-						}
-					}
-					else
-					{
-						Window.Get.Log("Nickname has been already taken!");
-						if (Bot.Get.isCreatingCharacter)
-							Bot.Get.CreateNickname();
-					}
+					Bot.Get._Event_NicknameChecked(result == 1);
 					break;
 				case Types.CharacterSelectionAction.Delete:
-					// Not checked...
+					// Not necessary at the moment..
 					break;
 				case Types.CharacterSelectionAction.List:
 					if (result == 1)
 					{
 						Window w = Window.Get;
-						Info i = Info.Get;
 						Bot b = Bot.Get;
 						// Reset values
 						WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
@@ -147,7 +133,8 @@ namespace xBot.Game
 						{
 							w.Login_cmbxCharacter.Items.Clear();
 						});
-						i.CharacterList.Clear();
+
+						List<SRObject> CharacterList = new List<SRObject>();
 						// Start packet reading 
 						byte nChars = packet.ReadByte();
 						for (int n = 0; n < nChars; n++)
@@ -157,7 +144,7 @@ namespace xBot.Game
 							character[SRAttribute.Scale] = packet.ReadByte();
 							character[SRAttribute.Level] = packet.ReadByte();
 							character[SRAttribute.Exp] = packet.ReadULong();
-							character[SRAttribute.ExpMax] = i.GetExpMax((byte)character[SRAttribute.Level]);
+							character[SRAttribute.ExpMax] = Info.Get.GetExpMax((byte)character[SRAttribute.Level]);
 							character[SRAttribute.STR] = packet.ReadUShort();
 							character[SRAttribute.INT] = packet.ReadUShort();
 							character[SRAttribute.StatPoints] = packet.ReadUShort();
@@ -192,7 +179,7 @@ namespace xBot.Game
 							// End of Packet
 
 							// Adding to game info
-							i.CharacterList.Add(character);
+							CharacterList.Add(character);
 
 							// Filling data to GUI
 							ListViewItem l = new ListViewItem();
@@ -209,7 +196,7 @@ namespace xBot.Game
 								WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
 									w.Login_cmbxCharacter.Items.Add(l.Name);
 									// Select Charname if AutoLogin is activated
-									if (b.isAutoLoginMode
+									if (b.hasAutoLoginMode
 									&& w.Login_cmbxCharacter.Tag != null
 									&& ((string)w.Login_cmbxCharacter.Tag).ToLower() == l.Name.ToLower())
 									{
@@ -232,28 +219,7 @@ namespace xBot.Game
 						});
 						w.LogProcess("Character selection");
 
-						// AutoLogin
-						if (b.isAutoLoginMode)
-						{
-							WinAPI.InvokeIfRequired(w, () => {
-								if (w.Login_cmbxCharacter.Text != "")
-								{
-									w.Control_Click(w.Login_btnStart, null);
-									return;
-								}
-							});
-						}
-						else
-						{
-							// Select first one (Just for UX)
-							if (w.Login_cmbxCharacter.Items.Count > 0)
-							{
-								WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () => {
-									w.Login_cmbxCharacter.SelectedIndex = 0;
-								});
-							}
-						}
-						b.Event_CharacterListing();
+						Bot.Get._Event_CharacterListing(CharacterList);
 					}
 					else if (result == 2)
 					{
@@ -262,6 +228,22 @@ namespace xBot.Game
 						Bot.Get.Proxy.Stop();
 					}
 					break;
+			}
+		}
+		public static void CharacterSelectionJoinResponse(Packet packet)
+		{
+			byte success = packet.ReadByte();
+
+			Window w = Window.Get;
+			if (success == 1)
+			{
+				w.Log("Character selected [" + Info.Get.Charname + "]");
+			}
+			else
+			{
+				ushort error = packet.ReadUShort();
+				w.Log("Error: " + error);
+				w.LogProcess("Error", Window.ProcessState.Error);
 			}
 		}
 		private static Packet characterDataPacket;
@@ -306,135 +288,7 @@ namespace xBot.Game
 			for (byte i = 0; i < itemsCount; i++)
 			{
 				byte slot = p.ReadByte();
-				SRObject item = new SRObject();
-				Inventory[slot] = item;
-
-				item[SRAttribute.RentType] = p.ReadUInt();
-				if ((uint)item[SRAttribute.RentType] == 1)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
-					item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
-				}
-				else if ((uint)item[SRAttribute.RentType] == 2)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentCanRecharge] = p.ReadUShort();
-					item[SRAttribute.RentMeterRateTime] = p.ReadUInt();
-				}
-				else if ((uint)item[SRAttribute.RentType] == 3)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentCanRecharge] = p.ReadUShort();
-					item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
-					item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
-					item[SRAttribute.RentPackingTime] = p.ReadUInt();
-				}
-				item.Load(p.ReadUInt(), SRObject.Type.Item);
-				if (item.ID1 == 3)
-				{
-					// ITEM_
-					if (item.ID2 == 1)
-					{
-						// ITEM_CH_
-						// ITEM_EU_
-						// ITEM_AVATAR_
-						item[SRAttribute.Plus] = p.ReadByte();
-						item[SRAttribute.Variance] = p.ReadULong();
-						item[SRAttribute.Durability] = p.ReadUInt();
-
-						SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
-						for (int j = 0; j < MagicParams.Capacity; j++)
-						{
-							MagicParams[j] = new SRObject();
-							MagicParams[j][SRAttribute.Type] = p.ReadUInt();
-							MagicParams[j][SRAttribute.Value] = p.ReadUInt();
-						}
-						item[SRAttribute.MagicParams] = MagicParams;
-						// 1 = Socket
-						p.ReadByte();
-						SRObjectCollection SocketParams = new SRObjectCollection(p.ReadByte());
-						for (int j = 0; j < SocketParams.Capacity; j++)
-						{
-							SocketParams[j] = new SRObject();
-							SocketParams[j][SRAttribute.Slot] = p.ReadByte();
-							SocketParams[j][SRAttribute.ID] = p.ReadUInt();
-							SocketParams[j][SRAttribute.Value] = p.ReadUInt();
-						}
-						item[SRAttribute.SocketParams] = SocketParams;
-						// 2 = Advanced elixir
-						p.ReadByte();
-						SRObjectCollection AdvanceElixirParams = new SRObjectCollection(p.ReadByte());
-						for (int j = 0; j < AdvanceElixirParams.Capacity; j++)
-						{
-							AdvanceElixirParams[j] = new SRObject();
-							AdvanceElixirParams[j][SRAttribute.Slot] = p.ReadByte();
-							AdvanceElixirParams[j][SRAttribute.ID] = p.ReadUInt();
-							AdvanceElixirParams[j][SRAttribute.Plus] = p.ReadUInt();
-						}
-						item[SRAttribute.AdvanceElixirParams] = AdvanceElixirParams;
-					}
-					else if (item.ID2 == 2)
-					{
-						// ITEM_COS
-						if (item.ID3 == 1)
-						{
-							// ITEM_COS_P
-							item[SRAttribute.PetState] = (Types.PetState)p.ReadByte();
-							switch ((Types.PetState)item[SRAttribute.PetState])
-							{
-								case Types.PetState.Summoned:
-								case Types.PetState.Alive:
-								case Types.PetState.Dead:
-									item[SRAttribute.Model] = new SRObject(p.ReadUInt(), SRObject.Type.Model);
-									item[SRAttribute.Name] = p.ReadAscii();
-									if (item.ID4 == 2)
-									{
-										// ITEM_COS_P (Ability)
-										item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
-									}
-									item[SRAttribute.unkByte01] = p.ReadByte();
-									break;
-							}
-						}
-						else if (item.ID3 == 2)
-						{
-							// ITEM_ETC_TRANS_MONSTER
-							item[SRAttribute.Model] = new SRObject(p.ReadUInt(), SRObject.Type.Model);
-						}
-						else if (item.ID3 == 3)
-						{
-							// MAGIC_CUBE
-							item[SRAttribute.Amount] = p.ReadUInt();
-						}
-					}
-					else if (item.ID2 == 3)
-					{
-						// ITEM_ETC
-						item[SRAttribute.Quantity] = p.ReadUShort();
-						if (item.ID3 == 11)
-						{
-							if (item.ID4 == 1 || item.ID4 == 2)
-							{
-								// MAGIC/ATRIBUTTE STONE
-								item[SRAttribute.AssimilationProbability] = p.ReadByte();
-							}
-						}
-						else if (item.ID3 == 14 && item.ID4 == 2)
-						{
-							// ITEM_MALL_GACHA_CARD_WIN
-							// ITEM_MALL_GACHA_CARD_LOSE
-							SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
-							for (int j = 0; j < MagicParams.Capacity; j++)
-							{
-								MagicParams[j] = new SRObject();
-								MagicParams[j][SRAttribute.Type] = p.ReadUInt();
-								MagicParams[j][SRAttribute.Value] = p.ReadUInt();
-							}
-							item[SRAttribute.MagicParams] = MagicParams;
-						}
-					}
-				}
+				Inventory[slot] = ItemParsing(p);
 			}
 			#endregion
 			#region (Inventory Avatar)
@@ -445,70 +299,7 @@ namespace xBot.Game
 			for (byte i = 0; i < itemsCount; i++)
 			{
 				byte slot = p.ReadByte();
-				SRObject item = new SRObject();
-				InventoryAvatar[slot] = item;
-
-				item[SRAttribute.RentType] = p.ReadUInt();
-				if ((byte)item[SRAttribute.RentType] == 1)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
-					item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
-				}
-				else if ((byte)item[SRAttribute.RentType] == 2)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentCanRecharge] = p.ReadUShort();
-					item[SRAttribute.RentMeterRateTime] = p.ReadUInt();
-				}
-				else if ((byte)item[SRAttribute.RentType] == 3)
-				{
-					item[SRAttribute.RentCanDelete] = p.ReadUShort();
-					item[SRAttribute.RentCanRecharge] = p.ReadUShort();
-					item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
-					item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
-					item[SRAttribute.RentPackingTime] = p.ReadUInt();
-				}
-				item.Load(p.ReadUInt(), SRObject.Type.Item);
-				if (item.ID1 == 3 && item.ID2 == 1)
-				{
-					// ITEM_CH_
-					// ITEM_EU_
-					// ITEM_AVATAR_
-					item[SRAttribute.Plus] = p.ReadByte();
-					item[SRAttribute.Variance] = p.ReadULong();
-					item[SRAttribute.Durability] = p.ReadUInt();
-					SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
-					for (int j = 0; j < MagicParams.Capacity; j++)
-					{
-						MagicParams[j] = new SRObject();
-						MagicParams[j][SRAttribute.Type] = p.ReadUInt();
-						MagicParams[j][SRAttribute.Value] = p.ReadUInt();
-					}
-					item[SRAttribute.MagicParams] = MagicParams;
-					// 1 = Socket
-					p.ReadByte();
-					SRObjectCollection SocketParams = new SRObjectCollection(p.ReadByte());
-					for (int j = 0; j < SocketParams.Capacity; j++)
-					{
-						SocketParams[j] = new SRObject();
-						SocketParams[j][SRAttribute.Slot] = p.ReadByte();
-						SocketParams[j][SRAttribute.ID] = p.ReadUInt();
-						SocketParams[j][SRAttribute.Value] = p.ReadUInt();
-					}
-					item[SRAttribute.SocketParams] = SocketParams;
-					// 2 = Advanced elixir
-					p.ReadByte();
-					SRObjectCollection AdvanceElixirParams = new SRObjectCollection(p.ReadByte());
-					for (int j = 0; j < AdvanceElixirParams.Capacity; j++)
-					{
-						AdvanceElixirParams[j] = new SRObject();
-						AdvanceElixirParams[j][SRAttribute.Slot] = p.ReadByte();
-						AdvanceElixirParams[j][SRAttribute.ID] = p.ReadUInt();
-						AdvanceElixirParams[j][SRAttribute.Plus] = p.ReadUInt();
-					}
-					item[SRAttribute.AdvanceElixirParams] = AdvanceElixirParams;
-				}
+				InventoryAvatar[slot] = ItemParsing(p);
 			}
 			#endregion
 			character[SRAttribute.unkByte02] = p.ReadByte();
@@ -656,11 +447,11 @@ namespace xBot.Game
 			character[SRAttribute.JobContribution] = p.ReadUInt();
 			character[SRAttribute.JobReward] = p.ReadUInt();
 			character[SRAttribute.PVPState] = (Types.PVPState)p.ReadByte();
-			character[SRAttribute.hasTransport] = p.ReadByte() == 1;
+			character[SRAttribute.isRiding] = p.ReadByte() == 1;
 			character[SRAttribute.isFighting] = p.ReadByte() == 1;
-			if ((bool)character[SRAttribute.hasTransport])
+			if ((bool)character[SRAttribute.isRiding])
 			{
-				character[SRAttribute.TransportUniqueID] = p.ReadUInt();
+				character[SRAttribute.RidingUniqueID] = p.ReadUInt();
 			}
 			character[SRAttribute.CaptureTheFlagType] = (Types.CaptureTheFlag)p.ReadByte();
 			character[SRAttribute.GuideFlag] = p.ReadULong();
@@ -692,18 +483,23 @@ namespace xBot.Game
 			#endregion
 			// End of Packet
 
+			Info info = Info.Get;
+
 			// Initializing basic bars
-			character[SRAttribute.ExpMax] = Info.Get.GetExpMax((byte)character[SRAttribute.Level]);
-			character[SRAttribute.JobExpMax] = Info.Get.GetJobExpMax((byte)character[SRAttribute.JobLevel],(Types.Job)character[SRAttribute.JobType]);
+			character[SRAttribute.ExpMax] = info.GetExpMax((byte)character[SRAttribute.Level]);
+			character[SRAttribute.JobExpMax] = info.GetJobExpMax((byte)character[SRAttribute.JobLevel], (Types.Job)character[SRAttribute.JobType]);
 			character[SRAttribute.HP] = character[SRAttribute.HPMax];
 			character[SRAttribute.MP] = character[SRAttribute.MPMax];
 
-			// Set the current character selected
-			Info.Get.Character = character;
+			// Set the current character or update the previously saved
+			if (info.Character == null)
+				info.Character = character;
+			else
+				info.Character.CopyAttributes(character, true);
 
 			// Updating GUI
 			Window w = Window.Get;
-			w.GameInfo_AddSpawn(character);
+			//w.GameInfo_AddSpawn(character);
 
 			#region (Character)
 			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
@@ -728,7 +524,7 @@ namespace xBot.Game
 				w.Character_pgbJobExp.ValueMaximum = (uint)character[SRAttribute.JobExpMax];
 				w.Character_pgbJobExp.Value = (uint)character[SRAttribute.JobExp];
 			});
-			w.SetSROGold((ulong)character[SRAttribute.Gold]);
+			w.Character_SetGold((ulong)character[SRAttribute.Gold]);
 			WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
 				w.Character_lblLocation.Text = Info.Get.GetRegion((ushort)character[SRAttribute.Region]);
 			});
@@ -756,6 +552,138 @@ namespace xBot.Game
 			});
 			w.Minimap_CharacterPointer_Move((int)character[SRAttribute.X], (int)character[SRAttribute.Y], (int)character[SRAttribute.Z], (ushort)character[SRAttribute.Region]);
 			#endregion
+		}
+		private static SRObject ItemParsing(Packet p)
+		{
+			SRObject item = new SRObject();
+
+			item[SRAttribute.RentType] = p.ReadUInt();
+			if ((uint)item[SRAttribute.RentType] == 1)
+			{
+				item[SRAttribute.RentCanDelete] = p.ReadUShort();
+				item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
+				item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
+			}
+			else if ((uint)item[SRAttribute.RentType] == 2)
+			{
+				item[SRAttribute.RentCanDelete] = p.ReadUShort();
+				item[SRAttribute.RentCanRecharge] = p.ReadUShort();
+				item[SRAttribute.RentMeterRateTime] = p.ReadUInt();
+			}
+			else if ((uint)item[SRAttribute.RentType] == 3)
+			{
+				item[SRAttribute.RentCanDelete] = p.ReadUShort();
+				item[SRAttribute.RentCanRecharge] = p.ReadUShort();
+				item[SRAttribute.RentPeriodBeginTime] = p.ReadUInt();
+				item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
+				item[SRAttribute.RentPackingTime] = p.ReadUInt();
+			}
+			item.Load(p.ReadUInt(), SRObject.Type.Item);
+			if (item.ID1 == 3)
+			{
+				// ITEM_
+				if (item.ID2 == 1)
+				{
+					// ITEM_CH_
+					// ITEM_EU_
+					// ITEM_AVATAR_
+					item[SRAttribute.Plus] = p.ReadByte();
+					item[SRAttribute.Variance] = p.ReadULong();
+					item[SRAttribute.Durability] = p.ReadUInt();
+
+					SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
+					for (byte j = 0; j < MagicParams.Capacity; j++)
+					{
+						MagicParams[j] = new SRObject();
+						MagicParams[j][SRAttribute.Type] = p.ReadUInt();
+						MagicParams[j][SRAttribute.Value] = p.ReadUInt();
+					}
+					item[SRAttribute.MagicParams] = MagicParams;
+					// 1 = Socket
+					p.ReadByte();
+					SRObjectCollection SocketParams = new SRObjectCollection(p.ReadByte());
+					for (byte j = 0; j < SocketParams.Capacity; j++)
+					{
+						SocketParams[j] = new SRObject();
+						SocketParams[j][SRAttribute.Slot] = p.ReadByte();
+						SocketParams[j][SRAttribute.ID] = p.ReadUInt();
+						SocketParams[j][SRAttribute.Value] = p.ReadUInt();
+					}
+					item[SRAttribute.SocketParams] = SocketParams;
+					// 2 = Advanced elixir
+					p.ReadByte();
+					SRObjectCollection AdvanceElixirParams = new SRObjectCollection(p.ReadByte());
+					for (byte j = 0; j < AdvanceElixirParams.Capacity; j++)
+					{
+						AdvanceElixirParams[j] = new SRObject();
+						AdvanceElixirParams[j][SRAttribute.Slot] = p.ReadByte();
+						AdvanceElixirParams[j][SRAttribute.ID] = p.ReadUInt();
+						AdvanceElixirParams[j][SRAttribute.Plus] = p.ReadUInt();
+					}
+					item[SRAttribute.AdvanceElixirParams] = AdvanceElixirParams;
+				}
+				else if (item.ID2 == 2)
+				{
+					// ITEM_COS
+					if (item.ID3 == 1)
+					{
+						// ITEM_COS_P
+						item[SRAttribute.PetState] = (Types.PetState)p.ReadByte();
+						switch ((Types.PetState)item[SRAttribute.PetState])
+						{
+							case Types.PetState.Summoned:
+							case Types.PetState.Unsummoned:
+							case Types.PetState.Dead:
+								item[SRAttribute.ModelID] = p.ReadUInt();
+								item[SRAttribute.PetName] = p.ReadAscii();
+								if (item.ID4 == 2)
+								{
+									// ITEM_COS_P (Ability)
+									item[SRAttribute.RentPeriodEndTime] = p.ReadUInt();
+								}
+								item[SRAttribute.unkByte01] = p.ReadByte();
+								break;
+						}
+					}
+					else if (item.ID3 == 2)
+					{
+						// ITEM_ETC_TRANS_MONSTER
+						item[SRAttribute.ModelID] = p.ReadUInt();
+					}
+					else if (item.ID3 == 3)
+					{
+						// MAGIC_CUBE
+						item[SRAttribute.Amount] = p.ReadUInt();
+					}
+				}
+				else if (item.ID2 == 3)
+				{
+					// ITEM_ETC
+					item[SRAttribute.Quantity] = p.ReadUShort();
+					if (item.ID3 == 11)
+					{
+						if (item.ID4 == 1 || item.ID4 == 2)
+						{
+							// MAGIC/ATRIBUTTE STONE
+							item[SRAttribute.AssimilationProbability] = p.ReadByte();
+						}
+					}
+					else if (item.ID3 == 14 && item.ID4 == 2)
+					{
+						// ITEM_MALL_GACHA_CARD_WIN
+						// ITEM_MALL_GACHA_CARD_LOSE
+						SRObjectCollection MagicParams = new SRObjectCollection(p.ReadByte());
+						for (byte j = 0; j < MagicParams.Capacity; j++)
+						{
+							MagicParams[j] = new SRObject();
+							MagicParams[j][SRAttribute.Type] = p.ReadUInt();
+							MagicParams[j][SRAttribute.Value] = p.ReadUInt();
+						}
+						item[SRAttribute.MagicParams] = MagicParams;
+					}
+				}
+			}
+			return item;
 		}
 		public static void CharacterStatsUpdate(Packet packet)
 		{
@@ -809,10 +737,10 @@ namespace xBot.Game
 			Info i = Info.Get;
 			Window w = Window.Get;
 
-			packet.ReadUInt(); // uniqueID (for displaying graphics)
+			uint sourceUniqueID = packet.ReadUInt(); // used to display exp. graphics
 			long ExpReceived = packet.ReadLong();
-			long SPExpReceived = packet.ReadLong(); // Long SP EXP? weird...
-			byte unkFlag = packet.ReadByte();
+			long SPExpReceived = packet.ReadLong(); // Long SP EXP? hmmm..
+			//byte unkByte01 = packet.ReadByte();
 			// End of Packet
 
 			if (w.Character_cbxMessageExp.Checked)
@@ -842,7 +770,7 @@ namespace xBot.Game
 				// Level Up
 				i.Character[SRAttribute.Level] = (byte)(level + 1);
 				WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
-					w.Character_lblLevel.Text ="Lv. " + i.Character[SRAttribute.Level];
+					w.Character_lblLevel.Text = "Lv. " + i.Character[SRAttribute.Level];
 				});
 				// Update new ExpMax
 				i.Character[SRAttribute.ExpMax] = i.GetExpMax((byte)i.Character[SRAttribute.Level]);
@@ -897,7 +825,7 @@ namespace xBot.Game
 			{
 				case 1: // Gold
 					i.Character[SRAttribute.Gold] = packet.ReadULong();
-					w.SetSROGold((ulong)i.Character[SRAttribute.Gold]);
+					w.Character_SetGold((ulong)i.Character[SRAttribute.Gold]);
 					break;
 				case 2: // SP
 					i.Character[SRAttribute.SP] = packet.ReadUInt();
@@ -1079,11 +1007,11 @@ namespace xBot.Game
 					entity[SRAttribute.JobType] = (Types.Job)packet.ReadByte();
 					entity[SRAttribute.JobLevel] = packet.ReadByte();
 					entity[SRAttribute.PVPState] = (Types.PVPState)packet.ReadByte();
-					entity[SRAttribute.hasTransport] = packet.ReadByte() == 1;
+					entity[SRAttribute.isRiding] = packet.ReadByte() == 1;
 					entity[SRAttribute.isFighting] = packet.ReadByte();
-					if ((bool)entity[SRAttribute.hasTransport])
+					if ((bool)entity[SRAttribute.isRiding])
 					{
-						entity[SRAttribute.TransportUniqueID] = packet.ReadUInt();
+						entity[SRAttribute.RidingUniqueID] = packet.ReadUInt();
 					}
 					entity[SRAttribute.ScrollMode] = (Types.ScrollMode)packet.ReadByte();
 					entity[SRAttribute.InteractMode] = (Types.InteractMode)packet.ReadByte();
@@ -1111,7 +1039,7 @@ namespace xBot.Game
 				else if (entity.ID2 == 2)
 				{
 					// NPC
-					entity[SRAttribute.hasTalk] = packet.ReadByte() != 0;
+					entity[SRAttribute.hasTalk] = packet.ReadByte() != 0; // Talking stack options or none (0)
 					if ((bool)entity[SRAttribute.hasTalk])
 					{
 						entity[SRAttribute.TalkOptions] = packet.ReadUInt8Array(packet.ReadByte());
@@ -1132,7 +1060,7 @@ namespace xBot.Game
 						if (entity.ID4 == 3 || entity.ID4 == 4)
 						{
 							//NPC_COS_P (Growth / Ability)
-							entity[SRAttribute.Name] = packet.ReadAscii();
+							entity[SRAttribute.PetName] = packet.ReadAscii();
 						}
 						if (entity.ID4 == 5)
 						{
@@ -1262,7 +1190,7 @@ namespace xBot.Game
 				entity[SRAttribute.Z] = (int)packet.ReadSingle();
 				entity[SRAttribute.Y] = (int)packet.ReadSingle();
 				entity[SRAttribute.Angle] = packet.ReadUShort();
-				
+
 				entity[SRAttribute.Name] = Skill[SRAttribute.Name];
 			}
 			if (packet.Opcode == Agent.Opcode.SERVER_ENTITY_SPAWN)
@@ -1280,7 +1208,7 @@ namespace xBot.Game
 				}
 			}
 			// End of Packet
-			
+
 			// Keep the track of the entity
 			Bot.Get._Event_Spawn(entity);
 		}
@@ -1405,39 +1333,51 @@ namespace xBot.Game
 			{
 				case Types.Chat.All:
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 				case Types.Chat.GM:
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 				case Types.Chat.NPC:
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 				case Types.Chat.Private:
 					w.LogChatMessage(w.Chat_rtbxPrivate, player + "(From)", message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option02);
 					break;
 				case Types.Chat.Party:
 					w.LogChatMessage(w.Chat_rtbxParty, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option03);
 					break;
 				case Types.Chat.Guild:
 					w.LogChatMessage(w.Chat_rtbxGuild, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option04);
 					break;
 				case Types.Chat.Union:
 					w.LogChatMessage(w.Chat_rtbxUnion, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option05);
 					break;
 				case Types.Chat.Academy:
 					w.LogChatMessage(w.Chat_rtbxAcademy, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option06);
 					break;
 				case Types.Chat.Global:
 					w.LogChatMessage(w.Chat_rtbxGlobal, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option08);
 					break;
 				case Types.Chat.Stall:
 					w.LogChatMessage(w.Chat_rtbxStall, player, message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option07);
 					break;
 				case Types.Chat.Notice:
 					w.LogChatMessage(w.Chat_rtbxAll, "(Notice)", message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 				default:
 					w.LogChatMessage(w.Chat_rtbxAll, "(...)", message);
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 			}
 		}
@@ -1460,16 +1400,17 @@ namespace xBot.Game
 		{
 			uint uniqueID = packet.ReadUInt();
 			byte unkByte01 = packet.ReadByte();
-			byte unkByte02 =packet.ReadByte();
+			byte unkByte02 = packet.ReadByte();
 
 			Info i = Info.Get;
 			SRObject entity = i.GetEntity(uniqueID);
+
+			// Check if the entity has been despawned (killed) already
 			if (entity == null)
 				return;
 
-			Window w = Window.Get;
-			Types.EntityStateUpdate UpdateType = (Types.EntityStateUpdate)packet.ReadByte();
-			switch (UpdateType)
+			Types.EntityStateUpdate updateType = (Types.EntityStateUpdate)packet.ReadByte();
+			switch (updateType)
 			{
 				case Types.EntityStateUpdate.HP:
 					entity[SRAttribute.HP] = packet.ReadUInt();
@@ -1484,13 +1425,15 @@ namespace xBot.Game
 					break;
 				case Types.EntityStateUpdate.BadStatus:
 					entity[SRAttribute.BadStatusType] = (Types.BadStatus)packet.ReadUInt();
-					w.LogMessageFilter("BadStatus:"+entity[SRAttribute.BadStatusType]+"|"+ entity[SRAttribute.UniqueID]);
+					// Just for testing
+					// w.LogMessageFilter("BadStatus:"+entity[SRAttribute.BadStatusType]+"|"+ entity[SRAttribute.UniqueID]);
 					break;
 			}
 			// End of Packet
 
 			// Update dead/alive state
-			if (entity.Contains(SRAttribute.HP) && (uint)entity[SRAttribute.HP] == 0)
+			if (entity.Contains(SRAttribute.HP)
+				&& (uint)entity[SRAttribute.HP] == 0)
 			{
 				entity[SRAttribute.LifeState] = Types.LifeState.Dead;
 			}
@@ -1499,23 +1442,15 @@ namespace xBot.Game
 				entity[SRAttribute.LifeState] = Types.LifeState.Alive;
 			}
 
-			// Update GUI
-			if (entity == i.Character)
+			// Genrating event
+			if ((uint)entity[SRAttribute.UniqueID] == (uint)i.Character[SRAttribute.UniqueID])
 			{
-				if (UpdateType == Types.EntityStateUpdate.HP || UpdateType == Types.EntityStateUpdate.HPMP)
-				{
-					WinAPI.InvokeIfRequired(w.Character_pgbHP, () =>{
-						w.Character_pgbHP.Value = (uint)entity[SRAttribute.HP];
-					});
-				}
-				if (UpdateType == Types.EntityStateUpdate.MP || UpdateType == Types.EntityStateUpdate.HPMP)
-				{
-					WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-						w.Character_pgbMP.Value = (uint)entity[SRAttribute.MP];
-					});
-				}
-				// Generating bot event to keep this method clean
-				Bot.Get._Event_StateUpdated();
+				Bot.Get._Event_StateUpdated(updateType);
+			}
+			else if (entity.ID4 != 1
+			 && (uint)entity[SRAttribute.OwnerUniqueID] == (uint)i.Character[SRAttribute.UniqueID])
+			{
+				Bot.Get._Event_PetStateUpdated(uniqueID, updateType);
 			}
 		}
 		public static void EnviromentWheaterUpdate(Packet packet)
@@ -1562,7 +1497,7 @@ namespace xBot.Game
 			switch ((Types.PlayerPetition)type)
 			{
 				case Types.PlayerPetition.PartyCreation:
-				case Types.PlayerPetition.PartyInvitation: 
+				case Types.PlayerPetition.PartyInvitation:
 					byte partySetupFlags = packet.ReadByte();
 					Bot.Get.Event_PartyInvitation(uniqueID, partySetupFlags);
 					break;
@@ -1599,7 +1534,7 @@ namespace xBot.Game
 			// Update GUI with current party setup
 			Window w = Window.Get;
 
-			string partySetup = "• Exp. "+ (ExpShared ? "Shared" : "Free-For-All") + " • Item "+ (ItemShared ? "Shared" : "Free-For-All") + " • "+ (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
+			string partySetup = "• Exp. " + (ExpShared ? "Shared" : "Free-For-All") + " • Item " + (ItemShared ? "Shared" : "Free-For-All") + " • " + (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
 			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
 				w.Party_lblCurrentSetup.Text = partySetup;
 			});
@@ -1608,7 +1543,7 @@ namespace xBot.Game
 			});
 
 			// Event hook
-			Bot.Get.Event_PartyJoined(partySetupType,partyPurposeType);
+			Bot.Get.Event_PartyJoined(partySetupType, partyPurposeType);
 		}
 		private static void PartyAddPlayer(Packet packet)
 		{
@@ -1640,13 +1575,13 @@ namespace xBot.Game
 			player[SRAttribute.unkByte06] = packet.ReadByte();
 			player[SRAttribute.GuildName] = packet.ReadAscii();
 			player[SRAttribute.unkByte07] = packet.ReadByte();
-			if(packet.Opcode == Agent.Opcode.SERVER_PARTY_UPDATE && (byte)player[SRAttribute.unkByte03] == 2)
+			if (packet.Opcode == Agent.Opcode.SERVER_PARTY_UPDATE && (byte)player[SRAttribute.unkByte03] == 2)
 			{
 				player[SRAttribute.unkByte08] = packet.ReadByte();
 			}
-			SRObjectCollection Masteries = new SRObjectCollection();
-			Masteries.Add(new SRObject(packet.ReadUInt(), SRObject.Type.Mastery)); // Primary
-			Masteries.Add(new SRObject(packet.ReadUInt(), SRObject.Type.Mastery)); // Secondary
+			SRObjectCollection Masteries = new SRObjectCollection(2);
+			Masteries[0] = new SRObject(packet.ReadUInt(), SRObject.Type.Mastery); // Primary
+			Masteries[1] = new SRObject(packet.ReadUInt(), SRObject.Type.Mastery); // Secondary
 			player[SRAttribute.Masteries] = Masteries;
 
 			// Keep on track players for updates
@@ -1670,20 +1605,19 @@ namespace xBot.Game
 			item.SubItems.Add(i.GetRegion((ushort)player[SRAttribute.Region]));
 
 			Window w = Window.Get;
-			WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
-				w.Party_lstvMembers.Items.Add(item);
+			WinAPI.InvokeIfRequired(w.Party_lstvPartyMembers, () => {
+				w.Party_lstvPartyMembers.Items.Add(item);
 			});
 		}
 		public static void PartyUpdate(Packet packet)
 		{
+			byte updateType = packet.ReadByte();
+
 			Window w = Window.Get;
 			Info i = Info.Get;
-			
-			byte type = packet.ReadByte();
 
 			uint memberID;
-			SRObject player;
-			switch (type)
+			switch (updateType)
 			{
 				case 1: // Dismissed
 					ushort unkUShort = packet.ReadUShort();
@@ -1697,56 +1631,54 @@ namespace xBot.Game
 					memberID = packet.ReadUInt();
 					byte reason = packet.ReadByte();
 
-					player = i.GetPartyMember(memberID);
-					if ((string)player[SRAttribute.Name] == i.Charname)
-					{
-						// Event hook
-						Bot.Get._Event_PartyLeaved();
-					}
-					else
-					{
-						i.PartyList.Remove(player);
-						WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
-							w.Party_lstvMembers.Items[memberID.ToString()].Remove();
-						});
-					}
+					Bot.Get._Event_MemberLeaved(memberID);
 					break;
 				case 6: // Member update
 					memberID = packet.ReadUInt();
-					player = i.GetPartyMember(memberID);
+					SRObject player = i.GetPartyMember(memberID);
 
-					byte updateType = packet.ReadByte();
+					updateType = packet.ReadByte();
 					switch (updateType)
 					{
 						case 4: // HP & MP
 							byte HPMP = packet.ReadByte();
-							player[SRAttribute.HPMP] = HPMP;
-							string PercentHPMP = string.Format("{0}% / {1}%", (HPMP & 15) * 10, (HPMP >> 4) * 10);
+							byte hp = (byte)(HPMP & 15);
+							byte mp = (byte)(HPMP >> 4);
+							if (hp == 0) // Check if is dead
+								mp = 0;
+							else
+								hp = (byte)(hp - 1);
+							player[SRAttribute.HPMP] = (byte)(hp & mp);
+
+							string PercentHPMP = string.Format("{0}% / {1}%", hp * 10, mp * 10);
 							// Weird : sometimes hp is wrong (by +1), giving as result 110% or 10% in dead state
-							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
-								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[3].Text = PercentHPMP;
+							WinAPI.InvokeIfRequired(w.Party_lstvPartyMembers, () => {
+								w.Party_lstvPartyMembers.Items[memberID.ToString()].SubItems[3].Text = PercentHPMP;
 							});
 							break;
 						case 0x20: // Map position
 							string region = i.GetRegion(packet.ReadUShort());
 							// X,Y,Z .. not important atm, only for minimap
-							WinAPI.InvokeIfRequired(w.Party_lstvMembers, () => {
-								w.Party_lstvMembers.Items[memberID.ToString()].SubItems[4].Text = region;
+							WinAPI.InvokeIfRequired(w.Party_lstvPartyMembers, () => {
+								w.Party_lstvPartyMembers.Items[memberID.ToString()].SubItems[4].Text = region;
 							});
 							break;
 					}
 					break;
 			}
 		}
-		public static void PartyMatchResponse(Packet packet){
+		public static void PartyMatchResponse(Packet packet) {
 			Window w = Window.Get;
-			WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch,()=> {
+			WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch, () => {
 				w.Party_lstvPartyMatch.Items.Clear();
 			});
-			
+
 			byte success = packet.ReadByte();
 			if (success == 1)
 			{
+				Bot b = Bot.Get;
+				bool hasParty = b.hasParty;
+
 				byte pageCount = packet.ReadByte();
 				byte pageIndex = packet.ReadByte();
 				byte partyCount = packet.ReadByte();
@@ -1757,8 +1689,8 @@ namespace xBot.Game
 					uint number = packet.ReadUInt();
 					uint unkUInt01 = packet.ReadUInt(); // Possibly UniqueID?
 					string master = packet.ReadAscii();
-					byte unkByte01 = packet.ReadByte();
-					byte playersCount = packet.ReadByte();
+					byte raceType = packet.ReadByte();
+					byte membersCount = packet.ReadByte();
 					byte setupType = packet.ReadByte();
 					byte purposeType = packet.ReadByte();
 					byte levelMin = packet.ReadByte();
@@ -1770,12 +1702,8 @@ namespace xBot.Game
 					bool ExpShared = setupFlags.HasFlag(Types.PartySetup.ExpShared);
 					bool ItemShared = setupFlags.HasFlag(Types.PartySetup.ItemShared);
 					bool AnyoneCanInvite = setupFlags.HasFlag(Types.PartySetup.AnyoneCanInvite);
-					
-					if (PartyMatches.ContainsKey(number.ToString()))
-					{
-						PartyMatches[number.ToString()].BackColor = Color.FromArgb(120, 120, 120);
-					}
-					else
+
+					if (!PartyMatches.ContainsKey(number.ToString()))
 					{
 						ListViewItem Party = new ListViewItem(number.ToString());
 						Party.Name = number.ToString();
@@ -1783,9 +1711,12 @@ namespace xBot.Game
 						Party.SubItems.Add((isJob ? "*" : "") + master);
 						Party.SubItems.Add(title);
 						Party.SubItems.Add(levelMin + "~" + levelMax);
-						Party.SubItems.Add(playersCount + "/" + (ExpShared ? "8" : "4"));
+						Party.SubItems.Add(membersCount + "/" + (ExpShared ? "8" : "4"));
 						Party.SubItems.Add(((Types.PartyPurpose)purposeType).ToString());
-						Party.ToolTipText = "Exp. " + (ExpShared ? "Shared" : "Free - For - All") + "\nItem " + (ItemShared ? "Shared" : "Free-For-All") + "\n" + (AnyoneCanInvite ? "Anyone" : "Only Master") + "Can Invite";
+						Party.ToolTipText = "Exp. " + (ExpShared ? "Shared" : "Free - For - All") + "\nItem " + (ItemShared ? "Shared" : "Free-For-All") + "\n" + (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
+
+						if(hasParty && master == (string)Info.Get.PartyList[0][SRAttribute.Name])
+							Party.BackColor = Color.FromArgb(120, 120, 120);
 
 						PartyMatches[Party.Name] = Party;
 					}
@@ -1814,8 +1745,8 @@ namespace xBot.Game
 		}
 		public static void EntitySelection(Packet packet)
 		{
-			bool sucess = packet.ReadByte() == 1;
-			if (sucess)
+			bool success = packet.ReadByte() == 1;
+			if (success)
 			{
 				uint uniqueID = packet.ReadUInt();
 				Bot.Get._Event_EntitySelected(uniqueID);
@@ -1834,7 +1765,7 @@ namespace xBot.Game
 				if (StatPoints > 0)
 				{
 					i.Character[SRAttribute.StatPoints] = (ushort)(StatPoints - 1);
-					WinAPI.InvokeIfRequired(w.Character_lblStatPoints,()=> {
+					WinAPI.InvokeIfRequired(w.Character_lblStatPoints, () => {
 						w.Character_lblStatPoints.Text = i.Character[SRAttribute.StatPoints].ToString();
 					});
 					if ((ushort)i.Character[SRAttribute.StatPoints] == 0)
@@ -1852,6 +1783,736 @@ namespace xBot.Game
 					w.Character_btnAddINT.Enabled = w.Character_btnAddSTR.Enabled = false;
 				});
 			}
+		}
+		public static void InventoryItemUse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				byte slot = packet.ReadByte();
+				ushort quantityUpdate = packet.ReadUShort();
+				//ushort usageType = packet.ReadUShort();
+
+				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+				if (quantityUpdate == 0)
+					inventory[slot] = null; // Item consumed
+				else
+					inventory[slot][SRAttribute.Quantity] = quantityUpdate;
+			}
+		}
+		public static void InventoryItemDurabilityUpdate(Packet packet)
+		{
+			byte slotInventory = packet.ReadByte();
+			uint durability = packet.ReadUInt();
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+			inventory[slotInventory][SRAttribute.Durability] = durability;
+		}
+		public static void InventoryItemStateUpdate(Packet packet)
+		{
+			byte slotInventory = packet.ReadByte();
+			byte updateType = packet.ReadByte();
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+			switch(updateType){
+				case 0x40: // Pet State
+					inventory[slotInventory][SRAttribute.PetState] = (Types.PetState)packet.ReadByte();
+					break;
+			}
+		}
+		private static Packet storageDataPacket;
+		public static void StorageDataBegin(Packet packet)
+		{
+			Info.Get.Character[SRAttribute.StorageGold] = packet.ReadULong();
+			storageDataPacket = new Packet(Agent.Opcode.SERVER_STORAGE_DATA);
+		}
+		public static void StorageData(Packet packet)
+		{
+			storageDataPacket.WriteUInt8Array(packet.GetBytes());
+		}
+		public static void StorageDataEnd(Packet packet)
+		{
+			storageDataPacket.Lock();
+			Packet p = storageDataPacket;
+
+			SRObjectCollection storage = new SRObjectCollection(p.ReadByte());
+			byte itemsCount = p.ReadByte();
+			for (int j = 0; j < itemsCount; j++)
+			{
+				byte slot = p.ReadByte();
+				storage[slot] = ItemParsing(p);
+			}
+			Info.Get.Character[SRAttribute.Storage] = storage;
+		}
+		public static bool InventoryItemMovement(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				byte type = packet.ReadByte();
+				switch ((Types.InventoryItemMovement)type)
+				{
+					case Types.InventoryItemMovement.InventoryToInventory:
+						InventoryItemMovement_InventoryToInventory(packet);
+						break;
+					case Types.InventoryItemMovement.StorageToStorage:
+						InventoryItemMovement_StorageToStorage(packet);
+						break;
+					case Types.InventoryItemMovement.InventoryToStorage:
+						InventoryItemMovement_InventoryToStorage(packet);
+						break;
+					case Types.InventoryItemMovement.StorageToInventory:
+						InventoryItemMovement_StorageToInventory(packet);
+						break;
+					case Types.InventoryItemMovement.GroundToInventory:
+						InventoryItemMovement_GroundToInventory(packet);
+						break;
+					case Types.InventoryItemMovement.InventoryToGround:
+						InventoryItemMovement_InventoryToGround(packet);
+						break;
+					case Types.InventoryItemMovement.ShopToInventory:
+						InventoryItemMovement_ShopToInventory(packet);
+						// Client ignore packet, the bot will handle it as a pick up injection (always)
+						return true;
+					case Types.InventoryItemMovement.InventoryToShop:
+						InventoryItemMovement_InventoryToShop(packet);
+						break;
+					case Types.InventoryItemMovement.PetToPet:
+						InventoryItemMovement_PetToPet(packet);
+						break;
+					case Types.InventoryItemMovement.PetToInventory:
+						InventoryItemMovement_PetToInventory(packet);
+						break;
+					case Types.InventoryItemMovement.InventoryToPet:
+						InventoryItemMovement_InventoryToPet(packet);
+						break;
+					case Types.InventoryItemMovement.TransportToTransport:
+						InventoryItemMovement_TransportToTransport(packet);
+						break;
+					case Types.InventoryItemMovement.GroundToTransport:
+						InventoryItemMovement_GroundToTransport(packet);
+						break;
+					case Types.InventoryItemMovement.ShopToTransport:
+						InventoryItemMovement_ShopToTransport(packet);
+						// Client ignore packet, the bot will handle it as a pick up injection (always)
+						return true;
+					case Types.InventoryItemMovement.TransportToShop:
+						InventoryItemMovement_TransportToShop(packet);
+						break;
+					case Types.InventoryItemMovement.ShopBuyBack:
+						InventoryItemMovement_ShopBuyBack(packet);
+						break;
+				}
+			}
+			return false;
+		}
+		private static void InventoryItemMovement_InventoryToInventory(Packet p)
+		{
+			byte slotInitial = p.ReadByte();
+			byte slotFinal = p.ReadByte();
+			ushort quantityMoved = p.ReadUShort();
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+
+			// Check if is stack or just switch.. and update it.
+			if (inventory[slotFinal] == null)
+			{
+				if ((ushort)inventory[slotInitial][SRAttribute.QuantityMax] == 1
+					|| (ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					// switch (empty)
+					SRObject temp = inventory[slotFinal];
+					inventory[slotFinal] = inventory[slotInitial];
+					inventory[slotInitial] = temp;
+				}
+				else
+				{
+					// stack (partition)
+					inventory[slotFinal] = inventory[slotInitial].Clone();
+					ushort q = (ushort)inventory[slotInitial][SRAttribute.Quantity];
+					inventory[slotFinal][SRAttribute.Quantity] = quantityMoved;
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)(q - quantityMoved);
+				}
+			}
+			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
+				|| quantityMoved == (ushort)inventory[slotFinal][SRAttribute.QuantityMax]
+				|| (ushort)inventory[slotFinal][SRAttribute.Quantity] == (ushort)inventory[slotFinal][SRAttribute.QuantityMax])
+			{
+				// switch
+				SRObject temp = inventory[slotFinal];
+				inventory[slotFinal] = inventory[slotInitial];
+				inventory[slotInitial] = temp;
+			}
+			else
+			{
+				// stacking
+				if ((ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial] = null;
+				}
+				else
+				{
+					// fixing
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotInitial][SRAttribute.Quantity] - quantityMoved);
+				}
+			}
+			bool isDoubleMovement = p.ReadByte() == 1;
+			if (isDoubleMovement)
+				InventoryItemMovement_InventoryToInventory(p);
+		}
+		private static void InventoryItemMovement_StorageToStorage(Packet p)
+		{
+			byte slotInitial = p.ReadByte();
+			byte slotFinal = p.ReadByte();
+			ushort quantityMoved = p.ReadUShort();
+
+			SRObjectCollection storage = (SRObjectCollection)Info.Get.Character[SRAttribute.Storage];
+
+			// Check if is stack or just switch.. and update it.
+			if (storage[slotFinal] == null)
+			{
+				if ((ushort)storage[slotInitial][SRAttribute.QuantityMax] == 1
+					|| (ushort)storage[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					// switch (empty)
+					SRObject temp = storage[slotFinal];
+					storage[slotFinal] = storage[slotInitial];
+					storage[slotInitial] = temp;
+				}
+				else
+				{
+					// stack (partition)
+					storage[slotFinal] = storage[slotInitial].Clone();
+					ushort q = (ushort)storage[slotInitial][SRAttribute.Quantity];
+					storage[slotFinal][SRAttribute.Quantity] = quantityMoved;
+					storage[slotInitial][SRAttribute.Quantity] = (ushort)(q - quantityMoved);
+				}
+			}
+			else if (storage[slotFinal].ID != storage[slotInitial].ID
+				|| quantityMoved == (ushort)storage[slotFinal][SRAttribute.QuantityMax])
+			{
+				// switch
+				SRObject temp = storage[slotFinal];
+				storage[slotFinal] = storage[slotInitial];
+				storage[slotInitial] = temp;
+			}
+			else
+			{
+				// stacking
+				if ((ushort)storage[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					storage[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)storage[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					storage[slotInitial] = null;
+				}
+				else
+				{
+					// fixing
+					storage[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)storage[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					storage[slotInitial][SRAttribute.Quantity] = (ushort)((ushort)storage[slotInitial][SRAttribute.Quantity] - quantityMoved);
+				}
+			}
+		}
+		private static void InventoryItemMovement_InventoryToStorage(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			byte slotStorage = p.ReadByte();
+			// End of Packet
+			Info i = Info.Get;
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+			SRObjectCollection storage = (SRObjectCollection)i.Character[SRAttribute.Storage];
+
+			// Just move it leaving an empty space at inventory
+			storage[slotStorage] = inventory[slotInventory];
+			inventory[slotInventory] = null;
+		}
+		private static void InventoryItemMovement_StorageToInventory(Packet p)
+		{
+			byte slotStorage = p.ReadByte();
+			byte slotInventory = p.ReadByte();
+			// End of Packet
+			Info i = Info.Get;
+			SRObjectCollection storage = (SRObjectCollection)i.Character[SRAttribute.Storage];
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+
+			// Just move it leaving an empty space at storage
+			inventory[slotInventory] = storage[slotStorage];
+			storage[slotStorage] = null;
+		}
+		private static void InventoryItemMovement_GroundToInventory(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			if (slotInventory == 254)
+			{
+				// (?) Not explored yet.
+			}
+			else
+			{
+				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+				inventory[slotInventory] = ItemParsing(p);
+			}
+		}
+		private static void InventoryItemMovement_InventoryToGround(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			// End of Packet
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRAttribute.Inventory];
+			inventory[slotInventory] = null;
+		}
+		private static void InventoryItemMovement_ShopToInventory(Packet p)
+		{
+			byte tabNumber = p.ReadByte();
+			byte tabSlot = p.ReadByte();
+			byte packageCount = p.ReadByte();
+
+			// Select the item from the shop specified
+			Info i = Info.Get;
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+			SRObject NPCEntity = i.GetEntity(Bot.Get.GetEntitySelected());
+			SRObject item = i.GetItemFromShop((string)NPCEntity[SRAttribute.Servername], tabNumber, tabSlot);
+
+			if (packageCount == 1)
+			{
+				byte slotInventory = p.ReadByte();
+				item[SRAttribute.Quantity] = p.ReadUShort();
+				item[SRAttribute.unkUInt01] = p.ReadUInt();
+				inventory[slotInventory] = item;
+
+				PacketBuilder.Client.CreatePickUpPacket(inventory[slotInventory], slotInventory);
+			}
+			else
+			{
+				//// Not confirmed when will happen this behaviour
+				//for (byte j = 0; j < packageCount; j++)
+				//{
+				//	byte slotInventory = p.ReadByte();
+				//	item[SRAttribute.Quantity] = (ushort)(1);
+				//	inventory[slotInventory] = item;
+
+				//	PacketBuilder.Client.CreatePickUpPacket(inventory[slotInventory], slotInventory);
+				//}
+			}
+		}
+		private static void InventoryItemMovement_InventoryToShop(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			ushort quantitySold = p.ReadUShort();
+			uint NPCModel = p.ReadUInt();
+			byte slotBuyBack = p.ReadByte();
+
+			Info i = Info.Get;
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+
+			if (!i.Character.Contains(SRAttribute.ShopBuyBack))
+				i.Character[SRAttribute.ShopBuyBack] = new SRObjectCollection();
+			SRObjectCollection buyBack = (SRObjectCollection)i.Character[SRAttribute.ShopBuyBack];
+
+			// Sync max. quantity to buy back
+			if (slotBuyBack == 5 && slotBuyBack == buyBack.Count)
+				buyBack.RemoveAt(0);
+
+			if ((ushort)inventory[slotInventory][SRAttribute.Quantity] == quantitySold)
+			{
+				buyBack[slotBuyBack - 1] = inventory[slotInventory];
+				inventory[slotInventory] = null;
+			}
+			else
+			{
+				buyBack[slotBuyBack - 1] = inventory[slotInventory].Clone();
+				buyBack[slotBuyBack - 1][SRAttribute.Quantity] = quantitySold;
+				inventory[slotInventory][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotInventory][SRAttribute.Quantity] - quantitySold);
+      }
+		}
+		private static void InventoryItemMovement_PetToPet(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotInitial = p.ReadByte();
+			byte slotFinal = p.ReadByte();
+			ushort quantityMoved = p.ReadUShort();
+
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			SRObjectCollection inventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+
+			// Check if is stack or just switch.. and update it.
+			if (inventory[slotFinal] == null)
+			{
+				if ((ushort)inventory[slotInitial][SRAttribute.QuantityMax] == 1
+					|| (ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					// switch (empty)
+					SRObject temp = inventory[slotFinal];
+					inventory[slotFinal] = inventory[slotInitial];
+					inventory[slotInitial] = temp;
+				}
+				else
+				{
+					// stack (partition)
+					inventory[slotFinal] = inventory[slotInitial].Clone();
+					ushort q = (ushort)inventory[slotInitial][SRAttribute.Quantity];
+					inventory[slotFinal][SRAttribute.Quantity] = quantityMoved;
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)(q - quantityMoved);
+				}
+			}
+			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
+				|| quantityMoved == (ushort)inventory[slotFinal][SRAttribute.QuantityMax]
+				|| (ushort)inventory[slotFinal][SRAttribute.Quantity] == (ushort)inventory[slotFinal][SRAttribute.QuantityMax])
+			{
+				// switch
+				SRObject temp = inventory[slotFinal];
+				inventory[slotFinal] = inventory[slotInitial];
+				inventory[slotInitial] = temp;
+			}
+			else
+			{
+				// stacking
+				if ((ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial] = null;
+				}
+				else
+				{
+					// fixing
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotInitial][SRAttribute.Quantity] - quantityMoved);
+				}
+			}
+		}
+		private static void InventoryItemMovement_PetToInventory(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotPetInventory = p.ReadByte();
+			byte slotMyInventory = p.ReadByte();
+
+			Info i = Info.Get;
+			SRObjectCollection myInventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			SRObjectCollection petInventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+
+			myInventory[slotMyInventory] = petInventory[slotPetInventory];
+			petInventory[slotPetInventory] = null;
+		}
+		private static void InventoryItemMovement_InventoryToPet(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotMyInventory = p.ReadByte();
+			byte slotPetInventory = p.ReadByte();
+
+			Info i = Info.Get;
+			SRObjectCollection myInventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+			SRObject pet = i.GetEntity(uniqueID);
+			SRObjectCollection petInventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+
+			petInventory[slotPetInventory] = myInventory[slotMyInventory];
+			myInventory[slotMyInventory] = null;
+		}
+		private static void InventoryItemMovement_TransportToTransport(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotInitial = p.ReadByte();
+			byte slotFinal = p.ReadByte();
+			ushort quantityMoved = p.ReadUShort();
+
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			SRObjectCollection inventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+
+			// Check if is stack or just switch.. and update it.
+			if (inventory[slotFinal] == null)
+			{
+				if ((ushort)inventory[slotInitial][SRAttribute.QuantityMax] == 1
+					|| (ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					// switch (empty)
+					SRObject temp = inventory[slotFinal];
+					inventory[slotFinal] = inventory[slotInitial];
+					inventory[slotInitial] = temp;
+				}
+				else
+				{
+					// stack (partition)
+					inventory[slotFinal] = inventory[slotInitial].Clone();
+					ushort q = (ushort)inventory[slotInitial][SRAttribute.Quantity];
+					inventory[slotFinal][SRAttribute.Quantity] = quantityMoved;
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)(q - quantityMoved);
+				}
+			}
+			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
+				|| quantityMoved == (ushort)inventory[slotFinal][SRAttribute.QuantityMax]
+				|| (ushort)inventory[slotFinal][SRAttribute.Quantity] == (ushort)inventory[slotFinal][SRAttribute.QuantityMax])
+			{
+				// switch
+				SRObject temp = inventory[slotFinal];
+				inventory[slotFinal] = inventory[slotInitial];
+				inventory[slotInitial] = temp;
+			}
+			else
+			{
+				// stacking
+				if ((ushort)inventory[slotInitial][SRAttribute.Quantity] == quantityMoved)
+				{
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial] = null;
+				}
+				else
+				{
+					// fixing
+					inventory[slotFinal][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotFinal][SRAttribute.Quantity] + quantityMoved);
+					inventory[slotInitial][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotInitial][SRAttribute.Quantity] - quantityMoved);
+				}
+			}
+		}
+		private static void InventoryItemMovement_GroundToTransport(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotInventory = p.ReadByte();
+
+			SRObject item = new SRObject();
+			item[SRAttribute.unkUInt01] = p.ReadUInt();
+			item.Load(p.ReadUInt(), SRObject.Type.Item);
+			item[SRAttribute.Quantity] = p.ReadUShort();
+			item[SRAttribute.OwnerName] = p.ReadAscii();
+
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			SRObjectCollection inventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+			inventory[slotInventory] = item;
+		}
+		private static void InventoryItemMovement_ShopToTransport(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte tabNumber = p.ReadByte();
+			byte tabSlot = p.ReadByte();
+			byte packageCount = p.ReadByte();
+
+			// Select the item from the shop specified
+			Info i = Info.Get;
+			SRObject pet = i.GetEntity(uniqueID);
+			SRObjectCollection inventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+			SRObject NPCEntity = i.GetEntity(Bot.Get.GetEntitySelected());
+			SRObject item = i.GetItemFromShop((string)NPCEntity[SRAttribute.Servername], tabNumber, tabSlot);
+			item[SRAttribute.OwnerName] = i.Charname;
+
+			if (packageCount == 1)
+			{
+				byte slotInventory = p.ReadByte();
+				item[SRAttribute.Quantity] = p.ReadUShort();
+				item[SRAttribute.unkUInt01] = p.ReadUInt();
+				inventory[slotInventory] = item;
+
+				PacketBuilder.Client.CreatePickUpSpecialtyGoodsPacket(inventory[slotInventory], slotInventory, uniqueID);
+			}
+			else
+			{
+				//// Not confirmed when will happen this behaviour
+				//for (byte j = 0; j < packageCount; j++)
+				//{
+				//	byte slotInventory = p.ReadByte();
+				//	item[SRAttribute.Quantity] = (ushort)(1);
+				//	inventory[slotInventory] = item;
+
+				//	PacketBuilder.Client.CreatePickUpSpecialtyGoodsPacket(inventory[slotInventory], slotInventory, uniqueID);
+				//}
+			}
+		}
+		private static void InventoryItemMovement_TransportToShop(Packet p)
+		{
+			uint uniqueID = p.ReadUInt();
+			byte slotInventory = p.ReadByte();
+			ushort quantitySold = p.ReadUShort();
+			//uint npcUniqueID = p.ReadUInt();
+			//uint unkByte01 = p.ReadByte();
+
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			SRObjectCollection inventory = (SRObjectCollection)pet[SRAttribute.Inventory];
+
+			if ((ushort)inventory[slotInventory][SRAttribute.Quantity] == quantitySold)
+				inventory[slotInventory] = null;
+			else
+				inventory[slotInventory][SRAttribute.Quantity] = (ushort)((ushort)inventory[slotInventory][SRAttribute.Quantity] - quantitySold);
+		}
+		private static void InventoryItemMovement_ShopBuyBack(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			byte slotBuyBack = p.ReadByte();
+			ushort quantitySold = p.ReadUShort();
+
+			Info i = Info.Get;
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRAttribute.Inventory];
+			SRObjectCollection buyBack = (SRObjectCollection)i.Character[SRAttribute.ShopBuyBack];
+
+			inventory[slotInventory] = buyBack[slotBuyBack];
+			buyBack.RemoveAt(slotBuyBack);
+		}
+		public static void PetData(Packet packet)
+		{
+			uint uniqueID = packet.ReadUInt();
+			uint modelID = packet.ReadUInt();
+
+			Info i = Info.Get;
+			SRObject pet = i.GetEntity(uniqueID);
+			if (pet.ID1 == 1)
+			{
+				// BIONIC
+				if(pet.ID2 == 2 && pet.ID3 == 3)
+				{
+					// COS
+					if (pet.ID4 == 1 || pet.ID4 == 2 )
+					{
+						// VEHICLE / TRANSPORT
+						pet[SRAttribute.HP] = packet.ReadUInt();
+						pet[SRAttribute.HPMax] = packet.ReadUInt();
+						SRObjectCollection Inventory = new SRObjectCollection(packet.ReadByte());
+						if (Inventory.Capacity > 0)
+						{
+							// TRANSPORT
+							byte itemsCount = packet.ReadByte();
+							for(byte j = 0; j < itemsCount; j++)
+							{
+								byte slot = packet.ReadByte();
+
+								SRObject item = new SRObject();
+								item[SRAttribute.unkUInt01] = packet.ReadUInt();
+								item.Load(packet.ReadUInt(),SRObject.Type.Item);
+								item[SRAttribute.Quantity] = packet.ReadUShort();
+								item[SRAttribute.OwnerName] = packet.ReadAscii();
+
+								Inventory[slot] = item;
+							}
+							pet[SRAttribute.Inventory] = Inventory;
+							//uint ownerUniqueID = packet.ReadUInt();
+						}
+					}
+					else if (pet.ID4 == 3)
+					{
+						// ATTACK PET
+						pet[SRAttribute.HP] = packet.ReadUInt();
+            pet[SRAttribute.unkUInt01] = packet.ReadUInt();
+						pet[SRAttribute.Exp] = packet.ReadULong();
+						pet[SRAttribute.Level] = packet.ReadByte();
+						pet[SRAttribute.ExpMax] = i.GetExpMax((byte)pet[SRAttribute.Level]);
+						pet[SRAttribute.HGP] = packet.ReadUShort();
+						pet[SRAttribute.PetAttackSettings] = (Types.PetAttackSettings)packet.ReadUInt();
+						string PetName = packet.ReadAscii();
+						pet[SRAttribute.unkByte07] = packet.ReadByte();
+						uint ownerUniqueID = packet.ReadUInt();
+						pet[SRAttribute.unkByte08] = packet.ReadByte();
+					}
+					else if (pet.ID4 == 4)
+					{
+						// GRAB PET
+						pet[SRAttribute.unkUInt01] = packet.ReadUInt();
+						pet[SRAttribute.unkUInt02] = packet.ReadUInt();
+						pet[SRAttribute.PetPickSettings] = (Types.PetPickSettings)packet.ReadUInt();
+						string PetName = packet.ReadAscii();
+
+						SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
+						byte itemsCount = packet.ReadByte();
+						for (byte j = 0; j < itemsCount; j++)
+						{
+							byte slot = packet.ReadByte();
+							inventory[slot] = ItemParsing(packet);
+						}
+						pet[SRAttribute.Inventory] = inventory;
+						//uint ownerUniqueID = packet.ReadUInt();
+					}
+				}
+			}
+			Bot.Get._Event_PetSummoned(uniqueID);
+		}
+		public static void PetUpdate(Packet packet)
+		{
+			uint uniqueID = packet.ReadUInt();
+			byte updateType = packet.ReadByte();
+
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			switch (updateType)
+			{
+				case 1: // Unsummoned
+					Bot.Get._Event_PetUnsummoned(uniqueID);
+					break;
+				case 3: // Exp
+					long ExpReceived = packet.ReadLong();
+					CalculatePetExp(ref pet, ExpReceived, (long)((ulong)pet[SRAttribute.Exp]), (long)((ulong)pet[SRAttribute.ExpMax]), (byte)pet[SRAttribute.Level]);
+					break;
+				case 4: // Hungry
+					pet[SRAttribute.HGP] = packet.ReadUShort();
+					break;
+				case 7: // Model changed
+					pet.Load(packet.ReadUInt(), SRObject.Type.Model);
+          break;
+			}
+		}
+		private static void CalculatePetExp(ref SRObject pet,long ExpReceived, long Exp, long ExpMax, byte level)
+		{
+			if (ExpReceived + Exp >= ExpMax)
+			{
+				// Level Up
+				pet[SRAttribute.Level] = (byte)(level + 1);
+				// Update new ExpMax
+				pet[SRAttribute.ExpMax] = Info.Get.GetExpMax((byte)pet[SRAttribute.Level]);
+				// Continue recursivity
+				CalculatePetExp(ref pet,(Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)pet[SRAttribute.ExpMax]), (byte)(level + 1));
+			}
+			else if (ExpReceived + Exp < 0)
+			{
+				// Level Down
+				pet[SRAttribute.Level] = (byte)(level - 1);
+				// Update new ExpMax
+				pet[SRAttribute.ExpMax] = Info.Get.GetExpMax((byte)pet[SRAttribute.Level]);
+				CalculatePetExp(ref pet, Exp + ExpReceived, (long)((ulong)pet[SRAttribute.ExpMax]), (long)((ulong)pet[SRAttribute.ExpMax]), (byte)(level - 1));
+			}
+			else
+			{
+				// Increase/Decrease Exp
+				pet[SRAttribute.Exp] = (ulong)(Exp + ExpReceived);
+			}
+		}
+		public static void PetSettingsChangeResponse(Packet packet)
+		{
+			uint uniqueID = packet.ReadUInt();
+			byte settingsType = packet.ReadByte();
+			
+			SRObject pet = Info.Get.GetEntity(uniqueID);
+			switch (settingsType)
+			{
+				case 1: // Pet Attack settings
+					pet[SRAttribute.PetAttackSettings] = (Types.PetAttackSettings)packet.ReadUInt();
+					break;
+			}
+		}
+		public static void PetPlayerMounted(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if(success){
+				SRObject player = Info.Get.GetEntity(packet.ReadUInt());
+				
+				player[SRAttribute.isRiding] = packet.ReadByte() == 1;
+				if ((bool)player[SRAttribute.isRiding]){
+					// Avoid reading when it's not necessary
+					player[SRAttribute.RidingUniqueID] = packet.ReadUInt();
+				}
+			}
+		}
+		public static void StallOpenResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+				Bot.Get._Event_StallOpened(true);
+		}
+		public static void StallCloseResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+				Bot.Get._Event_StallClosed();
+		}
+		public static void StallPlayerOpened(Packet packet)
+		{
+			Bot.Get._Event_StallOpened(false);
+		}
+		public static void StallPlayerClosed(Packet packet)
+		{
+			Bot.Get._Event_StallClosed();
 		}
 	}
 }

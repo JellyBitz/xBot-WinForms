@@ -36,7 +36,7 @@ namespace xBot.Game
 		{
 			NeverSummoned = 1,
 			Summoned = 2,
-			Alive = 3,
+			Unsummoned = 3,
 			Dead = 4
 		}
 		public enum MovementAction : byte
@@ -188,6 +188,50 @@ namespace xBot.Game
 			Trader = 2,
 			Thief = 3
 		}
+		/// <summary>
+		/// All possible bad status types.
+		/// <para>Flags</para>
+		/// </summary>
+		[Flags]
+		public enum BadStatus : uint
+		{
+			None = 0,
+			Freezing = 1, // Universal
+			Frostbite = 2, // Universal
+			ElectricShock = 4, // Universal
+			Burn = 8, // Universal
+			Poisoning = 16, // Universal
+			Zombie = 32, // Universal
+			Sleep = 64, // nope
+			Bind = 128, // ??
+			Dull = 256, // ??
+			Fear = 512, // ??
+			Unk07 = 1024,
+			Bleed = 2048, // Purification
+			Unk09 = 4096,
+			Unk10 = 8192,
+			Stun = 16384, // nope
+			Disease = 32768, // ??
+			Unk13 = 65536,
+			Decay = 131072, // Purification
+			Weaken = 262144, // Purification
+			Impotent = 524288, // Purification
+			Division = 1048576, // Purification
+			Unk18 = 2097152,
+			Combustion = 4194304, // ??
+			Unk20 = 8388608,
+			Hidden = 16777216, // ??
+			Unk22 = 33554432,
+			Unk23 = 67108864,
+			Unk24 = 134217728,
+			Unk25 = 268435456,
+			Unk26 = 536870912,
+			Unk27 = 1073741824,
+			Unk28 = 2147483648
+		}
+		/// <summary>
+		/// Players interacting petitions.
+		/// </summary>
 		public enum PlayerPetition : byte
 		{
 			PartyCreation = 2,
@@ -198,45 +242,85 @@ namespace xBot.Game
 			AcademyInvitation = 9, // Not confirmed
 		}
 		/// <summary>
-		/// All possible bad status types.
+		/// Character inventory item movement.
+		/// </summary>
+		public enum InventoryItemMovement : byte
+		{
+			InventoryToInventory = 0,
+			StorageToStorage = 1,
+			InventoryToStorage = 2,
+			StorageToInventory = 3,
+
+			GroundToInventory = 6,
+			InventoryToGround = 7,
+
+			ShopToInventory = 8,
+			InventoryToShop = 9,
+
+			PetToPet = 10,
+			PetToInventory = 11,
+			InventoryToPet = 12,
+
+			TransportToTransport = 16,
+			GroundToTransport = 17,
+			ShopToTransport = 19,
+			TransportToShop = 20,
+
+			ShopBuyBack = 34
+		}
+		/// <summary>
+		/// All possible pet pick settings (handled by the client).
 		/// <para>Flags</para>
 		/// </summary>
 		[Flags]
-		public enum BadStatus : uint
+		public enum PetPickSettings : uint
 		{
-			None = 0,
-			Freezing = 1, // universal
-			Frostbite = 2, // universal
-			ElectricShock = 4, // universal
-			Burn = 8, // universal
-			Poisoning = 16, // universal
-			Unk02 = 32,
-			Sleep = 64, // nope
-			Bind = 128, // ??
-			Dull = 256, // ??
-			Fear = 512, // purification
-			Unk07 = 1024,
-			Bleed = 2048, // universal
-			Unk09 = 4096,
-			Unk10 = 8192,
-			Stun = 16384, // nope
-			Disease = 32768, // ??
-			Unk13 = 65536,
-			Decay = 131072, // ??
-			Weaken = 262144, // ??
-			Impotent = 524288, // ??
-			Division = 1048576, // ??
-			Unk18 = 2097152,
-			Combustion = 4194304, // ??
-			Unk20 = 8388608,
-			Unk21 = 16777216,
-			Unk22 = 33554432,
-			Unk23 = 67108864,
-			Unk24 = 134217728,
-			Unk25 = 268435456,
-			Unk26 = 536870912,
-			Unk27 = 1073741824,
-			Unk28 = 2147483648
+			Disabled = 0,
+			Gold = 1,
+			Equipment = 2,
+			OtherItems = 4,
+			GrabAllItems = 64,
+			Enabled = 128
 		}
+		/// <summary>
+		/// All possible pet attack settings (handled by the client).
+		/// <para>Flags</para>
+		/// </summary>
+		[Flags]
+		public enum PetAttackSettings : uint
+		{
+			Disabled = 0,
+			Offensive = 1
+		}
+		//byte action = pck.ReadUInt8();
+		//GameCommands commandsEnum = (GameCommands)action;
+		//string commandName = commandsEnum.ToString();
+		/// <summary>
+		/// Game consola commands.
+		/// </summary>
+		public enum GameCommands : byte
+		{
+			FindUser = 1,
+			GoTown = 2,
+			ToTown = 3,
+			WorldStatus = 4,
+			LoadMonster = 6,
+			MakeItem = 7,
+			MoveToUser = 8,
+			WP = 10,
+			Zoe = 12,
+			Ban = 13,
+			Invisible = 14,
+			Invincible = 15,
+			RecallUser = 17,
+			RecallGuild = 18,
+			LieName = 19,
+			MobKill = 20,
+			ResetQ = 28,
+			MoveToNPC = 31,
+			MakeRentItem = 38,
+			SpawnUniqueLocation = 42
+		}
+
 	}
 }

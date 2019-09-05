@@ -10,6 +10,7 @@ namespace xBot
 			InitializeComponent();
 			InitializeFonts(this);
 			Icon = w.Icon;
+			Text = w.ProductName + " - About";
 			lblHeader.Text = w.ProductName + " v" + w.ProductVersion +@" | Easy & Flexible! Design perfection.";
     }
 		private void InitializeFonts(Control c)
@@ -46,8 +47,7 @@ namespace xBot
 					this.Close();
 					break;
 				case "btnSupport":
-					// Nothing atm.
-					System.Diagnostics.Process.Start("http://www.google.com");
+					System.Diagnostics.Process.Start("https://www.buymeacoffee.com/JellyBitz");
 					break;
 			}
 		}

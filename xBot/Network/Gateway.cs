@@ -91,7 +91,7 @@ namespace xBot.Network
 					{
 						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
 						InjectToServer(p);
-						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
+						Window.Get.LogProcess("HWID Sent : " + WinAPI.ToHexString(hwidData));
 					}
 				}
 			}

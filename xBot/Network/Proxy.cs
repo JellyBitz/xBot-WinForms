@@ -121,21 +121,25 @@ namespace xBot.Network
 					w.LogProcess("Executing EdxLoader...");
 					EdxLoader loader = new EdxLoader(Info.Get.ClientPath);
 					loader.SetPatches(true, true, false);
-					loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
+					sro_client = loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
+					if (sro_client == null)
+						Stop();
 
 					int dummy = 0;
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
 					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
-					ProxyReconnection(180, ref dummy, int.MaxValue); // Wait 3min. Infinity attempts
+					// Wait 3min. Infinity attempts
+					ProxyReconnection(90, ref dummy, int.MaxValue);
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
 					ProxyReconnectionStop();
-          w.LogProcess("Connected");
+					w.LogProcess("Connected");
 
 					// Save client process
-					sro_client = WinAPI.GetProcess(((IPEndPoint)Gateway.Local.Socket.RemoteEndPoint).Port);
+					sro_client.EnableRaisingEvents = true;
 					sro_client.Exited += new EventHandler(this.Client_Closed);
 				}
 				catch{
+					w.LogProcess();
 					return;
 				}
 			}
@@ -350,11 +354,12 @@ namespace xBot.Network
 		}
 		private void Client_Closed(object sender, EventArgs e)
 		{
-			if (Bot.Get.inGame)
+			try
 			{
-				Agent.Local.Socket.Close();
-				Window.Get.Log("Switched to clientless mode");
+				if (Bot.Get.inGame)
+					Window.Get.Log("Switched to clientless mode");
 			}
+			catch { /* Window closed probably.. */ }
 		}
 		private void ThreadAgent(string Host, int Port)
 		{
@@ -365,7 +370,6 @@ namespace xBot.Network
 				Agent.Local.Socket = bindSocket(Host, Port);
 				try
 				{
-
 					int dummy = 0;
 					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
 					ProxyReconnection(10, ref dummy, int.MaxValue);
@@ -373,7 +377,7 @@ namespace xBot.Network
 					ProxyReconnectionStop();
 					w.LogProcess("Connected");
 				}
-				catch { Reset(); return; }
+				catch { return; }
 			}
 			Agent.Remote.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			try
@@ -391,7 +395,6 @@ namespace xBot.Network
 			{
 				w.Log("Failed to connect to the server");
 				w.LogProcess();
-				Reset();
 				return;
 			}
 			try
@@ -505,7 +508,7 @@ namespace xBot.Network
 											if (context == Agent.Local)
 											{
 												// Try to continue without send to client
-                        break;
+												break;
 											}
 											else throw ex;
 										}

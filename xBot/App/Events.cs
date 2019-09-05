@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Timers;
 using xBot.Game;
 
@@ -17,17 +18,16 @@ namespace xBot
 		/// <summary>
 		/// Called when on character selection but only if the AutoLogin fails.
 		/// </summary>
-		public void Event_CharacterListing()
+		private void Event_CharacterListing(List<SRObject> CharacterList)
 		{
 			Window w = Window.Get;
-			Info i = Info.Get;
 
 			// Reset value
 			CreatingCharacterName = "";
 			// Delete characters that are not being deleted
 			if (w.Settings_cbxDeleteChar40to50.Checked)
 			{
-				foreach (SRObject character in i.CharacterList)
+				foreach (SRObject character in CharacterList)
 				{
 					if (!(bool)character[SRAttribute.isDeleting]
 						&& (byte)character[SRAttribute.Level] >= 40
@@ -43,7 +43,7 @@ namespace xBot
 			// Select the first character available
 			if (w.Settings_cbxSelectFirstChar.Checked)
 			{
-				foreach (SRObject character in i.CharacterList)
+				foreach (SRObject character in CharacterList)
 				{
 					if (!(bool)character[SRAttribute.isDeleting])
 					{
@@ -58,17 +58,17 @@ namespace xBot
 				w.Log("No characters availables to select!");
 			}
 			// No characters selected, then create it?
-			if (w.Settings_cbxCreateChar.Checked && i.CharacterList.Count == 0)
+			if (w.Settings_cbxCreateChar.Checked && CharacterList.Count == 0)
 			{
 				w.Log("Empty character list, creating character...");
 				CreateNickname();
 			}
 			else if (w.Settings_cbxCreateCharBelow40.Checked)
 			{
-				if (i.CharacterList.Count < 4)
+				if (CharacterList.Count < 4)
 				{
 					bool notFound = true;
-					foreach (SRObject character in i.CharacterList)
+					foreach (SRObject character in CharacterList)
 					{
 						if (!(bool)character[SRAttribute.isDeleting]
 							&& (byte)character[SRAttribute.Level] < 40)
@@ -113,11 +113,12 @@ namespace xBot
 
 			w.Log("Joined successfully to the game");
 			w.LogChatMessage(w.Chat_rtbxAll, "(Welcome)", i.GetUIFormat("UIIT_STT_STARTING_MSG").Replace("\\n", "\n"));
+
 			if (!Proxy.ClientlessMode && w.Login_cbxGoClientless.Checked)
 			{
 				Timer CloseClient = new Timer();
 				CloseClient.Interval = 1000;
-				byte s = 10;
+        byte s = 5;
 				CloseClient.Elapsed += (sender, e) => {
 					try
 					{
@@ -136,8 +137,10 @@ namespace xBot
 					catch { /* Bot closed */ }
 				};
 				CloseClient.AutoReset = true;
-				CloseClient.Enabled = true;
+				CloseClient.Start();
 			}
+
+			CheckAutoParty(null, null);
 		}
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
@@ -162,9 +165,28 @@ namespace xBot
 		/// <summary>
 		/// Called when the Health, Mana, or BadStatus from the character has changed.
 		/// </summary>
-		private void Event_StateUpdated()
+		private void Event_StateUpdated(Types.EntityStateUpdate type)
 		{
-
+			switch (type)
+			{
+				case Types.EntityStateUpdate.HP:
+					CheckUsingHP();
+					CheckUsingVigor();
+					break;
+				case Types.EntityStateUpdate.MP:
+					CheckUsingMP();
+					CheckUsingVigor();
+					break;
+				case Types.EntityStateUpdate.HPMP:
+					CheckUsingHP();
+					CheckUsingMP();
+					CheckUsingVigor();
+					break;
+				case Types.EntityStateUpdate.BadStatus:
+					CheckUsingUniversal();
+					CheckUsingPurification();
+					break;
+			}
 		}
 		/// <summary>
 		/// Called everytime a party invitation is detected
@@ -186,13 +208,9 @@ namespace xBot
 				{
 					// Exactly same party setup?
 					if (GetPartySetup() == PartySetup)
-					{
 						PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.PartyInvitation);
-					}
 					else if (w.Party_cbxRefusePartys.Checked)
-					{
 						PacketBuilder.PlayerPetitionResponse(false, Types.PlayerPetition.PartyInvitation);
-					}
 				}
 				else
 				{
@@ -202,14 +220,14 @@ namespace xBot
 				return;
 			}
 			// Check party list
-			if (w.Party_cbxAcceptPlayerList.Checked)
+			if (w.Party_cbxAcceptPartyList.Checked)
 			{
 				bool found = false;
 				string name = (string)player[SRAttribute.Name];
-				WinAPI.InvokeIfRequired(w.Party_lstvPlayers, () => {
-					for (int j = 0; j < w.Party_lstvPlayers.Items.Count; j++)
+				WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
+					for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
 					{
-						if (w.Party_lstvPlayers.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
+						if (w.Party_lstvPartyList.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							break;
@@ -238,10 +256,10 @@ namespace xBot
 			{
 				bool found = false;
 				string name = (string)player[SRAttribute.Name];
-				WinAPI.InvokeIfRequired(w.Party_lstvLeaders, () => {
-					for (int j = 0; j < w.Party_lstvLeaders.Items.Count; j++)
+				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
+					for (int j = 0; j < w.Party_lstvLeaderList.Items.Count; j++)
 					{
-						if (w.Party_lstvLeaders.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
+						if (w.Party_lstvLeaderList.Items[j].Text.Equals(name, StringComparison.OrdinalIgnoreCase))
 						{
 							found = true;
 							break;
@@ -262,14 +280,11 @@ namespace xBot
 					{
 						PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.PartyInvitation);
 						return;
-
 					}
 				}
 			}
 			if (w.Party_cbxRefusePartys.Checked)
-			{
 				PacketBuilder.PlayerPetitionResponse(false, Types.PlayerPetition.PartyInvitation);
-			}
 		}
 		/// <summary>
 		/// Called when has been joined to the party and all data is loaded.
@@ -280,37 +295,25 @@ namespace xBot
 
 			this.PartySetupType = (sbyte)PartySetupType;
 			this.PartyPurposeType = (sbyte)PartyPurposeType;
-
-			// Leave party if none leader is found
-			if (w.Party_cbxLeavePartyNoneLeader.Checked)
-			{
-				Info i = Info.Get;
-
-				bool NotFound = true;
-				SRObject[] players = i.PartyList.ToArray();
-
-				WinAPI.InvokeIfRequired(w.Party_lstvLeaders, () => {
-					foreach (SRObject member in players)
-					{
-						if (w.Party_lstvLeaders.Items.ContainsKey(((string)member[SRAttribute.Name]).ToLower()))
-						{
-							NotFound = false;
-							break;
-						}
-					}
-				});
-				if (NotFound)
-				{
-					PacketBuilder.LeaveParty();
-				}
-			}
-		}
+			
+			CheckPartyLeaving();
+    }
 		/// <summary>
 		/// Called when the character has left the party group.
 		/// </summary>
 		private void Event_PartyLeaved()
 		{
+			CheckAutoParty(null, null);
+
 			// Create again pt match, etc..
+		}
+		/// <summary>
+		/// Called when a member has left the party.
+		/// </summary>
+		private void Event_MemberLeaved()
+		{
+			if (!CheckPartyLeaving())
+				CheckAutoParty(null, null);
 		}
 		/// <summary>
 		/// Called when the current agent connection is lost.
@@ -322,9 +325,9 @@ namespace xBot
 		/// <summary>
 		/// Called when a (new) entity appears.
 		/// </summary>
-		public void Event_Spawn(SRObject entity)
+		private void Event_Spawn(SRObject entity)
 		{
-			// invite to party, etc...
+
 		}
 		/// <summary>
 		/// Called when a player is giving you resurrection request

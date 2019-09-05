@@ -16,6 +16,8 @@ namespace xBot
 	{
 		private Thread tGenerator;
 		private const byte CPU_BREAK = 100;
+		private Random rand = new Random();
+
 		private string pk2FileName { get; }
 		private string dbName { get; }
 		private PK2Reader pk2;
@@ -46,7 +48,7 @@ namespace xBot
 			// Stuffs ...
 			this.pk2FileName = pk2FileName;
 			this.dbName = dbName;
-			rtbxLogs.Text = WinAPI.getDate() + rtbxLogs.Text;
+			rtbxLogs.Text = WinAPI.GetDate() + rtbxLogs.Text;
 			cmbxLanguage.SelectedIndex = 0;
 			LogState();
 		}
@@ -67,7 +69,7 @@ namespace xBot
 			try
 			{
 				WinAPI.InvokeIfRequired(rtbxLogs, () => {
-					rtbxLogs.Text += "\n" + WinAPI.getDate() + " " + Message;
+					rtbxLogs.Text += "\n" + WinAPI.GetDate() + " " + Message;
 				});
 			}
 			catch {/* Window closed */}
@@ -239,17 +241,17 @@ namespace xBot
 			}
 			Thread.Sleep(CPU_BREAK);
 			LogState("Connected");
-
+			
 			// Generating records
 			Log("Generating database (this may take a while)");
 			Thread.Sleep(CPU_BREAK);
-			Log("Loading Text references...");
+			Log("Loading text references...");
 			LoadNameReferences();
 			Thread.Sleep(CPU_BREAK);
-			Log("Loading & adding System Text references...");
+			Log("Loading & adding system text references...");
 			LoadUITextReferences();
 			AddTextUISystem();
-      Thread.Sleep(CPU_BREAK);
+			Thread.Sleep(CPU_BREAK);
 			Log("Adding Items...");
 			AddItems();
 			Thread.Sleep(CPU_BREAK);
@@ -262,6 +264,9 @@ namespace xBot
 			Thread.Sleep(CPU_BREAK);
 			Log("Adding Exp. & Levels...");
 			AddLevelExperience();
+			Thread.Sleep(CPU_BREAK);
+			Log("Adding Shops...");
+			AddShops();
 			Thread.Sleep(CPU_BREAK);
 			Log("Loading Teleport references");
 			LoadTeleportData();
@@ -323,9 +328,8 @@ namespace xBot
 					}
 					Log("Using "+ cmbxLanguage.Text + " as language index");
 					languageSelected = true;
-        }
+				}
 			});
-			
 
 			// short file, load all lines to memory
 			string[] files = pk2.GetFileText("TextDataName.txt", "server_dep/silkroad/textdata").Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -346,7 +350,7 @@ namespace xBot
 								if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
 								{
 									Log("English language empty. Switching to Vietnam");
-                  LanguageIndex = 9; // Set Vietnam language
+									LanguageIndex = 9; // Set Vietnam language
 									if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
 									{
 										Log("Vietnam language empty. Switching to Korean");
@@ -355,9 +359,9 @@ namespace xBot
 								}
 								else {
 									Log("Using English as language");
-                }
+								}
 								languageSelected = true;
-              }
+							}
 							
 							// 10% display
 							if (rand.Next(1, 1000) <= 100)
@@ -383,7 +387,6 @@ namespace xBot
 		{
 			UITextReferences = new Dictionary<string, string>();
 			// vars constantly used
-			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 
@@ -416,7 +419,7 @@ namespace xBot
 								{
 									text = text.Remove(formatIndex) + "{"+ formatCount + "}"+ text.Substring(formatIndex + c_format.Length);
 									formatCount++;
-                }
+								}
 							}
 							UITextReferences[data[1]] = text;
 						}
@@ -436,24 +439,23 @@ namespace xBot
 		public void AddTextUISystem()
 		{
 			string sql = "CREATE TABLE textuisystem (";
-			sql += "ID INTEGER PRIMARY KEY AUTOINCREMENT,";
+			sql += "fakeID INTEGER PRIMARY KEY,";
 			sql += "servername VARCHAR(64) UNIQUE,";
 			sql += "text VARCHAR(256)";
 			sql += ");";
 			db.ExecuteQuery(sql);
-
-			// vars constantly used
-			Random rand = new Random();
-
+			
 			// using faster sqlite performance
 			db.Begin();
+			int j = 0;
 			foreach (string key in UITextReferences.Keys)
 			{
 				// 10% display
 				if (rand.Next(1, 1000) <= 100)
 					LogState("Adding " + key);
 				// INSERT
-				db.Prepare("INSERT INTO textuisystem (servername,text) VALUES (?,?);");
+				db.Prepare("INSERT INTO textuisystem (fakeID,servername,text) VALUES (?,?,?);");
+				db.Bind("fakeID", j++);
 				db.Bind("servername", key);
 				db.Bind("text", UITextReferences[key]);
 				db.ExecuteQuery();
@@ -478,7 +480,6 @@ namespace xBot
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string file, line, name;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -505,7 +506,7 @@ namespace xBot
 								// Extract name if has one
 
 								name = "";
-                if (data[5] != "xxx")
+								if (data[5] != "xxx")
 									name = GetName(data[5]);
 
 								// 15% display
@@ -513,7 +514,7 @@ namespace xBot
 									LogState("Adding " + data[2]);
 								// INSERT OR UPDATE
 								db.ExecuteQuery("SELECT id FROM items WHERE id=" + data[1]);
-								if (db.getResult().Count == 0)
+								if (db.GetResult().Count == 0)
 								{
 									// New
 									db.Prepare("INSERT INTO items (id,servername,name,stack,tid2,tid3,tid4,icon) VALUES (?,?,?,?,?,?,?,?);");
@@ -558,7 +559,6 @@ namespace xBot
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string line, name, skills;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -606,7 +606,7 @@ namespace xBot
 							
 							// INSERT OR UPDATE
 							db.ExecuteQuery("SELECT id FROM models WHERE id=" + data[1]);
-							if (db.getResult().Count == 0)
+							if (db.GetResult().Count == 0)
 							{
 								// New
 								db.Prepare("INSERT INTO models (id,servername,name,tid2,tid3,tid4,hp,level,skills) VALUES (?,?,?,?,?,?,?,?,?)");
@@ -722,12 +722,11 @@ namespace xBot
 			sql += "mana INTEGER,";
 			sql += "icon VARCHAR(64),";
 			sql += "target_required BOOLEAN,";
-			sql += "attributes VARCHAR (256)";
+			sql += "attributes VARCHAR(256)";
 			sql += ");";
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string line, name, desc, duration, attributes;
 			int index;
 			char[] split = new char[] { '\t' };
@@ -791,7 +790,7 @@ namespace xBot
 
 							// INSERT OR UPDATE
 							db.ExecuteQuery("SELECT id FROM skills WHERE id=" + data[1]);
-							if (db.getResult().Count == 0)
+							if (db.GetResult().Count == 0)
 							{
 								// New
 								db.Prepare("INSERT INTO skills (id,servername,name,description,casttime,cooldown,duration,mana,level,sp,icon,mastery_id,target_required,attributes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -923,7 +922,6 @@ namespace xBot
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -958,6 +956,301 @@ namespace xBot
 				db.End();
 			}
 		}
+		public static int MainIndex = 0;
+		public static int b = 0;
+		
+		private void AddShops()
+		{
+			List<Shop> shops = new List<Shop>();
+			// vars constantly used
+			string line;
+			char[] split = new char[] { '\t' };
+			string[] data;
+
+			LogState("Loading refShopGroup.txt");
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refShopGroup.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+
+						Shop shop = new Shop();
+						if(data[3].StartsWith("GROUP_MALL_"))
+							shop.StoreGroupName = data[3].Substring(6);
+						else
+							shop.StoreGroupName = data[3];
+						shop.NPCName = data[4];
+						shops.Add(shop);
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			LogState("Loading refMappingShopGroup.txt");
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refMappingShopGroup.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+
+						foreach (Shop shop in shops)
+						{
+							if (shop.StoreGroupName.StartsWith("MALL"))
+							{
+								if (shop.StoreGroupName == data[3])
+								{
+									shop.StoreName = data[3];
+									shop.StoreGroupName = data[2];
+								}
+							}
+							else if(shop.StoreGroupName == data[2])
+							{
+								shop.StoreName = data[3];
+							}
+						}
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			LogState("Loading refMappingShopWithTab.txt");
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refMappingShopWithTab.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+						
+						foreach (Shop shop in shops)
+						{
+							if(shop.StoreName == data[2])
+							{
+								Shop.Group group = new Shop.Group();
+								group.Name = data[3];
+								shop.Groups.Add(group);
+							}
+						}
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			LogState("Loading refShopTab.txt");
+			List<string[]> refShopTab = new List<string[]>();
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refShopTab.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+						
+						// 0 = name, 1 = group, 2 = title
+						refShopTab.Add(new string[] { data[3], data[4], data[5] });
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			foreach (Shop shop in shops)
+			{
+				foreach (Shop.Group group in shop.Groups)
+				{
+					for (int j = 0; j < refShopTab.Count; j++)
+					{
+						if (group.Name == refShopTab[j][1])
+						{
+							Shop.Group.Tab tab = new Shop.Group.Tab();
+							tab.Name = refShopTab[j][0];
+							tab.Title = GetUIText(refShopTab[j][2]);
+							group.Tabs.Add(tab);
+
+							// Remove line inmediatly to speed up the process
+							refShopTab.RemoveAt(j--);
+						}
+					}
+				}
+			}
+			LogState("Loading refShopGoods.txt");
+			List<string[]> refShopGoods = new List<string[]>();
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refShopGoods.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+
+						// 0 = tab, 1 = itemPackageName, 2 = tabSlot
+						refShopGoods.Add(new string[]{ data[2], data[3], data[4] });
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			LogState("Loading refScrapOfPackageItem.txt");
+			Dictionary<string, string[]> refScrapOfPackageItem = new Dictionary<string, string[]>();
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("refScrapOfPackageItem.txt", "server_dep/silkroad/textdata")))
+			{
+				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
+				{
+					// Data is enabled in game
+					if (line.StartsWith("1\t"))
+					{
+						data = line.Split(split, StringSplitOptions.None);
+
+						// Extract blue stats
+						string magicParams = "";
+						byte magicParamCount = byte.Parse(data[7]);
+						for(byte j = 0; j < magicParamCount; j++){
+							magicParams += data[8+j]+"|";
+						}
+						if (magicParamCount > 0)
+							magicParams = magicParams.Remove(magicParams.Length - 1);
+						else
+							magicParams = "0";
+
+						// 0 = itemServerName, 1 = plus, 2 = durability or buyStack (ID's behaviour), 3 = MagicParams
+						refScrapOfPackageItem[data[2]] = new string[]{ data[3], data[4], data[6], magicParams };
+
+						// CPU break
+						Thread.Sleep(1);
+					}
+				}
+			}
+			LogState("Generating store items...");
+			// Finally add items to shops
+			foreach (Shop shop in shops)
+			{
+				foreach (Shop.Group group in shop.Groups)
+				{
+					foreach (Shop.Group.Tab tab in group.Tabs)
+					{
+						for (int j = 0; j < refShopGoods.Count; j++)
+						{
+							if (tab.Name == refShopGoods[j][0])
+							{
+								string itemPackageName = refShopGoods[j][1];
+								if(refScrapOfPackageItem.ContainsKey(itemPackageName)){
+
+									// Create item image
+									Shop.Group.Tab.Item item = new Shop.Group.Tab.Item();
+									item.Name = refScrapOfPackageItem[itemPackageName][0];
+									item.Slot = refShopGoods[j][2];
+									item.Plus = refScrapOfPackageItem[itemPackageName][1];
+									item.Durability = refScrapOfPackageItem[itemPackageName][2];
+									item.MagicParams = refScrapOfPackageItem[itemPackageName][3];
+									tab.Items.Add(item);
+
+									// Remove line inmediatly to speed up the process
+									refShopGoods.RemoveAt(j--);
+
+									// CPU break
+									Thread.Sleep(1);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Adding to database
+			string sql = "CREATE TABLE shops (";
+			sql += "model_servername VARCHAR(64),";
+			sql += "tab INTEGER,";
+			sql += "slot INTEGER,";
+			sql += "item_servername VARCHAR(64),";
+			sql += "plus INTEGER,";
+			sql += "durability INTEGER,";
+			sql += "magic_params VARCHAR(256),";
+			sql += "PRIMARY KEY (model_servername,tab,slot)";
+			sql += ");";
+			db.ExecuteQuery(sql);
+			
+			// using faster sqlite performance
+			db.Begin();
+			foreach (Shop shop in shops)
+			{
+				int tabCount = 0;
+				for (int g = 0; g < shop.Groups.Count; g++)
+				{
+					for (int t = 0; t < shop.Groups[g].Tabs.Count; t++)
+					{
+						for (int i = 0; i < shop.Groups[g].Tabs[t].Items.Count; i++)
+						{
+							Shop.Group.Tab.Item item = shop.Groups[g].Tabs[t].Items[i];
+							
+							// INSERT OR UPDATE
+							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab="+ t+" AND slot="+ i + " AND item_servername = '" + item.Name+"'");
+							if (db.GetResult().Count == 0)
+							{
+								// 100% display
+								LogState("Adding " + item.Name);
+
+								db.Prepare("INSERT INTO shops (model_servername,tab,slot,item_servername,plus,durability,magic_params) VALUES (?,?,?,?,?,?,?)");
+								db.Bind("model_servername", shop.NPCName);
+								db.Bind("tab", tabCount);
+								db.Bind("slot", i);
+								db.Bind("item_servername", item.Name);
+								db.Bind("plus", item.Plus);
+								db.Bind("durability", item.Durability);
+								db.Bind("magic_params", item.MagicParams);
+								db.ExecuteQuery();
+							}
+							// CPU break
+							Thread.Sleep(1);
+						}
+						tabCount++;
+					}
+				}
+			}
+			db.End();
+		}
+		private class Shop
+		{
+			public string StoreGroupName { get; set; }
+			public string StoreName { get; set; }
+			public string NPCName { get; set; }
+			public List<Group> Groups { get; }
+			public Shop(){ Groups = new List<Group>(); }
+			internal class Group
+			{
+				public string Name { get; set; }
+				public List<Tab> Tabs { get; }
+				public Group(){ Tabs = new List<Tab>(); }
+				internal class Tab
+				{
+					public string Name { get; set; }
+					public string Title { get; set; }
+					public List<Item> Items { get; }
+					public Tab() { Items = new List<Item>(); }
+					internal class Item
+					{
+						public string Name { get; set; }
+						public string Slot { get; set; }
+						public string Plus { get; set; }
+						public string RentType { get; set; }
+						public string Durability { get; set; }
+						public string MagicParams { get; set; }
+					}
+				}
+			}
+		}
 		/// <summary>
 		/// Used to join teleport link table (since will be required always).
 		/// </summary>
@@ -965,7 +1258,6 @@ namespace xBot
 		{
 			TeleportData = new Dictionary<string, string[]>();
 			// vars constantly used
-			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -1024,7 +1316,6 @@ namespace xBot
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string line, name;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -1042,7 +1333,7 @@ namespace xBot
 						data = line.Split(split, StringSplitOptions.None);
 						// Extract name if has one
 						name = "";
-            if (data[5] != "xxx")
+						if (data[5] != "xxx")
 							name = GetName(data[5]);
 						if (name == "")
 							name = data[2];
@@ -1084,17 +1375,19 @@ namespace xBot
 			sql += "tid4 INTEGER,";
 			sql += "gold INTEGER,";
 			sql += "level INTEGER,";
-			sql += "region INTEGER,";
+			sql += "spawn_region INTEGER,";
 			sql += "spawn_x INTEGER,";
 			sql += "spawn_y INTEGER,";
+			sql += "spawn_z INTEGER,";
+			sql += "pos_region INTEGER,";
 			sql += "pos_x INTEGER,";
 			sql += "pos_y INTEGER,";
+			sql += "pos_z INTEGER,";
 			sql += "PRIMARY KEY (sourceid, destinationid)";
 			sql += ");";
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			Random rand = new Random();
 			string line, name, destination, tid1, tid2, tid3, tid4;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -1124,7 +1417,7 @@ namespace xBot
 						catch
 						{
 							db.ExecuteQuery("SELECT name,tid2,tid3,tid4 FROM models WHERE id=" + TeleportData[data[1]][3]);
-							List<NameValueCollection> result = db.getResult();
+							List<NameValueCollection> result = db.GetResult();
 							if (result.Count != 0)
 							{
 								name = result[0]["name"];
@@ -1149,48 +1442,46 @@ namespace xBot
 						if (destination == "")
 						{
 							db.ExecuteQuery("SELECT name FROM teleportlinks WHERE sourceid=" + data[2]);
-							List<NameValueCollection> result = db.getResult();
+							List<NameValueCollection> result = db.GetResult();
 							if (result.Count != 0)
 								destination = result[0]["name"];
 							else
 								destination = TeleportData[data[1]][2];
 						}
 
-						// Calculating game coords
-						ushort region = (ushort)short.Parse(TeleportData[data[1]][5]);
-						int x = int.Parse(TeleportData[data[1]][6]);
-						int z = int.Parse(TeleportData[data[1]][7]);
-						int y = int.Parse(TeleportData[data[1]][8]);
-						Point pSpawn = tp.GetPosition(region,x,y,z);
-						region = (ushort)short.Parse(TeleportData[data[2]][5]);
-						x = int.Parse(TeleportData[data[2]][6]);
-						y = int.Parse(TeleportData[data[2]][7]);
-						z = int.Parse(TeleportData[data[2]][8]);
-						Point pLoc = tp.GetPosition(region, x, y, z);
-
 						// 30% display
 						if (rand.Next(1, 1000) <= 300)
 							LogState("Adding " + TeleportData[data[1]][2]);
 						// INSERT
-						db.Prepare("INSERT INTO teleportlinks (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,region,spawn_x,spawn_y,pos_x,pos_y) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-						db.Bind("sourceid", data[1]);
-						db.Bind("destinationid", data[2]);
-						db.Bind("id", TeleportData[data[1]][3]);
-						db.Bind("servername", TeleportData[data[1]][2]);
-						db.Bind("name", name);
-						db.Bind("destination", destination);
-						db.Bind("tid1", tid1);
-						db.Bind("tid2", tid2);
-						db.Bind("tid3", tid3);
-						db.Bind("tid4", tid4);
-						db.Bind("gold", data[3]);
-						db.Bind("level", data[8]);
-						db.Bind("region", TeleportData[data[1]][3]);
-						db.Bind("spawn_x", pSpawn.X);
-						db.Bind("spawn_y", pSpawn.Y);
-						db.Bind("pos_x", pLoc.X);
-						db.Bind("pos_y", pLoc.Y);
-						db.ExecuteQuery();
+						db.Prepare("INSERT INTO teleportlinks (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,spawn_region,spawn_x,spawn_y,spawn_z,pos_region,pos_x,pos_y,pos_z) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+						try
+						{
+							db.Bind("sourceid", data[1]);
+							db.Bind("destinationid", data[2]);
+							db.Bind("id", TeleportData[data[1]][3]);
+							db.Bind("servername", TeleportData[data[1]][2]);
+							db.Bind("name", name);
+							db.Bind("destination", destination);
+							db.Bind("tid1", tid1);
+							db.Bind("tid2", tid2);
+							db.Bind("tid3", tid3);
+							db.Bind("tid4", tid4);
+							db.Bind("gold", data[3]);
+							db.Bind("level", data[8]);
+							db.Bind("spawn_region", (ushort)short.Parse(TeleportData[data[1]][5]));
+							db.Bind("spawn_x", int.Parse(TeleportData[data[1]][6]));
+							db.Bind("spawn_y", int.Parse(TeleportData[data[1]][8]));
+							db.Bind("spawn_z", int.Parse(TeleportData[data[1]][7]));
+							db.Bind("pos_region", (ushort)short.Parse(TeleportData[data[2]][5]));
+							db.Bind("pos_x", int.Parse(TeleportData[data[2]][6]));
+							db.Bind("pos_y", int.Parse(TeleportData[data[2]][8]));
+							db.Bind("pos_z", int.Parse(TeleportData[data[2]][7]));
+							db.ExecuteQuery();
+						}
+						catch
+						{
+							// TeleportData error
+						}
 
 						// CPU break
 						Thread.Sleep(1);
@@ -1202,7 +1493,6 @@ namespace xBot
 		private void AddRegions()
 		{
 			// vars constantly used
-			Random rand = new Random();
 			string line;
 			char[] split = new char[] { '\t' };
 			string[] data;
@@ -1238,57 +1528,37 @@ namespace xBot
 			sql += ");";
 			db.ExecuteQuery(sql);
 
-			string name;
-      using (StreamReader reader = new StreamReader(pk2.GetFileStream("RegionCode.txt", "server_dep/silkroad/textdata")))
+			// using faster sqlite performance
+			db.Begin();
+			foreach (string key in RegionReferences.Keys)
 			{
-				// using faster sqlite performance
-				db.Begin();
+				uint dummy;
+				if(uint.TryParse(key,out dummy)){
+					// 15% display
+					if (rand.Next(1, 1000) <= 150)
+						LogState("Adding " + key);
 
-				while ((line = WinAPI.ReadToString(reader, "\r\n")) != null)
-				{
-					// Data is enabled on the game
-					if (line.StartsWith("1\t"))
+					// INSERT OR UPDATE
+					db.ExecuteQuery("SELECT id FROM regions WHERE id=" + key);
+					if (db.GetResult().Count == 0)
 					{
-						data = line.Split(split, StringSplitOptions.None);
-
-						// Extract region name
-						name = "";
-						if (data[2] != "xxx" && RegionReferences.ContainsKey(data[2] + "_01"))
-						{
-							// _01 = Name; _02 = Description; _03 = Monster lvls.
-							name = RegionReferences[data[2] + "_01"];
-						}
-						else if (RegionReferences.ContainsKey(data[1]))
-						{
-							name = RegionReferences[data[1]];
-						}
-
-						// 15% display
-						if (rand.Next(1, 1000) <= 150)
-							LogState("Adding " + data[1]);
-
-						// INSERT OR UPDATE
-						db.ExecuteQuery("SELECT id FROM regions WHERE id=" + data[1]);
-						if (db.getResult().Count == 0)
-						{
-							// New
-							db.Prepare("INSERT INTO regions (id,name) VALUES (?,?)");
-							db.Bind("id", data[1]);
-						}
-						else
-						{
-							// Override
-							db.Prepare("UPDATE regions SET name=? WHERE id=" + data[1]);
-						}
-						db.Bind("name", name);
-						db.ExecuteQuery();
-						
-						// CPU break
-						Thread.Sleep(1);
+						// New
+						db.Prepare("INSERT INTO regions (id,name) VALUES (?,?)");
+						db.Bind("id", key);
 					}
+					else
+					{
+						// Override
+						db.Prepare("UPDATE regions SET name=? WHERE id=" + key);
+					}
+					db.Bind("name", RegionReferences[key]);
+					db.ExecuteQuery();
+
+					// CPU break
+					Thread.Sleep(1);
 				}
-				db.End();
 			}
+			db.End();
 		}
 		private void Control_Click(object sender, EventArgs e)
 		{

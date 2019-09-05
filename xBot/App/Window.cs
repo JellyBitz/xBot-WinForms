@@ -39,7 +39,7 @@ namespace xBot
 		{
 			InitializeComponent();
 			InitializeFonts(this);
-			InitializeIndexAndTabs();
+			InitializeValues();
 		}
 		/// <summary>
 		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
@@ -51,7 +51,7 @@ namespace xBot
 				if (_this == null)
 					_this = new Window();
 				return _this;
-			}
+		}
 		}
 		/// <summary>
 		/// Initialize fonts natives or not to the controls specified.
@@ -76,46 +76,33 @@ namespace xBot
 			}
 		}
 		/// <summary>
-		/// Initialize tab pages and options selected on GUI by default.
+		/// Initialize all default values required by the GUI.
 		/// </summary>
-		private void InitializeIndexAndTabs()
+		private void InitializeValues()
 		{
+			// Window Texts
+			SetTitle();
+			this.lblHeaderText01.Text = this.ProductName + " -";
+			this.lblHeaderText02.Location = new Point(this.lblHeaderText01.Location.X + this.lblHeaderText01.Size.Width, this.lblHeaderText01.Location.Y);
+			this.lblHeaderText02.Text = "v" + this.ProductVersion;
+
+
 			// Vertical tabs
 			// Login
 			TabPageV_Option_Click(this.TabPageV_Control01_Option01, null);
 			// Horizontal tabs
-			// Character
 			TabPageH_Option_Click(this.TabPageH_Character_Option01, null);
-			// Party
+			TabPageH_Option_Click(this.TabPageH_Inventory_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Party_Option01, null);
-			// Chat
 			TabPageH_Option_Click(this.TabPageH_Chat_Option01, null);
 			Chat_cmbxMsgType.SelectedIndex = 0;
 			// Settings
 			TabPageH_Option_Click(this.TabPageH_Settings_Option01, null);
-			Settings_cmbxHWIDClientSaveFrom.SelectedIndex = 0;
-			Settings_cmbxHWIDServerSendTo.SelectedIndex = 0;
-			Settings_cmbxCreateCharRace.SelectedIndex = 0;
-			Settings_cmbxCreateCharGenre.SelectedIndex = 0;
+			Settings_cmbxHWIDClientSaveFrom.SelectedIndex =
+			Settings_cmbxHWIDServerSendTo.SelectedIndex =
+			Settings_cmbxCreateCharRace.SelectedIndex =
+			Settings_cmbxCreateCharGenre.SelectedIndex =
 			Settings_cmbxInjectTo.SelectedIndex = 0;
-		}
-		/// <summary>
-		/// Load WebBrowser diplaying the Silkroad world map.
-		/// </summary>
-		public void LoadWebBrowserMap()
-		{
-			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
-			if (Minimap_wbrChromeMap == null && File.Exists(path))
-			{
-				// Initialize cef with the provided settings
-				CefSettings settings = new CefSettings();
-				Cef.Initialize(settings);
-				// Empty URL because DockStyle.Fill can (maybe) slow down the responsive process.
-				Minimap_wbrChromeMap = new ChromiumWebBrowser("");
-        Minimap_wbrChromeMap.Dock = DockStyle.Fill;
-				Minimap_wbrChromeMap.Load(path);
-				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
-			}
 		}
 		/// <summary>
 		/// Load all components (not visuals) to the App. Like settings and stuffs.
@@ -123,7 +110,7 @@ namespace xBot
 		private void Window_Load(object sender, EventArgs e)
 		{
 			// Welcome
-			rtbxLogs.Text = string.Format("{0} Welcome to {1} v{2} | Made by Engels \"JellyBitz\" Quintero{3}{0} Discord : JellyBitz#7643 | FaceBook : @ImJellyBitz", WinAPI.getDate(), ProductName, ProductVersion,Environment.NewLine);
+			rtbxLogs.Text = string.Format("{0} Welcome to {1} v{2} | Made by Engels \"JellyBitz\" Quintero{3}{0} Discord : JellyBitz#7643 | FaceBook : @ImJellyBitz", WinAPI.GetDate(), ProductName, ProductVersion, Environment.NewLine);
 			LogProcess();
 			// Load basic
 			Settings.LoadBotSettings();
@@ -182,7 +169,7 @@ namespace xBot
 				&& Login_tbxPassword.Text != ""
 				&& Login_cmbxServer.Tag != null)
 			{
-				Bot.Get.isAutoLoginMode = true;
+				Bot.Get.hasAutoLoginMode = true;
 				Control_Click(Login_btnStart, null);
 			}
 		}
@@ -201,7 +188,7 @@ namespace xBot
 		/// <summary>
 		/// Colors used on TabPage Vertical.
 		/// </summary>
-		private Color TabPageV_ColorHover = Color.FromArgb(74,74,76),
+		private Color TabPageV_ColorHover = Color.FromArgb(74, 74, 76),
 			TabPageV_ColorSelected = Color.FromArgb(0, 122, 204);
 		/// <summary>
 		///  TabPage Vertical option click.
@@ -292,12 +279,12 @@ namespace xBot
 		private void Control_FocusEnter(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv","btn" };
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
 			foreach (string t in controlTypes)
 			{
 				if (c.Name.Contains(t))
 				{
-					if(c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
 					{
 						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
 					}
@@ -311,7 +298,7 @@ namespace xBot
 		private void Control_FocusLeave(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv","btn" };
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
 			foreach (string t in controlTypes)
 			{
 				if (c.Name.Contains(t))
@@ -376,12 +363,31 @@ namespace xBot
 				WinAPI.InvokeIfRequired(rtbxLogs, () => {
 					// Keep 256 lines as max capacity
 					if (rtbxLogs.Lines.Length > 256)
-						rtbxLogs.Text = rtbxLogs.Text.Substring(rtbxLogs.Text.IndexOf("\n")) + Environment.NewLine + WinAPI.getDate() + " " + text;
+						rtbxLogs.Text = rtbxLogs.Text.Substring(rtbxLogs.Text.IndexOf("\n")) + Environment.NewLine + WinAPI.GetDate() + " " + text;
 					else
-						rtbxLogs.Text += Environment.NewLine + WinAPI.getDate() + " " + text;
+						rtbxLogs.Text += Environment.NewLine + WinAPI.GetDate() + " " + text;
 				});
 			}
 			catch { }
+		}
+		public void SetTitle()
+		{
+			WinAPI.InvokeIfRequired(this, () => {
+				this.Text = this.ProductName;
+				this.lblHeaderText02.Text = "v"+this.ProductVersion;
+				this.NotifyIcon.Text = this.ProductName+" v"+this.ProductVersion+"\nMade by JellyBitz";
+			});
+		}
+		public void SetTitle(string server, string charname,Process client = null)
+		{
+			string wTitle = this.ProductName + " - [" + server + "] " + charname;
+			WinAPI.InvokeIfRequired(this, () => {
+				this.Text = wTitle;
+				this.lblHeaderText02.Text = charname;
+				this.NotifyIcon.Text = this.ProductName+" v"+this.ProductVersion+"\n[" + server + "] " + charname;
+			});
+			if (client != null)
+				WinAPI.SetWindowText(client.MainWindowHandle, wTitle);
 		}
 		public void LogMessageFilter(string message)
 		{
@@ -389,29 +395,29 @@ namespace xBot
 			{
 				WinAPI.InvokeIfRequired(Character_rtbxMessageFilter, () => {
 					if (Character_rtbxMessageFilter.Lines.Length > 2048)
-						Character_rtbxMessageFilter.Text = Character_rtbxMessageFilter.Text.Substring(Character_rtbxMessageFilter.Text.IndexOf("\n")) + WinAPI.getDate() + " " + message + Environment.NewLine;
+						Character_rtbxMessageFilter.Text = Character_rtbxMessageFilter.Text.Substring(Character_rtbxMessageFilter.Text.IndexOf("\n")) + WinAPI.GetDate() + " " + message + Environment.NewLine;
 					else
-						Character_rtbxMessageFilter.Text += WinAPI.getDate() + " " + message + Environment.NewLine;
+						Character_rtbxMessageFilter.Text += WinAPI.GetDate() + " " + message + Environment.NewLine;
 				});
 			}
 			catch { }
 		}
 		public void LogPacket(string text)
 		{
-      try
+			try
 			{
 				StringBuilder sb = new StringBuilder();
 				if (Menu_rtbxPackets_AddTimestamp.Checked)
-					sb.Append(WinAPI.getDate());
+					sb.Append(WinAPI.GetDate());
 				sb.AppendLine(text);
-        WinAPI.InvokeIfRequired(Settings_rtbxPackets, () => {
+				WinAPI.InvokeIfRequired(Settings_rtbxPackets, () => {
 					// Keep 2048 lines as max capacity
 					if (Settings_rtbxPackets.Lines.Length > 2048)
-						sb.Insert(0,Settings_rtbxPackets.Text.Substring(Settings_rtbxPackets.Text.IndexOf("\n")));
+						sb.Insert(0, Settings_rtbxPackets.Text.Substring(Settings_rtbxPackets.Text.IndexOf("\n")));
 					else
-						sb.Insert(0,Settings_rtbxPackets.Text);
+						sb.Insert(0, Settings_rtbxPackets.Text);
 					Settings_rtbxPackets.Text = sb.ToString();
-        });
+				});
 			}
 			catch { }
 		}
@@ -421,9 +427,9 @@ namespace xBot
 			{
 				WinAPI.InvokeIfRequired(chat, () => {
 					if (chat.Lines.Length > 512)
-						chat.Text = chat.Text.Substring(chat.Text.IndexOf('\n')) + player + ": " + message + Environment.NewLine;
+						chat.Text = chat.Text.Substring(chat.Text.IndexOf('\n')) + WinAPI.GetDate() + " " + player + ": " + message + Environment.NewLine;
 					else
-						chat.Text += player + ": " + message + Environment.NewLine;
+						chat.Text += WinAPI.GetDate() + " " + player + ": " + message + Environment.NewLine;
 				});
 			}
 			catch { }
@@ -536,7 +542,7 @@ namespace xBot
 							ports.Add((ushort)silkroad.Nodes["Port"].Tag);
 							if (hosts.Count == 0 || ports.Count == 0)
 								return; // Just in case
-							
+
 							i.Locale = byte.Parse(silkroad.Nodes["Locale"].Tag.ToString());
 							i.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
 
@@ -570,7 +576,7 @@ namespace xBot
 							EnableControl(c, false);
 							LogProcess("Login...");
 							Bot.Get.LoggedFromBot = true;
-							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text,Convert.ToUInt16(Info.Get.ServerID));
+							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text, Convert.ToUInt16(Info.Get.ServerID));
 							break;
 						case "SELECT":
 							if (Login_cmbxCharacter.Text == "")
@@ -600,7 +606,7 @@ namespace xBot
 				case "Character_btnAddINT":
 					if (Bot.Get.inGame)
 					{
-						if((ushort)Info.Get.Character[SRAttribute.StatPoints] > 0)
+						if ((ushort)Info.Get.Character[SRAttribute.StatPoints] > 0)
 						{
 							PacketBuilder.AddStatPointINT();
 						}
@@ -615,29 +621,36 @@ namespace xBot
 						}
 					}
 					break;
+				case "Inventory_btnRefresh":
+					if (Bot.Get.inGame)
+						this.Inventory_Refresh();
+					else
+						this.Inventory_lstvItems.Items.Clear();
+					break;
 				case "Party_btnAddPlayer":
 					if (Bot.Get.inGame)
 					{
 						// Check if already exists
-						if (Party_tbxPlayer.Text != "" && !Party_lstvPlayers.Items.ContainsKey(Party_tbxPlayer.Text.ToLower()))
+						if (Party_tbxPlayer.Text != "" && !Party_lstvPartyList.Items.ContainsKey(Party_tbxPlayer.Text.ToLower()))
 						{
 							ListViewItem player = new ListViewItem(Party_tbxPlayer.Text);
 							player.Name = player.Text.ToLower();
-							Party_lstvPlayers.Items.Add(player);
+							Party_lstvPartyList.Items.Add(player);
 
 							Party_tbxPlayer.Text = "";
 							Settings.SaveCharacterSettings();
+							Bot.Get.CheckAutoParty();
 						}
 					}
 					break;
 				case "Party_btnAddLeader":
 					if (Bot.Get.inGame)
 					{
-						if (Party_tbxLeader.Text != "" && !Party_lstvLeaders.Items.ContainsKey(Party_tbxLeader.Text.ToLower()))
+						if (Party_tbxLeader.Text != "" && !Party_lstvLeaderList.Items.ContainsKey(Party_tbxLeader.Text.ToLower()))
 						{
 							ListViewItem leader = new ListViewItem(Party_tbxLeader.Text);
 							leader.Name = leader.Text.ToLower();
-							Party_lstvLeaders.Items.Add(leader);
+							Party_lstvLeaderList.Items.Add(leader);
 
 							Party_tbxLeader.Text = "";
 							Settings.SaveCharacterSettings();
@@ -653,7 +666,7 @@ namespace xBot
 				case "Party_btnJoinMatch":
 					if (Party_tbxJoinToNumber.Text != "")
 					{
-						if (Bot.Get.inGame && !Bot.Get.inParty)
+						if (Bot.Get.inGame && !Bot.Get.hasParty)
 						{
 							PacketBuilder.JoinToPartyMatch(uint.Parse(Party_tbxJoinToNumber.Text));
 						}
@@ -675,11 +688,16 @@ namespace xBot
 					break;
 				case "Minimap_btnLoadMap":
 					// Try to load WebBrowser map
-					LoadWebBrowserMap();
+					Minimap_Load();
 					if (Minimap_wbrChromeMap != null)
 					{
 						// Map loaded
 						Minimap_btnLoadMap.Parent.Controls.Remove(Minimap_btnLoadMap);
+						if (Bot.Get.inGame)
+						{
+							SRObject p = Info.Get.Character;
+							Minimap_CharacterPointer_Move((int)p[SRAttribute.X], (int)p[SRAttribute.Y], (int)p[SRAttribute.Z], (ushort)p[SRAttribute.Region]);
+						}
 					}
 					break;
 				case "GameInfo_btnRefresh":
@@ -687,13 +705,14 @@ namespace xBot
 					if (Bot.Get.inGame)
 					{
 						Info i = Info.Get;
-						GameInfo_lstrObjects.Nodes.Add(i.Character.ToNode());
-						// Making a copy because the list can be edited while iterating
-						SRObject[] objects = i.EntityList.ToArray();
+						GameInfo_lstrObjects.Nodes.Add(i.Character.Clone().ToNode());
+						// Making a copy because the list could be edited while iterating
+						SRObject[] objects = new SRObject[i.EntityList.Values.Count];
+						i.EntityList.Values.CopyTo(objects,0);
 						foreach (SRObject obj in objects)
 							GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
-						GameInfo_tbxWheaterTime.Text = i.GetWheaterTime()+" "+ i.GetWheater() + " | " +i.GetMoonphase();
+						GameInfo_tbxWheaterTime.Text = i.GetWheaterTime() + " " + i.GetWheater() + " | " + i.GetMoonphase();
 					}
 					break;
 				case "Settings_btnPK2Path":
@@ -766,7 +785,7 @@ namespace xBot
 					if (Settings_tbxSilkroadName.Text != "")
 					{
 						string silkroadkey = Settings_tbxSilkroadName.Text;
-						if (!CleanSilkroadName(ref silkroadkey))
+						if (!CheckSilkroadName(ref silkroadkey))
 							return;
 						if (!Database.Exists(silkroadkey))
 							return;
@@ -859,7 +878,7 @@ namespace xBot
 
 						string hwidData = "";
 						if (File.Exists("Data\\" + silkroadkey + ".hwid"))
-							hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + silkroadkey + ".hwid"));
+							hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + silkroadkey + ".hwid"));
 
 						node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
 						node.Name = "Data";
@@ -916,7 +935,7 @@ namespace xBot
 								{
 									try
 									{
-										data = WinAPI.HexStringToBytes(Settings_tbxInjectData.Text.Replace(" ",""));
+										data = WinAPI.ToByteArray(Settings_tbxInjectData.Text.Replace(" ", ""));
 									}
 									catch
 									{
@@ -932,7 +951,7 @@ namespace xBot
 								}
 								else
 								{
-									LogPacket(Utility.HexDump(p.GetBytes())+Environment.NewLine);
+									LogPacket(Utility.HexDump(p.GetBytes()) + Environment.NewLine);
 									Bot.Get.Proxy.InjectToClient(p);
 								}
 							}
@@ -974,7 +993,7 @@ namespace xBot
 						Settings_rtbxHWIDdata.Text = (string)server.Nodes["HWID"].Nodes["Data"].Tag;
 						Settings_cbxHWIDSendOnlyOnce.Checked = (bool)server.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
 						// Can be edited if is not being used
-						if(!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == server.Text)
+						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == server.Text)
 							this.EnableControl(Settings_btnAddSilkroad, false);
 						else
 							this.EnableControl(Settings_btnAddSilkroad, true);
@@ -1007,7 +1026,7 @@ namespace xBot
 						if (Login_cmbxServer.Text == server.Text)
 							Info.Get.ServerID = server.Name;
 					break;
-        case "Chat_cmbxMsgType":
+				case "Chat_cmbxMsgType":
 					if (Chat_cmbxMsgType.Text == "Private")
 						Chat_tbxMsgPlayer.Enabled = true;
 					else
@@ -1018,6 +1037,7 @@ namespace xBot
 		private void Control_CheckedChanged(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
+			// Save settings
 			switch (c.Name)
 			{
 				case "Login_rbnClient":
@@ -1031,6 +1051,72 @@ namespace xBot
 						Login_btnLauncher.Visible = false;
 						Login_btnStart.Location = new Point(110, 34);
 					}
+					break;
+				case "Character_cbxUseHP":
+				case "Character_cbxUseHPGrain":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingHP();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUseMP":
+				case "Character_cbxUseMPGrain":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingMP();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUseHPVigor":
+				case "Character_cbxUseMPVigor":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingVigor();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUsePillUniversal":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingUniversal();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUsePillPurification":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingPurification();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUsePetHP":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingPetHP();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUseTransportHP":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingTransportHP();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Party_rbnSetupExpFree":
+				case "Party_rbnSetupItemFree":
+				case "Party_cbxSetupMasterInvite":
+				case "Party_cbxInviteAll":
+				case "Party_cbxInvitePartyList":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckAutoParty();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Party_cbxLeavePartyNoneLeader":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckPartyLeaving();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxMessageExp":
+				case "Character_cbxMessageUniques":
+				case "Character_cbxMessageEvents":
+				case "Character_cbxMessagePicks":
+				case "Character_cbxAcceptRess":
+				case "Character_cbxAcceptRessPartyOnly":
+				case "Party_cbxAcceptOnlyPartySetup":
+				case "Party_cbxInviteOnlyPartySetup":
+				case "Party_cbxAcceptAll":
+				case "Party_cbxAcceptPartyList":
+				case "Party_cbxAcceptLeaderList":
+				case "Party_cbxRefusePartys":
+					Settings.SaveCharacterSettings();
 					break;
 				case "Settings_cbxSelectFirstChar":
 				case "Settings_cbxCreateChar":
@@ -1047,31 +1133,6 @@ namespace xBot
 					if (Settings_cbxInjectMassive.Checked && Settings_cbxInjectEncrypted.Checked)
 						Settings_cbxInjectEncrypted.Checked = false;
 					break;
-				case "Character_cbxMessageExp":
-				case "Character_cbxMessageUniques":
-				case "Character_cbxMessageEvents":
-				case "Character_cbxMessagePicks":
-				case "Character_cbxUseHP":
-				case "Character_cbxUseHPGrain":
-				case "Character_cbxUseHPVigor":
-				case "Character_cbxUseMP":
-				case "Character_cbxUseMPGrain":
-				case "Character_cbxUseMPVigor":
-				case "Character_cbxUsePillUniversal":
-				case "Character_cbxUsePillPurification":
-				case "Character_cbxAcceptRess":
-        case "Character_cbxAcceptRessPartyOnly":
-        case "Party_rbnSetupExpFree":
-				case "Party_rbnSetupItemFree":
-				case "Party_cbxSetupMasterInvite":
-				case "Party_cbxAcceptOnlyPartySetup":
-				case "Party_cbxAcceptAll":
-				case "Party_cbxAcceptPlayerList":
-				case "Party_cbxAcceptLeaderList":
-				case "Party_cbxLeavePartyNoneLeader":
-				case "Party_cbxRefusePartys":
-					Settings.SaveCharacterSettings();
-					break;
 			}
 		}
 		private void TextBox_TextChanged(object sender, EventArgs e)
@@ -1083,11 +1144,13 @@ namespace xBot
 				case "Character_tbxUseHPVigor":
 				case "Character_tbxUseMP":
 				case "Character_tbxUseMPVigor":
+				case "Character_tbxUsePetHP":
+				case "Character_tbxUseTransportHP":
 					// Percentage only
 					if (t.Text != "")
 					{
 						ushort value;
-						if (ushort.TryParse(t.Text,out value))
+						if (ushort.TryParse(t.Text, out value))
 						{
 							if (value > 100)
 							{
@@ -1109,8 +1172,11 @@ namespace xBot
 					}
 					if (Bot.Get.inGame)
 					{
+						Bot b = Bot.Get;
 						// Force check about potions right there
-						Bot.Get._Event_StateUpdated();
+						b.CheckUsingHP();
+						b.CheckUsingMP();
+						b.CheckUsingVigor();
 					}
 					Settings.SaveCharacterSettings();
 					break;
@@ -1127,7 +1193,7 @@ namespace xBot
 					break;
 				case "Settings_tbxSilkroadName":
 					string silkroadkey = Settings_tbxSilkroadName.Text;
-					if (CleanSilkroadName(ref silkroadkey))
+					if (CheckSilkroadName(ref silkroadkey))
 					{
 						EnableControl(Settings_btnPK2Path, true);
 						Settings_btnPK2Path.Tag = silkroadkey;
@@ -1168,7 +1234,10 @@ namespace xBot
 					break;
 			}
 		}
-		private bool CleanSilkroadName(ref string SilkroadName)
+		/// <summary>
+		/// Check if the silkroad name choosen is correct to be used as filename and fix it if is necessary.
+		/// </summary>
+		private bool CheckSilkroadName(ref string SilkroadName)
 		{
 			SilkroadName = SilkroadName.Trim();
 			if (SilkroadName != "")
@@ -1187,7 +1256,7 @@ namespace xBot
 		/// <summary>
 		/// Fix the text using a pattern restriction. Returns empty if the pattern is not found.
 		/// </summary>
-		private string FixTextRestriction(string Text,string Pattern,bool FirstMatch=false)
+		private string FixTextRestriction(string Text, string Pattern, bool FirstMatch = false)
 		{
 			MatchCollection matches = Regex.Matches(Text, Pattern);
 			if (matches.Count > 0)
@@ -1216,7 +1285,7 @@ namespace xBot
 					this.Control_Click(btnWinExit, null);
 					break;
 				case "Menu_NotifyIcon_About":
-					using(About about = new About(this)){
+					using (About about = new About(this)) {
 						about.ShowDialog(this);
 					}
 					break;
@@ -1232,34 +1301,82 @@ namespace xBot
 						t.Text = "Hide";
 					}
 					break;
-				case "Menu_lstvMembers_AddToPlayerList":
-					if (Party_lstvMembers.SelectedItems.Count == 1)
+				case "Menu_lstvPartyMembers_AddToPartyList":
+					if (Party_lstvPartyMembers.SelectedItems.Count == 1)
 					{
-						Party_tbxPlayer.Text = Party_lstvMembers.SelectedItems[0].Text;
+						Party_tbxPlayer.Text = Party_lstvPartyMembers.SelectedItems[0].Text;
 						Control_Click(Party_btnAddPlayer, null);
 					}
 					break;
-				case "Menu_lstvMembers_AddToLeaderList":
-					if (Party_lstvMembers.SelectedItems.Count == 1)
+				case "Menu_lstvPartyMembers_AddToLeaderList":
+					if (Party_lstvPartyMembers.SelectedItems.Count == 1)
 					{
-						Party_tbxLeader.Text = Party_lstvMembers.SelectedItems[0].Text;
+						Party_tbxLeader.Text = Party_lstvPartyMembers.SelectedItems[0].Text;
 						Control_Click(Party_btnAddLeader, null);
 					}
 					break;
-				case "Menu_lstvMembers_LeaveParty":
-					if (Bot.Get.inParty)
-					{
+				case "Menu_lstvPartyMembers_LeaveParty":
+					if (Bot.Get.hasParty)
 						PacketBuilder.LeaveParty();
+					break;
+				case "Menu_lstvPartyList_Remove":
+					if (Party_lstvPartyList.SelectedItems.Count == 1)
+					{
+						Party_lstvPartyList.SelectedItems[0].Remove();
+						Settings.SaveCharacterSettings();
 					}
 					break;
-				case "Menu_lstvOpcodes_remove":
+				case "Menu_lstvPartyList_RemoveAll":
+					if (Party_lstvPartyList.SelectedItems.Count > 0)
+					{
+						Party_lstvPartyList.Items.Clear();
+						Settings.SaveCharacterSettings();
+					}
+					break;
+				case "Menu_lstvLeaderList_Remove":
+					if (Party_lstvLeaderList.SelectedItems.Count == 1)
+					{
+						Party_lstvLeaderList.SelectedItems[0].Remove();
+						Settings.SaveCharacterSettings();
+						if (Bot.Get.inGame)
+							Bot.Get.CheckPartyLeaving();
+					}
+					break;
+				case "Menu_lstvLeaderList_RemoveAll":
+					if (Party_lstvLeaderList.SelectedItems.Count > 0)
+					{
+						Party_lstvLeaderList.Items.Clear();
+						Settings.SaveCharacterSettings();
+						if (Bot.Get.inGame)
+							Bot.Get.CheckPartyLeaving();
+					}
+					break;
+				case "Menu_lstvPartyMatch_JoinToParty":
+					if (Party_lstvPartyMatch.SelectedItems.Count > 0)
+					{
+						Bot b = Bot.Get;
+            if (b.inGame && !b.hasParty)
+							PacketBuilder.JoinToPartyMatch(uint.Parse(Party_lstvPartyMatch.SelectedItems[0].Name));
+					}
+					break;
+				case "Menu_lstvPartyMatch_PrivateMsg":
+					if (Party_lstvPartyMatch.SelectedItems.Count > 0)
+					{
+						Chat_cmbxMsgType.Text = "Private";
+						Chat_tbxMsgPlayer.Text = Party_lstvPartyMatch.SelectedItems[0].SubItems[1].Text;
+						TabPageV_Option_Click(TabPageV_Control01_Option11, e); // Go to chat
+						TabPageH_Option_Click(TabPageH_Chat_Option02, e); // Go to private
+						Chat_tbxMsg.Focus();
+					}
+					break;
+				case "Menu_lstvOpcodes_Remove":
 					if (Settings_lstvOpcodes.SelectedItems.Count == 1)
 					{
 						Settings_lstvOpcodes.SelectedItems[0].Remove();
 						Settings.SaveBotSettings();
 					}
 					break;
-				case "Menu_lstvOpcodes_removeAll":
+				case "Menu_lstvOpcodes_RemoveAll":
 					if (Settings_lstvOpcodes.Items.Count > 0)
 					{
 						Settings_lstvOpcodes.Items.Clear();
@@ -1296,6 +1413,24 @@ namespace xBot
 					break;
 			}
 		}
+		/// <summary>
+		/// Modified TabPage Horizontal behavior for better chat UX.
+		/// </summary>
+		private void TabPageH_ChatOption_Click(object sender, EventArgs e)
+		{
+			TabPageH_Option_Click(sender, e);
+			Control option = (Control)sender;
+			if (option.Font.Bold)
+				option.Font = new Font(option.Font, FontStyle.Regular);
+			Chat_cmbxMsgType.Text = option.Text; // If is not into the options, then will not change.
+    }
+		public void TabPageH_ChatOption_Notify(Control c)
+		{
+			WinAPI.InvokeIfRequired(c.Parent, () => {
+				if (c.Parent.Tag != c && !c.Font.Bold)
+					c.Font = new Font(c.Font, FontStyle.Bold);
+			});
+		}
 		private void Control_KeyDown(object sender, KeyEventArgs e)
 		{
 			Control c = (Control)sender;
@@ -1306,14 +1441,15 @@ namespace xBot
 					case "Chat_tbxMsg":
 						if (Chat_tbxMsg.Text != "" && Bot.Get.inGame)
 						{
-							if (Chat_cmbxMsgType.Text == "Private" && Chat_tbxMsgPlayer.Text == "")
-								return;
 							switch (Chat_cmbxMsgType.Text)
 							{
 								case "All":
 									PacketBuilder.SendChatAll(Chat_tbxMsg.Text);
 									break;
 								case "Private":
+									Chat_tbxMsgPlayer.Text = Chat_tbxMsgPlayer.Text.Trim();
+                  if (Chat_tbxMsgPlayer.Text == "" || Chat_tbxMsgPlayer.Text.StartsWith("*"))
+										return;
 									PacketBuilder.SendChatPrivate(Chat_tbxMsgPlayer.Text, Chat_tbxMsg.Text);
 									LogChatMessage(Chat_rtbxPrivate,Chat_tbxMsgPlayer.Text + "(To)",Chat_tbxMsg.Text);
 									break;
@@ -1329,6 +1465,11 @@ namespace xBot
 								case "Academy":
 									PacketBuilder.SendChatAcademy(Chat_tbxMsg.Text);
 									break;
+								case "Stall":
+									if (!Bot.Get.inStall)
+										return;
+									PacketBuilder.SendChatStall(Chat_tbxMsg.Text);
+									break;
 							}
 							Chat_tbxMsg.Text = "";
 						}
@@ -1336,45 +1477,85 @@ namespace xBot
 				}
 			}
 		}
+
+		#region (GUI updates)
 		/// <summary>
 		/// Set the gold in Silkroad format color.
 		/// </summary>
 		/// <param name="gold"></param>
-		public void SetSROGold(ulong gold)
+		public void Character_SetGold(ulong gold)
 		{
 			// 1000000 to 1.000.000
 			string Text = gold.ToString("#,0");
 			int GoldDigits = gold.ToString().Length;
 			// Visual color
 			Color ForeColor = Color.White; // Default
-			if (GoldDigits > 4)
+			if(GoldDigits <= 4){
+				ForeColor = Color.White;
+			}
+			else if (GoldDigits <= 5){
+				ForeColor = Color.FromArgb(255, 250, 133); // Light Yellow
+			}
+			else if (GoldDigits <= 6)
 			{
-				if (GoldDigits < 6)
-				{
-					ForeColor = Color.FromArgb(255, 250, 133);
-				}
-				else if (GoldDigits < 7)
-				{
-					ForeColor = Color.FromArgb(255, 211, 72);
-				}
-				else if (GoldDigits < 10)
-				{
-					ForeColor = Color.FromArgb(255, 173, 92);
-				}
-				else if (GoldDigits < 13)
-				{
-					
-				}
+				ForeColor = Color.FromArgb(255, 211, 72); // Yellow
+			}
+			else if (GoldDigits <= 7)
+			{
+				ForeColor = Color.FromArgb(255, 173, 92); // Dark Orange
+			}
+			else if (GoldDigits <= 8)
+			{
+				ForeColor = Color.FromArgb(255, 154, 161); // Pink
+			}
+			else if (GoldDigits <= 9)
+			{
+				ForeColor = Color.FromArgb(235, 161, 255); // Purple
 			}
 			WinAPI.InvokeIfRequired(Character_lblGold, () => {
 				Character_lblGold.ForeColor = ForeColor;
 				Character_lblGold.Text = Text;
 			});
 		}
+		public void Inventory_Refresh()
+		{
+			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.Items.Clear();
+			});
+			Info i = Info.Get;
+			SRObjectCollection inventory = ((SRObjectCollection)i.Character[SRAttribute.Inventory]).Clone();
+
+			ListViewItem[] items = new ListViewItem[inventory.Capacity];
+			for (int j = 0; j < items.Length; j++)
+			{
+				items[j] = new ListViewItem(j.ToString());
+				if (inventory[j] != null)
+				{
+					items[j].SubItems.Add((string)inventory[j][SRAttribute.Icon]);
+					items[j].SubItems.Add((string)inventory[j][SRAttribute.Name] + (inventory[j].Contains(SRAttribute.Plus) ? " (+" + (byte)inventory[j][SRAttribute.Plus] + ")" : ""));
+					items[j].SubItems.Add((ushort)inventory[j][SRAttribute.QuantityMax] == 1 ? "1" : inventory[j][SRAttribute.Quantity] + "/" + inventory[j][SRAttribute.QuantityMax]);
+					items[j].SubItems.Add(inventory[j][SRAttribute.Servername].ToString());
+					// TO DO:
+					// Add as tooltip the item stats
+				}
+				else
+				{
+					items[j].SubItems.Add("");
+					items[j].SubItems.Add("Empty");
+				}
+			}
+
+			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.Items.AddRange(items);
+			});
+			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
+				Inventory_lblCapacity.Text = "Capacity : "+ inventory.Count+"/"+inventory.Capacity;
+			});
+		}
 		public void Party_Clear()
 		{
-			WinAPI.InvokeIfRequired(Party_lstvMembers, () => {
-				Party_lstvMembers.Items.Clear();
+			WinAPI.InvokeIfRequired(Party_lstvPartyMembers, () => {
+				Party_lstvPartyMembers.Items.Clear();
 			});
 			WinAPI.InvokeIfRequired(Party_lblCurrentSetup, () => {
 				Party_lblCurrentSetup.Text = "";
@@ -1405,6 +1586,24 @@ namespace xBot
 					GameInfo_lstrObjects.Nodes[uniqueID.ToString()].Remove();
 				}
 			});
+		}
+		/// <summary>
+		/// Load WebBrowser diplaying the Silkroad world map.
+		/// </summary>
+		public void Minimap_Load()
+		{
+			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
+			if (Minimap_wbrChromeMap == null && File.Exists(path))
+			{
+				// Initialize cef with the provided settings
+				CefSettings settings = new CefSettings();
+				Cef.Initialize(settings);
+				// Empty URL because DockStyle.Fill can (maybe) slow down the responsive process.
+				Minimap_wbrChromeMap = new ChromiumWebBrowser("");
+				Minimap_wbrChromeMap.Dock = DockStyle.Fill;
+				Minimap_wbrChromeMap.Load(path);
+				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
+      }
 		}
 		public void Minimap_CharacterPointer_Move(int x, int y, int z, ushort region)
 		{
@@ -1442,5 +1641,6 @@ namespace xBot
 				Minimap_wbrChromeMap.ExecuteScriptAsyncWhenPageLoaded("SilkroadMap.RemoveAllExtraPointers();", true);
 			}
 		}
+		#endregion
 	}
 }

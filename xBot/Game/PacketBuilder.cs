@@ -150,12 +150,13 @@ namespace xBot.Game
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void SendClientMessage(string message)
+		public static void SendChatStall(string message)
 		{
-			Packet p = new Packet(Agent.Opcode.SERVER_CHAT_UPDATE);
-			p.WriteUInt8(Types.Chat.Notice);
+			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
+			p.WriteUInt8(Types.Chat.Stall);
+			p.WriteUInt8(Window.Get.Chat_rtbxStall.Lines.Length);
 			p.WriteAscii(message);
-			Bot.Get.Proxy.Agent.InjectToClient(p);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void MoveTo(ushort region,int x,int y,int z){
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_MOVEMENT);
@@ -175,14 +176,14 @@ namespace xBot.Game
 		public static void AddStatPointINT()
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ADD_INT_REQUEST);
-      Bot.Get.Proxy.Agent.InjectToServer(p);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void AddStatPointSTR()
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ADD_STR_REQUEST);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void PlayerPetitionResponse(bool accept, Types.PlayerPetition t)
+		public static void PlayerPetitionResponse(bool accept, Types.PlayerPetition type)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_PLAYER_INVITATION_RESPONSE);
 			if (accept)
@@ -192,7 +193,7 @@ namespace xBot.Game
 			}
 			else
 			{
-				switch (t)
+				switch (type)
 				{
 					case Types.PlayerPetition.PartyInvitation:
 					case Types.PlayerPetition.PartyCreation:
@@ -208,14 +209,12 @@ namespace xBot.Game
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void InviteToParty(uint uniqueID)
+		public static void InviteToParty(uint uniqueID,byte setupType)
 		{
-
-
-
-
-
-
+			Packet p = new Packet(Agent.Opcode.CLIENT_PARTY_INVITATION_REQUEST);
+			p.WriteUInt(uniqueID);
+			p.WriteUInt8(setupType);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void LeaveParty()
 		{
@@ -242,12 +241,226 @@ namespace xBot.Game
 		}
 		public static void UseItem(SRObject item,byte slot,uint uniqueID=0)
 		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_USE_ITEM,true);
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_USE,true);
 			p.WriteByte(slot);
-			p.WriteUShort((ushort)((uint)item[SRAttribute.RentType] + ((item).ID1 << 2) + ((item).ID2 << 5) + ((item).ID3 << 7) + ((item).ID4 << 11)));
+			ushort usageType = (ushort)((ushort)((uint)item[SRAttribute.RentType])
+				| (item.ID1 << 2) | (item.ID2 << 5) | (item.ID3 << 7) | (item.ID4 << 11));
+			p.WriteUShort(usageType);
 			if (uniqueID != 0)
 				p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void OpenStall(string title,string annotation)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_OPEN_REQUEST);
+			p.WriteAscii(title);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+			p = new Packet(Agent.Opcode.CLIENT_STALL_ANOTATION_REQUEST);
+			p.WriteAscii(annotation);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void CloseStall()
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_CLOSE_REQUEST);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void RequestStorageData(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STORAGE_DATA_REQUEST);
+			p.WriteUInt(uniqueID);
+			p.WriteUInt8(0);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void UnsummonPet(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_PET_UNSUMMON_REQUEST);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		internal class Client
+		{
+			public static void CreatePickUpPacket(SRObject item, byte inventorySlot)
+			{
+				Packet p = new Packet(Agent.Opcode.SERVER_INVENTORY_ITEM_MOVEMENT);
+				p.WriteByte(1); // Success
+				p.WriteByte((byte)Types.InventoryItemMovement.GroundToInventory);
+				p.WriteByte(inventorySlot);
+
+				// Temporaly (probably) since it only will be used to buy town stuffs only
+				if (!item.Contains(SRAttribute.RentType))
+					item[SRAttribute.RentType] = (uint)(0);
+				p.WriteUInt((uint)item[SRAttribute.RentType]);
+				if ((uint)item[SRAttribute.RentType] == 1)
+				{
+					p.WriteUShort((ushort)item[SRAttribute.RentCanDelete]);
+					p.WriteUInt((uint)item[SRAttribute.RentPeriodBeginTime]);
+					p.WriteUInt((uint)item[SRAttribute.RentPeriodEndTime]);
+				}
+				else if ((uint)item[SRAttribute.RentType] == 2)
+				{
+					p.WriteUShort((ushort)item[SRAttribute.RentCanDelete]);
+					p.WriteUShort((ushort)item[SRAttribute.RentCanRecharge]);
+					p.WriteUInt((uint)item[SRAttribute.RentMeterRateTime]);
+				}
+				else if ((uint)item[SRAttribute.RentType] == 3)
+				{
+					p.WriteUShort((ushort)item[SRAttribute.RentCanDelete]);
+					p.WriteUShort((ushort)item[SRAttribute.RentCanRecharge]);
+					p.WriteUInt((uint)item[SRAttribute.RentPeriodBeginTime]);
+					p.WriteUInt((uint)item[SRAttribute.RentPeriodEndTime]);
+					p.WriteUInt((uint)item[SRAttribute.RentPackingTime]);
+				}
+				p.WriteUInt((uint)item.ID);
+				if (item.ID1 == 3)
+				{
+					// ITEM_
+					if (item.ID2 == 1)
+					{
+						// ITEM_CH_
+						// ITEM_EU_
+						// ITEM_AVATAR_
+						if (!item.Contains(SRAttribute.Plus)) // Temporaly
+							item[SRAttribute.Plus] = (byte)(0);
+						p.WriteByte((byte)item[SRAttribute.Plus]);
+						if (!item.Contains(SRAttribute.Variance)) // Temporaly
+							item[SRAttribute.Variance] = (ulong)(0);
+						p.WriteULong((ulong)item[SRAttribute.Variance]);
+						if (!item.Contains(SRAttribute.Durability)) // Temporaly
+							item[SRAttribute.Durability] = (uint)(64);
+						p.WriteUInt((uint)item[SRAttribute.Durability]);
+
+						if (!item.Contains(SRAttribute.MagicParams)) // Temporaly
+							item[SRAttribute.MagicParams] = new SRObjectCollection(0);
+						SRObjectCollection MagicParams = (SRObjectCollection)item[SRAttribute.MagicParams];
+						p.WriteByte((byte)MagicParams.Count);
+						for (byte j = 0; j < MagicParams.Count; j++)
+						{
+							SRObject MagicParam = MagicParams[j];
+							p.WriteUInt((uint)MagicParam[SRAttribute.Type]);
+							p.WriteUInt((uint)MagicParam[SRAttribute.Value]);
+						}
+
+						// 1 = Socket
+						p.WriteByte(1);
+						if (!item.Contains(SRAttribute.SocketParams)) // Temporaly
+							item[SRAttribute.SocketParams] = new SRObjectCollection(0);
+						SRObjectCollection SocketParams = (SRObjectCollection)item[SRAttribute.SocketParams];
+						p.WriteByte((byte)SocketParams.Count);
+						for (byte j = 0; j < SocketParams.Capacity; j++)
+						{
+							SRObject SocketParam = SocketParams[j];
+							p.WriteByte((byte)SocketParam[SRAttribute.Slot]);
+							p.WriteUInt((uint)SocketParam[SRAttribute.ID]);
+							p.WriteUInt((uint)SocketParam[SRAttribute.Value]);
+						}
+
+						// 2 = Advanced elixir
+						p.WriteByte(2);
+						if (!item.Contains(SRAttribute.AdvanceElixirParams)) // Temporaly
+							item[SRAttribute.AdvanceElixirParams] = new SRObjectCollection(0);
+						SRObjectCollection AdvanceElixirParams = (SRObjectCollection)item[SRAttribute.AdvanceElixirParams];
+						p.WriteByte((byte)AdvanceElixirParams.Count);
+						for (byte j = 0; j < AdvanceElixirParams.Capacity; j++)
+						{
+							SRObject AdvanceElixirParam = AdvanceElixirParams[j];
+							p.WriteByte((byte)AdvanceElixirParam[SRAttribute.Slot]);
+							p.WriteUInt((uint)AdvanceElixirParam[SRAttribute.ID]);
+							p.WriteUInt((uint)AdvanceElixirParam[SRAttribute.Plus]);
+						}
+					}
+					else if (item.ID2 == 2)
+					{
+						// ITEM_COS
+						if (item.ID3 == 1)
+						{
+							// ITEM_COS_P
+							if (!item.Contains(SRAttribute.PetState)) // Temporaly
+								item[SRAttribute.PetState] = (byte)Types.PetState.NeverSummoned;
+							p.WriteByte((byte)((Types.PetState)item[SRAttribute.PetState]));
+							switch ((Types.PetState)item[SRAttribute.PetState])
+							{
+								case Types.PetState.Summoned:
+								case Types.PetState.Unsummoned:
+								case Types.PetState.Dead:
+									p.WriteUInt((uint)item[SRAttribute.ModelID]);
+									p.WriteAscii((string)item[SRAttribute.PetName]);
+									if (item.ID4 == 2)
+									{
+										// ITEM_COS_P (Ability)
+										p.WriteUInt((uint)item[SRAttribute.RentPeriodEndTime]);
+									}
+									p.WriteByte((byte)item[SRAttribute.unkByte01]);
+									break;
+							}
+						}
+						else if (item.ID3 == 2)
+						{
+							// ITEM_ETC_TRANS_MONSTER
+							if (!item.Contains(SRAttribute.ModelID)) // Temporaly
+								item[SRAttribute.ModelID] = (new SRObject("MOB_CH_MANGNYANG", SRObject.Type.Model)).ID;
+							p.WriteUInt((uint)item[SRAttribute.ModelID]);
+						}
+						else if (item.ID3 == 3)
+						{
+							// MAGIC_CUBE
+							if (!item.Contains(SRAttribute.Amount)) // Temporaly
+								item[SRAttribute.Amount] = (uint)(0);
+							p.WriteUInt((uint)item[SRAttribute.Amount]);
+						}
+					}
+					else if (item.ID2 == 3)
+					{
+						// ITEM_ETC
+						p.WriteUShort((ushort)item[SRAttribute.Quantity]);
+						if (item.ID3 == 11)
+						{
+							if (item.ID4 == 1 || item.ID4 == 2)
+							{
+								// MAGIC/ATRIBUTTE STONE
+								if (!item.Contains(SRAttribute.AssimilationProbability)) // Temporaly
+									item[SRAttribute.AssimilationProbability] = (byte)(0);
+								p.WriteByte((byte)item[SRAttribute.AssimilationProbability]);
+							}
+						}
+						else if (item.ID3 == 14 && item.ID4 == 2)
+						{
+							// ITEM_MALL_GACHA_CARD_WIN
+							// ITEM_MALL_GACHA_CARD_LOSE
+							if (!item.Contains(SRAttribute.MagicParams)) // Temporaly
+								item[SRAttribute.MagicParams] = new SRObjectCollection(0);
+							SRObjectCollection MagicParams = (SRObjectCollection)item[SRAttribute.MagicParams];
+							p.WriteByte((byte)MagicParams.Count);
+							for (byte j = 0; j < MagicParams.Count; j++)
+							{
+								SRObject MagicParam = MagicParams[j];
+								p.WriteUInt((uint)MagicParam[SRAttribute.Type]);
+								p.WriteUInt((uint)MagicParam[SRAttribute.Value]);
+							}
+						}
+					}
+				}
+				Bot.Get.Proxy.Agent.InjectToClient(p);
+			}
+			public static void CreatePickUpSpecialtyGoodsPacket(SRObject item, byte inventorySlot, uint transportUniqueID)
+			{
+				Packet p = new Packet(Agent.Opcode.SERVER_INVENTORY_ITEM_MOVEMENT);
+				p.WriteByte(1); // Success
+				p.WriteByte((byte)Types.InventoryItemMovement.GroundToTransport);
+				p.WriteUInt(transportUniqueID);
+				p.WriteByte(inventorySlot);
+				p.WriteUInt((uint)item[SRAttribute.unkUInt01]);
+				p.WriteUInt(item.ID);
+				p.WriteUShort((ushort)item[SRAttribute.Quantity]);
+				p.WriteAscii((string)item[SRAttribute.OwnerName]);
+				Bot.Get.Proxy.Agent.InjectToClient(p);
+			}
+			public static void SendNoticeToClient(string message)
+			{
+				Packet p = new Packet(Agent.Opcode.SERVER_CHAT_UPDATE);
+				p.WriteByte((byte)Types.Chat.Notice);
+				p.WriteAscii(message);
+				Bot.Get.Proxy.Agent.InjectToClient(p);
+			}
 		}
 	}
 }

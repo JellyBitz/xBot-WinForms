@@ -21,15 +21,27 @@ namespace xBot.Network
 				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
 				CLIENT_ENVIROMENT_WEATHER_REQUEST = 0x750E,
 				CLIENT_CHARACTER_MOVEMENT = 0x7021,
+				CLIENT_CHARACTER_TRANSPORT_MOVEMENT = 0x70C5,
 				CLIENT_CHARACTER_ADD_STR_REQUEST = 0x7050,
 				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
 				CLIENT_CHAT_REQUEST = 0x7025,
 				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
+				CLIENT_PARTY_INVITATION_REQUEST = 0x7060,
 				CLIENT_PARTY_LEAVE = 0x7061,
 				CLIENT_PARTY_MATCH_REQUEST = 0x706C,
 				CLIENT_PARTY_MATCH_JOIN = 0x706D,
 				CLIENT_ENTITY_SELECTION = 0x7045,
-				CLIENT_INVENTORY_USE_ITEM = 0x704C,
+				CLIENT_INVENTORY_ITEM_USE = 0x704C,
+				CLIENT_INVENTORY_ITEM_MOVEMENT = 0x7034,
+				CLIENT_STALL_OPEN_REQUEST = 0x70B1,
+				CLIENT_STALL_CLOSE_REQUEST = 0x70B2,
+				CLIENT_STALL_ANOTATION_REQUEST = 0x70BA,
+				CLIENT_STORAGE_DATA_REQUEST = 0x703C,
+				CLIENT_EMOTE_USE_REQUEST = 0x3091,
+				CLIENT_PET_UNSUMMON_REQUEST = 0x7116,
+				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
+				CLIENT_PET_MOUNTED = 0x70CB,
+				CLIENT_PET_DESTROY = 0x706C,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -61,6 +73,25 @@ namespace xBot.Network
 				SERVER_PARTY_UPDATE = 0x3864,
 				SERVER_ENTITY_SELECTION = 0xB045,
 				SERVER_PARTY_MATCH_RESPONSE = 0xB06C,
+				SERVER_INVENTORY_ITEM_USE = 0xB04C,
+				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
+				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
+				SERVER_INVENTORY_ITEM_STATE_UPDATE = 0x3040,
+				SERVER_STALL_OPEN_RESPONSE = 0xB0B1,
+				SERVER_STALL_CLOSE_RESPONSE = 0xB0B2,
+				SERVER_STALL_PLAYER_OPENED = 0xB0B3,
+				SERVER_STALL_PLAYER_CLOSED = 0xB0B5,
+				SERVER_STALL_ANOTATION_RESPONSE = 0xB0BA,
+				SERVER_STALL_CREATED = 0x30B8,
+				SERVER_STALL_CLOSED = 0x30B9,
+				SERVER_STORAGE_DATA_BEGIN = 0x3047,
+				SERVER_STORAGE_DATA = 0x3049,
+				SERVER_STORAGE_DATA_END = 0x3048,
+				SERVER_EMOTE_PLAYER_USE = 0x3091,
+				SERVER_PET_DATA = 0x30C8,
+				SERVER_PET_UPDATE = 0x30C9,
+				SERVER_PET_SETTINGS_CHANGE_RESPONSE = 0xB420,
+				SERVER_PET_PLAYER_MOUNTED = 0xB0CB,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -135,7 +166,7 @@ namespace xBot.Network
 					{
 						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
 						InjectToServer(p);
-						Window.Get.LogProcess("HWID Sent : " + WinAPI.BytesToHexString(hwidData));
+						Window.Get.LogProcess("HWID Sent : " + WinAPI.ToHexString(hwidData));
 					}
 				}
 			}
@@ -165,11 +196,38 @@ namespace xBot.Network
 			else if (packet.Opcode == Opcode.CLIENT_CHAT_REQUEST)
 			{
 				// Keep on track all private messages sent
-				if(packet.ReadByte() == (byte)Types.Chat.Private)
+				Types.Chat t = (Types.Chat)packet.ReadByte();
+				byte chatIndex = packet.ReadByte();
+				if (t == Types.Chat.Private)
 				{
-					packet.ReadByte(); // chat index
 					Window w = Window.Get;
 					w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
+				}
+				else if (t == Types.Chat.All)
+				{
+					// JUST FOR FUN
+					string message = packet.ReadAscii().ToLower();
+					if (message == ".")
+					{
+						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						p.WriteByte(12);
+						InjectToServer(p);
+						return true;
+					}
+					else if (message == "..")
+					{
+						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						p.WriteByte(71);
+						InjectToServer(p);
+						return true;
+					}
+					else if (message == "...")
+					{
+						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						p.WriteByte(29);
+						InjectToServer(p);
+						return true;
+					}
 				}
 			}
 			return false;
@@ -203,8 +261,7 @@ namespace xBot.Network
 				byte success = packet.ReadByte();
 				if (success == 1)
 				{
-					w.Log("Logged successfully!");
-					w.LogProcess("Logged");
+					w.LogProcess("Logged successfully!");
 					w.EnableControl(w.Login_btnStart, false);
 					if (ClientlessMode)
 						PacketBuilder.RequestCharacterList();
@@ -224,18 +281,7 @@ namespace xBot.Network
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_SELECTION_JOIN_RESPONSE)
 			{
-				Window w = Window.Get;
-				byte success = packet.ReadByte();
-				if (success == 1)
-				{
-					w.Log("Character selected ["+Info.Get.Charname+"]");
-				}
-				else
-				{
-					int error = packet.ReadUShort();
-					w.Log("Error: " + error);
-					w.LogProcess("Error", Window.ProcessState.Error);
-				}
+				PacketParser.CharacterSelectionJoinResponse(packet);
 			}
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DATA_BEGIN)
 			{
@@ -363,10 +409,73 @@ namespace xBot.Network
 			{
 				PacketParser.CharacterAddStatPointResponse(packet);
 			}
+			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_USE)
+			{
+				PacketParser.InventoryItemUse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_MOVEMENT)
+			{
+				return PacketParser.InventoryItemMovement(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_DURABILITY_UPDATE)
+			{
+				PacketParser.InventoryItemDurabilityUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE)
+			{
+				PacketParser.InventoryItemStateUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_OPEN_RESPONSE)
+			{
+				PacketParser.StallOpenResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_OPEN_RESPONSE)
+			{
+				PacketParser.StallOpenResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_CLOSE_RESPONSE)
+			{
+				PacketParser.StallCloseResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_OPENED)
+			{
+				PacketParser.StallPlayerOpened(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_CLOSED)
+			{
+				PacketParser.StallPlayerClosed(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA_BEGIN)
+			{
+				PacketParser.StorageDataBegin(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA)
+			{
+				PacketParser.StorageData(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STORAGE_DATA_END)
+			{
+				PacketParser.StorageDataEnd(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PET_DATA)
+			{
+				PacketParser.PetData(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PET_UPDATE)
+			{
+				PacketParser.PetUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_PET_SETTINGS_CHANGE_RESPONSE)
+			{
+				PacketParser.PetSettingsChangeResponse(packet);
+			}
+			else if(packet.Opcode == Opcode.SERVER_PET_PLAYER_MOUNTED){
+				PacketParser.PetPlayerMounted(packet);
+			}
 			return false;
 		}
 		/// <summary>
-		/// Inject a packet to the server. The delay is used to no lock the main thread.
+		/// Inject a packet to the server. The delay is used to avoid locking the current thread.
 		/// </summary>
 		/// <param name="p">Packet with the info</param>
 		/// <param name="delay">Delay in miliseconds to be executed in other thread</param>

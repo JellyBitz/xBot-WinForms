@@ -223,7 +223,7 @@ namespace xBot
 
 					string hwidData = "";
 					if (File.Exists("Data\\" + key.Name + ".hwid"))
-						hwidData = WinAPI.BytesToHexString(File.ReadAllBytes("Data\\" + key.Name + ".hwid"));
+						hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + key.Name + ".hwid"));
 					node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
 					node.Name = "Data";
 					node.Tag = hwidData;
@@ -305,7 +305,10 @@ namespace xBot
 					Potions["UseMPVigor"] = w.Character_cbxUseMPVigor.Checked;
 					Potions["UseUniversalPills"] = w.Character_cbxUsePillUniversal.Checked;
 					Potions["UsePurificationPills"] = w.Character_cbxUsePillPurification.Checked;
-
+					Potions["UsePetHP"] = w.Character_cbxUsePetHP.Checked;
+					Potions["UsePetHPPercent"] = w.Character_tbxUsePetHP.Text;
+					Potions["UseTransportHP"] = w.Character_cbxUseTransportHP.Checked;
+					Potions["UseTransportHPPercent"] = w.Character_tbxUseTransportHP.Text;
 
 					JObject Misc = new JObject();
 					Character["Misc"] = Misc;
@@ -325,20 +328,22 @@ namespace xBot
 					Options["OnlyMasterInvite"] = w.Party_cbxSetupMasterInvite.Checked;
 					Options["AcceptOnlyPartySetup"] = w.Party_cbxAcceptOnlyPartySetup.Checked;
 					Options["AcceptAll"] = w.Party_cbxAcceptAll.Checked;
-					Options["AcceptPlayerList"] = w.Party_cbxAcceptPlayerList.Checked;
+					Options["AcceptPartyList"] = w.Party_cbxAcceptPartyList.Checked;
 					Options["AcceptLeaderList"] = w.Party_cbxAcceptLeaderList.Checked;
 					Options["LeavePartyLeaderNotFound"] = w.Party_cbxLeavePartyNoneLeader.Checked;
 					Options["RefusePartys"] = w.Party_cbxRefusePartys.Checked;
+					Options["InviteOnlyPartySetup"] = w.Party_cbxInviteOnlyPartySetup.Checked;
+					Options["InviteAll"] = w.Party_cbxInviteAll.Checked;
+					Options["InvitePartyList"] = w.Party_cbxInvitePartyList.Checked;
 
 					JArray players = new JArray();
-					foreach (ListViewItem item in w.Party_lstvPlayers.Items)
+					foreach (ListViewItem item in w.Party_lstvPartyList.Items)
 						players.Add(item.Text);
-					Options["PlayerList"] = players;
+					Options["PartyList"] = players;
 					JArray leaders = new JArray();
-					foreach (ListViewItem item in w.Party_lstvLeaders.Items)
+					foreach (ListViewItem item in w.Party_lstvLeaderList.Items)
 						leaders.Add(item.Text);
 					Options["LeaderList"] = leaders;
-
 					#endregion
 
 					// Saving
@@ -420,7 +425,7 @@ namespace xBot
 					w.Character_tbxUseHP.Text = (string)Potions["UseHPPercent"];
 				else
 					w.Character_tbxUseHP.Text = "50";
-        if (Potions.ContainsKey("UseHPGrain"))
+				if (Potions.ContainsKey("UseHPGrain"))
 					w.Character_cbxUseHPGrain.Checked = (bool)Potions["UseHPGrain"];
 				else
 					w.Character_cbxUseHPGrain.Checked = false;
@@ -452,7 +457,22 @@ namespace xBot
 					w.Character_cbxUsePillPurification.Checked = (bool)Potions["UsePurificationPills"];
 				else
 					w.Character_cbxUsePillPurification.Checked = false;
-
+				if (Potions.ContainsKey("UsePetHP"))
+					w.Character_cbxUsePetHP.Checked = (bool)Potions["UsePetHP"];
+				else
+					w.Character_cbxUsePetHP.Checked = false;
+				if (Potions.ContainsKey("UsePetHPPercent"))
+					w.Character_tbxUsePetHP.Text = (string)Potions["UsePetHPPercent"];
+				else
+					w.Character_tbxUsePetHP.Text = "50";
+				if (Potions.ContainsKey("UseTransportHP"))
+					w.Character_cbxUseTransportHP.Checked = (bool)Potions["UseTransportHP"];
+				else
+					w.Character_cbxUseTransportHP.Checked = false;
+				if (Potions.ContainsKey("UseTransportHPPercent"))
+					w.Character_tbxUseTransportHP.Text = (string)Potions["UseTransportHPPercent"];
+				else
+					w.Character_tbxUseTransportHP.Text = "50";
 
 				JObject Misc = (JObject)Character["Misc"];
 				if (Misc.ContainsKey("AcceptRess"))
@@ -467,16 +487,20 @@ namespace xBot
 
 				#region (Party Tab)
 				JObject Party = (JObject)root["Party"];
-				
+
 				JObject Options = (JObject)Party["Options"];
 				if (Options.ContainsKey("ExpFree"))
 					w.Party_rbnSetupExpFree.Checked = (bool)Options["ExpFree"];
 				else
-					w.Party_rbnSetupExpFree.Checked = false;
-        if (Options.ContainsKey("ItemFree"))
+					w.Party_rbnSetupExpFree.Checked = true;
+				w.Party_rbnSetupExpShared.Checked = !w.Party_rbnSetupExpFree.Checked;
+
+				if (Options.ContainsKey("ItemFree"))
 					w.Party_rbnSetupItemFree.Checked = (bool)Options["ItemFree"];
 				else
-					w.Party_rbnSetupItemFree.Checked = false;
+					w.Party_rbnSetupItemFree.Checked = true;
+				w.Party_rbnSetupItemShared.Checked = !w.Party_rbnSetupItemFree.Checked;
+
 				if (Options.ContainsKey("OnlyMasterInvite"))
 					w.Party_cbxSetupMasterInvite.Checked = (bool)Options["OnlyMasterInvite"];
 				else
@@ -489,10 +513,10 @@ namespace xBot
 					w.Party_cbxAcceptAll.Checked = (bool)Options["AcceptAll"];
 				else
 					w.Party_cbxAcceptAll.Checked = false;
-				if (Options.ContainsKey("AcceptPlayerList"))
-					w.Party_cbxAcceptPlayerList.Checked = (bool)Options["AcceptPlayerList"];
+				if (Options.ContainsKey("AcceptPartyList"))
+					w.Party_cbxAcceptPartyList.Checked = (bool)Options["AcceptPartyList"];
 				else
-					w.Party_cbxAcceptPlayerList.Checked = false;
+					w.Party_cbxAcceptPartyList.Checked = false;
 				if (Options.ContainsKey("AcceptLeaderList"))
 					w.Party_cbxAcceptLeaderList.Checked = (bool)Options["AcceptLeaderList"];
 				else
@@ -505,20 +529,42 @@ namespace xBot
 					w.Party_cbxRefusePartys.Checked = (bool)Options["RefusePartys"];
 				else
 					w.Party_cbxRefusePartys.Checked = false;
+				if (Options.ContainsKey("InviteOnlyPartySetup"))
+					w.Party_cbxInviteOnlyPartySetup.Checked = (bool)Options["InviteOnlyPartySetup"];
+				else
+					w.Party_cbxInviteOnlyPartySetup.Checked = false;
+				if (Options.ContainsKey("InviteAll"))
+					w.Party_cbxInviteAll.Checked = (bool)Options["InviteAll"];
+				else
+					w.Party_cbxInviteAll.Checked = false;
+				if (Options.ContainsKey("InvitePartyList"))
+					w.Party_cbxInvitePartyList.Checked = (bool)Options["InvitePartyList"];
+				else
+					w.Party_cbxInvitePartyList.Checked = false;
 
-				foreach (JToken player in (JArray)Options["PlayerList"])
+				w.Party_lstvPartyList.Items.Clear();
+				if (Options.ContainsKey("PartyList"))
 				{
-					ListViewItem item = new ListViewItem((string)player);
-					item.Name = item.Text.ToLower();
-					w.Party_lstvPlayers.Items.Add(item);
+					foreach (JToken player in (JArray)Options["PartyList"])
+					{
+						ListViewItem item = new ListViewItem((string)player);
+						item.Name = item.Text.ToLower();
+						w.Party_lstvPartyList.Items.Add(item);
+					}
 				}
-				foreach (JToken leader in (JArray)Options["LeaderList"])
+
+				w.Party_lstvLeaderList.Items.Clear();
+        if (Options.ContainsKey("LeaderList"))
 				{
-					ListViewItem item = new ListViewItem((string)leader);
-					item.Name = item.Text.ToLower();
-					w.Party_lstvLeaders.Items.Add(item);
+					foreach (JToken leader in (JArray)Options["LeaderList"])
+					{
+						ListViewItem item = new ListViewItem((string)leader);
+						item.Name = item.Text.ToLower();
+						w.Party_lstvLeaderList.Items.Add(item);
+					}
 				}
 				#endregion
+
 				LoadingCharacterSettings = false;
 			}
 		}

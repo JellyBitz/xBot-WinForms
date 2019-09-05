@@ -4,7 +4,6 @@ using SecurityAPI;
 using System.Collections.Generic;
 using System.IO;
 using xBot.Game;
-using System.Timers;
 
 namespace xBot
 {
@@ -14,10 +13,11 @@ namespace xBot
 	public partial class Bot
 	{
 		private static Bot _this = null;
+		private Random rand = new Random();
 		/// <summary>
 		/// Check if the bot is using auto login mode from command line.
 		/// </summary>
-		public bool isAutoLoginMode { get; set; }
+		public bool hasAutoLoginMode { get; set; }
 		/// <summary>
 		/// Get or set the proxy actually running.
 		/// </summary>
@@ -40,7 +40,7 @@ namespace xBot
 		/// <summary>
 		/// Check if the character is in party.
 		/// </summary>
-		public bool inParty { get { return PartySetupType != -1; } }
+		public bool hasParty { get { return PartySetupType != -1; } }
 		/// <summary>
 		/// Keep the current party setup type or (-1) if is not in party. 
 		/// </summary>
@@ -50,41 +50,25 @@ namespace xBot
 		/// </summary>
 		private sbyte PartyPurposeType = -1;
 		/// <summary>
-		/// Get or set the last uniqueID selected.
+		/// Keep the last entity selected by the character
 		/// </summary>
-		public uint EntitySelected { get { return _EntitySelected; } }
-		private uint _EntitySelected;
+		private uint EntitySelected;
 		/// <summary>
-		/// Cooldown timer.
+		/// Check if the character has his own stall opened.
 		/// </summary>
-		Timer tUsingHP, tUsingMP, tUsingVigor, tUsingUniversal, tUsingPurification;
+		public bool hasStall { get { return _hasStall; } }
+		private bool _hasStall;
+		/// <summary>
+		/// Check if the character is inside of stall, including his own.
+		/// </summary>
+		public bool inStall { get { return _inStall; } }
+		private bool _inStall;
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		private Bot()
 		{
-			// Preparing all neccesary timers
-			tUsingHP = new Timer();
-			tUsingMP = new Timer();
-			tUsingVigor = new Timer();
-			tUsingUniversal = new Timer();
-			tUsingPurification = new Timer();
-			// A second is enought for any potion cooldown
-			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
-				tUsingUniversal.Interval = tUsingPurification.Interval = 1000;
-			// Callbacks
-			tUsingHP.Elapsed += (sender, e) => {
-				CheckUsingHP();
-			};
-			tUsingMP.Elapsed += (sender, e) => {
-				CheckUsingMP();
-			};
-			tUsingVigor.Elapsed += (sender, e) => {
-				CheckUsingVigor();
-			};
-			tUsingUniversal.Elapsed += (sender, e) => {
-				CheckUsingUniversal();
-			};
-			tUsingPurification.Elapsed += (sender, e) => {
-				CheckUsingPurification();
-			};
+			InitializeTimers();
 		}
 		/// <summary>
 		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
@@ -105,12 +89,12 @@ namespace xBot
 		{
 			string msg = DateTime.Now.ToString("[dd/MM/yyyy|HH:mm:ss]") + error + Environment.NewLine;
 			if (packet != null)
-				msg += "[" + packet.Opcode.ToString("X4") + "][" + WinAPI.BytesToHexString(packet.GetBytes()) + "]" + Environment.NewLine;
+				msg += "[" + packet.Opcode.ToString("X4") + "][" + WinAPI.ToHexString(packet.GetBytes()) + "]" + Environment.NewLine;
 			File.AppendAllText("erros.log", msg);
 		}
 
-		#region (Extended methods)
-		public void CreateNickname()
+		#region (Methods)
+		private void CreateNickname()
 		{
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Settings_tbxCustomName, () => {
@@ -120,7 +104,7 @@ namespace xBot
 			if (CreatingCharacterName == "")
 			{
 				WinAPI.InvokeIfRequired(w.Settings_cmbxCreateCharGenre, () => {
-					CreatingCharacterName = getRandomNickname(w.Settings_cmbxCreateCharGenre.Text);
+					CreatingCharacterName = GetRandomNickname(w.Settings_cmbxCreateCharGenre.Text);
 				});
 			}
 			else
@@ -171,9 +155,8 @@ namespace xBot
 		/// <summary>
 		/// Generates a random Game of Thrones nickname with Discord style.
 		/// </summary>
-		public string getRandomNickname(string nameGenre)
+		public string GetRandomNickname(string nameGenre)
 		{
-			Random rand = new Random();
 			// List with names as maximum 8 letters!
 			List<string> nicknames = new List<string>();
 			// Choosing name genre
@@ -236,16 +219,16 @@ namespace xBot
 			// Adding +10000 possibilities to every nick
 			return nicknames[rand.Next(nicknames.Count)] + rand.Next(10000).ToString().PadLeft(4, '0');
 		}
-		public void CreateCharacter()
+		private void CreateCharacter()
 		{
 			Window w = Window.Get;
 			string CreatingCharacterRace = "CH";
 			WinAPI.InvokeIfRequired(w.Settings_cmbxCreateCharRace, () => {
 				CreatingCharacterRace = w.Settings_cmbxCreateCharRace.Text;
 			});
-			bool sucess = PacketBuilder.CreateCharacter(CreatingCharacterName, CreatingCharacterMale, CreatingCharacterRace);
+			bool success = PacketBuilder.CreateCharacter(CreatingCharacterName, CreatingCharacterMale, CreatingCharacterRace);
 			CreatingCharacterName = "";
-			if (sucess)
+			if (success)
 			{
 				Window.Get.LogProcess("Creating character...");
 			}
@@ -258,26 +241,32 @@ namespace xBot
 			Window w = Window.Get;
 			return (byte)
 				((w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
-				& (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
-				& (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
+				| (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
+				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
+		}
+		/// <summary>
+		/// Get's the last uniqueID selected.
+		/// </summary>
+		public uint GetEntitySelected() {
+			return EntitySelected;
 		}
 		/// <summary>
 		/// Search for specific type ID's item in the inventory. Return success.
 		/// </summary>
-		/// <param name="tid1">type id #1</param>
 		/// <param name="tid2">type id #2</param>
 		/// <param name="tid3">type id #3</param>
 		/// <param name="tid4">type id #4</param>
 		/// <param name="slot">Invenory slot found</param>
 		/// <param name="servername">Rule the search to contains string specified</param>
-		public bool FindItem(byte tid1, byte tid2, byte tid3, byte tid4, ref byte slot, string servername = "")
+		public bool FindItem(byte tid2, byte tid3, byte tid4, ref byte slot, string servername = "")
 		{
 			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRAttribute.Inventory]).Clone();
 			for (byte i = 13; i < inventory.Capacity; i++)
 			{
 				if (inventory[i] != null)
 				{
-					if (inventory[i].Equals(tid1, tid2, tid3, tid4) && ((string)inventory[i][SRAttribute.Servername]).Contains(servername))
+					// tid1 = item (3)
+					if (inventory[i].Equals(3, tid2, tid3, tid4) && ((string)inventory[i][SRAttribute.Servername]).Contains(servername))
 					{
 						slot = i;
 						return true;
@@ -286,148 +275,23 @@ namespace xBot
 			}
 			return false;
 		}
-		private void CheckUsingHP()
+		public bool FindPet(ref byte slot,uint modelID)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
+			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRAttribute.Inventory]).Clone();
+			for (byte i = 13; i < inventory.Capacity; i++)
 			{
-
-				Window w = Window.Get;
-				if (w.Character_cbxUseHP.Checked || w.Character_cbxUseHPGrain.Checked)
+				if (inventory[i] != null)
 				{
-					byte useHP = 100; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseHP, () => {
-						useHP = byte.Parse(w.Character_tbxUseHP.Text);
-					});
-					if ((int)i.Character.GetHPPercent() < useHP)
+					// pet summon scroll
+					if (inventory[i].Equals(3,2,1,1)
+						&& (uint)inventory[i][SRAttribute.ModelID] == modelID)
 					{
-						byte slot = 0;
-						if (w.Character_cbxUseHPGrain.Checked && FindItem(3, 3, 1, 1, ref slot, "_SPOTION_")
-							|| w.Character_cbxUseHP.Checked && FindItem(3, 3, 1, 1, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-							tUsingHP.Start();
-						}
+						slot = i;
+						return true;
 					}
 				}
 			}
-		}
-		private void CheckUsingMP()
-		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
-			{
-
-				Window w = Window.Get;
-				if (w.Character_cbxUseMP.Checked || w.Character_cbxUseMPGrain.Checked)
-				{
-					byte useMP = 100; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseMP, () =>
-					{
-						useMP = byte.Parse(w.Character_tbxUseMP.Text);
-					});
-					if ((int)i.Character.GetMPPercent() < useMP)
-					{
-						byte slot = 0;
-						if (w.Character_cbxUseMPGrain.Checked && FindItem(3, 3, 1, 2, ref slot, "_SPOTION_")
-							|| w.Character_cbxUseMP.Checked && FindItem(3, 3, 1, 2, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-							tUsingMP.Start();
-						}
-					}
-				}
-			}
-		}
-		private void CheckUsingVigor()
-		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
-			{
-
-				Window w = Window.Get;
-				if (w.Character_cbxUseHPVigor.Checked || w.Character_cbxUseMPVigor.Checked)
-				{
-					byte usePercent = 100;
-					WinAPI.InvokeIfRequired(w.Character_tbxUseHPVigor, () => {
-						usePercent = byte.Parse(w.Character_tbxUseHPVigor.Text);
-					});
-					// Check hp %
-					if ((int)i.Character.GetHPPercent() < usePercent)
-					{
-						byte slot = 0;
-						if (FindItem(3, 3, 1, 3, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-							tUsingVigor.Start();
-						}
-					}
-					else
-					{
-						// Check mp %
-						WinAPI.InvokeIfRequired(w.Character_tbxUseMPVigor, () => {
-							usePercent = byte.Parse(w.Character_tbxUseMPVigor.Text);
-						});
-						if ((int)i.Character.GetMPPercent() < usePercent)
-						{
-							byte slot = 0;
-							if (FindItem(3, 3, 1, 3, ref slot))
-							{
-								PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-								tUsingVigor.Start();
-							}
-						}
-					}
-				}
-			}
-		}
-		private void CheckUsingUniversal()
-		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
-			{
-				Window w = Window.Get;
-				if (w.Character_cbxUsePillUniversal.Checked)
-				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusType];
-					if (status.HasFlag(Types.BadStatus.Freezing
-						| Types.BadStatus.Frostbite
-						| Types.BadStatus.ElectricShock
-						| Types.BadStatus.Burn
-						| Types.BadStatus.Poisoning
-						| Types.BadStatus.Fear))
-					{
-						byte slot = 0;
-						if (FindItem(3, 3, 2, 6, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-							tUsingUniversal.Start();
-						}
-					}
-				}
-			}
-		}
-		private void CheckUsingPurification()
-		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
-			{
-				Window w = Window.Get;
-				if (w.Character_cbxUsePillPurification.Checked)
-				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusType];
-					if (status.HasFlag(Types.BadStatus.Bleed))
-					{
-						byte slot = 0;
-						if (FindItem(3, 3, 2, 1, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot);
-							tUsingPurification.Start();
-						}
-					}
-
-				}
-			}
+			return false;
 		}
 		#endregion
 	}

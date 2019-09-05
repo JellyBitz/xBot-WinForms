@@ -94,7 +94,7 @@ namespace xBot.Game
 		{
 			q.Parameters.Add(new SQLiteParameter(column, value));
 		}
-    public List<NameValueCollection> getResult()
+    public List<NameValueCollection> GetResult()
 		{
 			List<NameValueCollection> result = new List<NameValueCollection>();
 			using (SQLiteDataReader reader = q.ExecuteReader())
