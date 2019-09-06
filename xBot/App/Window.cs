@@ -1082,12 +1082,12 @@ namespace xBot
 					break;
 				case "Character_cbxUsePetHP":
 					if (Bot.Get.inGame)
-						Bot.Get.CheckUsingPetHP();
+						Bot.Get.CheckUsingRecoveryKit();
 					Settings.SaveCharacterSettings();
 					break;
 				case "Character_cbxUseTransportHP":
 					if (Bot.Get.inGame)
-						Bot.Get.CheckUsingTransportHP();
+						Bot.Get.CheckUsingRecoveryKit();
 					Settings.SaveCharacterSettings();
 					break;
 				case "Party_rbnSetupExpFree":
@@ -1174,9 +1174,22 @@ namespace xBot
 					{
 						Bot b = Bot.Get;
 						// Force check about potions right there
-						b.CheckUsingHP();
-						b.CheckUsingMP();
-						b.CheckUsingVigor();
+						switch(t.Name){
+							case "Character_tbxUseHP":
+								b.CheckUsingHP();
+								break;
+							case "Character_tbxUseHPVigor":
+							case "Character_tbxUseMPVigor":
+								b.CheckUsingVigor();
+								break;
+							case "Character_tbxUseMP":
+								b.CheckUsingMP();
+								break;
+							case "Character_tbxUsePetHP":
+							case "Character_tbxUseTransportHP":
+								b.CheckUsingRecoveryKit();
+								break;
+						}
 					}
 					Settings.SaveCharacterSettings();
 					break;

@@ -333,19 +333,47 @@ namespace xBot
 			}
 			return false;
 		}
-		public void CheckUsingPetHP()
+		public void CheckUsingRecoveryKit()
 		{
-			if (!tUsingPetHP.Enabled)
-				CheckUsingPetHP(tUsingPetHP, null);
+			if (!tUsingRecoveryKit.Enabled)
+				CheckUsingRecoveryKit(tUsingRecoveryKit, null);
 		}
-		private void CheckUsingPetHP(object sender, ElapsedEventArgs e)
+		private void CheckUsingRecoveryKit(object sender, ElapsedEventArgs e)
 		{
+			Window w = Window.Get;
 			Info i = Info.Get;
-			SRObject pet = i.GetPets().Find(p => p.ID4 == 3);
-			if(pet != null)
-			{
-				Window w = Window.Get;
-				if (w.Character_cbxUsePetHP.Checked)
+
+			// Checking pet using recovery kit by priority
+			SRObject pet = null;
+
+			// Vehicle or Transport
+			if (w.Character_cbxUseTransportHP.Checked){
+				pet = i.GetPets().Find(p => p.ID4 == 1 || p.ID4 == 2);
+				// Check % if there is at least one pet
+				if(pet != null)
+				{
+					byte useHP = 0; // dummy
+					WinAPI.InvokeIfRequired(w.Character_tbxUseTransportHP, () => {
+						useHP = byte.Parse(w.Character_tbxUseTransportHP.Text);
+					});
+					if ((int)pet.GetHPPercent() <= useHP)
+					{
+						byte slot = 0;
+						if (FindItem(3, 1, 4, ref slot))
+						{
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot,(uint)pet[SRAttribute.UniqueID]);
+							tUsingRecoveryKit.Start();
+						}
+						return; // Avoid checking other pets
+					}
+				}
+			}
+
+			// Attacking pet
+			if (w.Character_cbxUsePetHP.Checked){
+				pet = i.GetPets().Find(p => p.ID4 == 3);
+				// Check % if there is at least one pet
+				if(pet != null)
 				{
 					byte useHP = 0; // dummy
 					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHP, () => {
@@ -357,38 +385,9 @@ namespace xBot
 						if (FindItem(3, 1, 4, ref slot))
 						{
 							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot,(uint)pet[SRAttribute.UniqueID]);
-							tUsingPetHP.Start();
+							tUsingRecoveryKit.Start();
 						}
-					}
-				}
-			}
-		}
-		public void CheckUsingTransportHP()
-		{
-			if (!tUsingTransportHP.Enabled)
-				CheckUsingTransportHP(tUsingTransportHP, null);
-		}
-		private void CheckUsingTransportHP(object sender, ElapsedEventArgs e)
-		{
-			Info i = Info.Get;
-			SRObject transport = i.GetPets().Find(p => p.ID4 == 1 || p.ID4 == 2);
-			if(transport != null)
-			{
-				Window w = Window.Get;
-				if (w.Character_cbxUseTransportHP.Checked)
-				{
-					byte useHP = 0; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseTransportHP, () => {
-						useHP = byte.Parse(w.Character_tbxUseTransportHP.Text);
-					});
-					if ((int)transport.GetHPPercent() <= useHP)
-					{
-						byte slot = 0;
-						if (FindItem(3, 1, 4, ref slot))
-						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot,(uint)transport[SRAttribute.UniqueID]);
-							tUsingTransportHP.Start();
-						}
+						return; // Avoid checking other pets
 					}
 				}
 			}

@@ -13,7 +13,7 @@ namespace xBot
 		/// </summary>
 		Timer tUsingHP, tUsingMP, tUsingVigor,
 			tUsingUniversal, tUsingPurification,
-			tAutoParty, tUsingPetHP, tUsingTransportHP;
+			tAutoParty, tUsingRecoveryKit;
 
 		private void InitializeTimers()
 		{
@@ -24,13 +24,12 @@ namespace xBot
 			tUsingUniversal = new Timer();
 			tUsingPurification = new Timer();
 			tAutoParty = new Timer();
-			tUsingPetHP = new Timer();
-			tUsingTransportHP = new Timer();
+			tUsingRecoveryKit = new Timer();
 
 			// A second is enought for any potion cooldown
 			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
 			tUsingUniversal.Interval = tUsingPurification.Interval = 
-			tUsingPetHP.Interval = tUsingTransportHP.Interval = 1000;
+			tUsingRecoveryKit.Interval = 1000;
 
 			tAutoParty.Interval = 5000;
 
@@ -41,8 +40,7 @@ namespace xBot
 			tUsingUniversal.Elapsed += CheckUsingUniversal;
 			tUsingPurification.Elapsed += CheckUsingPurification;
 			tAutoParty.Elapsed += CheckAutoParty;
-			tUsingPetHP.Elapsed += CheckUsingPetHP;
-			tUsingTransportHP.Elapsed += CheckUsingTransportHP;
+			tUsingRecoveryKit.Elapsed += CheckUsingRecoveryKit;
 		}
 		public void _Event_Connected()
 		{
@@ -215,10 +213,8 @@ namespace xBot
 			SRObject pet = Info.Get.GetEntity(uniqueID);
 			if(type == Types.EntityStateUpdate.EntityHPMP)
 			{
-				if (pet.ID4 == 1 || pet.ID4 == 2)
-					CheckUsingTransportHP();
-				else if (pet.ID4 == 3)
-					CheckUsingPetHP();
+				if (pet.ID4 == 1 || pet.ID4 == 2 || pet.ID4 == 3)
+					CheckUsingRecoveryKit();
 			}
 			else if (type == Types.EntityStateUpdate.BadStatus)
 			{

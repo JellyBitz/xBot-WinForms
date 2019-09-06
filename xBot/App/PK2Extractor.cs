@@ -1196,7 +1196,7 @@ namespace xBot
 							Shop.Group.Tab.Item item = shop.Groups[g].Tabs[t].Items[i];
 							
 							// INSERT OR UPDATE
-							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab="+ t+" AND slot="+ i + " AND item_servername = '" + item.Name+"'");
+							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab="+ t+" AND slot="+i);
 							if (db.GetResult().Count == 0)
 							{
 								// 100% display
