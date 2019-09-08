@@ -492,10 +492,20 @@ namespace xBot.Game
 		/// </summary>
 		Buffs,
 		/// <summary>
-		/// Time left.
+		/// Time left to finish his active effect (ms).
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
 		Duration,
+		/// <summary>
+		/// Cooldown time (ms).
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
+		Cooldown,
+		/// <summary>
+		/// Casting time (ms).
+		/// <para>Data type : <see cref="uint"/></para>
+		/// </summary>
+		Casttime,
 		/// <summary>
 		/// Check if is creator of the current object reference.
 		/// <para>Data type : <see cref="bool"/></para>
@@ -577,10 +587,10 @@ namespace xBot.Game
 		/// </summary>
 		GMFlag,
 		/// <summary>
-		/// Attributes used by the skill, concatenated by "|" symbol.
+		/// Params used by the skill, concatenated by "|" symbol.
 		/// <para>Data type : <see cref="string"/></para>
 		/// </summary>
-		SkillAttributes,
+		SkillParams,
 		/// <summary>
 		/// Drop group by unique ID.
 		/// <para>Data type : <see cref="uint"/></para>
@@ -590,7 +600,7 @@ namespace xBot.Game
 		/// Check the current Bad status.
 		/// <para>Data type : <see cref="Types.BadStatus"/></para>
 		/// </summary>
-		BadStatusType,
+		BadStatusFlags,
 		/// <summary>
 		/// Short description for users.
 		/// <para>Data type : <see cref="string"/></para>
@@ -622,8 +632,8 @@ namespace xBot.Game
 		/// </summary>
 		ScrollMode,
 		/// <summary>
-		/// ...
-		/// <para>Data type : <see cref="Types.InteractMode"/></para>
+		/// Entity interaction mode.
+		/// <para>Data type : <see cref="Types.PlayerMode"/></para>
 		/// </summary>
 		InteractMode,
 		/// <summary>
@@ -667,15 +677,15 @@ namespace xBot.Game
 		/// </summary>
 		GuildMemberAuthorityType,
 		/// <summary>
-		/// Stall name.
+		/// Stall title.
 		/// <para>Data type : <see cref="string"/></para>
 		/// </summary>
-		StallName,
+		StallTitle,
 		/// <summary>
 		/// Stall decoration identifier.
 		/// <para>Data type : <see cref="uint"/></para>
 		/// </summary>
-		DecorationItemID,
+		StallDecorationType,
 		/// <summary>
 		/// ...
 		/// <para>Data type : <see cref="byte"/></para>
@@ -730,12 +740,12 @@ namespace xBot.Game
 		/// Picking pet settings recently saved and handled by the client.
 		/// <para>Data type : <see cref="Types.PetPickSettings"/></para>
 		/// </summary>
-		PetPickSettings,
+		PickSettingFlags,
 		/// <summary>
 		/// Attacking pet settings recently saved and handled by the client.
 		/// <para>Data type : <see cref="Types.PetAttackSettings"/></para>
 		/// </summary>
-		PetAttackSettings,
+		AttackSettingsFlags,
 		/// <summary>
 		/// Check if the current entity has an owner.
 		/// <para>Data type : <see cref="bool"/></para>
@@ -757,14 +767,14 @@ namespace xBot.Game
 		/// </summary>
 		HGP,
 		/// <summary>
-		/// Link reference to an Item.
-		/// <para>Data type : <see cref="SRObject"/></para>
+		/// Group name reference.
+		/// <para>Data type : <see cref="string"/></para>
 		/// </summary>
-		Item,
+		Groupname,
 
 
-
-
+		
+		
 		DropSource,
 		Rarity,
 		Appearance,
@@ -823,7 +833,7 @@ namespace xBot.Game
 			_attributes = new Dictionary<string, object>();
 			id = tid1 = tid2 = tid3 = tid4 = 0;
 			_type = Type.Property;
-    }
+		}
 		/// <summary>
 		/// Creates a game object from the ID specified.
 		/// </summary>
@@ -901,63 +911,31 @@ namespace xBot.Game
 				case Type.Model:
 					if (data == null)
 						data = i.GetModel(ID);
-					this[SRAttribute.Servername] = data["servername"];
-					this[SRAttribute.Name] = data["name"];
-					tid1 = 1;
-					tid2 = byte.Parse(data["tid2"]);
-					tid3 = byte.Parse(data["tid3"]);
-					tid4 = byte.Parse(data["tid4"]);
-					this[SRAttribute.HPMax] = uint.Parse(data["hp"]);
 					break;
 				case Type.Item:
 					if (data == null)
 						data = i.GetItem(ID);
-					this[SRAttribute.Servername] = data["servername"];
-					this[SRAttribute.Name] = data["name"];
-					tid1 = 3;
-					tid2 = byte.Parse(data["tid2"]);
-					tid3 = byte.Parse(data["tid3"]);
-					tid4 = byte.Parse(data["tid4"]);
-					this[SRAttribute.Icon] = data["icon"];
-					this[SRAttribute.QuantityMax] = ushort.Parse(data["stack"]);
-          break;
+					break;
 				case Type.Teleport:
 					if (data == null)
 						data = i.GetTeleport(ID);
 					if (data == null)
 						data = i.GetTeleportLink(ID);
-					this[SRAttribute.Servername] = data["servername"];
-					this[SRAttribute.Name] = data["name"];
-					tid1 = 4;
-					tid2 = byte.Parse(data["tid2"]);
-					tid3 = byte.Parse(data["tid3"]);
-					tid4 = byte.Parse(data["tid4"]);
 					break;
 				case Type.Skill:
 					if (data == null)
 						data = i.GetSkill(ID);
-					this[SRAttribute.Servername] = data["servername"];
-					this[SRAttribute.Name] = data["name"];
-					this[SRAttribute.SkillAttributes] = data["attributes"];
 					break;
 				case Type.Mastery:
 					if (ID != 0)
-					{
 						data = i.GetMastery(ID);
-						this[SRAttribute.Name] = data["name"];
-						this[SRAttribute.Description] = data["description"];
-					}
-					else
-					{
-						this[SRAttribute.Name] = "";
-						this[SRAttribute.Description] = "";
-					}
 					break;
 				case Type.Quest:
 
 					break;
 			}
-		}
+			LoadDefaultAttibutes(data);
+    }
 		/// <summary>
 		/// Load the object overriding all attributes previously saved.
 		/// </summary>
@@ -966,7 +944,7 @@ namespace xBot.Game
 		public void Load(string Servername, Type type)
 		{
 			Info i = Info.Get;
-      NameValueCollection data = null;
+			NameValueCollection data = null;
 
 			_type = type;
 			switch (type)
@@ -996,26 +974,54 @@ namespace xBot.Game
 						_type = Type.Item;
 						goto case Type.Item;
 					}
-					if (id == uint.MaxValue)
-					{
-						_type = Type.BuffZone;
-					}
-					break;
+					throw new Exception("Entity cannot to be found by servername.");
 				case Type.Model:
 					if (data == null)
 						data = i.GetModel(Servername);
 					this.id = uint.Parse(data["id"]);
+					break;
+				case Type.Item:
+					if (data == null)
+						data = i.GetItem(Servername);
+					this.id = uint.Parse(data["id"]);
+					break;
+				case Type.Teleport:
+					if (data == null)
+						data = i.GetTeleport(Servername);
+					if (data == null)
+						data = i.GetTeleportLink(Servername);
+					this.id = uint.Parse(data["id"]);
+					break;
+				case Type.Skill:
+					if (data == null)
+						data = i.GetSkill(Servername);
+					this.id = uint.Parse(data["id"]);;
+					break;
+				case Type.Mastery:
+					throw new Exception("Mastery cannot to be found by servername.");
+				case Type.Quest:
+
+					break;
+			}
+			LoadDefaultAttibutes(data);
+		}
+		/// <summary>
+		/// Load default attributes stored on database
+		/// </summary>
+		private void LoadDefaultAttibutes(NameValueCollection data)
+		{
+			switch (type)
+			{
+				case Type.Model:
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 1;
 					tid2 = byte.Parse(data["tid2"]);
 					tid3 = byte.Parse(data["tid3"]);
 					tid4 = byte.Parse(data["tid4"]);
+					this[SRAttribute.HPMax] = uint.Parse(data["hp"]);
 					break;
 				case Type.Item:
-					if (data == null)
-						data = i.GetItem(Servername);
-					this.id = uint.Parse(data["id"]);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 3;
@@ -1026,11 +1032,6 @@ namespace xBot.Game
 					this[SRAttribute.QuantityMax] = ushort.Parse(data["stack"]);
 					break;
 				case Type.Teleport:
-					if (data == null)
-						data = i.GetTeleport(Servername);
-					if (data == null)
-						data = i.GetTeleportLink(Servername);
-					this.id = uint.Parse(data["id"]);
 					this[SRAttribute.Servername] = data["servername"];
 					this[SRAttribute.Name] = data["name"];
 					tid1 = 4;
@@ -1039,17 +1040,29 @@ namespace xBot.Game
 					tid4 = byte.Parse(data["tid4"]);
 					break;
 				case Type.Skill:
-					if (data == null)
-						data = i.GetSkill(Servername);
-					this.id = uint.Parse(data["id"]);
 					this[SRAttribute.Servername] = data["servername"];
+					this[SRAttribute.Groupname] = data["group_name"];
 					this[SRAttribute.Name] = data["name"];
-					this[SRAttribute.SkillAttributes] = data["attributes"];
+					//this[SRAttribute.Description] = data["description"];
+					this[SRAttribute.Cooldown] = uint.Parse(data["cooldown"]);
+					this[SRAttribute.Duration] = uint.Parse(data["duration"]);
+					this[SRAttribute.Casttime] = uint.Parse(data["casttime"]);
+					this[SRAttribute.MP] = uint.Parse(data["mana"]);
+					this[SRAttribute.Level] = byte.Parse(data["level"]);
+					this[SRAttribute.SkillParams] = data["params"].Split('|');
+					this[SRAttribute.Icon] = data["icon"];
 					break;
 				case Type.Mastery:
-					throw new Exception("Mastery cannot to be found by servername.");
-				case Type.Quest:
-
+					if (ID != 0)
+					{
+						this[SRAttribute.Name] = data["name"];
+						this[SRAttribute.Description] = data["description"];
+					}
+					else
+					{
+						this[SRAttribute.Name] = "";
+						this[SRAttribute.Description] = "";
+					}
 					break;
 			}
 		}
@@ -1086,17 +1099,22 @@ namespace xBot.Game
 			_attributes.Remove(Attribute.ToString());
 		}
 		/// <summary>
-		/// Copy all the attributes from another game object.
+		/// Keep the current attributes while copy all from another object, even his type and ID if override is set to true.
 		/// </summary>
-		/// <param name="obj">Game object copied</param>
-		/// <param name="replace">Specify if the current attribute will be replaced</param>
-		public void CopyAttributes(SRObject obj, bool replace = false)
+		/// <param name="Object">Game object copied</param>
+		/// <param name="Override">Specify if the current attribute will be replaced</param>
+		public void CopyAttributes(SRObject Object, bool Override = false)
 		{
-			foreach (string key in obj._attributes.Keys)
+			if (Override)
 			{
-				if (!this._attributes.ContainsKey(key) || replace)
+				this.id = Object.id;
+				this._type = Object._type;
+			}
+			foreach (string key in Object._attributes.Keys)
+			{
+				if (Override || !this._attributes.ContainsKey(key))
 				{
-					this._attributes[key] = obj._attributes[key];
+					this._attributes[key] = Object._attributes[key];
 				}
 			}
 		}
@@ -1116,11 +1134,19 @@ namespace xBot.Game
 		/// </summary>
 		public TreeNode ToNode()
 		{
-			string text = (string)this[SRAttribute.Name];
-			TreeNode root = new TreeNode(text==""?"No name": text);
-			if (Contains(SRAttribute.UniqueID))
-				root.Name = ((uint)this[SRAttribute.UniqueID]).ToString();
-			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + type.ToString() + ")"));
+			string text = "";
+			if (ID1 == 1 && ID2 == 2 && ID3 == 3 && (ID4 == 3 || ID4 == 4)) {
+				// Attack or Pick Pet
+				text = (string)this[SRAttribute.PetName];
+				if (text.Length == 0)
+					text = "No name";
+			}
+			else
+			{
+				text = (string)this[SRAttribute.Name];
+			}
+			TreeNode root = new TreeNode(text);
+			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + type + ")"));
 			root.Nodes.Add(new TreeNode("Type IDs [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]"));
 			foreach (string key in _attributes.Keys)
 			{
@@ -1133,6 +1159,12 @@ namespace xBot.Game
 						TreeNode obj = new TreeNode(key);
 						obj.Nodes.AddRange(((SRObjectCollection)_attributes[key]).ToNodes());
 						root.Nodes.Add(obj);
+						break;
+					case "String[]":
+						TreeNode strings = new TreeNode(key);
+						foreach (string _string in (string[])_attributes[key])
+							strings.Nodes.Add(_string.ToString());
+						root.Nodes.Add(strings);
 						break;
 					case "Byte[]": // Will be temporaly till find understandable data.
 						TreeNode bytes = new TreeNode(key);
@@ -1163,7 +1195,6 @@ namespace xBot.Game
 		/// <summary>
 		/// Return the ountry type of the item
 		/// </summary>
-		/// <returns></returns>
 		public string GetCountry()
 		{
 			if (((string)this[SRAttribute.Servername]).Contains("_CH_"))
@@ -1173,8 +1204,16 @@ namespace xBot.Game
 			else if (((string)this[SRAttribute.Servername]).Contains("_EU_"))
 			{
 				return "EU";
-      }
+			}
 			return "";
+		}
+		/// <summary>
+		/// Check if an entity is in Job Mode
+		/// </summary>
+		public bool isJobMode()
+		{
+			SRObjectCollection inventory = (SRObjectCollection)this[SRAttribute.Inventory];
+			return inventory.Exists( item => item != null && item.ID1 == 3 && item.ID2 == 1 && item.ID3 == 7);
 		}
 		/// <summary>
 		/// Gets the current experience at percent.
@@ -1203,7 +1242,9 @@ namespace xBot.Game
 		public bool isAutoTransferEffect()
 		{
 			if (type == Type.Skill)
-				return ((string)this[SRAttribute.SkillAttributes]).Contains("1701213281");
+			{
+				return (new List<string>((string[])this[SRAttribute.SkillParams])).Contains("1701213281");
+			}
 			return false;
 		}
 		/// <summary>
@@ -1379,13 +1420,13 @@ namespace xBot.Game
 		public void Add(SRObject obj)
 		{
 			this[Capacity] = obj;
-    }
+		}
 		public void RemoveAt(int index)
 		{
 			if (_items[index] != null)
 				_count--;
 			_items.RemoveAt(index);
-    }
+		}
 		public void Clear()
 		{
 			_items.Clear();
@@ -1410,9 +1451,14 @@ namespace xBot.Game
 		{
 			return new SRObjectCollection(this);
 		}
-		/// <summary>
-		/// Check if the list has some job equipment
-		/// </summary>
+		public bool Exists(Predicate<SRObject> match)
+		{
+			return _items.Exists(match);
+		}
+		public SRObject Find(Predicate<SRObject> match)
+		{
+			return _items.Find(match);
+		}
 		public bool ContainsJobEquipment()
 		{
 			for (int i = 0; i < Capacity; i++)
@@ -1423,7 +1469,7 @@ namespace xBot.Game
 					{
 						//if (_items[i].ID4 == 1 || _items[i].ID4 == 2 || _items[i].ID4 == 3)
 						//{
-							return true;
+						return true;
 						//}
 					}
 				}

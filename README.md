@@ -5,12 +5,12 @@
 - Client loader included
 - Clientless support (No client required at all)
 - Auto Login from command line
-- Auto Potions
+- Auto Potions (pets & transport included)
 - Auto Party (Party matching included)
 - Character inventory
 - Chatting
 - Minimap
-- Full game info, also known as spy
+- Full game info, could be known as spy
 - Packet analyzer (Filter & injector included)
 
 ------------

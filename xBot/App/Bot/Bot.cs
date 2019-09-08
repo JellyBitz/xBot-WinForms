@@ -38,17 +38,23 @@ namespace xBot
 		public bool inGame { get { return _inGame; } }
 		private bool _inGame;
 		/// <summary>
+		/// Check if the character is in game.
+		/// </summary>
+		public bool inTeleport { get { return _inTeleport; } }
+		private bool _inTeleport;
+		/// <summary>
 		/// Check if the character is in party.
 		/// </summary>
-		public bool hasParty { get { return PartySetupType != -1; } }
+		public bool inParty { get { return _inParty; } }
+		private bool _inParty;
 		/// <summary>
-		/// Keep the current party setup type or (-1) if is not in party. 
+		/// Keep the current party setup. 
 		/// </summary>
-		private sbyte PartySetupType = -1;
+		private Types.PartySetup PartySetupFlags;
 		/// <summary>
-		/// Keep the current party purpose type or (-1) if is not in party. 
+		/// Keep the current party purpose type. 
 		/// </summary>
-		private sbyte PartyPurposeType = -1;
+		private Types.PartyPurpose PartyPurposeType;
 		/// <summary>
 		/// Keep the last entity selected by the character
 		/// </summary>
@@ -236,13 +242,12 @@ namespace xBot
 		/// <summary>
 		/// Returns the current party setup used by the GUI.
 		/// </summary>
-		public byte GetPartySetup()
+		public Types.PartySetup GetPartySetup()
 		{
 			Window w = Window.Get;
-			return (byte)
-				((w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
+			return ( (w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
 				| (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
-				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
+				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite) );
 		}
 		/// <summary>
 		/// Get's the last uniqueID selected.
@@ -267,24 +272,6 @@ namespace xBot
 				{
 					// tid1 = item (3)
 					if (inventory[i].Equals(3, tid2, tid3, tid4) && ((string)inventory[i][SRAttribute.Servername]).Contains(servername))
-					{
-						slot = i;
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		public bool FindPet(ref byte slot,uint modelID)
-		{
-			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRAttribute.Inventory]).Clone();
-			for (byte i = 13; i < inventory.Capacity; i++)
-			{
-				if (inventory[i] != null)
-				{
-					// pet summon scroll
-					if (inventory[i].Equals(3,2,1,1)
-						&& (uint)inventory[i][SRAttribute.ModelID] == modelID)
 					{
 						slot = i;
 						return true;

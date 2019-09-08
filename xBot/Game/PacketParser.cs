@@ -103,13 +103,9 @@ namespace xBot.Game
 			{
 				case Types.CharacterSelectionAction.Create:
 					if (result == 1)
-					{
 						Window.Get.Log("Character created successfully");
-					}
 					else
-					{
 						Window.Get.Log("Character creation failed!");
-					}
 					if (Bot.Get.Proxy.ClientlessMode)
 						PacketBuilder.RequestCharacterList();
 					break;
@@ -492,10 +488,9 @@ namespace xBot.Game
 			character[SRAttribute.MP] = character[SRAttribute.MPMax];
 
 			// Set the current character or update the previously saved
-			if (info.Character == null)
-				info.Character = character;
-			else
-				info.Character.CopyAttributes(character, true);
+			if (info.Character != null)
+				character.CopyAttributes(info.Character);
+			info.Character = character;
 
 			// Updating GUI
 			Window w = Window.Get;
@@ -1014,11 +1009,11 @@ namespace xBot.Game
 						entity[SRAttribute.RidingUniqueID] = packet.ReadUInt();
 					}
 					entity[SRAttribute.ScrollMode] = (Types.ScrollMode)packet.ReadByte();
-					entity[SRAttribute.InteractMode] = (Types.InteractMode)packet.ReadByte();
+					entity[SRAttribute.InteractMode] = (Types.PlayerMode)packet.ReadByte();
 					entity[SRAttribute.unkByte02] = packet.ReadByte();
 					// Guild
 					entity[SRAttribute.GuildName] = packet.ReadAscii();
-					if (!((SRObjectCollection)entity[SRAttribute.Inventory]).ContainsJobEquipment())
+					if (!entity.isJobMode())
 					{
 						entity[SRAttribute.GuildID] = packet.ReadUInt();
 						entity[SRAttribute.GuildMemberName] = packet.ReadAscii();
@@ -1028,10 +1023,10 @@ namespace xBot.Game
 						entity[SRAttribute.GuildisFriendly] = packet.ReadByte();
 						entity[SRAttribute.GuildMemberAuthorityType] = packet.ReadByte();
 					}
-					if ((Types.InteractMode)entity[SRAttribute.InteractMode] == Types.InteractMode.P2N_TALK)
+					if ((Types.PlayerMode)entity[SRAttribute.InteractMode] == Types.PlayerMode.OnStall)
 					{
-						entity[SRAttribute.StallName] = packet.ReadAscii();
-						entity[SRAttribute.DecorationItemID] = packet.ReadUInt();
+						entity[SRAttribute.StallTitle] = packet.ReadAscii();
+						entity[SRAttribute.StallDecorationType] = packet.ReadUInt();
 					}
 					entity[SRAttribute.EquipmentCooldown] = packet.ReadByte();
 					entity[SRAttribute.CaptureTheFlagType] = (Types.CaptureTheFlag)packet.ReadByte();
@@ -1424,7 +1419,7 @@ namespace xBot.Game
 					entity[SRAttribute.MP] = packet.ReadUInt();
 					break;
 				case Types.EntityStateUpdate.BadStatus:
-					entity[SRAttribute.BadStatusType] = (Types.BadStatus)packet.ReadUInt();
+					entity[SRAttribute.BadStatusFlags] = (Types.BadStatus)packet.ReadUInt();
 					// Just for testing
 					// w.LogMessageFilter("BadStatus:"+entity[SRAttribute.BadStatusType]+"|"+ entity[SRAttribute.UniqueID]);
 					break;
@@ -1447,10 +1442,14 @@ namespace xBot.Game
 			{
 				Bot.Get._Event_StateUpdated(updateType);
 			}
-			else if (entity.ID4 != 1
-			 && (uint)entity[SRAttribute.OwnerUniqueID] == (uint)i.Character[SRAttribute.UniqueID])
-			{
-				Bot.Get._Event_PetStateUpdated(uniqueID, updateType);
+			else if(entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3){
+				// Check if is pet
+        if(entity.ID4 == 1 && (string)entity[SRAttribute.OwnerName] == i.Charname // vehicle
+					|| (entity.ID4 != 1 && (uint)entity[SRAttribute.OwnerUniqueID] == (uint)i.Character[SRAttribute.UniqueID]))
+				{
+					// Check if it's my pet
+					Bot.Get._Event_PetStateUpdated(updateType);
+				}
 			}
 		}
 		public static void EnviromentWheaterUpdate(Packet packet)
@@ -1498,8 +1497,7 @@ namespace xBot.Game
 			{
 				case Types.PlayerPetition.PartyCreation:
 				case Types.PlayerPetition.PartyInvitation:
-					byte partySetupFlags = packet.ReadByte();
-					Bot.Get.Event_PartyInvitation(uniqueID, partySetupFlags);
+					Bot.Get.Event_PartyInvitation(uniqueID, (Types.PartySetup)packet.ReadByte());
 					break;
 				case Types.PlayerPetition.Resurrection:
 					Bot.Get.Event_Resurrection(uniqueID);
@@ -1520,30 +1518,13 @@ namespace xBot.Game
 			uint unkUint01 = packet.ReadUInt();
 			uint unkUint02 = packet.ReadUInt();
 			byte partyPurposeType = packet.ReadByte();
-			byte partySetupType = packet.ReadByte();
+			byte partySetupFlags = packet.ReadByte();
 			byte playerCount = packet.ReadByte();
 			for (int j = 0; j < playerCount; j++)
 				PartyAddPlayer(packet);
 
-			// Party Setup to boolean
-			Types.PartySetup partySetupFlags = (Types.PartySetup)partySetupType;
-			bool ExpShared = partySetupFlags.HasFlag(Types.PartySetup.ExpShared);
-			bool ItemShared = partySetupFlags.HasFlag(Types.PartySetup.ItemShared);
-			bool AnyoneCanInvite = partySetupFlags.HasFlag(Types.PartySetup.AnyoneCanInvite);
-
-			// Update GUI with current party setup
-			Window w = Window.Get;
-
-			string partySetup = "• Exp. " + (ExpShared ? "Shared" : "Free-For-All") + " • Item " + (ItemShared ? "Shared" : "Free-For-All") + " • " + (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
-			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
-				w.Party_lblCurrentSetup.Text = partySetup;
-			});
-			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
-				w.ToolTips.SetToolTip(w.Party_lblCurrentSetup, ((Types.PartyPurpose)partyPurposeType).ToString());
-			});
-
 			// Event hook
-			Bot.Get.Event_PartyJoined(partySetupType, partyPurposeType);
+			Bot.Get._Event_PartyJoined((Types.PartySetup)partySetupFlags, (Types.PartyPurpose)partyPurposeType);
 		}
 		private static void PartyAddPlayer(Packet packet)
 		{
@@ -1569,20 +1550,18 @@ namespace xBot.Game
 				player[SRAttribute.Z] = (int)packet.ReadShort();
 				player[SRAttribute.Y] = (int)packet.ReadShort();
 			}
-			player[SRAttribute.unkByte03] = packet.ReadByte(); // 2 = unkByte08.
+			player[SRAttribute.unkByte02] = packet.ReadByte(); // 2 = unkByte08.
+			player[SRAttribute.unkByte03] = packet.ReadByte();
 			player[SRAttribute.unkByte04] = packet.ReadByte();
 			player[SRAttribute.unkByte05] = packet.ReadByte();
-			player[SRAttribute.unkByte06] = packet.ReadByte();
 			player[SRAttribute.GuildName] = packet.ReadAscii();
-			player[SRAttribute.unkByte07] = packet.ReadByte();
-			if (packet.Opcode == Agent.Opcode.SERVER_PARTY_UPDATE && (byte)player[SRAttribute.unkByte03] == 2)
+			player[SRAttribute.unkByte06] = packet.ReadByte();
+			if (packet.Opcode == Agent.Opcode.SERVER_PARTY_UPDATE && (byte)player[SRAttribute.unkByte02] == 2)
 			{
-				player[SRAttribute.unkByte08] = packet.ReadByte();
+				player[SRAttribute.unkByte07] = packet.ReadByte();
 			}
-			SRObjectCollection Masteries = new SRObjectCollection(2);
-			Masteries[0] = new SRObject(packet.ReadUInt(), SRObject.Type.Mastery); // Primary
-			Masteries[1] = new SRObject(packet.ReadUInt(), SRObject.Type.Mastery); // Secondary
-			player[SRAttribute.Masteries] = Masteries;
+			uint masteryID_primary = packet.ReadUInt();
+			uint masteryID_secondary = packet.ReadUInt();
 
 			// Keep on track players for updates
 			Info i = Info.Get;
@@ -1677,7 +1656,7 @@ namespace xBot.Game
 			if (success == 1)
 			{
 				Bot b = Bot.Get;
-				bool hasParty = b.hasParty;
+				bool hasParty = b.inParty;
 
 				byte pageCount = packet.ReadByte();
 				byte pageIndex = packet.ReadByte();
@@ -1689,7 +1668,7 @@ namespace xBot.Game
 					uint number = packet.ReadUInt();
 					uint unkUInt01 = packet.ReadUInt(); // Possibly UniqueID?
 					string master = packet.ReadAscii();
-					byte raceType = packet.ReadByte();
+					byte countryType = packet.ReadByte();
 					byte membersCount = packet.ReadByte();
 					byte setupType = packet.ReadByte();
 					byte purposeType = packet.ReadByte();
@@ -2392,7 +2371,7 @@ namespace xBot.Game
 						pet[SRAttribute.Level] = packet.ReadByte();
 						pet[SRAttribute.ExpMax] = i.GetExpMax((byte)pet[SRAttribute.Level]);
 						pet[SRAttribute.HGP] = packet.ReadUShort();
-						pet[SRAttribute.PetAttackSettings] = (Types.PetAttackSettings)packet.ReadUInt();
+						pet[SRAttribute.AttackSettingsFlags] = (Types.PetAttackSettings)packet.ReadUInt();
 						string PetName = packet.ReadAscii();
 						pet[SRAttribute.unkByte07] = packet.ReadByte();
 						uint ownerUniqueID = packet.ReadUInt();
@@ -2403,7 +2382,7 @@ namespace xBot.Game
 						// GRAB PET
 						pet[SRAttribute.unkUInt01] = packet.ReadUInt();
 						pet[SRAttribute.unkUInt02] = packet.ReadUInt();
-						pet[SRAttribute.PetPickSettings] = (Types.PetPickSettings)packet.ReadUInt();
+						pet[SRAttribute.PickSettingFlags] = (Types.PetPickSettings)packet.ReadUInt();
 						string PetName = packet.ReadAscii();
 
 						SRObjectCollection inventory = new SRObjectCollection(packet.ReadByte());
@@ -2477,7 +2456,7 @@ namespace xBot.Game
 			switch (settingsType)
 			{
 				case 1: // Pet Attack settings
-					pet[SRAttribute.PetAttackSettings] = (Types.PetAttackSettings)packet.ReadUInt();
+					pet[SRAttribute.AttackSettingsFlags] = (Types.PetAttackSettings)packet.ReadUInt();
 					break;
 			}
 		}
@@ -2506,13 +2485,71 @@ namespace xBot.Game
 			if (success)
 				Bot.Get._Event_StallClosed();
 		}
-		public static void StallPlayerOpened(Packet packet)
+		public static void StallOtherOpened(Packet packet)
 		{
 			Bot.Get._Event_StallOpened(false);
 		}
-		public static void StallPlayerClosed(Packet packet)
+		public static void StallOtherClosed(Packet packet)
 		{
 			Bot.Get._Event_StallClosed();
+		}
+		public static void StallPlayerCreated(Packet packet)
+		{
+			uint uniqueID = packet.ReadUInt();
+
+			SRObject entity = Info.Get.GetEntity(uniqueID);
+			entity[SRAttribute.StallTitle] = packet.ReadAscii();
+			entity[SRAttribute.StallDecorationType] = packet.ReadUInt();
+			entity[SRAttribute.InteractMode] = Types.PlayerMode.OnStall;
+		}
+		public static void StallPlayerClosed(Packet packet)
+		{
+			uint uniqueID = packet.ReadUInt();
+			//ushort unkUshort01 = packet.ReadUShort();
+
+			SRObject entity = Info.Get.GetEntity(uniqueID);
+			entity[SRAttribute.InteractMode] = Types.PlayerMode.None;
+		}
+		public static void SkillLevelUpResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				SRObject newSkill = new SRObject(packet.ReadUInt(),SRObject.Type.Skill);
+
+				// Update skills
+				Info i = Info.Get;
+				SRObjectCollection skills = (SRObjectCollection)i.Character[SRAttribute.Skills];
+
+				// Look for the skill with the last category name
+				uint skillID = i.GetLastSkillID(newSkill);
+
+				if (skillID != 0)
+				{
+					// Update/override if an skill is sharing the same groupname
+					SRObject skill = skills.Find(m => m.ID == skillID);
+					skill.CopyAttributes(newSkill, true);
+				}
+				else
+				{
+					// Add new skill
+					skills.Add(newSkill);
+        }
+			}
+		}
+		public static void MasteryLevelUpResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				uint masteryID = packet.ReadUInt();
+
+				SRObjectCollection masteries = (SRObjectCollection)Info.Get.Character[SRAttribute.Masteries];
+				SRObject mastery = masteries.Find(m => m.ID == masteryID);
+				if(mastery != null){
+					mastery[SRAttribute.Level] = packet.ReadByte();
+				}
+			}
 		}
 	}
 }

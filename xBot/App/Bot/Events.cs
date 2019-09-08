@@ -16,6 +16,13 @@ namespace xBot
 
 		}
 		/// <summary>
+		/// Called when the current agent connection is lost.
+		/// </summary>
+		private void Event_Disconnected()
+		{
+			// Start relogin, etc
+		}
+		/// <summary>
 		/// Called when on character selection but only if the AutoLogin fails.
 		/// </summary>
 		private void Event_CharacterListing(List<SRObject> CharacterList)
@@ -189,10 +196,42 @@ namespace xBot
 			}
 		}
 		/// <summary>
+		/// Called when the Health, or BadStatus from the pet has changed.
+		/// </summary>
+		public void Event_PetStateUpdated(Types.EntityStateUpdate type)
+		{
+			switch (type){
+				case Types.EntityStateUpdate.EntityHPMP:
+					CheckUsingRecoveryKit();
+					break;
+				case Types.EntityStateUpdate.BadStatus:
+					CheckUsingAbnormalPill();
+					break;
+			}
+		}
+		/// <summary>
+		/// Called when a pet has been summoned
+		/// </summary>
+		/// <param name="uniqueID"></param>
+		private void Event_PetSummoned(uint uniqueID)
+		{
+			CheckUsingHGP();
+		}
+		/// <summary>
+		/// Called when a pet has been unsummoned
+		/// </summary>
+		/// <param name="uniqueID"></param>
+		private void Event_PetUnsummoned(uint uniqueID)
+		{
+			if (Info.Get.Pets[uniqueID].ID4 == 3){
+				tUsingHGP.Stop();
+			}
+		}
+		/// <summary>
 		/// Called everytime a party invitation is detected
 		/// </summary>
 		/// <param name="uniqueID">How send the invitation</param>
-		public void Event_PartyInvitation(uint uniqueID, byte PartySetup)
+		public void Event_PartyInvitation(uint uniqueID,Types.PartySetup PartySetup)
 		{
 			// Get entity
 			Info i = Info.Get;
@@ -289,13 +328,8 @@ namespace xBot
 		/// <summary>
 		/// Called when has been joined to the party and all data is loaded.
 		/// </summary>
-		public void Event_PartyJoined(byte PartySetupType, byte PartyPurposeType)
+		public void Event_PartyJoined()
 		{
-			Window w = Window.Get;
-
-			this.PartySetupType = (sbyte)PartySetupType;
-			this.PartyPurposeType = (sbyte)PartyPurposeType;
-			
 			CheckPartyLeaving();
     }
 		/// <summary>
@@ -314,13 +348,6 @@ namespace xBot
 		{
 			if (!CheckPartyLeaving())
 				CheckAutoParty(null, null);
-		}
-		/// <summary>
-		/// Called when the current agent connection is lost.
-		/// </summary>
-		private void Event_Disconnected()
-		{
-			// Start relogin, etc
 		}
 		/// <summary>
 		/// Called when a (new) entity appears.

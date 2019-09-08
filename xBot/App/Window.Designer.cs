@@ -253,6 +253,9 @@
 			this.TabPageH_Character_Option01 = new System.Windows.Forms.Button();
 			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
 			this.Character_gbxPotionPet = new System.Windows.Forms.GroupBox();
+			this.Character_tbxUsePetHGP = new System.Windows.Forms.TextBox();
+			this.Character_cbxUsePetHGP = new System.Windows.Forms.CheckBox();
+			this.Character_cbxUsePetsPill = new System.Windows.Forms.CheckBox();
 			this.Character_tbxUseTransportHP = new System.Windows.Forms.TextBox();
 			this.Character_cbxUseTransportHP = new System.Windows.Forms.CheckBox();
 			this.Character_tbxUsePetHP = new System.Windows.Forms.TextBox();
@@ -281,7 +284,6 @@
 			this.Character_lblGold = new System.Windows.Forms.Label();
 			this.Character_lblGoldText = new System.Windows.Forms.Label();
 			this.Character_lblJobLevel = new System.Windows.Forms.Label();
-			this.Character_pgbJobExp = new xGraphics.xProgressBar();
 			this.Character_gbxStatPoints = new System.Windows.Forms.GroupBox();
 			this.Character_lblStatPoints = new System.Windows.Forms.Label();
 			this.Character_lblINT = new System.Windows.Forms.Label();
@@ -297,9 +299,6 @@
 			this.Character_cbxMessageUniques = new System.Windows.Forms.CheckBox();
 			this.Character_cbxMessageExp = new System.Windows.Forms.CheckBox();
 			this.Character_rtbxMessageFilter = new System.Windows.Forms.RichTextBox();
-			this.Character_pgbExp = new xGraphics.xProgressBar();
-			this.Character_pgbMP = new xGraphics.xProgressBar();
-			this.Character_pgbHP = new xGraphics.xProgressBar();
 			this.TabPageH_Character_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Login_btnAddSilkroad = new System.Windows.Forms.Button();
@@ -401,6 +400,10 @@
 			this.Menu_NotifyIcon_About = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_NotifyIcon_Separator01 = new System.Windows.Forms.ToolStripSeparator();
 			this.Menu_NotifyIcon_Exit = new System.Windows.Forms.ToolStripMenuItem();
+			this.Character_pgbJobExp = new xGraphics.xProgressBar();
+			this.Character_pgbExp = new xGraphics.xProgressBar();
+			this.Character_pgbMP = new xGraphics.xProgressBar();
+			this.Character_pgbHP = new xGraphics.xProgressBar();
 			this.TabPageV_Control01.SuspendLayout();
 			this.pnlHeader.SuspendLayout();
 			this.TabPageV_Control01_Option14_Panel.SuspendLayout();
@@ -3807,6 +3810,9 @@
 			// 
 			// Character_gbxPotionPet
 			// 
+			this.Character_gbxPotionPet.Controls.Add(this.Character_tbxUsePetHGP);
+			this.Character_gbxPotionPet.Controls.Add(this.Character_cbxUsePetHGP);
+			this.Character_gbxPotionPet.Controls.Add(this.Character_cbxUsePetsPill);
 			this.Character_gbxPotionPet.Controls.Add(this.Character_tbxUseTransportHP);
 			this.Character_gbxPotionPet.Controls.Add(this.Character_cbxUseTransportHP);
 			this.Character_gbxPotionPet.Controls.Add(this.Character_tbxUsePetHP);
@@ -3821,6 +3827,59 @@
 			this.Character_gbxPotionPet.TabStop = false;
 			this.Character_gbxPotionPet.Tag = "Source Sans Pro";
 			this.Character_gbxPotionPet.Text = "Pet";
+			// 
+			// Character_tbxUsePetHGP
+			// 
+			this.Character_tbxUsePetHGP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Character_tbxUsePetHGP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_tbxUsePetHGP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_tbxUsePetHGP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_tbxUsePetHGP.Location = new System.Drawing.Point(128, 89);
+			this.Character_tbxUsePetHGP.MaxLength = 3;
+			this.Character_tbxUsePetHGP.Name = "Character_tbxUsePetHGP";
+			this.Character_tbxUsePetHGP.Size = new System.Drawing.Size(35, 25);
+			this.Character_tbxUsePetHGP.TabIndex = 26;
+			this.Character_tbxUsePetHGP.Tag = "Source Sans Pro";
+			this.Character_tbxUsePetHGP.Text = "0";
+			this.Character_tbxUsePetHGP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Character_tbxUsePetHGP.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+			// 
+			// Character_cbxUsePetHGP
+			// 
+			this.Character_cbxUsePetHGP.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUsePetHGP.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUsePetHGP.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUsePetHGP.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUsePetHGP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUsePetHGP.Location = new System.Drawing.Point(2, 89);
+			this.Character_cbxUsePetHGP.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUsePetHGP.Name = "Character_cbxUsePetHGP";
+			this.Character_cbxUsePetHGP.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUsePetHGP.Size = new System.Drawing.Size(212, 25);
+			this.Character_cbxUsePetHGP.TabIndex = 25;
+			this.Character_cbxUsePetHGP.Tag = "Source Sans Pro";
+			this.Character_cbxUsePetHGP.Text = "Use HGP on pet               %";
+			this.ToolTips.SetToolTip(this.Character_cbxUsePetHGP, "Recover starvation from pet when is less or equal than");
+			this.Character_cbxUsePetHGP.UseVisualStyleBackColor = false;
+			this.Character_cbxUsePetHGP.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_cbxUsePetsPill
+			// 
+			this.Character_cbxUsePetsPill.Cursor = System.Windows.Forms.Cursors.Default;
+			this.Character_cbxUsePetsPill.FlatAppearance.BorderSize = 0;
+			this.Character_cbxUsePetsPill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Character_cbxUsePetsPill.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_cbxUsePetsPill.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_cbxUsePetsPill.Location = new System.Drawing.Point(2, 64);
+			this.Character_cbxUsePetsPill.Margin = new System.Windows.Forms.Padding(0);
+			this.Character_cbxUsePetsPill.Name = "Character_cbxUsePetsPill";
+			this.Character_cbxUsePetsPill.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+			this.Character_cbxUsePetsPill.Size = new System.Drawing.Size(212, 25);
+			this.Character_cbxUsePetsPill.TabIndex = 24;
+			this.Character_cbxUsePetsPill.Tag = "Source Sans Pro";
+			this.Character_cbxUsePetsPill.Text = "Use abnormal state pills";
+			this.Character_cbxUsePetsPill.UseVisualStyleBackColor = false;
+			this.Character_cbxUsePetsPill.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
 			// Character_tbxUseTransportHP
 			// 
@@ -4051,6 +4110,7 @@
 			this.Character_cbxUseMPVigor.TabIndex = 16;
 			this.Character_cbxUseMPVigor.Tag = "Source Sans Pro";
 			this.Character_cbxUseMPVigor.Text = "Use vigor MP              %";
+			this.ToolTips.SetToolTip(this.Character_cbxUseMPVigor, "Use vigor potion when MP less or equal than");
 			this.Character_cbxUseMPVigor.UseVisualStyleBackColor = false;
 			this.Character_cbxUseMPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
@@ -4107,6 +4167,7 @@
 			this.Character_cbxUseHPVigor.TabIndex = 14;
 			this.Character_cbxUseHPVigor.Tag = "Source Sans Pro";
 			this.Character_cbxUseHPVigor.Text = "Use vigor HP              %";
+			this.ToolTips.SetToolTip(this.Character_cbxUseHPVigor, "Use vigor potion when HP less or equal than");
 			this.Character_cbxUseHPVigor.UseVisualStyleBackColor = false;
 			this.Character_cbxUseHPVigor.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
 			// 
@@ -4282,24 +4343,6 @@
 			this.Character_lblJobLevel.Tag = "Source Sans Pro";
 			this.Character_lblJobLevel.Text = "Job Lv. - - -";
 			this.ToolTips.SetToolTip(this.Character_lblJobLevel, "Job Level");
-			// 
-			// Character_pgbJobExp
-			// 
-			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
-			this.Character_pgbJobExp.ColorDegradation = 4;
-			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbJobExp.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbJobExp.DisplayText = "";
-			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
-			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
-			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
-			this.Character_pgbJobExp.TabIndex = 23;
-			this.Character_pgbJobExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
-			this.Character_pgbJobExp.Value = ((ulong)(0ul));
-			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
 			// 
 			// Character_gbxStatPoints
 			// 
@@ -4551,60 +4594,6 @@
 			this.Character_rtbxMessageFilter.Tag = "Source Sans Pro";
 			this.Character_rtbxMessageFilter.Text = "";
 			this.Character_rtbxMessageFilter.TextChanged += new System.EventHandler(this.RichTextBox_TextChanged_AutoScroll);
-			// 
-			// Character_pgbExp
-			// 
-			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
-			this.Character_pgbExp.ColorDegradation = 5;
-			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbExp.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbExp.DisplayText = "";
-			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
-			this.Character_pgbExp.Name = "Character_pgbExp";
-			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
-			this.Character_pgbExp.TabIndex = 5;
-			this.Character_pgbExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
-			this.Character_pgbExp.Value = ((ulong)(0ul));
-			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
-			// 
-			// Character_pgbMP
-			// 
-			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
-			this.Character_pgbMP.ColorDegradation = 6;
-			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Values;
-			this.Character_pgbMP.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbMP.DisplayText = null;
-			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
-			this.Character_pgbMP.Name = "Character_pgbMP";
-			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbMP.TabIndex = 4;
-			this.Character_pgbMP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
-			this.Character_pgbMP.Value = ((ulong)(0ul));
-			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
-			// 
-			// Character_pgbHP
-			// 
-			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
-			this.Character_pgbHP.ColorDegradation = 6;
-			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Values;
-			this.Character_pgbHP.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbHP.DisplayText = null;
-			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
-			this.Character_pgbHP.Name = "Character_pgbHP";
-			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbHP.TabIndex = 3;
-			this.Character_pgbHP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
-			this.Character_pgbHP.Value = ((ulong)(0ul));
-			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
 			// 
 			// TabPageH_Character_Option03_Panel
 			// 
@@ -5976,7 +5965,7 @@
 			this.lblBotState.Size = new System.Drawing.Size(790, 19);
 			this.lblBotState.TabIndex = 3;
 			this.lblBotState.Tag = "Source Sans Pro";
-			this.lblBotState.Text = "xBot - ProjexNET";
+			this.lblBotState.Text = "xBot - Made by Engels \"JellyBitz\" Quintero";
 			this.lblBotState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// NotifyIcon
@@ -6020,6 +6009,78 @@
 			this.Menu_NotifyIcon_Exit.Size = new System.Drawing.Size(107, 22);
 			this.Menu_NotifyIcon_Exit.Text = "Exit";
 			this.Menu_NotifyIcon_Exit.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Character_pgbJobExp
+			// 
+			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
+			this.Character_pgbJobExp.ColorDegradation = 4;
+			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbJobExp.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbJobExp.DisplayText = "";
+			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
+			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
+			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
+			this.Character_pgbJobExp.TabIndex = 23;
+			this.Character_pgbJobExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
+			this.Character_pgbJobExp.Value = ((ulong)(0ul));
+			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_pgbExp
+			// 
+			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
+			this.Character_pgbExp.ColorDegradation = 5;
+			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbExp.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbExp.DisplayText = "";
+			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
+			this.Character_pgbExp.Name = "Character_pgbExp";
+			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
+			this.Character_pgbExp.TabIndex = 5;
+			this.Character_pgbExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
+			this.Character_pgbExp.Value = ((ulong)(0ul));
+			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_pgbMP
+			// 
+			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
+			this.Character_pgbMP.ColorDegradation = 6;
+			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Values;
+			this.Character_pgbMP.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbMP.DisplayText = null;
+			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
+			this.Character_pgbMP.Name = "Character_pgbMP";
+			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbMP.TabIndex = 4;
+			this.Character_pgbMP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
+			this.Character_pgbMP.Value = ((ulong)(0ul));
+			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_pgbHP
+			// 
+			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
+			this.Character_pgbHP.ColorDegradation = 6;
+			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Values;
+			this.Character_pgbHP.DisplayFont = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbHP.DisplayText = null;
+			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
+			this.Character_pgbHP.Name = "Character_pgbHP";
+			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbHP.TabIndex = 3;
+			this.Character_pgbHP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
+			this.Character_pgbHP.Value = ((ulong)(0ul));
+			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
 			// 
 			// Window
 			// 
@@ -6501,6 +6562,9 @@
 		public System.Windows.Forms.GroupBox Character_gbxPotionPet;
 		public System.Windows.Forms.TextBox Character_tbxUseTransportHP;
 		public System.Windows.Forms.CheckBox Character_cbxUseTransportHP;
+		public System.Windows.Forms.CheckBox Character_cbxUsePetsPill;
+		public System.Windows.Forms.CheckBox Character_cbxUsePetHGP;
+		public System.Windows.Forms.TextBox Character_tbxUsePetHGP;
 	}
 }
 

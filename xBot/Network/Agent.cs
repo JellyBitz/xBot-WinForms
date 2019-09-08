@@ -37,11 +37,13 @@ namespace xBot.Network
 				CLIENT_STALL_CLOSE_REQUEST = 0x70B2,
 				CLIENT_STALL_ANOTATION_REQUEST = 0x70BA,
 				CLIENT_STORAGE_DATA_REQUEST = 0x703C,
-				CLIENT_EMOTE_USE_REQUEST = 0x3091,
+				CLIENT_CHARACTER_EMOTE_USE = 0x3091,
 				CLIENT_PET_UNSUMMON_REQUEST = 0x7116,
 				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
 				CLIENT_PET_MOUNTED = 0x70CB,
 				CLIENT_PET_DESTROY = 0x706C,
+				CLIENT_SKILL_LEVELUP_REQUEST = 0x70A1,
+				CLIENT_MASTERY_LEVELUP_REQUEST = 0x70A2,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -79,19 +81,23 @@ namespace xBot.Network
 				SERVER_INVENTORY_ITEM_STATE_UPDATE = 0x3040,
 				SERVER_STALL_OPEN_RESPONSE = 0xB0B1,
 				SERVER_STALL_CLOSE_RESPONSE = 0xB0B2,
-				SERVER_STALL_PLAYER_OPENED = 0xB0B3,
-				SERVER_STALL_PLAYER_CLOSED = 0xB0B5,
+				SERVER_STALL_OTHER_OPENED = 0xB0B3,
+				SERVER_STALL_OTHER_CLOSED = 0xB0B5,
 				SERVER_STALL_ANOTATION_RESPONSE = 0xB0BA,
-				SERVER_STALL_CREATED = 0x30B8,
+				SERVER_STALL_PLAYER_CREATED = 0x30B8,
+				SERVER_STALL_PLAYER_CLOSED = 0x30B9,
 				SERVER_STALL_CLOSED = 0x30B9,
 				SERVER_STORAGE_DATA_BEGIN = 0x3047,
 				SERVER_STORAGE_DATA = 0x3049,
 				SERVER_STORAGE_DATA_END = 0x3048,
-				SERVER_EMOTE_PLAYER_USE = 0x3091,
+				SERVER_ENTITY_EMOTE_USE = 0x3091,
 				SERVER_PET_DATA = 0x30C8,
 				SERVER_PET_UPDATE = 0x30C9,
 				SERVER_PET_SETTINGS_CHANGE_RESPONSE = 0xB420,
 				SERVER_PET_PLAYER_MOUNTED = 0xB0CB,
+				SERVER_SKILL_LEVELUP_RESPONSE = 0xB0A1,
+				SERVER_MASTERY_LEVELUP_RESPONSE = 0xB0A2,
+				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -209,21 +215,21 @@ namespace xBot.Network
 					string message = packet.ReadAscii().ToLower();
 					if (message == ".")
 					{
-						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
 						p.WriteByte(12);
 						InjectToServer(p);
 						return true;
 					}
 					else if (message == "..")
 					{
-						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
 						p.WriteByte(71);
 						InjectToServer(p);
 						return true;
 					}
 					else if (message == "...")
 					{
-						Packet p = new Packet(Opcode.CLIENT_EMOTE_USE_REQUEST);
+						Packet p = new Packet(Opcode.CLIENT_CHARACTER_EMOTE_USE);
 						p.WriteByte(29);
 						InjectToServer(p);
 						return true;
@@ -437,9 +443,17 @@ namespace xBot.Network
 			{
 				PacketParser.StallCloseResponse(packet);
 			}
-			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_OPENED)
+			else if (packet.Opcode == Opcode.SERVER_STALL_OTHER_OPENED)
 			{
-				PacketParser.StallPlayerOpened(packet);
+				PacketParser.StallOtherOpened(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_OTHER_CLOSED)
+			{
+				PacketParser.StallOtherClosed(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_CREATED)
+			{
+				PacketParser.StallPlayerCreated(packet);
 			}
 			else if (packet.Opcode == Opcode.SERVER_STALL_PLAYER_CLOSED)
 			{
@@ -471,6 +485,14 @@ namespace xBot.Network
 			}
 			else if(packet.Opcode == Opcode.SERVER_PET_PLAYER_MOUNTED){
 				PacketParser.PetPlayerMounted(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_SKILL_LEVELUP_RESPONSE)
+			{
+				PacketParser.SkillLevelUpResponse(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_MASTERY_LEVELUP_RESPONSE)
+			{
+				PacketParser.MasteryLevelUpResponse(packet);
 			}
 			return false;
 		}

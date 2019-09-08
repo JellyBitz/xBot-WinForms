@@ -128,8 +128,8 @@ namespace xBot.Network
 					int dummy = 0;
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
 					w.LogProcess("Waiting client connection...", Window.ProcessState.Warning);
-					// Wait 3min. Infinity attempts
-					ProxyReconnection(90, ref dummy, int.MaxValue);
+					// Wait 2min. Infinity attempts
+					ProxyReconnection(120, ref dummy, int.MaxValue);
 					Gateway.Local.Socket = Gateway.Local.Socket.Accept();
 					ProxyReconnectionStop();
 					w.LogProcess("Connected");
@@ -149,7 +149,7 @@ namespace xBot.Network
 				w.Log("Connecting to Gateway server [" + Gateway.Host + ":" + Gateway.Port + "]");
 				w.LogProcess("Waiting server connection...");
 
-				ProxyReconnection(60, ref CurrentAttemptReconnections, 10); // Wait 1min. max 10 attempts
+				ProxyReconnection(30, ref CurrentAttemptReconnections, 10); // Wait 30 seconds, max. 10 attempts
 				Gateway.Remote.Socket.Connect(Gateway.Host, Gateway.Port);
 				ProxyReconnectionStop();
 				CurrentAttemptReconnections = 0;

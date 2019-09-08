@@ -710,25 +710,28 @@ namespace xBot
 		{
 			string sql = "CREATE TABLE skills (";
 			sql += "id INTEGER PRIMARY KEY,";
-			sql += "servername VARCHAR(64), ";
+			sql += "servername VARCHAR(64),";
 			sql += "name VARCHAR(64),";
 			sql += "description VARCHAR(1024),";
-			sql += "cooldown INTEGER,";
-			sql += "duration INTEGER,";
 			sql += "casttime INTEGER,";
+			sql += "duration INTEGER,";
+			sql += "cooldown INTEGER,";
+			sql += "mana INTEGER,";
 			sql += "level INTEGER,";
 			sql += "mastery_id INTEGER,";
 			sql += "sp INTEGER,";
-			sql += "mana INTEGER,";
-			sql += "icon VARCHAR(64),";
+			sql += "group_name VARCHAR(64),";
+			sql += "group_skill_id INTEGER,";
+			sql += "weapon_first INTEGER,";
+			sql += "weapon_second INTEGER,";
 			sql += "target_required BOOLEAN,";
-			sql += "attributes VARCHAR(256)";
+			sql += "params VARCHAR(256),";
+			sql += "icon VARCHAR(64)";
 			sql += ");";
 			db.ExecuteQuery(sql);
 
 			// vars constantly used
-			string line, name, desc, duration, attributes;
-			int index;
+			string line, name, desc, duration;
 			char[] split = new char[] { '\t' };
 			string[] data;
 
@@ -772,16 +775,6 @@ namespace xBot
 								duration = data[70];
 							else
 								duration = "0";
-							// Extract values
-							attributes = "";
-							index = 69;
-							while (data[index] != "0")
-							{
-								attributes += data[index] + "|";
-								index++;
-							}
-							if (index != 69)
-								attributes = attributes.Remove(attributes.Length - 1);
 
 							// 15% display
 							if (rand.Next(1, 1000) <= 150)
@@ -793,27 +786,31 @@ namespace xBot
 							if (db.GetResult().Count == 0)
 							{
 								// New
-								db.Prepare("INSERT INTO skills (id,servername,name,description,casttime,cooldown,duration,mana,level,sp,icon,mastery_id,target_required,attributes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+								db.Prepare("INSERT INTO skills (id,servername,name,description,casttime,duration,cooldown,mana,level,mastery_id,sp,group_name,group_skill_id,weapon_first,weapon_second,target_required,params,icon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 								db.Bind("id", data[1]);
 							}
 							else
 							{
 								// Override
-								db.Prepare("UPDATE skills SET servername=?,name=?,description=?,casttime=?,cooldown=?,duration=?,mana=?,level=?,sp=?,icon=?,mastery_id=?,target_required=?,attributes=? WHERE id=" + data[1]);
+								db.Prepare("UPDATE skills SET servername=?,name=?,description=?,casttime=?,duration=?,cooldown=?,mana=?,level=?,mastery_id=?,sp=?,group_name=?,group_skill_id=?,weapon_first=?,weapon_second=?,target_required=?,params=?,icon=? WHERE id=" + data[1]);
 							}
 							db.Bind("servername", data[3]);
 							db.Bind("name", name);
 							db.Bind("description", desc);
 							db.Bind("casttime", data[13]);
-							db.Bind("cooldown", data[14]);
 							db.Bind("duration", duration);
+							db.Bind("cooldown", data[14]);
 							db.Bind("mana", data[53]);
 							db.Bind("level", data[36]);
-							db.Bind("sp", data[46]);
-							db.Bind("icon", data[61]);
 							db.Bind("mastery_id", data[34]);
+							db.Bind("sp", data[46]);
+							db.Bind("group_name", data[5]);
+							db.Bind("group_skill_id", data[9]);
+							db.Bind("weapon_first", data[50]);
+							db.Bind("weapon_second", data[51]);
 							db.Bind("target_required", data[22]);
-							db.Bind("attributes", attributes);
+							db.Bind("params", data[69] + "|" + data[70] + "|" + data[71] + "|" + data[72] + "|" + data[73] + "|" + data[74]);
+							db.Bind("icon", data[61]);
 							db.ExecuteQuery();
 
 							// CPU break

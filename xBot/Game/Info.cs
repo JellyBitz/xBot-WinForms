@@ -392,11 +392,10 @@ namespace xBot.Game
 		{
 			if ((uint)Character[SRAttribute.UniqueID] == uniqueID)
 				return Character;
-			if (EntityList.ContainsKey(uniqueID))
-				return EntityList[uniqueID];
-			// If pet is not near
-			if (Pets.ContainsKey(uniqueID))
-				return Pets[uniqueID];
+			SRObject entity = null;
+			if (EntityList.TryGetValue(uniqueID, out entity) // Entity near
+				|| Pets.TryGetValue(uniqueID,out entity)) // Pet not near
+				return entity;
 			return null;
 		}
 		/// <summary>
@@ -465,6 +464,33 @@ namespace xBot.Game
 				return item;
 			}
 			return null;
+		}
+		/// <summary>
+		/// Gets the last skill ID from the skill updated, returns 0 if none is found.
+		/// </summary>
+		public uint GetLastSkillID(SRObject skill)
+		{
+			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRAttribute.Groupname] + "' AND level<" + skill[SRAttribute.Level]+" ORDER BY level DESC LIMIT 1";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0){
+				return uint.Parse(result[0]["id"]);
+			}
+			return 0;
+		}
+		/// <summary>
+		/// Gets the next skill ID from the skill to update, returns 0 if none is found.
+		/// </summary>
+		public uint GetNextSkillID(SRObject skill)
+		{
+			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRAttribute.Groupname] + "' AND level>" + skill[SRAttribute.Level] + " ORDER BY level LIMIT 1";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+			{
+				return uint.Parse(result[0]["id"]);
+			}
+			return 0;
 		}
 	}
 }

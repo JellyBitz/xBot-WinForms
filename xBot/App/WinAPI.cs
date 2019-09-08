@@ -150,7 +150,17 @@ namespace xBot
 				List[n] = value;
 			}
 			return List;
-    }
+		}
+
+		/// <summary>
+		/// Restart timer with a new Interval.
+		/// </summary>
+		public static void ResetTimer(ref System.Timers.Timer Timer, double newInterval)
+		{
+			Timer.Stop();
+			Timer.Interval = newInterval;
+			Timer.Start();
+		}
 		#endregion
 	}
 }

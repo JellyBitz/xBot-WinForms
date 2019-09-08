@@ -76,7 +76,7 @@
     <Compile Include="App\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="App\Events.cs" />
+    <Compile Include="App\Bot\Events.cs" />
     <Compile Include="App\Bot\System.cs" />
     <Compile Include="App\Bot\Checks.cs" />
     <Compile Include="App\PK2Extractor.cs">

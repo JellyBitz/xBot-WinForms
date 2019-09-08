@@ -7,13 +7,15 @@ namespace xBot
 {
 	public partial class Bot
 	{
-		#region (Event System Hooks & Game Logic Controller)
+		#region (Logical System Controller)
 		/// <summary>
 		/// Cooldown timer.
 		/// </summary>
 		Timer tUsingHP, tUsingMP, tUsingVigor,
 			tUsingUniversal, tUsingPurification,
-			tAutoParty, tUsingRecoveryKit;
+			tUsingRecoveryKit, tUsingAbnormalPill,
+			tUsingHGP,
+			tCycleAutoParty;
 
 		private void InitializeTimers()
 		{
@@ -23,25 +25,30 @@ namespace xBot
 			tUsingVigor = new Timer();
 			tUsingUniversal = new Timer();
 			tUsingPurification = new Timer();
-			tAutoParty = new Timer();
 			tUsingRecoveryKit = new Timer();
+			tUsingAbnormalPill = new Timer();
+			tUsingHGP = new Timer();
+			tCycleAutoParty = new Timer();
 
 			// A second is enought for any potion cooldown
 			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
 			tUsingUniversal.Interval = tUsingPurification.Interval = 
-			tUsingRecoveryKit.Interval = 1000;
+			tUsingRecoveryKit.Interval = tUsingAbnormalPill.Interval;
 
-			tAutoParty.Interval = 5000;
-
+			tCycleAutoParty.Interval = 5000;
+			
 			// Callbacks
 			tUsingHP.Elapsed += CheckUsingHP;
 			tUsingMP.Elapsed += CheckUsingMP;
 			tUsingVigor.Elapsed += CheckUsingVigor;
 			tUsingUniversal.Elapsed += CheckUsingUniversal;
 			tUsingPurification.Elapsed += CheckUsingPurification;
-			tAutoParty.Elapsed += CheckAutoParty;
+			tCycleAutoParty.Elapsed += CheckAutoParty;
 			tUsingRecoveryKit.Elapsed += CheckUsingRecoveryKit;
+			tUsingAbnormalPill.Elapsed += CheckUsingAbnormalPill;
+			tUsingHGP.Elapsed += CheckUsingHGP;
 		}
+
 		public void _Event_Connected()
 		{
 			this.Event_Connected();
@@ -69,7 +76,6 @@ namespace xBot
 					});
 				}
 			}
-
 			this.Event_CharacterListing(CharacterList);
 		}
 		public void _Event_Disconnected()
@@ -86,26 +92,27 @@ namespace xBot
 			EntitySelected = 0;
 			i.EntityList.Clear();
 			w.Minimap_ObjectPointer_Clear();
-			
-			PartySetupType = PartyPurposeType = -1;
+
+			_inParty = false;
 			i.PartyList.Clear();
 			w.Party_Clear();
 
 			// Stop timers
 			tUsingHP.Enabled = tUsingMP.Enabled = tUsingVigor.Enabled =
 				tUsingUniversal.Enabled = tUsingPurification.Enabled =
-				tAutoParty.Enabled = false;
+				tUsingRecoveryKit.Enabled = tUsingAbnormalPill.Enabled = tUsingHGP.Enabled =
+				tCycleAutoParty.Enabled = false;
 
 			LoggedFromBot = false;
 			_HWIDSent = false;
 
 			this.Event_Disconnected();
 		}
-		public void _Event_NicknameChecked(bool success)
+		public void _Event_NicknameChecked(bool available)
 		{
 			if (isCreatingCharacter)
 			{
-				if (success)
+				if (available)
 				{
 					Window.Get.Log("Nickname available!");
 					CreateCharacter();
@@ -119,6 +126,8 @@ namespace xBot
 		}
 		public void _Event_Teleported()
 		{
+			_inTeleport = false;
+
 			Info i = Info.Get;
 			if (!_inGame)
 			{
@@ -131,6 +140,8 @@ namespace xBot
 		}
 		public void _Event_Teleporting()
 		{
+			_inTeleport = true;
+
 			Window w = Window.Get;
 			Info i = Info.Get;
 
@@ -141,7 +152,7 @@ namespace xBot
 			w.Minimap_ObjectPointer_Clear();
 
 			// Reset party data
-			PartySetupType = PartyPurposeType = -1;
+			_inParty = false;
 			i.PartyList.Clear();
 			w.Party_Clear();
 
@@ -166,7 +177,7 @@ namespace xBot
 		}
 		public void _Event_PartyLeaved()
 		{
-			PartySetupType = PartyPurposeType = -1;
+			_inParty = false;
 			Info.Get.PartyList.Clear();
 			Window.Get.Party_Clear();
 
@@ -203,35 +214,46 @@ namespace xBot
 		{
 			Info i = Info.Get;
 			i.Pets[uniqueID] = i.EntityList[uniqueID];
+
+			this.Event_PetSummoned(uniqueID);
 		}
 		public void _Event_PetUnsummoned(uint uniqueID)
 		{
+			Event_PetUnsummoned(uniqueID);
 			Info.Get.Pets.Remove(uniqueID);
 		}
-		public void _Event_PetStateUpdated(uint uniqueID,Types.EntityStateUpdate type)
+		public void _Event_PetStateUpdated(Types.EntityStateUpdate type)
 		{
-			SRObject pet = Info.Get.GetEntity(uniqueID);
-			if(type == Types.EntityStateUpdate.EntityHPMP)
-			{
-				if (pet.ID4 == 1 || pet.ID4 == 2 || pet.ID4 == 3)
-					CheckUsingRecoveryKit();
-			}
-			else if (type == Types.EntityStateUpdate.BadStatus)
-			{
-				if (pet.ID4 == 2)
-				{
-
-				}
-				else if (pet.ID4 == 3)
-				{
-
-				}
-			}
+			Event_PetStateUpdated(type);
 		}
-    public void _Event_EntitySelected(uint uniqueID)
+		public void _Event_EntitySelected(uint uniqueID)
 		{
 			EntitySelected = uniqueID;
 		}
+		public void _Event_PartyJoined(Types.PartySetup PartySetupFlags,Types.PartyPurpose PartyPurposeType)
+		{
+			this._inParty = true;
+			this.PartySetupFlags = PartySetupFlags;
+			this.PartyPurposeType = PartyPurposeType;
+
+			// Party Setup to boolean
+			bool ExpShared = PartySetupFlags.HasFlag(Types.PartySetup.ExpShared);
+			bool ItemShared = PartySetupFlags.HasFlag(Types.PartySetup.ItemShared);
+			bool AnyoneCanInvite = PartySetupFlags.HasFlag(Types.PartySetup.AnyoneCanInvite);
+
+			// Update GUI with current party setup
+			Window w = Window.Get;
+
+			string partySetup = "• Exp. " + (ExpShared ? "Shared" : "Free-For-All") + " • Item " + (ItemShared ? "Shared" : "Free-For-All") + " • " + (AnyoneCanInvite ? "Anyone" : "Only Master") + " Can Invite";
+			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
+				w.Party_lblCurrentSetup.Text = partySetup;
+			});
+			WinAPI.InvokeIfRequired(w.Party_lblCurrentSetup, () => {
+				w.ToolTips.SetToolTip(w.Party_lblCurrentSetup, PartyPurposeType.ToString());
+			});
+
+			this.Event_PartyJoined();
+    }
 		public void _Event_MemberLeaved(uint memberID)
 		{
 			Info i = Info.Get;

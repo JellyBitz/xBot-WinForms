@@ -21,7 +21,9 @@ xBot/bin/Debug/GPUCache/
 xBot/bin/Debug/Data/
 xBot/bin/Debug/Config/
 
-
 # Packages can be restored via NuGet
 packages/
 xBot/obj/Debug/
+
+# To keep temporaly and individually the main changes made in the code
+Changelog.txt

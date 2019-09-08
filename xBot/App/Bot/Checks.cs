@@ -129,7 +129,7 @@ namespace xBot
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillUniversal.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusType];
+					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusFlags];
 					if (status.HasFlag(Types.BadStatus.Freezing
 						| Types.BadStatus.Frostbite
 						| Types.BadStatus.ElectricShock
@@ -160,12 +160,18 @@ namespace xBot
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillPurification.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusType];
-					if (status.HasFlag(Types.BadStatus.Bleed
+					Types.BadStatus status = (Types.BadStatus)i.Character[SRAttribute.BadStatusFlags];
+					if (status.HasFlag(Types.BadStatus.Bind
+						| Types.BadStatus.Dull
+						| Types.BadStatus.Fear
+						| Types.BadStatus.Bleed
+						| Types.BadStatus.Disease
 						| Types.BadStatus.Decay
 						| Types.BadStatus.Weaken
 						| Types.BadStatus.Impotent
-						| Types.BadStatus.Division))
+						| Types.BadStatus.Division
+						| Types.BadStatus.Combustion
+						| Types.BadStatus.Hidden))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 1, ref slot))
@@ -179,8 +185,8 @@ namespace xBot
 		}
 		public void CheckAutoParty()
 		{
-			if (!tAutoParty.Enabled)
-				CheckAutoParty(tAutoParty, null);
+			if (!tCycleAutoParty.Enabled)
+				CheckAutoParty(tCycleAutoParty, null);
 		}
 		private void CheckAutoParty(object sender, ElapsedEventArgs e)
 		{
@@ -192,7 +198,7 @@ namespace xBot
 				List<SRObject> nearPlayers = i.GetPlayers();
 				if (nearPlayers.Count > 0)
 				{
-					if (hasParty)
+					if (inParty)
 					{
 						// Remove party members (not trying invite them again)
 						SRObject[] partyPlayers = i.PartyList.ToArray();
@@ -204,29 +210,29 @@ namespace xBot
 						}
 						// Invite players
 						if (!w.Party_cbxInviteOnlyPartySetup.Checked
-							|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupType == GetPartySetup())
+							|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupFlags == GetPartySetup())
 						{
-							int maxMembers = ((Types.PartySetup)PartySetupType).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
+							int maxMembers = ((Types.PartySetup)PartySetupFlags).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
 							if (i.PartyList.Count < maxMembers)
 							{
 								if (nearPlayers.Count != 0)
 									// Randomize the character invitation to avoid stuck at only one
-									PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID], (byte)PartySetupType);
+									PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID], (byte)PartySetupFlags);
 								// If no players to invite, try later
-								tAutoParty.Start();
+								tCycleAutoParty.Start();
 							}
 						}
 					}
 					else
 					{
-						PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID], GetPartySetup());
-						tAutoParty.Start();
+						PacketBuilder.InviteToParty((uint)nearPlayers[rand.Next(nearPlayers.Count)][SRAttribute.UniqueID],(byte)GetPartySetup());
+						tCycleAutoParty.Start();
 					}
 				}
 				else
 				{
 					// If no players to invite, try later
-					tAutoParty.Start();
+					tCycleAutoParty.Start();
 				}
 				// Has no sense continue checking
 				return;
@@ -273,34 +279,34 @@ namespace xBot
 								break;
 						}
 
-						if (hasParty)
+						if (inParty)
 						{
 							// Invite players
 							if (!w.Party_cbxInviteOnlyPartySetup.Checked
-								|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupType == GetPartySetup())
+								|| w.Party_cbxInviteOnlyPartySetup.Checked && PartySetupFlags == GetPartySetup())
 							{
-								int maxMembers = ((Types.PartySetup)PartySetupType).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
+								int maxMembers = ((Types.PartySetup)PartySetupFlags).HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
 								if (i.PartyList.Count < maxMembers)
 								{
 									if (invitePlayer != null)
-										PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], (byte)PartySetupType);
+										PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], (byte)PartySetupFlags);
 									// If none player to invite, try later
-									tAutoParty.Start();
+									tCycleAutoParty.Start();
 								}
 							}
 						}
 						else
 						{
 							if (invitePlayer != null)
-								PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], GetPartySetup());
+								PacketBuilder.InviteToParty((uint)invitePlayer[SRAttribute.UniqueID], (byte)GetPartySetup());
 							// If no player to invite, try later
-							tAutoParty.Start();
+							tCycleAutoParty.Start();
 						}
 					}
 					else
 					{
 						// If no players to invite, try later
-						tAutoParty.Start();
+						tCycleAutoParty.Start();
 					}
 				}
 			}
@@ -389,6 +395,83 @@ namespace xBot
 						}
 						return; // Avoid checking other pets
 					}
+				}
+			}
+		}
+		public void CheckUsingAbnormalPill()
+		{
+			if (!tUsingAbnormalPill.Enabled)
+				CheckUsingAbnormalPill(tUsingAbnormalPill, null);
+		}
+		private void CheckUsingAbnormalPill(object sender, ElapsedEventArgs e)
+		{
+			Window w = Window.Get;
+			Info i = Info.Get;
+
+			if (w.Character_cbxUsePetsPill.Checked)
+			{
+				// Checking pet bad status for using abnormal
+				SRObject pet = null;
+				// As priority pet transport
+				pet = i.GetPets().Find(p =>
+					(p.ID4 == 1 || p.ID4 == 2)
+					&& p.Contains(SRAttribute.BadStatusFlags)
+					&& !((Types.BadStatus)p[SRAttribute.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+				);
+				if (pet == null)
+				{
+					pet = i.GetPets().Find(p =>
+						p.ID4 == 3
+						&& p.Contains(SRAttribute.BadStatusFlags)
+						&& !((Types.BadStatus)p[SRAttribute.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+					);
+				}
+				// At least one pet has bad status
+				if (pet != null)
+				{
+					byte slot = 0; // dummy
+					if (FindItem(3, 2, 7, ref slot))
+					{
+						PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot, (uint)pet[SRAttribute.UniqueID]);
+						tUsingAbnormalPill.Start();
+					}
+				}
+			}
+		}
+		public void CheckUsingHGP()
+		{
+			if (!tUsingHGP.Enabled || tUsingHGP.Interval != 1000)
+			{
+				CheckUsingHGP(tUsingHGP, null);
+			}
+				
+		}
+		private void CheckUsingHGP(object sender, ElapsedEventArgs e)
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxUsePetHGP.Checked)
+			{
+				Info i = Info.Get;
+        SRObject pet = i.GetPets().Find(p => p.ID4 == 3);
+				if(pet != null)
+				{
+					byte usePercent = 0;
+					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHGP, () => {
+						usePercent = byte.Parse(w.Character_tbxUsePetHGP.Text);
+					});
+					// Check hp %
+					int HGPPercent = (int)(((ushort)pet[SRAttribute.HGP])*0.01); // 10000 = 100%
+          if (HGPPercent <= usePercent)
+					{
+						byte slot = 0;
+						if (FindItem(3, 1, 9, ref slot))
+						{
+							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRAttribute.Inventory])[slot], slot, (uint)pet[SRAttribute.UniqueID]);
+							WinAPI.ResetTimer(ref tUsingHGP, 1000);
+							return;
+						}
+					}
+					WinAPI.ResetTimer(ref tUsingHGP, 300000); // 1% decrease : -100 HGP every 5min
 				}
 			}
 		}

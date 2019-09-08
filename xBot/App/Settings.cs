@@ -309,6 +309,9 @@ namespace xBot
 					Potions["UsePetHPPercent"] = w.Character_tbxUsePetHP.Text;
 					Potions["UseTransportHP"] = w.Character_cbxUseTransportHP.Checked;
 					Potions["UseTransportHPPercent"] = w.Character_tbxUseTransportHP.Text;
+					Potions["UsePetsPill"] = w.Character_cbxUsePetsPill.Checked;
+					Potions["UsePetHGP"] = w.Character_cbxUsePetHGP.Checked;
+					Potions["UsePetHGPPercent"] = w.Character_tbxUsePetHGP.Text;
 
 					JObject Misc = new JObject();
 					Character["Misc"] = Misc;
@@ -473,6 +476,18 @@ namespace xBot
 					w.Character_tbxUseTransportHP.Text = (string)Potions["UseTransportHPPercent"];
 				else
 					w.Character_tbxUseTransportHP.Text = "50";
+				if (Potions.ContainsKey("UsePetsPill"))
+					w.Character_cbxUsePetsPill.Checked = (bool)Potions["UsePetsPill"];
+				else
+					w.Character_cbxUsePetsPill.Checked = false;
+				if (Potions.ContainsKey("UsePetHGP"))
+					w.Character_cbxUsePetHGP.Checked = (bool)Potions["UsePetHGP"];
+				else
+					w.Character_cbxUsePetHGP.Checked = false;
+				if (Potions.ContainsKey("UsePetHGPPercent"))
+					w.Character_tbxUsePetHGP.Text = (string)Potions["UsePetHGPPercent"];
+				else
+					w.Character_tbxUsePetHGP.Text = "50";
 
 				JObject Misc = (JObject)Character["Misc"];
 				if (Misc.ContainsKey("AcceptRess"))

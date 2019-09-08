@@ -147,12 +147,12 @@ namespace xBot.Game
 			ReturnScroll = 1,
 			BanditReturnScroll = 2
 		}
-		public enum InteractMode
+		public enum PlayerMode : byte
 		{
 			None = 0,
-			P2P = 2,
-			P2N_TALK = 4,
-			OPNMKT_DEAL = 6
+			OnExchangeProbably = 2,
+			OnStall = 4,
+			OnShop = 6
 		}
 		public enum GuildMemberAuthority
 		{
@@ -203,24 +203,24 @@ namespace xBot.Game
 			Poisoning = 16, // Universal
 			Zombie = 32, // Universal
 			Sleep = 64, // nope
-			Bind = 128, // ??
-			Dull = 256, // ??
-			Fear = 512, // ??
+			Bind = 128, // Purification
+			Dull = 256, // Purification
+			Fear = 512, // Purification
 			Unk07 = 1024,
 			Bleed = 2048, // Purification
 			Unk09 = 4096,
 			Unk10 = 8192,
 			Stun = 16384, // nope
-			Disease = 32768, // ??
+			Disease = 32768, // Purification
 			Unk13 = 65536,
 			Decay = 131072, // Purification
 			Weaken = 262144, // Purification
 			Impotent = 524288, // Purification
 			Division = 1048576, // Purification
 			Unk18 = 2097152,
-			Combustion = 4194304, // ??
+			Combustion = 4194304, // Purification
 			Unk20 = 8388608,
-			Hidden = 16777216, // ??
+			Hidden = 16777216, // Purification
 			Unk22 = 33554432,
 			Unk23 = 67108864,
 			Unk24 = 134217728,
@@ -292,13 +292,10 @@ namespace xBot.Game
 			Disabled = 0,
 			Offensive = 1
 		}
-		//byte action = pck.ReadUInt8();
-		//GameCommands commandsEnum = (GameCommands)action;
-		//string commandName = commandsEnum.ToString();
 		/// <summary>
 		/// Game consola commands.
 		/// </summary>
-		public enum GameCommands : byte
+		public enum GMConsoleAction : byte
 		{
 			FindUser = 1,
 			GoTown = 2,
@@ -321,6 +318,12 @@ namespace xBot.Game
 			MakeRentItem = 38,
 			SpawnUniqueLocation = 42
 		}
-
+		/// <summary>
+		/// All weapons types handled.
+		/// </summary>
+		public enum Weapons : byte
+		{
+			None = 255
+		}
 	}
 }

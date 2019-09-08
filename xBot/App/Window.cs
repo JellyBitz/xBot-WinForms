@@ -130,31 +130,31 @@ namespace xBot
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 0; i < args.Length; i++)
 			{
-				args[i] = args[i].ToLower();
+				string cmd = args[i].ToLower();
 				// Check data
-				if (args[i].StartsWith("-silkroad="))
+				if (cmd.StartsWith("-silkroad="))
 				{
 					Login_cmbxSilkroad.Text = args[i].Substring(10);
 				}
-				else if (args[i].StartsWith("-username="))
+				else if (cmd.StartsWith("-username="))
 				{
 					Login_tbxUsername.Text = args[i].Substring(10);
 				}
-				else if (args[i].StartsWith("-password="))
+				else if (cmd.StartsWith("-password="))
 				{
 					Login_tbxPassword.Text = args[i].Substring(10);
 				}
-				else if (args[i].StartsWith("-server="))
+				else if (cmd.StartsWith("-server="))
 				{
 					// Saving to Tag because cannot be set as text yet
 					Login_cmbxServer.Tag = args[i].Substring(8);
 				}
-				else if (args[i].StartsWith("-character="))
+				else if (cmd.StartsWith("-character="))
 				{
 					// Saving to Tag because cannot be set as text yet
 					Login_cmbxCharacter.Tag = args[i].Substring(11);
 				}
-				else if (args[i].Equals("--clientless"))
+				else if (cmd.Equals("--clientless"))
 				{
 					Login_rbnClientless.Checked = true;
 				}
@@ -666,7 +666,7 @@ namespace xBot
 				case "Party_btnJoinMatch":
 					if (Party_tbxJoinToNumber.Text != "")
 					{
-						if (Bot.Get.inGame && !Bot.Get.hasParty)
+						if (Bot.Get.inGame && !Bot.Get.inParty)
 						{
 							PacketBuilder.JoinToPartyMatch(uint.Parse(Party_tbxJoinToNumber.Text));
 						}
@@ -707,8 +707,7 @@ namespace xBot
 						Info i = Info.Get;
 						GameInfo_lstrObjects.Nodes.Add(i.Character.Clone().ToNode());
 						// Making a copy because the list could be edited while iterating
-						SRObject[] objects = new SRObject[i.EntityList.Values.Count];
-						i.EntityList.Values.CopyTo(objects,0);
+						List<SRObject> objects = new List<SRObject>(i.EntityList.Values);
 						foreach (SRObject obj in objects)
 							GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
@@ -1090,6 +1089,16 @@ namespace xBot
 						Bot.Get.CheckUsingRecoveryKit();
 					Settings.SaveCharacterSettings();
 					break;
+				case "Character_cbxUsePetsPill":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingAbnormalPill();
+					Settings.SaveCharacterSettings();
+					break;
+				case "Character_cbxUsePetHGP":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckUsingHGP();
+					Settings.SaveCharacterSettings();
+					break;
 				case "Party_rbnSetupExpFree":
 				case "Party_rbnSetupItemFree":
 				case "Party_cbxSetupMasterInvite":
@@ -1146,6 +1155,7 @@ namespace xBot
 				case "Character_tbxUseMPVigor":
 				case "Character_tbxUsePetHP":
 				case "Character_tbxUseTransportHP":
+				case "Character_tbxUsePetHGP":
 					// Percentage only
 					if (t.Text != "")
 					{
@@ -1188,6 +1198,9 @@ namespace xBot
 							case "Character_tbxUsePetHP":
 							case "Character_tbxUseTransportHP":
 								b.CheckUsingRecoveryKit();
+								break;
+							case "Character_tbxUsePetHGP":
+								b.CheckUsingHGP();
 								break;
 						}
 					}
@@ -1329,7 +1342,7 @@ namespace xBot
 					}
 					break;
 				case "Menu_lstvPartyMembers_LeaveParty":
-					if (Bot.Get.hasParty)
+					if (Bot.Get.inParty)
 						PacketBuilder.LeaveParty();
 					break;
 				case "Menu_lstvPartyList_Remove":
@@ -1368,7 +1381,7 @@ namespace xBot
 					if (Party_lstvPartyMatch.SelectedItems.Count > 0)
 					{
 						Bot b = Bot.Get;
-            if (b.inGame && !b.hasParty)
+            if (b.inGame && !b.inParty)
 							PacketBuilder.JoinToPartyMatch(uint.Parse(Party_lstvPartyMatch.SelectedItems[0].Name));
 					}
 					break;
@@ -1576,28 +1589,6 @@ namespace xBot
 			});
 			WinAPI.InvokeIfRequired(this, () => {
 				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
-			});
-		}
-		public void GameInfo_Clear()
-		{
-			WinAPI.InvokeIfRequired(this, () => {
-				GameInfo_lstrObjects.Nodes.Clear();
-			});
-		}
-		public void GameInfo_AddSpawn(SRObject entity)
-		{
-			WinAPI.InvokeIfRequired(this, () =>
-			{
-				GameInfo_lstrObjects.Nodes.Add(entity.ToNode());
-			});
-		}
-		public void GameInfo_RemoveSpawn(uint uniqueID)
-		{
-			WinAPI.InvokeIfRequired(this, () => {
-				if (GameInfo_lstrObjects.Nodes.ContainsKey(uniqueID.ToString()))
-				{
-					GameInfo_lstrObjects.Nodes[uniqueID.ToString()].Remove();
-				}
 			});
 		}
 		/// <summary>
