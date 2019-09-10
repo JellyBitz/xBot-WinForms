@@ -12,6 +12,7 @@ using SecurityAPI;
 using System.Text.RegularExpressions;
 using System.Text;
 using xGraphics;
+using System.Threading;
 
 namespace xBot
 {
@@ -34,8 +35,12 @@ namespace xBot
 		/// <summary>
 		/// Used to show interactive extern minimap.
 		/// </summary>
-		public ChromiumWebBrowser Minimap_wbrChromeMap;
-		private Window()
+		private ChromiumWebBrowser Minimap_wbrChromeMap;
+		/// <summary>
+		/// Advertising window.
+		/// </summary>
+		private Ads advertising;
+    private Window()
 		{
 			InitializeComponent();
 			InitializeFonts(this);
@@ -85,7 +90,7 @@ namespace xBot
 			this.lblHeaderText01.Text = this.ProductName + " -";
 			this.lblHeaderText02.Location = new Point(this.lblHeaderText01.Location.X + this.lblHeaderText01.Size.Width, this.lblHeaderText01.Location.Y);
 			this.lblHeaderText02.Text = "v" + this.ProductVersion;
-
+			advertising = new Ads(this);
 
 			// Vertical tabs
 			// Login
@@ -115,11 +120,15 @@ namespace xBot
 			// Load basic
 			Settings.LoadBotSettings();
 			LoadCommandLine();
+			// Try to load adverstising at 3 seconds
+			ShowAds(3000);
 			// Force visible (because no title)
 			WinAPI.SetForegroundWindow(Handle);
 		}
 		private void Window_Closing(object sender, FormClosingEventArgs e)
 		{
+			if (Bot.Get.Proxy != null)
+				Bot.Get.Proxy.Stop();
 			Cef.Shutdown();
 		}
 		/// <summary>
@@ -158,9 +167,13 @@ namespace xBot
 				{
 					Login_rbnClientless.Checked = true;
 				}
-				else if (args[i].Equals("--goclientless"))
+				else if (cmd.Equals("--goclientless"))
 				{
 					Login_cbxGoClientless.Checked = true;
+				}
+				else if (cmd.Equals("--autorelog"))
+				{
+					Login_cbxAutoRelog.Checked = true;
 				}
 			}
 			// Check if minimum neccesary is correct to start auto login
@@ -172,6 +185,33 @@ namespace xBot
 				Bot.Get.hasAutoLoginMode = true;
 				Control_Click(Login_btnStart, null);
 			}
+		}
+		private void ShowAds(int delay = 0)
+		{
+			string[] data = advertising.LoadAds();
+			if(data != null)
+			{
+				// Load the minibanner if is necessary only
+				if(this.Login_pbxAds.ImageLocation != data[Ads.URL_MINIBANNER])
+					this.Login_pbxAds.Load(data[Ads.URL_MINIBANNER]);
+				this.ToolTips.SetToolTip(Login_pbxAds, data[Ads.TITLE]);
+				(new Thread((ThreadStart)delegate{
+					// Wait at least 3 seconds to show the ads.
+					Thread.Sleep(delay);
+					try
+					{
+						WinAPI.InvokeIfRequired(this, () => {
+							advertising.ShowDialog(this);
+						});
+					}
+					catch { /*Window closed or something else..*/ }
+				})).Start();
+			}
+			else
+			{
+				// Load the default image
+				this.Login_pbxAds.Image = Properties.Resources.ProjexNET_40x40;
+			}	
 		}
 		#region (GUI theme design)
 		/// <summary>
@@ -372,10 +412,11 @@ namespace xBot
 		}
 		public void SetTitle()
 		{
-			WinAPI.InvokeIfRequired(this, () => {
+			WinAPI.InvokeIfRequired(this, () =>
+			{
 				this.Text = this.ProductName;
-				this.lblHeaderText02.Text = "v"+this.ProductVersion;
-				this.NotifyIcon.Text = this.ProductName+" v"+this.ProductVersion+"\nMade by JellyBitz";
+				this.lblHeaderText02.Text = "v" + this.ProductVersion;
+				this.NotifyIcon.Text = this.ProductName + " v" + this.ProductVersion + "\nMade by JellyBitz";
 			});
 		}
 		public void SetTitle(string server, string charname,Process client = null)
@@ -452,8 +493,6 @@ namespace xBot
 					this.WindowState = FormWindowState.Maximized;
 					break;
 				case "btnWinExit":
-					if (Bot.Get.Proxy != null)
-						Bot.Get.Proxy.Stop();
 					Application.Exit();
 					break;
 				case "btnBotStart":
@@ -602,6 +641,9 @@ namespace xBot
 							TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 						}
 					}
+					break;
+				case "Login_pbxAds":
+					ShowAds();
 					break;
 				case "Character_btnAddINT":
 					if (Bot.Get.inGame)
@@ -1638,6 +1680,10 @@ namespace xBot
 			}
 		}
 
+		private void pictureBox1_Click(object sender, EventArgs e)
+		{
+			
+		}
 		public void Minimap_ObjectPointer_Clear()
 		{
 			if (Minimap_wbrChromeMap != null)

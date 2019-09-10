@@ -833,6 +833,11 @@ namespace xBot.Game
 					break;
 			}
 		}
+		public static void CharacterDied(Packet packet)
+		{
+			//byte unkByte01 = packet.ReadByte();
+			// Probably dead cause: 4 = Dead by mob?
+		}
 		private static byte groupSpawnType;
 		private static ushort groupSpawnCount;
 		private static Packet groupSpawnPacket;
@@ -1400,7 +1405,7 @@ namespace xBot.Game
 			Info i = Info.Get;
 			SRObject entity = i.GetEntity(uniqueID);
 
-			// Check if the entity has been despawned (killed) already
+			// Check if the entity has been despawned or killed already
 			if (entity == null)
 				return;
 
@@ -1426,31 +1431,7 @@ namespace xBot.Game
 			}
 			// End of Packet
 
-			// Update dead/alive state
-			if (entity.Contains(SRAttribute.HP)
-				&& (uint)entity[SRAttribute.HP] == 0)
-			{
-				entity[SRAttribute.LifeState] = Types.LifeState.Dead;
-			}
-			else if ((Types.LifeState)entity[SRAttribute.LifeState] != Types.LifeState.Alive)
-			{
-				entity[SRAttribute.LifeState] = Types.LifeState.Alive;
-			}
-
-			// Genrating event
-			if ((uint)entity[SRAttribute.UniqueID] == (uint)i.Character[SRAttribute.UniqueID])
-			{
-				Bot.Get._Event_StateUpdated(updateType);
-			}
-			else if(entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3){
-				// Check if is pet
-        if(entity.ID4 == 1 && (string)entity[SRAttribute.OwnerName] == i.Charname // vehicle
-					|| (entity.ID4 != 1 && (uint)entity[SRAttribute.OwnerUniqueID] == (uint)i.Character[SRAttribute.UniqueID]))
-				{
-					// Check if it's my pet
-					Bot.Get._Event_PetStateUpdated(updateType);
-				}
-			}
+			Bot.Get._Event_EntityStateUpdated(uniqueID,updateType);
 		}
 		public static void EnviromentWheaterUpdate(Packet packet)
 		{

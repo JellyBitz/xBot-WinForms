@@ -444,7 +444,6 @@ namespace xBot
 			{
 				CheckUsingHGP(tUsingHGP, null);
 			}
-				
 		}
 		private void CheckUsingHGP(object sender, ElapsedEventArgs e)
 		{

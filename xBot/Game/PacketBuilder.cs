@@ -277,11 +277,10 @@ namespace xBot.Game
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void GMConsola(Types.GMConsoleAction action,string message)
+		public static void ResurrectAtPresentPoint()
 		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_PET_UNSUMMON_REQUEST);
-			p.WriteByte((byte)action);
-			p.WriteAscii(message);
+			Packet p = new Packet(0x3053);
+			p.WriteByte(2);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		internal class Client
@@ -468,6 +467,13 @@ namespace xBot.Game
 				p.WriteAscii(message);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
+		}
+		public static void GMConsola(Types.GMConsoleAction action, string message)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_PET_UNSUMMON_REQUEST);
+			p.WriteByte((byte)action);
+			p.WriteAscii(message);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 	}
 }

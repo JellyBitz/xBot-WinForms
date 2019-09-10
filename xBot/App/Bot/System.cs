@@ -183,7 +183,43 @@ namespace xBot
 
 			this.Event_PartyLeaved();
 		}
-		public void _Event_StateUpdated(Types.EntityStateUpdate type)
+		public void _Event_EntityStateUpdated(uint uniqueID,Types.EntityStateUpdate type)
+		{
+			Info i = Info.Get;
+			SRObject entity = i.GetEntity(uniqueID);
+			// Update dead/alive state
+			switch (type)
+			{
+				case Types.EntityStateUpdate.HP:
+				case Types.EntityStateUpdate.HPMP:
+				case Types.EntityStateUpdate.EntityHPMP:
+					if (entity.Contains(SRAttribute.HP) && (uint)entity[SRAttribute.HP] == 0)
+					{
+						entity[SRAttribute.LifeState] = Types.LifeState.Dead;
+					}
+					else if ((Types.LifeState)entity[SRAttribute.LifeState] != Types.LifeState.Alive)
+					{
+						entity[SRAttribute.LifeState] = Types.LifeState.Alive;
+					}
+					break;
+			}
+			// Generating character event
+			if (uniqueID == (uint)i.Character[SRAttribute.UniqueID])
+			{
+				_Event_StateUpdated(type);
+			}
+			else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
+			{
+				// Check entity is a pet
+				if (entity.ID4 == 1 && (string)entity[SRAttribute.OwnerName] == i.Charname // vehicle
+					|| (entity.ID4 != 1 && (uint)entity[SRAttribute.OwnerUniqueID] == (uint)i.Character[SRAttribute.UniqueID]))
+				{
+					// Check if it's my pet
+					_Event_PetStateUpdated(type);
+				}
+			}
+		}
+		private void _Event_StateUpdated(Types.EntityStateUpdate type)
 		{
 			// Update GUI bars
 			Window w = Window.Get;

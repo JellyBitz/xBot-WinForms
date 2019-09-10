@@ -20,7 +20,7 @@ namespace xBot
 		/// </summary>
 		private void Event_Disconnected()
 		{
-			// Start relogin, etc
+			
 		}
 		/// <summary>
 		/// Called when on character selection but only if the AutoLogin fails.
@@ -174,25 +174,36 @@ namespace xBot
 		/// </summary>
 		private void Event_StateUpdated(Types.EntityStateUpdate type)
 		{
-			switch (type)
+			Info i = Info.Get;
+			if ((Types.LifeState)i.Character[SRAttribute.LifeState] == Types.LifeState.Alive)
 			{
-				case Types.EntityStateUpdate.HP:
-					CheckUsingHP();
-					CheckUsingVigor();
-					break;
-				case Types.EntityStateUpdate.MP:
-					CheckUsingMP();
-					CheckUsingVigor();
-					break;
-				case Types.EntityStateUpdate.HPMP:
-					CheckUsingHP();
-					CheckUsingMP();
-					CheckUsingVigor();
-					break;
-				case Types.EntityStateUpdate.BadStatus:
-					CheckUsingUniversal();
-					CheckUsingPurification();
-					break;
+				switch (type)
+				{
+					case Types.EntityStateUpdate.HP:
+						CheckUsingHP();
+						CheckUsingVigor();
+						break;
+					case Types.EntityStateUpdate.MP:
+						CheckUsingMP();
+						CheckUsingVigor();
+						break;
+					case Types.EntityStateUpdate.HPMP:
+						CheckUsingHP();
+						CheckUsingMP();
+						CheckUsingVigor();
+						break;
+					case Types.EntityStateUpdate.BadStatus:
+						CheckUsingUniversal();
+						CheckUsingPurification();
+						break;
+				}
+			}
+			else
+			{
+				// Character dead.
+				if((byte)i.Character[SRAttribute.Level] <= 10){
+					PacketBuilder.ResurrectAtPresentPoint();
+				}
 			}
 		}
 		/// <summary>
@@ -331,7 +342,7 @@ namespace xBot
 		public void Event_PartyJoined()
 		{
 			CheckPartyLeaving();
-    }
+		}
 		/// <summary>
 		/// Called when the character has left the party group.
 		/// </summary>

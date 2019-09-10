@@ -56,6 +56,7 @@ namespace xBot.Network
 				SERVER_CHARACTER_ADD_STR_RESPONSE = 0xB050,
 				SERVER_CHARACTER_ADD_INT_RESPONSE = 0xB051,
 				SERVER_CHARACTER_INFO_UPDATE = 0x304E,
+				SERVER_CHARACTER_DIED = 0x3011,
 				SERVER_ENTITY_SPAWN = 0x3015,
 				SERVER_ENTITY_DESPAWN = 0x3016,
 				SERVER_ENTITY_GROUPSPAWN_BEGIN = 0x3017,
@@ -325,6 +326,10 @@ namespace xBot.Network
 			else if (packet.Opcode == Opcode.SERVER_CHARACTER_INFO_UPDATE)
 			{
 				PacketParser.CharacterInfoUpdate(packet);
+			}
+			else if (packet.Opcode == Opcode.SERVER_CHARACTER_DIED)
+			{
+				PacketParser.CharacterDied(packet);
 			}
 			else if (packet.Opcode == Opcode.GLOBAL_XTRAP_IDENTIFICATION && ClientlessMode)
 			{

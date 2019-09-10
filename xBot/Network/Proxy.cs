@@ -686,7 +686,18 @@ namespace xBot.Network
 			});
 
 			if (Bot.Get.inGame)
+			{
 				Bot.Get._Event_Disconnected();
+			}
+
+			// Relogin
+			if (w.Login_cbxAutoRelog.Checked)
+			{
+				(new Thread((ThreadStart)delegate{
+					Thread.Sleep(10000);
+					w.Control_Click(w.Login_btnStart, null);
+				})).Start();
+			}
 		}
 		/// <summary>
 		/// Send packet to the server if exists connection (Gateway/Agent).
