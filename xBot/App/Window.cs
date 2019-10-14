@@ -1725,7 +1725,6 @@ namespace xBot.App
 				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;
 			});
 			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
-				Inventory_lstvItems.Items.Clear();
 				Inventory_lstvItems.EndUpdate();
 			});
 		}
