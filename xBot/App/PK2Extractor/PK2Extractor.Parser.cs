@@ -149,7 +149,7 @@ namespace xBot.App.PK2Extractor
 		private Dictionary<string, string[]> TeleportData;
 		private Dictionary<string, string[]> TeleportBuildings;
 		// Variables frequently used.
-		const byte CPU_BREAK = 1;
+		const byte CPU_BREAK = 0;
 		readonly char[] pk2_split = new char[] { '\t' };
 		const string pk2_lineSplit = "\r\n";
 		const string pk2_lineEnabled = "1\t";
@@ -587,16 +587,25 @@ namespace xBot.App.PK2Extractor
 								skillparams[j] = data[DSKILL.Param1+j];
 
 							// filter extraction
-							if (data[DSKILL.Param1] == "3")
+							switch (data[DSKILL.Param1])
 							{
-								// Buff
-								duration = Params.ReadValue(skillparams, Params.Type.SKILL_DURATION);
-								if(duration == "")
-									duration = "1"; // Infinite
-							}
-							else
-							{
-								duration = "0";
+								case "3":
+								case "10":
+									// Buff
+									duration = Params.ReadValue(skillparams, Params.Type.SKILL_DURATION);
+									if (duration == "")
+									{
+										duration = "1"; // Infinite
+									}
+									else if (duration.StartsWith("-"))
+									{
+										// requires negative value fix
+										duration = ((uint)int.Parse(duration)).ToString();
+                  }
+									break;
+								default:
+									duration = "0";
+									break;
 							}
 
 							// 10% display

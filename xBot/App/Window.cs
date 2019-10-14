@@ -44,6 +44,9 @@ namespace xBot.App
 		private Ads advertising;
 		private Window()
 		{
+			int x = -1875767296;
+			uint y = (uint)x;
+
 			InitializeComponent();
 			InitializeFonts(this);
 			InitializeValues();

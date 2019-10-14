@@ -84,7 +84,7 @@ namespace xBot.Game.Objects
 		public bool Contains(SRProperty name)
 		{
 			return Properties.ContainsKey(name);
-    }
+		}
 		public void CopyFrom(SRObject value)
 		{
 			// A safe copy
@@ -101,12 +101,12 @@ namespace xBot.Game.Objects
 		public bool isType(byte ID1, byte ID2, byte ID3, byte ID4)
 		{
 			return this.ID1 == ID1 && this.ID2 == ID2 && this.ID3 == ID3 && this.ID4 == ID4;
-    }
+		}
 		public SRObject Clone()
 		{
 			return new SRObject(this);
 		}
-    public void LoadDefaultProperties(uint ID,SRType Type)
+		public void LoadDefaultProperties(uint ID,SRType Type)
 		{
 			this.ID = ID;
 			this.Type = Type;
@@ -136,7 +136,7 @@ namespace xBot.Game.Objects
 					break;
 				case SRType.Model:
 					data = i.GetModel(ID);
-          break;
+					break;
 				case SRType.Item:
 					data = i.GetItem(ID);
 					break;
@@ -158,7 +158,7 @@ namespace xBot.Game.Objects
 					break;
 			}
 			LoadDefaultProperties(data);
-    }
+		}
 		public void LoadDefaultProperties(string ServerName,SRType Type)
 		{
 			this.ServerName = ServerName;

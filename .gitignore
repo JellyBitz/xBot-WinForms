@@ -25,5 +25,9 @@ xBot/bin/Debug/Config/
 packages/
 xBot/obj/Debug/
 
+# Release version will be zipped apart with only required files
+xBot/bin/Release/
+xBot/obj/Release/
+
 # To keep temporaly and individually the main changes made in the code
 Changelog.txt

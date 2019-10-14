@@ -292,6 +292,9 @@ namespace xBot.App.PK2Extractor
 			db.Close();
 			pk2.Dispose();
 
+			WinAPI.InvokeIfRequired(this, () => {
+				this.Activate();
+			});
 			w.EnableControl(w.Settings_btnAddSilkroad, true);
 			WinAPI.InvokeIfRequired(w, () => {
 				w.Control_Click(w.Settings_btnLauncherPath, null);
@@ -301,7 +304,7 @@ namespace xBot.App.PK2Extractor
 			});
 			WinAPI.InvokeIfRequired(w, () => {
 				w.Control_Click(w.Settings_btnAddSilkroad, null);
-				WinAPI.SetForegroundWindow(w.Handle);
+				w.Activate();
 			});
 			WinAPI.InvokeIfRequired(this, () => {
 				Close();

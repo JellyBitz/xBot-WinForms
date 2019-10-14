@@ -39,13 +39,17 @@
 
 All commands are **UPPERCASED**. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
 
-Examples from chat below:
->`TRACE JellyBitz`
->`INJECT 3091 false 01`
->`INJECT 3091 01"`
+A few using examples from any chat:
+- `TRACE JellyBitz`
+- `INJECT 3091 false 01`
+- `INJECT 3091 01`
 
 Only the player(s) into the **Leader list** can use this commands
 This commands will work only if you had **checked** the option from **Party > Settings**
+
+#### Tips
+Here are a few functions that you maybe don't know:
+- Right click from the buff list will remove the buff
 
 ---
 > ### **Do you like this Project ?**
@@ -57,8 +61,9 @@ This commands will work only if you had **checked** the option from **Party > Se
 > ##### Credits and special thanks!
 > - Drew "pushedx" Benton for his past work and sources!
 > - DaxterSoul for his time and help about packet structures
+> - [ConfuserEx2](https://github.com/mkaring/ConfuserEx) to let me create a free software!
 >
-> ##### Created on VisualStudio2014 with NET4.6
+> ##### Created on VisualStudio2015 with NET4.6
 > - CefSharp web browser
 > - FontAwesome Icons
 > - Leaflet maps
