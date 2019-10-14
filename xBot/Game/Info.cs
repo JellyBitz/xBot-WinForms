@@ -369,6 +369,13 @@ namespace xBot.Game
 			return new List<SRObject>(PlayersNear.Values);
 		}
 		/// <summary>
+		 /// Returns all near players.
+		 /// </summary>
+		public List<SRObject> GetNPCs()
+		{
+			return (new List<SRObject>(EntityList.Values)).FindAll(e => e.isNPC());
+		}
+		/// <summary>
 		/// Returns all summoned pets players.
 		/// </summary>
 		public List<SRObject> GetPets()
@@ -400,7 +407,7 @@ namespace xBot.Game
 			if (result.Count > 0)
 			{
 				SRObject item = new SRObject(result[0]["item_servername"],SRType.Item);
-        if (item.ID1 == 3 && item.ID2 == 1)
+				if (item.ID1 == 3 && item.ID2 == 1)
 				{
 					item[SRProperty.Plus] = byte.Parse(result[0]["plus"]);
 					item[SRProperty.Durability] = uint.Parse(result[0]["durability"]);
@@ -445,6 +452,19 @@ namespace xBot.Game
 			if (result.Count > 0)
 			{
 				return uint.Parse(result[0]["id"]);
+			}
+			return 0;
+		}
+		/// <summary>
+		/// Gets the teleport destination ID. Return 0 if none is found.
+		/// </summary>
+		public uint GetTeleportDestinationID(string sourceTeleportName, string destinationTeleportName){
+			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '"+sourceTeleportName+"'' and destination LIKE '"+destinationTeleportName+"'";
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+			{
+				return uint.Parse(result[0]["sourceid"]);
 			}
 			return 0;
 		}

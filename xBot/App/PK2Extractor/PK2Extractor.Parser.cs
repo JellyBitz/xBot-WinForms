@@ -1211,48 +1211,40 @@ namespace xBot.App.PK2Extractor
 						data = line.Split(pk2_split, StringSplitOptions.None);
 
 						// Extract name
-						try
+						db.ExecuteQuery("SELECT name,tid2,tid3,tid4 FROM models WHERE id=" + TeleportData[data[1]][3]);
+						List<NameValueCollection> result = db.GetResult();
+						if (result.Count != 0)
 						{
-							name = GetNameReference(TeleportBuildings[TeleportData[data[1]][3]][5]);
-							tid1 = TeleportBuildings[TeleportData[data[1]][3]][9];
-							tid2 = TeleportBuildings[TeleportData[data[1]][3]][10];
-							tid3 = TeleportBuildings[TeleportData[data[1]][3]][11];
-							tid4 = TeleportBuildings[TeleportData[data[1]][3]][12];
+							name = result[0]["name"];
+							tid1 = "1";
+							tid2 = result[0]["tid2"];
+							tid3 = result[0]["tid3"];
+							tid4 = result[0]["tid4"];
 						}
-						catch
+						else
 						{
-							db.ExecuteQuery("SELECT name,tid2,tid3,tid4 FROM models WHERE id=" + TeleportData[data[1]][3]);
-							List<NameValueCollection> result = db.GetResult();
-							if (result.Count != 0)
-							{
-								name = result[0]["name"];
-								tid1 = "1";
-								tid2 = result[0]["tid2"];
-								tid3 = result[0]["tid3"];
-								tid4 = result[0]["tid4"];
-							}
-							else
-							{
-								// Teleports without gate
-								name = GetNameReference(TeleportData[data[1]][4]);
-								tid1 = "4";
-								tid2 = tid3 = tid4 = "0";
-							}
+							// Teleports without gate
+							name = GetNameReference(TeleportData[data[1]][4]);
+							tid1 = "4";
+							tid2 = tid3 = tid4 = "0";
 						}
 						if (name == "")
 							name = TeleportData[data[1]][2]; // Just in case
-
+						
 						// Extract destination
-						destination = GetNameReference(TeleportData[data[2]][4]);
-						if (destination == "")
+						db.ExecuteQuery("SELECT name FROM models WHERE id=" + TeleportData[data[2]][3]);
+						result = db.GetResult();
+						if (result.Count != 0)
 						{
-							db.ExecuteQuery("SELECT name FROM teleportlinks WHERE sourceid=" + data[2]);
-							List<NameValueCollection> result = db.GetResult();
-							if (result.Count != 0)
-								destination = result[0]["name"];
-							else
-								destination = TeleportData[data[1]][2];
+							destination = result[0]["name"];
 						}
+						else
+						{
+							// Teleports without gate
+							destination = GetNameReference(TeleportData[data[2]][4]);
+						}
+						if (destination == "")
+							destination = TeleportData[data[2]][2]; // Just in case
 
 						// 30% display
 						if (rand.Next(1, 1000) <= 300)

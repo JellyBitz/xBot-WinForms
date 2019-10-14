@@ -296,6 +296,31 @@ namespace xBot.App
 						}
 						
 					}
+					else if (message.StartsWith("TELEPORT "))
+					{
+						message = message.Substring(9);
+						// Check params correctly
+						string[] data;
+						if(message.Contains(","))
+							data = message.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+						else
+							data = message.Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries);
+						// IF there is at least 2 params
+						if (data.Length > 1){
+							Info i = Info.Get;
+							// Check if npc name is near
+							SRObject teleportNPC = i.GetNPCs().Find(npc => npc.Name.Equals(data[0], StringComparison.OrdinalIgnoreCase));
+							if(teleportNPC != null)
+							{
+								// Check if the teleport link exists
+								uint teleportID = Info.Get.GetTeleportDestinationID(teleportNPC.Name,data[1]);
+								if (teleportID != 0)
+								{
+									PacketBuilder.UseTeleport((uint)teleportNPC[SRProperty.UniqueID], teleportID);
+                }
+							}
+						}
+					}
 					else if (message == "NOTRACE")
 					{
 						StopTrace();

@@ -1715,6 +1715,11 @@ namespace xBot.App
 				{
 					item.SubItems.Add("Empty");
 				}
+
+				// Add
+				WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+					Inventory_lstvItems.Items.Add(item);
+				});
 			}
 			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
 				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;

@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.3") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.5") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -36,19 +36,20 @@
 |`NOTRACE`| Stop trace
 |`RETURN`| Use a return scroll from inventory
 |`INJECT *Opcode ?Encrypted ?Data`| Inject packet
+|`TELEPORT *SourceName *DestinationName`| Use a teleport
 
 All commands are **UPPERCASED**. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
 
 A few using examples from any chat:
 - `TRACE JellyBitz`
 - `INJECT 3091 false 01`
+- `TELEPORT Ferry ticket seller doji,ferry ticket seller tayun`
 - `INJECT 3091 01`
 
 Only the player(s) into the **Leader list** can use this commands
 This commands will work only if you had **checked** the option from **Party > Settings**
 
-#### Tips
-Here are a few functions that you maybe don't know:
+#### Tips:
 - Right click from the buff list will remove the buff
 
 ---

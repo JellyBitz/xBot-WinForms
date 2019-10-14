@@ -357,6 +357,14 @@ namespace xBot.Game
 			p.WriteByte(0);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void UseTeleport(uint sourceUniqueID,uint destinationID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_USE_REQUEST);
+			p.WriteUInt(sourceUniqueID);
+			p.WriteByte(2); // unknown
+			p.WriteUInt(destinationID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		internal class Client
 		{
 			public static void CreatePickUpPacket(SRObject item, byte inventorySlot)
