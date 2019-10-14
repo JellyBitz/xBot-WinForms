@@ -1,64 +1,64 @@
 # xBot
-[xBot](https://projexbot.blogspot.com/) - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.3") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
 - Clientless support
-- Auto Login from command line
+- Auto Login from [command line](#Command-Line-Options)
 - Auto Potions (Pets & transport included)
 - Auto Party (Party matching included)
-- Chat leader commands controller
+- Leader [commands](#Chat-Leader-Commands) control from chat
 - Character inventory
 - Chatting
 - Minimap
-- Game info viewer, also known as "spy" but better
+- Game info viewer, also known as "Spy" but better!
 - Packet analyzer (Filter & injector included)
 
-#### Command Line Options:
-[code]
--silkroad=@param    - Silkroad name to select
--username=@param    - Game ID
--password=@param    - Game Password
--server=@param      - Game server channel
--captcha=@param     - NOT IMPLEMENTED
--character=@param   - Character name
---clientless        - Use clientless mode
---relogin           - Activate relogin on disconnect
---goclientless      - Try to go clientless mode after joined to the game
---usereturn         - Try to use a return scroll from inventory after joined to the game
-[/code]
+---
+#### Command Line Options :
+| Command | Description |
+| :----: | :--- |
+|`-silkroad=?`| Silkroad name to select
+|`-username=?`| Game ID
+|`-password=?`| Game Password
+|`-server=?`| Game server channel
+|`-captcha=?`| NOT IMPLEMENTED
+|`-character=?`| Character name
+|`--clientless`| Use clientless mode
+|`--relogin`| Activate relogin on disconnect
+|`--goclientless`| Go clientless mode after joined to the game
+|`--usereturn`| Use a return scroll from inventory after joined to the game
 
-#### Chat Leader Commands:
-[code]
-TRACE ?Charname                   - Start trace to player
-NOTRACE                           - Stop trace
-RETURN                            - Try to use a return scroll from inventory
-INJECT *Opcode ?Encrypted ?Data   - Inject a packet
-[/code]
+#### Chat Leader Commands :
+| Command | Description |
+| :---: | :--- |
+|`TRACE ?Charname`| Start trace to player
+|`NOTRACE`| Stop trace
+|`RETURN`| Use a return scroll from inventory
+|`INJECT *Opcode ?Encrypted ?Data`| Inject packet
 
-Only the player(s) into the leader list can use this commands
-But don't worry, this commands will work only if you had `checked` the respective option from `Party > Settings`
+All commands are **UPPERCASED**. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
 
-All commands are UPPERCASED. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
-A few examples below:
-[code]
-"TRACE JellyBitz"
-"INJECT 3091 false 01"
-"INJECT 3091 01"
-[/code]
+Examples from chat below:
+>`TRACE JellyBitz`
+>`INJECT 3091 false 01`
+>`INJECT 3091 01"`
 
-------------
-> **Do you like this Project ?**
-> Support me! [Buy me a coffee <img src="https://twemoji.maxcdn.com/2/72x72/2615.png" width="18" height="18">](https://www.buymeacoffee.com/JellyBitz "Coffee <3")
+Only the player(s) into the **Leader list** can use this commands
+This commands will work only if you had **checked** the option from **Party > Settings**
+
+---
+> ### **Do you like this Project ?**
+> ### Support me! [Buy me a coffee <img src="https://twemoji.maxcdn.com/2/72x72/2615.png" width="18" height="18">](https://www.buymeacoffee.com/JellyBitz "Coffee <3")
 >
 > Made with <img title="Love" src="https://twemoji.maxcdn.com/2/72x72/1f499.png" width="18" height="18"> for Silkroad community. Pull if you want! <img title="JellyBitz" src="https://twemoji.maxcdn.com/2/72x72/1f575.png" width="18" height="18">
 
-#### Credits and special thanks!
-- Drew "pushedx" Benton for his past work and sources!
-- DaxterSoul for his time and help about packet structures
-
-------------
-> ###### Created on VisualStudio2014 with NET4.5
+---
+> ##### Credits and special thanks!
+> - Drew "pushedx" Benton for his past work and sources!
+> - DaxterSoul for his time and help about packet structures
+>
+> ##### Created on VisualStudio2014 with NET4.6
 > - CefSharp web browser
 > - FontAwesome Icons
 > - Leaflet maps

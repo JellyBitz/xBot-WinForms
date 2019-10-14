@@ -13,12 +13,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>xBot</RootNamespace>
     <AssemblyName>xBot</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,6 +46,10 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevIL.NET2, Version=1.1.2619.31671, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DevIL.NET2.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -51,12 +57,16 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.110.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.110.0\lib\net451\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net46\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -82,18 +92,27 @@
     <Compile Include="App\Ads.Designer.cs">
       <DependentUpon>Ads.cs</DependentUpon>
     </Compile>
-    <Compile Include="App\Bot\Events.cs" />
-    <Compile Include="App\Bot\System.cs" />
-    <Compile Include="App\Bot\Checks.cs" />
-    <Compile Include="App\PK2Extractor.cs">
+    <Compile Include="App\Bot\Bot.Events.cs" />
+    <Compile Include="App\Bot\Bot.System.cs" />
+    <Compile Include="App\Bot\Bot.Checks.cs" />
+    <Compile Include="App\PK2Extractor\DDSReader.cs" />
+    <Compile Include="App\PK2Extractor\Pk2Extractor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App\PK2Extractor.Designer.cs">
-      <DependentUpon>PK2Extractor.cs</DependentUpon>
+    <Compile Include="App\PK2Extractor\PK2Extractor.Parser.cs">
+      <DependentUpon>Pk2Extractor.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="App\PK2Extractor\Pk2Extractor.Designer.cs">
+      <DependentUpon>Pk2Extractor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="App\PK2Extractor\Pk2Extractor.Media.cs">
+      <DependentUpon>Pk2Extractor.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="App\Settings.cs" />
     <Compile Include="App\EdxLoader.cs" />
-    <Compile Include="Game\Database.cs" />
+    <Compile Include="App\SQLDatabase.cs" />
     <Compile Include="Game\Info.cs" />
     <Compile Include="Game\Objects\SRCoord.cs" />
     <Compile Include="Game\Objects\SRObject.cs" />
@@ -110,9 +129,9 @@
     <Compile Include="App\Bot\Bot.cs" />
     <Compile Include="App\WinAPI.cs" />
     <Compile Include="App\Fonts.cs" />
-    <Compile Include="PK2ReaderAPI\PK2File.cs" />
-    <Compile Include="PK2ReaderAPI\PK2Folder.cs" />
-    <Compile Include="PK2ReaderAPI\PK2Reader.cs" />
+    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2File.cs" />
+    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Folder.cs" />
+    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Reader.cs" />
     <Compile Include="SecurityAPI\Blowfish.cs" />
     <Compile Include="SecurityAPI\Packet.cs" />
     <Compile Include="SecurityAPI\PacketReader.cs" />
@@ -125,6 +144,10 @@
     </Compile>
     <Compile Include="App\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
+    </Compile>
+    <Compile Include="App\Window.Graphics.cs">
+      <DependentUpon>Window.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,8 +163,8 @@
     <EmbeddedResource Include="App\Ads.resx">
       <DependentUpon>Ads.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="App\PK2Extractor.resx">
-      <DependentUpon>PK2Extractor.cs</DependentUpon>
+    <EmbeddedResource Include="App\PK2Extractor\Pk2Extractor.resx">
+      <DependentUpon>Pk2Extractor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="App\Window.resx">
       <DependentUpon>Window.cs</DependentUpon>
@@ -193,11 +216,10 @@
     <Error Condition="!Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets'))" />
     <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props'))" />
     <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets'))" />
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
   <Import Project="..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" />
   <Import Project="..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.110.0\build\net451\System.Data.SQLite.Core.targets')" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
@@ -206,6 +228,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

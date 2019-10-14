@@ -1,68 +1,31 @@
 ﻿using System.IO;
 using xBot.Game;
 using xBot.Network;
-using System.Timers;
 using xBot.Game.Objects;
 using System.Collections.Generic;
 using System;
+using System.Windows.Forms;
 
-namespace xBot
+namespace xBot.App
 {
 	public partial class Bot
 	{
 		#region (Logical System Controller)
-		/// <summary>
-		/// Cooldown timer.
-		/// </summary>
-		Timer tUsingHP, tUsingMP, tUsingVigor,
-			tUsingUniversal, tUsingPurification,
-			tUsingRecoveryKit, tUsingAbnormalPill,
-			tUsingHGP,
-			tCycleAutoParty;
-
-		private void InitializeTimers()
+		public void _OnConnected()
 		{
-			// Preparing all neccesary timers
-			tUsingHP = new Timer();
-			tUsingMP = new Timer();
-			tUsingVigor = new Timer();
-			tUsingUniversal = new Timer();
-			tUsingPurification = new Timer();
-			tUsingRecoveryKit = new Timer();
-			tUsingAbnormalPill = new Timer();
-			tUsingHGP = new Timer();
-			tCycleAutoParty = new Timer();
+			Window w = Window.Get;
+			w.LogProcess("Logged successfully!");
+			w.EnableControl(w.Login_btnStart, false);
 
-			// A second is enought for any potion cooldown
-			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
-			tUsingUniversal.Interval = tUsingPurification.Interval = 
-			tUsingRecoveryKit.Interval = tUsingAbnormalPill.Interval;
-
-			tCycleAutoParty.Interval = 5000;
-			
-			// Callbacks
-			tUsingHP.Elapsed += CheckUsingHP;
-			tUsingMP.Elapsed += CheckUsingMP;
-			tUsingVigor.Elapsed += CheckUsingVigor;
-			tUsingUniversal.Elapsed += CheckUsingUniversal;
-			tUsingPurification.Elapsed += CheckUsingPurification;
-			tCycleAutoParty.Elapsed += CheckAutoParty;
-			tUsingRecoveryKit.Elapsed += CheckUsingRecoveryKit;
-			tUsingAbnormalPill.Elapsed += CheckUsingAbnormalPill;
-			tUsingHGP.Elapsed += CheckUsingHGP;
+			this.OnConnected();
 		}
-
-		public void _Event_Connected()
-		{
-			this.Event_Connected();
-		}
-		public void _Event_CharacterListing(List<SRObject> CharacterList)
+		public void _OnCharacterListing(List<SRObject> CharacterList)
 		{
 			Window w = Window.Get;
 			// Add to GUI
 			for (int j = 0; j< CharacterList.Count;j++)
 			{
-				System.Windows.Forms.ListViewItem Item = new System.Windows.Forms.ListViewItem();
+				ListViewItem Item = new ListViewItem();
 				Item.Text = CharacterList[j].Name + ((bool)CharacterList[j][SRProperty.isDeleting] ? " (*)" : "");
 				Item.Name = CharacterList[j].Name;
 				Item.SubItems.Add(CharacterList[j][SRProperty.Level].ToString());
@@ -102,9 +65,9 @@ namespace xBot
 			});
 			
 			w.LogProcess("Character selection");
-			this.Event_CharacterListing(CharacterList);
+			this.OnCharacterListing(CharacterList);
 		}
-		public void _Event_Disconnected()
+		public void _OnDisconnected()
 		{
 			inGame = false;
 			inTeleport = false;
@@ -127,6 +90,10 @@ namespace xBot
 			w.Party_Clear();
 			StopTrace();
 
+			w.ClearSkills();
+			w.ClearBuffs();
+			i.BuffList.Clear();
+
 			// Stop timers
 			tUsingHP.Enabled = tUsingMP.Enabled = tUsingVigor.Enabled =
 				tUsingUniversal.Enabled = tUsingPurification.Enabled =
@@ -137,9 +104,9 @@ namespace xBot
 			LoggedFromBot = false;
 			_HWIDSent = false;
 
-			this.Event_Disconnected();
+			this.OnDisconnected();
 		}
-		public void _Event_NicknameChecked(bool available)
+		public void _OnNicknameChecked(bool available)
 		{
 			if (isCreatingCharacter)
 			{
@@ -155,7 +122,7 @@ namespace xBot
 				}
 			}
 		}
-		public void _Event_Teleporting()
+		public void _OnTeleporting()
 		{
 			inTeleport = true;
 
@@ -164,9 +131,11 @@ namespace xBot
 
 			// Reset entity data
 			EntitySelected = 0;
+
 			i.Pets.Clear();
 			i.PlayersNear.Clear();
 			i.EntityList.Clear();
+
 			w.Minimap_ObjectPointer_Clear();
 
 			// Reset party data
@@ -174,23 +143,119 @@ namespace xBot
 			i.PartyList.Clear();
 			w.Party_Clear();
 
-			this.Event_Teleporting();
+			w.ClearSkills();
+			w.ClearBuffs();
+			i.BuffList.Clear();
+
+			this.OnTeleporting();
 		}
-		public void _Event_Teleported()
+		public void _OnCharacterSpawn()
+		{
+			Info i = Info.Get;
+			SRObject character = i.Character;
+			// Initialize basic
+			character[SRProperty.ExpMax] = i.GetExpMax((byte)character[SRProperty.Level]);
+			character[SRProperty.JobExpMax] = i.GetJobExpMax((byte)character[SRProperty.JobLevel], (Types.Job)character[SRProperty.JobType]);
+			// to avoid wrong values hp = hpmax, will be updated at stats packet anyways 
+			character[SRProperty.HP] = character[SRProperty.HPMax];
+			character[SRProperty.MP] = character[SRProperty.MPMax];
+			character[SRProperty.BadStatusFlags] = Types.BadStatus.None;
+
+			// Updating GUI
+			Window w = Window.Get;
+			#region (Character Tab)
+			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
+				w.Character_pgbHP.ValueMaximum = (uint)character[SRProperty.HPMax];
+				w.Character_pgbHP.Value = w.Character_pgbHP.ValueMaximum;
+			});
+			WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
+				w.Character_pgbMP.ValueMaximum = (uint)character[SRProperty.MPMax];
+				w.Character_pgbMP.Value = w.Character_pgbMP.ValueMaximum;
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblLevel, () => {
+				w.Character_lblLevel.Text = "Lv. " + character[SRProperty.Level];
+			});
+			WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
+				w.Character_pgbExp.ValueMaximum = (ulong)character[SRProperty.ExpMax];
+				w.Character_pgbExp.Value = (ulong)character[SRProperty.Exp];
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblJobLevel, () => {
+				w.Character_lblJobLevel.Text = "Job Lv. " + character[SRProperty.JobLevel];
+			});
+			WinAPI.InvokeIfRequired(w.Character_pgbJobExp, () => {
+				w.Character_pgbJobExp.ValueMaximum = (uint)character[SRProperty.JobExpMax];
+				w.Character_pgbJobExp.Value = (uint)character[SRProperty.JobExp];
+			});
+			w.Character_SetGold((ulong)character[SRProperty.Gold]);
+			WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
+				w.Character_lblLocation.Text = i.GetRegion(character.GetPosition().Region);
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblSP, () => {
+				w.Character_lblSP.Text = character[SRProperty.SP].ToString();
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblCoordX, () => {
+				w.Character_lblCoordX.Text = "X : " + character.GetPosition().PosX;
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblCoordY, () => {
+				w.Character_lblCoordY.Text = "Y : " + character.GetPosition().PosY;
+			});
+
+			SRObjectCollection Buffs = (SRObjectCollection)character[SRProperty.Buffs];
+
+			w.Character_lstvBuffs.BeginUpdate();
+			for (int j = 0; j < Buffs.Capacity; j++)
+			{
+				w.AddBuff(Buffs[j]);
+			}
+			w.Character_lstvBuffs.EndUpdate();
+
+			WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
+				w.Character_lblStatPoints.Text = character[SRProperty.StatPoints].ToString();
+				if ((ushort)character[SRProperty.StatPoints] > 0)
+				{
+					w.Character_btnAddSTR.Enabled = w.Character_btnAddINT.Enabled = true;
+				}
+			});
+			#endregion
+
+			#region (Skills Tab)
+			SRObjectCollection Skills = (SRObjectCollection)character[SRProperty.Skills];
+			w.Skills_lstvSkills.BeginUpdate();
+      for (int j = 0; j < Skills.Capacity; j++)
+			{
+				w.AddSkill(Skills[j]);
+      }
+			w.Skills_lstvSkills.EndUpdate();
+			#endregion
+
+			#region (Minimap Tab)
+			SRCoord myPos = character.GetPosition();
+			WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
+				w.Minimap_tbxX.Text = myPos.X.ToString();
+				w.Minimap_tbxY.Text = myPos.Y.ToString();
+				w.Minimap_tbxZ.Text = myPos.Z.ToString();
+				w.Minimap_tbxRegion.Text = myPos.Region.ToString();
+			});
+			w.Minimap_CharacterPointer_Move(myPos);
+			#endregion
+		}
+		public void _OnTeleported()
 		{
 			inTeleport = false;
 
-			Info i = Info.Get;
 			if (!inGame)
 			{
 				inGame = true;
+
+				Info i = Info.Get;
+				Settings.LoadCharacterSettings();
 				Window.Get.SetTitle(i.Server, i.Charname, Proxy.SRO_Client);
-				Event_GameJoined();
+				OnGameJoined();
 			}
 
-			this.Event_Teleported();
+			this.OnTeleported();
 		}
-		public void _Event_Spawn(ref SRObject entity)
+		public void _OnSpawn(ref SRObject entity)
 		{
 			Info i = Info.Get;
 			uint uniqueID = (uint)entity[SRProperty.UniqueID];
@@ -200,9 +265,9 @@ namespace xBot
 			}
 			i.EntityList[uniqueID] = entity;
 			Window.Get.Minimap_ObjectPointer_Add((uint)entity[SRProperty.UniqueID], entity.ServerName, entity.Name,(SRCoord)entity[SRProperty.Position]);
-			Event_Spawn(ref entity);
+			OnSpawn(ref entity);
 		}
-		public void _Event_Despawn(uint uniqueID)
+		public void _OnDespawn(uint uniqueID)
 		{
 			Info i = Info.Get;
 			SRObject entity = i.EntityList[uniqueID];
@@ -213,7 +278,7 @@ namespace xBot
 			i.EntityList.Remove(uniqueID);
 			Window.Get.Minimap_ObjectPointer_Remove(uniqueID);
 		}
-		public void _Event_EntityMovement(ref SRObject entity)
+		public void _OnEntityMovement(ref SRObject entity)
 		{
 			Info i = Info.Get;
 			if ((bool)entity[SRProperty.hasMovement])
@@ -244,7 +309,7 @@ namespace xBot
 				}
 				if (entity.isPlayer())
 				{
-					Event_PlayerMovement(ref entity);
+					OnPlayerMovement(ref entity);
 				}
 				else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
 				{
@@ -256,8 +321,8 @@ namespace xBot
 						if (player != null)
 						{
 							player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
-							player[SRProperty.MovementDate] = entity[SRProperty.MovementDate];
-							_Event_EntityMovement(ref player);
+							player[SRProperty.LastUpdateTimeUtc] = entity[SRProperty.LastUpdateTimeUtc];
+							_OnEntityMovement(ref player);
 						}
 					}
 					else if (entity.ID4 == 2)
@@ -266,15 +331,15 @@ namespace xBot
 						if (player != null && (bool)player[SRProperty.isRiding])
 						{
 							player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
-							player[SRProperty.MovementDate] = entity[SRProperty.MovementDate];
-							Event_PlayerMovement(ref player);
+							player[SRProperty.LastUpdateTimeUtc] = entity[SRProperty.LastUpdateTimeUtc];
+							OnPlayerMovement(ref player);
 						}
 					}
 				}
 				w.Minimap_ObjectPointer_Move((uint)entity[SRProperty.UniqueID], (SRCoord)entity[SRProperty.MovementPosition]);
 			}
 		}
-		public void _Event_EntityStateUpdated(ref SRObject entity, Types.EntityStateUpdate type)
+		public void _OnEntityStateUpdated(ref SRObject entity, Types.EntityStateUpdate type)
 		{
 			// Update dead/alive state
 			switch (type)
@@ -296,7 +361,7 @@ namespace xBot
 			// Generating character event
 			if ((uint)entity[SRProperty.UniqueID] == (uint)i.Character[SRProperty.UniqueID])
 			{
-				_Event_StateUpdated(type);
+				_OnStateUpdated(type);
 			}
 			else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
 			{
@@ -305,11 +370,11 @@ namespace xBot
 					|| (entity.ID4 != 1 && (uint)entity[SRProperty.OwnerUniqueID] == (uint)i.Character[SRProperty.UniqueID]))
 				{
 					// Check if it's my pet
-					_Event_PetStateUpdated(type);
+					_OnPetStateUpdated(type);
 				}
 			}
 		}
-		private void _Event_StateUpdated(Types.EntityStateUpdate type)
+		private void _OnStateUpdated(Types.EntityStateUpdate type)
 		{
 			// Update GUI bars
 			Window w = Window.Get;
@@ -335,9 +400,9 @@ namespace xBot
 					});
 					break;
 			}
-			this.Event_StateUpdated(type);
+			this.OnStateUpdated(type);
 		}
-		public void _Event_ExpReceived(long ExpReceived, long Exp, long ExpMax, byte Level)
+		public void _OnExpReceived(long ExpReceived, long Exp, long ExpMax, byte Level)
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
@@ -364,10 +429,10 @@ namespace xBot
 						w.Character_btnAddSTR.Enabled = w.Character_btnAddINT.Enabled = true;
 					});
 					// Generate bot event
-					Event_LevelUp((byte)i.Character[SRProperty.Level]);
+					OnLevelUp((byte)i.Character[SRProperty.Level]);
 				}
 				// Continue recursivity
-				_Event_ExpReceived((Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)i.Character[SRProperty.ExpMax]), (byte)(Level + 1));
+				_OnExpReceived((Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)i.Character[SRProperty.ExpMax]), (byte)(Level + 1));
 			}
 			else if (ExpReceived + Exp < 0)
 			{
@@ -380,7 +445,7 @@ namespace xBot
 				WinAPI.InvokeIfRequired(w.Character_pgbExp, () => {
 					w.Character_pgbExp.ValueMaximum = (ulong)i.Character[SRProperty.ExpMax];
 				});
-				_Event_ExpReceived(Exp + ExpReceived, (long)((ulong)i.Character[SRProperty.ExpMax]), (long)(ulong)i.Character[SRProperty.ExpMax], (byte)(Level - 1));
+				_OnExpReceived(Exp + ExpReceived, (long)((ulong)i.Character[SRProperty.ExpMax]), (long)(ulong)i.Character[SRProperty.ExpMax], (byte)(Level - 1));
 			}
 			else
 			{
@@ -391,23 +456,29 @@ namespace xBot
 				});
 			}
 		}
-		public void _Event_PetSummoned(uint uniqueID)
+		public void _OnItemPickedUp(SRObject item){
+			
+			// generate statistics
+
+			OnItemPickedUp(item);
+    }
+		public void _OnPetSummoned(uint uniqueID)
 		{
 			Info i = Info.Get;
 			i.Pets[uniqueID] = i.EntityList[uniqueID];
 
-			this.Event_PetSummoned(uniqueID);
+			this.OnPetSummoned(uniqueID);
 		}
-		public void _Event_PetUnsummoned(uint uniqueID)
+		public void _OnPetUnsummoned(uint uniqueID)
 		{
-			Event_PetUnsummoned(uniqueID);
+			OnPetUnsummoned(uniqueID);
 			Info.Get.Pets.Remove(uniqueID);
 		}
-		public void _Event_PetStateUpdated(Types.EntityStateUpdate type)
+		public void _OnPetStateUpdated(Types.EntityStateUpdate type)
 		{
-			Event_PetStateUpdated(type);
+			OnPetStateUpdated(type);
 		}
-		public void _Event_PetExpReceived(ref SRObject pet, long ExpReceived, long Exp, long ExpMax, byte level)
+		public void _OnPetExpReceived(ref SRObject pet, long ExpReceived, long Exp, long ExpMax, byte level)
 		{
 			if (ExpReceived + Exp >= ExpMax)
 			{
@@ -416,7 +487,7 @@ namespace xBot
 				// Update new ExpMax
 				pet[SRProperty.ExpMax] = Info.Get.GetPetExpMax((byte)pet[SRProperty.Level]);
 				// Continue recursivity
-				_Event_PetExpReceived(ref pet, (Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)pet[SRProperty.ExpMax]), (byte)(level + 1));
+				_OnPetExpReceived(ref pet, (Exp + ExpReceived) - ExpMax, 0L, (long)((ulong)pet[SRProperty.ExpMax]), (byte)(level + 1));
 			}
 			else if (ExpReceived + Exp < 0)
 			{
@@ -424,7 +495,7 @@ namespace xBot
 				pet[SRProperty.Level] = (byte)(level - 1);
 				// Update new ExpMax
 				pet[SRProperty.ExpMax] = Info.Get.GetPetExpMax((byte)pet[SRProperty.Level]);
-				_Event_PetExpReceived(ref pet, Exp + ExpReceived, (long)((ulong)pet[SRProperty.ExpMax]), (long)((ulong)pet[SRProperty.ExpMax]), (byte)(level - 1));
+				_OnPetExpReceived(ref pet, Exp + ExpReceived, (long)((ulong)pet[SRProperty.ExpMax]), (long)((ulong)pet[SRProperty.ExpMax]), (byte)(level - 1));
 			}
 			else
 			{
@@ -432,7 +503,7 @@ namespace xBot
 				pet[SRProperty.Exp] = (ulong)(Exp + ExpReceived);
 			}
 		}
-		public void _Event_Chat(Types.Chat type, string player, string message)
+		public void _OnChat(Types.Chat type, string player, string message)
 		{
 			Window w = Window.Get;
 			switch (type)
@@ -486,17 +557,17 @@ namespace xBot
 					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
 					break;
 			}
-			Event_Chat(type, player, message);
+			OnChat(type, player, message);
 		}
-		public void _Event_EntitySelected(uint uniqueID)
+		public void _OnEntitySelected(uint uniqueID)
 		{
 			EntitySelected = uniqueID;
 		}
-		public void _Event_PartyInvitation(uint uniqueID, Types.PartySetup PartySetup)
+		public void _OnPartyInvitation(uint uniqueID, Types.PartySetup PartySetup)
 		{
-			Event_PartyInvitation(Info.Get.EntityList[uniqueID].Name, PartySetup);
+			OnPartyInvitation(Info.Get.EntityList[uniqueID].Name, PartySetup);
 		}
-		public void _Event_PartyJoined(Types.PartySetup PartySetupFlags,Types.PartyPurpose PartyPurposeType)
+		public void _OnPartyJoined(Types.PartySetup PartySetupFlags,Types.PartyPurpose PartyPurposeType)
 		{
 			this.inParty = true;
 			this.PartySetupFlags = PartySetupFlags;
@@ -518,16 +589,16 @@ namespace xBot
 				w.ToolTips.SetToolTip(w.Party_lblCurrentSetup, PartyPurposeType.ToString());
 			});
 
-			this.Event_PartyJoined();
+			this.OnPartyJoined();
     }
-		public void _Event_MemberLeaved(uint joinID)
+		public void _OnMemberLeaved(uint joinID)
 		{
 			Info i = Info.Get;
 
 			SRObject player = i.GetPartyMember(joinID);
 			if (player.Name == i.Charname)
 			{
-				_Event_PartyLeaved();
+				_OnPartyLeaved();
 			}
 			else
 			{
@@ -537,18 +608,18 @@ namespace xBot
 				WinAPI.InvokeIfRequired(w.Party_lstvPartyMembers, () => {
 					w.Party_lstvPartyMembers.Items[joinID.ToString()].Remove();
 				});
-				Event_MemberLeaved();
+				OnMemberLeaved();
 			}
 		}
-		public void _Event_PartyLeaved()
+		public void _OnPartyLeaved()
 		{
 			inParty = false;
 			Info.Get.PartyList.Clear();
 			Window.Get.Party_Clear();
 
-			this.Event_PartyLeaved();
+			this.OnPartyLeaved();
 		}
-		public void _Event_PartyMatchListing(byte pageIndex, byte pageCount, Dictionary<uint, SRPartyMatch> PartyMatches)
+		public void _OnPartyMatchListing(byte pageIndex, byte pageCount, Dictionary<uint, SRPartyMatch> PartyMatches)
 		{
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch, () =>	{
@@ -578,7 +649,7 @@ namespace xBot
 
 			foreach (SRPartyMatch Match in PartyMatches.Values)
 			{
-				System.Windows.Forms.ListViewItem Item = new System.Windows.Forms.ListViewItem();
+				ListViewItem Item = new ListViewItem();
 				Item.Text = Item.Name = Match.Number.ToString();
 				Item.SubItems.Add((Match.isJobMode ? "*" : "") + Match.Owner);
 				Item.SubItems.Add(Match.Title);
@@ -602,72 +673,48 @@ namespace xBot
 				});
 			}
 
-			Event_PartyMatchListing(myMatch);
+			OnPartyMatchListing(myMatch);
 		}
-		public void _Event_StallOpened(bool isMine)
+		public void _OnStallOpened(bool isMine)
 		{
 			inStall = true;
 			if (isMine)
 				hasStall = true;
 		}
-		public void _Event_StallClosed()
+		public void _OnStallClosed()
 		{
 			inStall = hasStall = false;
 		}
-		#endregion
+		public void _OnEntityBuffAdded(uint uniqueID,ref SRObject buff){
+			// Keep on track the buff
+			Info i = Info.Get;
+			i.BuffList[(uint)buff[SRProperty.UniqueID]] = buff;
 
-		#region (HWID setup)
-		/// <summary>
-		/// Gets the context type to save the HWID (Can be Gateway, Agent, or Both)
-		/// </summary>
-		public string HWIDSaveFrom { get { return _HWIDSaveFrom; } }
-		private string _HWIDSaveFrom;
-		/// <summary>
-		/// Gets the context type to send the HWID (Can be Gateway, Agent, or Both)
-		/// </summary>
-		public string HWIDSendTo { get { return _HWIDSendTo; } }
-		private string _HWIDSendTo;
-		private bool _HWIDSent;
-		private bool _HWIDSendOnlyOnce;
-		/// <summary>
-		/// Set the HWID setup.
-		/// </summary>
-		/// <param name="cOp">Client opcode used to save the HWID packet</param>
-		/// <param name="SaveFrom">Save from Gateway/Server/Both</param>
-		/// <param name="sOp">Server opcode used to send the HWID packet</param>
-		/// <param name="SendTo">Send to from Gateway/Server/Both</param>
-		/// <param name="SendOnlyOnce">Send HWID packet only once</param>
-		/// <param name="Data">Packet string format</param>
-		public void SetHWID(ushort cOp, string SaveFrom, ushort sOp, string SendTo, bool SendOnlyOnce)
-		{
-			Agent.Opcode.CLIENT_HWID_RESPONSE = Gateway.Opcode.CLIENT_HWID_RESPONSE = cOp;
-			Agent.Opcode.SERVER_HWID_REQUEST = Gateway.Opcode.SERVER_HWID_REQUEST = sOp;
-			_HWIDSaveFrom = SaveFrom;
-			_HWIDSendTo = SendTo;
-			_HWIDSendOnlyOnce = SendOnlyOnce;
-			_HWIDSent = false;
-		}
-		/// <summary>
-		/// Saves the hwid data to be used later.
-		/// </summary>
-		public void SaveHWID(byte[] data)
-		{
-			Window.Get.LogProcess("HWID Detected : " + WinAPI.ToHexString(data));
-			File.WriteAllBytes("Data\\" + Info.Get.Silkroad + ".hwid", data);
-		}
-		/// <summary>
-		/// Loads the HWID previously saved. Returns null if is not found.
-		/// </summary>
-		public byte[] LoadHWID()
-		{
-			if (_HWIDSendOnlyOnce && _HWIDSent)
-				return null;
-			if (File.Exists("Data\\" + Info.Get.Silkroad + ".hwid"))
+			SRObject entity = i.GetEntity(uniqueID);
+			SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
+
+			Buffs.Add(buff);
+			if (entity == i.Character)
 			{
-				_HWIDSent = true;
-				return File.ReadAllBytes("Data\\" + Info.Get.Silkroad + ".hwid");
+				Window.Get.AddBuff(buff);
 			}
-			return null;
+		}
+		public void _OnEntityBuffRemoved(uint buffUniqueID)
+		{
+			Info i = Info.Get;
+			SRObject buff;
+			if (i.BuffList.TryGetValue(buffUniqueID,out buff))
+			{
+				i.BuffList.Remove(buffUniqueID);
+				SRObject entity = i.GetEntity((uint)buff[SRProperty.OwnerUniqueID]);
+				SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
+
+				Buffs.Remove(buff);
+				if (i.Character == entity)
+				{
+					Window.Get.RemoveBuff(buff.ID);
+				}
+			}
 		}
 		#endregion
 	}

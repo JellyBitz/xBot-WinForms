@@ -1,6 +1,6 @@
-﻿namespace xBot
+﻿namespace xBot.App.PK2Extractor
 {
-	partial class PK2Extractor
+	partial class Pk2Extractor
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -33,7 +33,6 @@
 			this.rtbxLogs = new System.Windows.Forms.RichTextBox();
 			this.pnlLogs = new System.Windows.Forms.Panel();
 			this.panelWindow = new System.Windows.Forms.Panel();
-			this.cmbxLanguage = new System.Windows.Forms.ComboBox();
 			this.lblHeaderIcon = new System.Windows.Forms.Label();
 			this.btnStart = new System.Windows.Forms.Button();
 			this.tbxBlowfishKey = new System.Windows.Forms.TextBox();
@@ -80,7 +79,7 @@
 			this.rtbxLogs.TabIndex = 5;
 			this.rtbxLogs.TabStop = false;
 			this.rtbxLogs.Tag = "Source Sans Pro";
-			this.rtbxLogs.Text = " PK2 Extractor v1.0.0 - Made by JellyBitz";
+			this.rtbxLogs.Text = " PK2 Extractor v1.1.0 - Made by JellyBitz";
 			this.rtbxLogs.TextChanged += new System.EventHandler(this.RichTextBox_TextChanged_AutoScroll);
 			// 
 			// pnlLogs
@@ -95,7 +94,6 @@
 			// panelWindow
 			// 
 			this.panelWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.panelWindow.Controls.Add(this.cmbxLanguage);
 			this.panelWindow.Controls.Add(this.lblHeaderIcon);
 			this.panelWindow.Controls.Add(this.btnStart);
 			this.panelWindow.Controls.Add(this.tbxBlowfishKey);
@@ -107,28 +105,6 @@
 			this.panelWindow.Name = "panelWindow";
 			this.panelWindow.Size = new System.Drawing.Size(398, 247);
 			this.panelWindow.TabIndex = 8;
-			// 
-			// cmbxLanguage
-			// 
-			this.cmbxLanguage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.cmbxLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cmbxLanguage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.cmbxLanguage.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.cmbxLanguage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.cmbxLanguage.FormattingEnabled = true;
-			this.cmbxLanguage.Items.AddRange(new object[] {
-            "Default",
-            "English",
-            "Korean",
-            "Vietnam"});
-			this.cmbxLanguage.Location = new System.Drawing.Point(230, 56);
-			this.cmbxLanguage.MaxDropDownItems = 5;
-			this.cmbxLanguage.Name = "cmbxLanguage";
-			this.cmbxLanguage.Size = new System.Drawing.Size(87, 28);
-			this.cmbxLanguage.Sorted = true;
-			this.cmbxLanguage.TabIndex = 18;
-			this.cmbxLanguage.Tag = "Source Sans Pro";
-			this.toolTips.SetToolTip(this.cmbxLanguage, "Language");
 			// 
 			// lblHeaderIcon
 			// 
@@ -142,16 +118,16 @@
 			// btnStart
 			// 
 			this.btnStart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.btnStart.FlatAppearance.BorderSize = 0;
+			this.btnStart.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
 			this.btnStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
 			this.btnStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
 			this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnStart.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
 			this.btnStart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.btnStart.Location = new System.Drawing.Point(322, 56);
+			this.btnStart.Location = new System.Drawing.Point(287, 56);
 			this.btnStart.Margin = new System.Windows.Forms.Padding(0);
 			this.btnStart.Name = "btnStart";
-			this.btnStart.Size = new System.Drawing.Size(65, 28);
+			this.btnStart.Size = new System.Drawing.Size(100, 28);
 			this.btnStart.TabIndex = 15;
 			this.btnStart.Tag = "Source Sans Pro";
 			this.btnStart.Text = "Start";
@@ -168,7 +144,7 @@
 			this.tbxBlowfishKey.Location = new System.Drawing.Point(165, 56);
 			this.tbxBlowfishKey.MaxLength = 6;
 			this.tbxBlowfishKey.Name = "tbxBlowfishKey";
-			this.tbxBlowfishKey.Size = new System.Drawing.Size(60, 28);
+			this.tbxBlowfishKey.Size = new System.Drawing.Size(110, 28);
 			this.tbxBlowfishKey.TabIndex = 12;
 			this.tbxBlowfishKey.Tag = "Source Sans Pro";
 			this.tbxBlowfishKey.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -204,7 +180,7 @@
 			this.lblHeader.Size = new System.Drawing.Size(398, 42);
 			this.lblHeader.TabIndex = 16;
 			this.lblHeader.Tag = "Source Sans Pro";
-			this.lblHeader.Text = "PK2 Extractor";
+			this.lblHeader.Text = "Pk2 Extractor";
 			this.lblHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Window_Drag_MouseDown);
 			// 
@@ -226,7 +202,7 @@
 			this.lblProcessState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblProcessState.UseMnemonic = false;
 			// 
-			// PK2Extractor
+			// Pk2Extractor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -236,7 +212,7 @@
 			this.Controls.Add(this.panelWindow);
 			this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.Name = "PK2Extractor";
+			this.Name = "Pk2Extractor";
 			this.Padding = new System.Windows.Forms.Padding(1);
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
@@ -260,6 +236,5 @@
 		private System.Windows.Forms.Label lblHeaderIcon;
 		private System.Windows.Forms.ToolTip toolTips;
 		private System.Windows.Forms.Label lblProcessState;
-		public System.Windows.Forms.ComboBox cmbxLanguage;
 	}
 }

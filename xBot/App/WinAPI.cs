@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace xBot
+namespace xBot.App
 {
 	/// <summary>
 	/// API static class to handle windows methods and utility extensions.
@@ -159,6 +159,27 @@ namespace xBot
 			Timer.Stop();
 			Timer.Interval = newInterval;
 			Timer.Start();
+		}
+		/// <summary>
+		/// Delete a directory and all his files recursively.
+		/// </summary>
+		public static void DirectoryDelete(string Path)
+		{
+			string[] files = Directory.GetFiles(Path);
+			string[] dirs = Directory.GetDirectories(Path);
+
+			foreach (string file in files)
+			{
+				File.SetAttributes(file, FileAttributes.Normal);
+				File.Delete(file);
+			}
+
+			foreach (string dir in dirs)
+			{
+				DirectoryDelete(dir);
+			}
+
+			Directory.Delete(Path, false);
 		}
 		#endregion
 	}

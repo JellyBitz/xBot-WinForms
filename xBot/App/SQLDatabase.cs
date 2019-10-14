@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SQLite;
 using System.IO;
-namespace xBot.Game
+namespace xBot.App
 {
-	public class Database
+	public class SQLDatabase
 	{
-		/// <summary>
-		/// Unique name to identify the silkroad database.
-		/// </summary>
-		public string Name { get; }
-		public string FileName { get; }
+		private string Path { get; }
 		private SQLiteConnection db;
 		private SQLiteCommand q;
-		public Database(string Name)
+		public SQLDatabase(string Path)
 		{
-			this.Name = Name;
-			this.FileName = "Data\\" + Name + ".db";
+			this.Path = Path;
 		}
 		/// <summary>
 		/// Creates a zero-byte database file to be used correctly by SQLite. Return success.
@@ -26,7 +20,7 @@ namespace xBot.Game
 		{
 			try
 			{
-				SQLiteConnection.CreateFile(FileName);
+				SQLiteConnection.CreateFile(Path);
 				return true;
 			}
 			catch { return false; }
@@ -38,7 +32,7 @@ namespace xBot.Game
 		{
 			try
 			{
-				db = new SQLiteConnection("Data Source=" + FileName + ";Version=3;");
+				db = new SQLiteConnection("Data Source=" + Path + ";Version=3;");
 				q = new SQLiteCommand(db);
 				db.Open();
 				return true;
@@ -123,18 +117,16 @@ namespace xBot.Game
 				db = null;
 			}
 		}
-		public static bool Exists(string Name)
+		public static bool Exists(string Path)
 		{
-			return File.Exists("Data\\" + Name + ".db");
+			return File.Exists(Path);
 		}
-		public static bool Delete(string Name)
+		public static bool TryDelete(string Path)
 		{
 			try
 			{
-				if (Exists(Name))
-				{
-					File.Delete("Data\\" + Name + ".db");
-				}
+				if (Exists(Path))
+					File.Delete(Path);
 				return true;
 			}
 			catch { return false; }

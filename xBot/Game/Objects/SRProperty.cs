@@ -256,7 +256,15 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="uint"/>[]</para>
 		/// </summary>
 		NPCModelID,
-    Duration,
+		/// <summary>
+		/// Duration at miliseconds.
+		/// <para>Type : <see cref="uint"/></para>
+		/// </summary>
+		Duration,
+		/// <summary>
+		/// Max. duration at miliseconds.
+		/// <para>Type : <see cref="uint"/></para>
+		/// </summary>
 		DurationMax,
 		Cooldown,
 		Casttime,
@@ -297,6 +305,9 @@ namespace xBot.Game.Objects
 		GuideFlag,
 		JoinID,
 		isGameMaster,
+		/// <summary>
+		/// <para>Type : <see cref="List{T}"/> where T : <see cref="string"/></para>
+		/// </summary>
 		SkillParams,
 		DropUniqueID,
 		/// <summary>
@@ -322,7 +333,12 @@ namespace xBot.Game.Objects
 		StallDecorationType,
 		EquipmentCooldown,
 		SkillID,
-		MovementDate,
+
+		/// <summary>
+		/// Last update at utc time.
+		/// <para>Type : <see cref="DateTime"/></para>
+		/// </summary>
+		LastUpdateTimeUtc,
 		HPMP,
 		Icon,
 		hasTalk,
@@ -339,6 +355,13 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="ushort"/></para>
 		/// </summary>
 		HGP,
+		/// <summary>
+		/// <para>Type : <see cref="uint"/></para>
+		/// </summary>
+		GroupID,
+		/// <summary>
+		/// <para>Type : <see cref="string"/></para>
+		/// </summary>
 		GroupName,
 		PhyAtkMin,
 		PhyAtkMax,

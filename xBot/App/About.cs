@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace xBot
+namespace xBot.App
 {
 	public partial class About : Form
 	{

@@ -99,6 +99,10 @@ namespace xBot.Game.Objects
 		{
 			this[Capacity] = value;
 		}
+		public void Remove(SRObject value)
+		{
+			Objects.Remove(value);
+		}
 		public void RemoveAt(int index)
 		{
 			if (index < Objects.Count)
@@ -107,6 +111,10 @@ namespace xBot.Game.Objects
 					Count--;
 				Objects.RemoveAt(index);
 			}
+		}
+		public SRObject Last()
+		{
+			return this[Capacity-1];
 		}
 		public void Clear()
 		{

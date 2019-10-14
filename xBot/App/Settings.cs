@@ -2,8 +2,9 @@
 using System.IO;
 using System.Windows.Forms;
 using xBot.Game;
+using xBot.Game.Objects;
 
-namespace xBot
+namespace xBot.App
 {
 	public static class Settings{
 		/// <summary>
@@ -357,15 +358,63 @@ namespace xBot
 					Match["AcceptPartyList"] = w.Party_cbxMatchAcceptPartyList.Checked;
 					Match["AcceptLeaderList"] = w.Party_cbxMatchAcceptLeaderList.Checked;
 					Match["Refuse"] = w.Party_cbxMatchRefuse.Checked;
+					#endregion
 
+					#region (Skills Tab)
+					JObject Skills = new JObject();
+					root["Skills"] = Skills;
+
+					JObject Attack = new JObject();
+					Skills["Attack"] = Attack;
+
+					JArray skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_General.Items)
+						skills.Add(item.Text);
+					Attack["General"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Champion.Items)
+						skills.Add(item.Text);
+					Attack["Champion"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Giant.Items)
+						skills.Add(item.Text);
+					Attack["Giant"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_PartyGeneral.Items)
+						skills.Add(item.Text);
+					Attack["PartyGeneral"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_PartyChampion.Items)
+						skills.Add(item.Text);
+					Attack["PartyChampion"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_PartyGiant.Items)
+						skills.Add(item.Text);
+					Attack["PartyGiant"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Unique.Items)
+						skills.Add(item.Text);
+					Attack["Unique"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Elite.Items)
+						skills.Add(item.Text);
+					Attack["Elite"] = skills;
+					skills = new JArray();
+					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Event.Items)
+						skills.Add(item.Text);
+					Attack["Event"] = skills;
+					#endregion
+
+					#region (Training Tab)
 					JObject Training = new JObject();
-					Party["Training"] = Training;
+					root["Training"] = Training;
 
-					JObject Area = new JObject();
-					Party["Area"] = Area;
-					Area["TracePartyMaster"] = w.Training_cbxTraceMaster.Checked;
-					Area["UseTraceDistance"] = w.Training_cbxTraceDistance.Checked;
-					Area["TraceDistance"] = w.Training_tbxTraceDistance.Text;
+					JObject Trace = new JObject();
+					Training["Trace"] = Trace;
+
+					Trace["TracePartyMaster"] = w.Training_cbxTraceMaster.Checked;
+					Trace["UseTraceDistance"] = w.Training_cbxTraceDistance.Checked;
+					Trace["TraceDistance"] = w.Training_tbxTraceDistance.Text;
 					#endregion
 
 					// Saving
@@ -426,6 +475,8 @@ namespace xBot
 					root = JObject.Parse(File.ReadAllText(path));
 
 				Window w = Window.Get;
+				Info i = Info.Get;
+
 				#region (Character Tab)
 				JObject Character = root.ContainsKey("Character") ? (JObject)root["Character"] : new JObject();
 
@@ -599,7 +650,7 @@ namespace xBot
 					}
 				}
 				w.Party_lstvLeaderList.Items.Clear();
-        if (Options.ContainsKey("LeaderList"))
+				if (Options.ContainsKey("LeaderList"))
 				{
 					foreach (JToken leader in (JArray)Options["LeaderList"])
 					{
@@ -642,6 +693,148 @@ namespace xBot
 					w.Party_cbxMatchRefuse.Checked = (bool)Match["Refuse"];
 				else
 					w.Party_cbxMatchRefuse.Checked = false;
+				#endregion
+
+				#region (Skills Tab)
+				JObject Skills = root.ContainsKey("Skills") ? (JObject)root["Skills"] : new JObject();
+				SRObjectCollection charSkills = (SRObjectCollection)i.Character[SRProperty.Skills];
+
+				JObject Attack = Skills.ContainsKey("Attack") ? (JObject)Skills["Attack"] : new JObject();
+				w.Skills_lstvAttackMobType_General.Items.Clear();
+				if (Attack.ContainsKey("General"))
+				{
+					foreach (JToken token in (JArray)Attack["General"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_General.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_Champion.Items.Clear();
+				if (Attack.ContainsKey("Champion"))
+				{
+					foreach (JToken token in (JArray)Attack["Champion"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_Champion.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_Giant.Items.Clear();
+				if (Attack.ContainsKey("Giant"))
+				{
+					foreach (JToken token in (JArray)Attack["Giant"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_Giant.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_PartyGeneral.Items.Clear();
+				if (Attack.ContainsKey("PartyGeneral"))
+				{
+					foreach (JToken token in (JArray)Attack["PartyGeneral"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_PartyGeneral.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_PartyChampion.Items.Clear();
+				if (Attack.ContainsKey("PartyChampion"))
+				{
+					foreach (JToken token in (JArray)Attack["PartyChampion"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_PartyChampion.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_PartyGiant.Items.Clear();
+				if (Attack.ContainsKey("PartyGiant"))
+				{
+					foreach (JToken token in (JArray)Attack["PartyGiant"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_PartyGiant.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_Unique.Items.Clear();
+				if (Attack.ContainsKey("Unique"))
+				{
+					foreach (JToken token in (JArray)Attack["Unique"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_Unique.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_Elite.Items.Clear();
+				if (Attack.ContainsKey("Elite"))
+				{
+					foreach (JToken token in (JArray)Attack["Elite"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_Elite.Items.Add(item);
+						}
+					}
+				}
+				w.Skills_lstvAttackMobType_Event.Items.Clear();
+				if (Attack.ContainsKey("Event"))
+				{
+					foreach (JToken token in (JArray)Attack["Event"])
+					{
+						string skillName = (string)token;
+						SRObject skill = charSkills.Find(s => s.Name == skillName);
+						if (skill != null)
+						{
+							ListViewItem item = new ListViewItem(skillName);
+							item.Name = skill.ID.ToString();
+							w.Skills_lstvAttackMobType_Event.Items.Add(item);
+						}
+					}
+				}
 				#endregion
 
 				#region (Training Tab)

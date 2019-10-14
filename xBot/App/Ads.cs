@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using CefSharp;
 using System.Net;
 
-namespace xBot
+namespace xBot.App
 {
 	public partial class Ads : Form
 	{

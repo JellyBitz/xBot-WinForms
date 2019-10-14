@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using xBot.App;
 using xBot.Game;
 
 namespace xBot.Network
@@ -25,14 +26,16 @@ namespace xBot.Network
 				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
 				CLIENT_CHARACTER_EMOTE_USE = 0x3091,
 				CLIENT_CHARACTER_AUTORESURRECTION = 0x3053,
-				CLIENT_INVENTORY_ITEM_USE = 0x704C,
+				CLIENT_CHARACTER_ACTION_REQUEST = 0x7074,
+        CLIENT_INVENTORY_ITEM_USE = 0x704C,
 				CLIENT_INVENTORY_ITEM_MOVEMENT = 0x7034,
 				CLIENT_STORAGE_DATA_REQUEST = 0x703C,
 				CLIENT_ENTITY_SELECTION = 0x7045,
 				CLIENT_CHAT_REQUEST = 0x7025,
-				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
+				CLIENT_MAIL_SEND_REQUEST = 0x7309,
+        CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
 				CLIENT_PARTY_CREATION_REQUEST = 0x7060,
-        CLIENT_PARTY_LEAVE = 0x7061,
+				CLIENT_PARTY_LEAVE = 0x7061,
 				CLIENT_PARTY_INVITATION_REQUEST = 0x7062,
 				CLIENT_PARTY_BANISH_REQUEST = 0x7063,
 				CLIENT_PARTY_MATCH_CREATION_REQUEST = 0x7069,
@@ -46,9 +49,12 @@ namespace xBot.Network
 				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
 				CLIENT_PET_MOUNTED = 0x70CB,
 				CLIENT_PET_DESTROY = 0x706C,
-				CLIENT_STALL_OPEN_REQUEST = 0x70B1,
-				CLIENT_STALL_CLOSE_REQUEST = 0x70B2,
-				CLIENT_STALL_ANOTATION_REQUEST = 0x70BA,
+				CLIENT_STALL_CREATE_REQUEST = 0x70B1,
+				CLIENT_STALL_DESTROY_REQUEST = 0x70B2,
+				CLIENT_STALL_TALK_REQUEST = 0x70B3,
+				CLIENT_STALL_BUY_REQUEST = 0x70B4,
+				CLIENT_STALL_LEAVE_REQUEST = 0x70B5,
+				CLIENT_STALL_UPDATE_REQUEST = 0x70BA,
 				CLIENT_MASTERY_SKILL_LEVELUP_REQUEST = 0x70A1,
 				CLIENT_MASTERY_LEVELUP_REQUEST = 0x70A2,
 				CLIENT_TELEPORT_USE_REQUEST = 0x705A,
@@ -75,6 +81,9 @@ namespace xBot.Network
 				SERVER_STORAGE_DATA = 0x3049,
 				SERVER_STORAGE_DATA_END = 0x3048,
 				SERVER_ENTITY_SELECTION = 0xB045,
+				SERVER_ENTITY_SKILL_USE = 0xB070,
+				SERVER_ENTITY_SKILL_BUFF_ADDED = 0xB0BD,
+				SERVER_ENTITY_SKILL_BUFF_REMOVED = 0xB072,
 				SERVER_ENTITY_SPAWN = 0x3015,
 				SERVER_ENTITY_DESPAWN = 0x3016,
 				SERVER_ENTITY_GROUPSPAWN_BEGIN = 0x3017,
@@ -82,16 +91,17 @@ namespace xBot.Network
 				SERVER_ENTITY_GROUPSPAWN_DATA = 0x3019,
 				SERVER_ENTITY_MOVEMENT = 0xB021,
 				SERVER_ENTITY_MOVEMENT_STUCK = 0xB023,
-        SERVER_ENTITY_LEVEL_UP = 0x3054,
+				SERVER_ENTITY_LEVEL_UP = 0x3054,
 				SERVER_ENTITY_STATE_UPDATE = 0x3057,
 				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
 				SERVER_ENTITY_SPEED_UPDATE = 0x30D0,
 				SERVER_ENTITY_MOTION_UPDATE = 0x30BF,
-				SERVER_ENTITY_STALL_CREATED = 0x30B8,
-				SERVER_ENTITY_STALL_CLOSED = 0x30B9,
+				SERVER_ENTITY_STALL_CREATE = 0x30B8,
+				SERVER_ENTITY_STALL_DESTROY = 0x30B9,
 				SERVER_ENTITY_EMOTE_USE = 0x3091,
 				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
 				SERVER_CHAT_UPDATE = 0x3026,
+				SERVER_MAIL_SEND_RESPONSE = 0xB309,
 				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
 				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
 				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
@@ -108,11 +118,12 @@ namespace xBot.Network
 				SERVER_PET_UPDATE = 0x30C9,
 				SERVER_PET_SETTINGS_CHANGE_RESPONSE = 0xB420,
 				SERVER_PET_PLAYER_MOUNTED = 0xB0CB,
-				SERVER_STALL_OPEN_RESPONSE = 0xB0B1,
-				SERVER_STALL_CLOSE_RESPONSE = 0xB0B2,
-				SERVER_STALL_PLAYER_OPEN_RESPONSE = 0xB0B3,
-				SERVER_STALL_PLAYER_CLOSE_RESPONSE = 0xB0B5,
-				SERVER_STALL_ANOTATION_RESPONSE = 0xB0BA,
+				SERVER_STALL_CREATE_RESPONSE = 0xB0B1,
+				SERVER_STALL_DESTROY_RESPONSE = 0xB0B2,
+				SERVER_STALL_TALK_RESPONSE = 0xB0B3,
+				SERVER_STALL_BUY_RESPONSE = 0xB0B4,
+				SERVER_STALL_LEAVE_RESPONSE = 0xB0B5,
+				SERVER_STALL_UPDATE_RESPONSE = 0xB0BA,
 				SERVER_STALL_CLOSED = 0x30B9,
 				SERVER_MASTERY_SKILL_LEVELUP_RESPONSE = 0xB0A1,
 				SERVER_MASTERY_LEVELUP_RESPONSE = 0xB0A2,
@@ -206,7 +217,7 @@ namespace xBot.Network
 					break;
 				case Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN:
 					if(!ClientlessMode)
-						Bot.Get._Event_Teleported();
+						Bot.Get._OnTeleported();
 					break;
 				case Opcode.CLIENT_CHAT_REQUEST:
 					{
@@ -267,24 +278,20 @@ namespace xBot.Network
           break;
 				case Opcode.SERVER_AUTH_RESPONSE:
 					{
-						Window w = Window.Get;
 						byte success = packet.ReadByte();
 						if (success == 1)
 						{
-							w.LogProcess("Logged successfully!");
-							w.EnableControl(w.Login_btnStart, false);
-
 							// Protocol
 							if (ClientlessMode)
 								PacketBuilder.RequestCharacterList();
 
 							// Generating Bot Event to keep this method clean
-							Bot.Get._Event_Connected();
+							Bot.Get._OnConnected();
 						}
 						else
 						{
 							byte error = packet.ReadByte();
-							w.Log("Login error [" + error + "]");
+							Window.Get.Log("Login error [" + error + "]");
 						}
 					}
 					break;
@@ -309,7 +316,7 @@ namespace xBot.Network
 						InjectToServer(protocol);
 
 						// Generating Bot Events to keep methods clean
-						Bot.Get._Event_Teleported();
+						Bot.Get._OnTeleported();
 
 						protocol = new Packet(Opcode.CLIENT_CONSIGNMENT_LIST_REQUEST);
 						InjectToServer(protocol);
@@ -371,11 +378,20 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_MOTION_UPDATE:
 					PacketParser.EntityMotionUpdate(packet);
 					break;
-				case Opcode.SERVER_ENTITY_STALL_CREATED:
-					PacketParser.EntityStallCreated(packet);
+				case Opcode.SERVER_ENTITY_STALL_CREATE:
+					PacketParser.EntityStallCreate(packet);
 					break;
-				case Opcode.SERVER_ENTITY_STALL_CLOSED:
-					PacketParser.EntityStallClosed(packet);
+				case Opcode.SERVER_ENTITY_STALL_DESTROY:
+					PacketParser.EntityStallDestroy(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SKILL_USE:
+					PacketParser.EntitySkillUse(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SKILL_BUFF_ADDED:
+					PacketParser.EntitySkillBuffAdded(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SKILL_BUFF_REMOVED:
+					PacketParser.EntitySkillBuffRemoved(packet);
 					break;
 				case Opcode.SERVER_ENVIROMENT_CELESTIAL_POSITION:
 					PacketParser.EnviromentCelestialPosition(packet);
@@ -433,17 +449,17 @@ namespace xBot.Network
 				case Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE:
 					PacketParser.InventoryItemStateUpdate(packet);
 					break;
-				case Opcode.SERVER_STALL_OPEN_RESPONSE:
-					PacketParser.StallOpenResponse(packet);
+				case Opcode.SERVER_STALL_CREATE_RESPONSE:
+					PacketParser.StallCreateResponse(packet);
 					break;
-				case Opcode.SERVER_STALL_CLOSE_RESPONSE:
-					PacketParser.StallCloseResponse(packet);
+				case Opcode.SERVER_STALL_DESTROY_RESPONSE:
+					PacketParser.StallDestroyResponse(packet);
 					break;
-				case Opcode.SERVER_STALL_PLAYER_OPEN_RESPONSE:
-					PacketParser.StallPlayerOpenResponse(packet);
+				case Opcode.SERVER_STALL_TALK_RESPONSE:
+					PacketParser.StallTalkResponse(packet);
 					break;
-				case Opcode.SERVER_STALL_PLAYER_CLOSE_RESPONSE:
-					PacketParser.StallPlayerCloseResponse(packet);
+				case Opcode.SERVER_STALL_LEAVE_RESPONSE:
+					PacketParser.StallLeaveResponse(packet);
 					break;
 				case Opcode.SERVER_STORAGE_DATA_BEGIN:
 					PacketParser.StorageDataBegin(packet);

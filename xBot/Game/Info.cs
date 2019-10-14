@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using xBot.App;
+using xBot.App.PK2Extractor;
 using xBot.Game.Objects;
 
 namespace xBot.Game
@@ -10,17 +12,14 @@ namespace xBot.Game
 	/// </summary>
 	public class Info
 	{
+		/// <summary>
+		/// Unique instance of this class.
+		/// </summary>
 		private static Info _this = null;
 		/// <summary>
 		/// Unique name from the Silkroad.
 		/// </summary>
-		public string Silkroad {
-			get {
-				if (db != null)
-					return db.Name;
-				return "";
-			}
-		}
+		public string Silkroad { get; private set; }
 		/// <summary>
 		/// Server name.
 		/// </summary>
@@ -48,8 +47,7 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets the database previouly selected.
 		/// </summary>
-		public Database Database { get { return db; } }
-		private Database db;
+		public SQLDatabase Database { get; private set; }
 		/// <summary>
 		/// The current path to the SR_Client.
 		/// </summary>
@@ -71,6 +69,10 @@ namespace xBot.Game
 		/// </summary>
 		public Dictionary<uint,SRObject> EntityList { get; }
 		/// <summary>
+		/// Keep on track all buffs from near entity.
+		/// </summary>
+		public Dictionary<uint, SRObject> BuffList { get; }
+		/// <summary>
 		/// Gets all party members. The master will be at the first position.
 		/// </summary>
 		public List<SRObject> PartyList { get; }
@@ -87,35 +89,16 @@ namespace xBot.Game
       }
 		}
 		private uint _ServerTime;
-    private DateTime _ServerTimeDate;
-		/// <summary>
-		/// Graphic reference used to display the moon.
-		/// </summary>
-		public ushort Moonphase { get; set; }
-		/// <summary>
-		/// Graphic reference to display day/night times.
-		/// </summary>
-		public byte Hour { get; set; }
-		/// <summary>
-		/// Graphic reference to display day/night times.
-		/// </summary>
-		public byte Minute { get; set; }
-		/// <summary>
-		/// Graphic reference to display wheater.
-		/// </summary>
-		public byte WheaterType { get; set; }
-		/// <summary>
-		/// Graphic reference to display wheater.
-		/// </summary>
-		public byte WheaterIntensity { get; set; }
+		private DateTime _ServerTimeDate;
 		private Info()
 		{
 			Character = null;
 			Pets = new Dictionary<uint, SRObject>();
 			PlayersNear = new Dictionary<string, SRObject>();
 			EntityList = new Dictionary<uint, SRObject>();
+			BuffList = new Dictionary<uint, SRObject>();
 			PartyList = new List<SRObject>();
-			db = null;
+			Database = null;
     }
 		/// <summary>
 		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
@@ -128,28 +111,6 @@ namespace xBot.Game
 					_this = new Info();
 				return _this;
 			}
-		}
-		/// <summary>
-		/// Wheater time to display graphics. Returns format "00:00"
-		/// </summary>
-		public string GetWheaterTime()
-		{
-			return Hour.ToString().PadLeft(2,'0')+":"+Minute.ToString().PadLeft(2, '0');
-		}
-		/// <summary>
-		/// Moonphase to display graphics.
-		/// </summary>
-		public string GetDayTime()
-		{
-			return Moonphase.ToString();
-		}
-		/// <summary>
-		/// Wheater to display graphics.
-		/// </summary>
-		public string GetWheater()
-		{
-			int intensity = (WheaterIntensity * 100 / 255);
-			return ((Types.Wheater)WheaterType).ToString() + " (" + intensity + "%)";
 		}
 		/// <summary>
 		/// Server time generated with the SROTimeStamp.
@@ -177,13 +138,16 @@ namespace xBot.Game
 		/// </summary>
 		/// <param name="name">Database unique name</param>
 		/// <returns></returns>
-		public bool SelectDatabase(string name)
+		public bool SelectDatabase(string SilkroadName)
 		{
-			if (Database.Exists(name))
+			if (Pk2Extractor.DirectoryExists(SilkroadName))
 			{
-				db = new Database(name);
-				return db.Connect();
-			}
+				this.Database = new SQLDatabase(Pk2Extractor.GetDatabasePath(SilkroadName));
+				bool connected = this.Database.Connect();
+        if (connected)
+					this.Silkroad = SilkroadName;
+				return connected;
+      }
 			return false;
 		}
 		/// <summary>
@@ -462,7 +426,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetLastSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRProperty.GroupName] + "' AND level<" + skill[SRProperty.Level]+" ORDER BY level DESC LIMIT 1";
+			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level<" + skill[SRProperty.Level]+" ORDER BY level DESC LIMIT 1";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0){
@@ -475,7 +439,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetNextSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_name='" + skill[SRProperty.GroupName] + "' AND level>" + skill[SRProperty.Level] + " ORDER BY level LIMIT 1";
+			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level>" + skill[SRProperty.Level] + " ORDER BY level LIMIT 1";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)

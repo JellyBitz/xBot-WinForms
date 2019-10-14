@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Timers;
 using xBot.Game;
 using xBot.Game.Objects;
 
-namespace xBot
+namespace xBot.App
 {
 	public partial class Bot
 	{
@@ -14,21 +13,21 @@ namespace xBot
 		/// <summary>
 		/// Called when the account has been logged succesfully and the Agent has been connected.
 		/// </summary>
-		private void Event_Connected()
+		private void OnConnected()
 		{
 
 		}
 		/// <summary>
 		/// Called when the current agent connection is lost.
 		/// </summary>
-		private void Event_Disconnected()
+		private void OnDisconnected()
 		{
 			
 		}
 		/// <summary>
 		/// Called when on character selection but only if the AutoLogin fails.
 		/// </summary>
-		private void Event_CharacterListing(List<SRObject> CharacterList)
+		private void OnCharacterListing(List<SRObject> CharacterList)
 		{
 			Window w = Window.Get;
 			// Select character
@@ -114,7 +113,7 @@ namespace xBot
 		/// <summary>
 		/// Called when the character start loading from any teleport.
 		/// </summary>
-		private void Event_Teleporting()
+		private void OnTeleporting()
 		{
 			if (inGame)
 			{
@@ -123,17 +122,16 @@ namespace xBot
 			else
 			{
 				Window.Get.LogProcess("Loading...");
-				Settings.LoadCharacterSettings();
 			}
 		}
 		/// <summary>
-		/// Just before <see cref="Event_Teleported"/> is called. Generated only once per character login.
+		/// Just before <see cref="OnTeleported"/> is called. Generated only once per character login.
 		/// </summary>
-		private void Event_GameJoined()
+		private void OnGameJoined()
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
-			w.Log("Joined successfully to the game");
+			w.Log("You has been joined to the game");
 			w.LogChatMessage(w.Chat_rtbxAll, "(Welcome)", i.GetUIFormat("UIIT_STT_STARTING_MSG").Replace("\\n", "\n"));
 
 			// Check login options
@@ -149,14 +147,14 @@ namespace xBot
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
 		/// </summary>
-		private void Event_Teleported()
+		private void OnTeleported()
 		{
 			Window.Get.LogProcess("Teleported");
 		}
 		/// <summary>
 		/// Called only when the maximum level has been increased.
 		/// </summary>
-		public void Event_LevelUp(byte level)
+		private void OnLevelUp(byte level)
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
@@ -164,10 +162,18 @@ namespace xBot
 			w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_STRGERR_LEVEL", level));
 			// Up skills, etc..
 		}
+		private void OnItemPickedUp(SRObject item)
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxMessagePicks.Checked)
+			{
+				w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STRGERR_LEVEL", item.Name));
+			}
+		}
 		/// <summary>
 		/// Called when the Health, Mana, or BadStatus from the character has changed.
 		/// </summary>
-		private void Event_StateUpdated(Types.EntityStateUpdate type)
+		private void OnStateUpdated(Types.EntityStateUpdate type)
 		{
 			Info i = Info.Get;
 			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
@@ -204,7 +210,7 @@ namespace xBot
 		/// <summary>
 		/// Called when the Health, or BadStatus from the pet has changed.
 		/// </summary>
-		public void Event_PetStateUpdated(Types.EntityStateUpdate type)
+		private void OnPetStateUpdated(Types.EntityStateUpdate type)
 		{
 			switch (type)
 			{
@@ -222,7 +228,7 @@ namespace xBot
 		/// Called when a pet has been summoned
 		/// </summary>
 		/// <param name="uniqueID"></param>
-		private void Event_PetSummoned(uint uniqueID)
+		private void OnPetSummoned(uint uniqueID)
 		{
 			CheckUsingHGP();
 		}
@@ -230,7 +236,7 @@ namespace xBot
 		/// Called when a pet has been unsummoned
 		/// </summary>
 		/// <param name="uniqueID"></param>
-		private void Event_PetUnsummoned(uint uniqueID)
+		private void OnPetUnsummoned(uint uniqueID)
 		{
 			if (Info.Get.Pets[uniqueID].ID4 == 3){
 				tUsingHGP.Stop();
@@ -239,7 +245,7 @@ namespace xBot
 		/// <summary>
 		/// Called when a message is received.
 		/// </summary>
-		private void Event_Chat(Types.Chat type, string playerName, string message)
+		private void OnChat(Types.Chat type, string playerName, string message)
 		{
 			Window w = Window.Get;
 			if (w.Party_cbxActivateLeaderCommands.Checked && playerName != "")
@@ -304,7 +310,7 @@ namespace xBot
 		/// <summary>
 		/// Called everytime a party invitation is detected.
 		/// </summary>
-		private void Event_PartyInvitation(string playerName, Types.PartySetup PartySetup)
+		private void OnPartyInvitation(string playerName, Types.PartySetup PartySetup)
 		{
 			// Check GUI
 			Window w = Window.Get;
@@ -395,14 +401,14 @@ namespace xBot
 		/// <summary>
 		/// Called when has been joined to the party and all data is loaded.
 		/// </summary>
-		public void Event_PartyJoined()
+		public void OnPartyJoined()
 		{
 			CheckPartyLeaving();
 		}
 		/// <summary>
 		/// Called when the character has left the party group.
 		/// </summary>
-		private void Event_PartyLeaved()
+		private void OnPartyLeaved()
 		{
 			CheckPartyMatchAutoReform();
 			CheckAutoParty();
@@ -410,7 +416,7 @@ namespace xBot
 		/// <summary>
 		/// Called when a member has left the party.
 		/// </summary>
-		private void Event_MemberLeaved()
+		private void OnMemberLeaved()
 		{
 			if (!CheckPartyLeaving()){
 				CheckPartyMatchAutoReform();
@@ -419,7 +425,7 @@ namespace xBot
 		/// <summary>
 		/// Called when a player wants to join to our party match.
 		/// </summary>
-		public void Event_PartyMatchJoinRequest(uint requestID, uint playerJoinID, string playerName)
+		public void OnPartyMatchJoinRequest(uint requestID, uint playerJoinID, string playerName)
 		{
 			Window w = Window.Get;
 			if (w.Party_cbxMatchAutoReform.Checked)
@@ -464,7 +470,7 @@ namespace xBot
 		/// <summary>
 		/// Called when the party match has been updated.
 		/// </summary>
-		public void Event_PartyMatchListing(SRPartyMatch myMatch)
+		public void OnPartyMatchListing(SRPartyMatch myMatch)
 		{
 			Window w = Window.Get;
 			if (myMatch == null)
@@ -496,7 +502,7 @@ namespace xBot
 		/// <summary>
 		/// Called when a (new) entity appears.
 		/// </summary>
-		private void Event_Spawn(ref SRObject entity)
+		private void OnSpawn(ref SRObject entity)
 		{
 
 		}
@@ -504,7 +510,7 @@ namespace xBot
 		/// Called right after a player makes a destination movement.
 		/// </summary>
 		/// <param name="player"></param>
-		private void Event_PlayerMovement(ref SRObject player)
+		private void OnPlayerMovement(ref SRObject player)
 		{
 			if (inTrace)
 			{
@@ -560,7 +566,7 @@ namespace xBot
 		/// <summary>
 		/// Called when a player is giving you resurrection request
 		/// </summary>
-		public void Event_Resurrection(uint uniqueID)
+		public void OnResurrection(uint uniqueID)
 		{
 			Window w = Window.Get;
 

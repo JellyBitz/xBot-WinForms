@@ -241,6 +241,7 @@ namespace xBot.Game.Objects
 				case SRType.Skill:
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
+					this[SRProperty.GroupID] = data["group_id"];
 					this[SRProperty.GroupName] = data["group_name"];
 					this[SRProperty.Cooldown] = uint.Parse(data["cooldown"]);
 					this[SRProperty.DurationMax] = uint.Parse(data["duration"]);
@@ -266,7 +267,7 @@ namespace xBot.Game.Objects
 		{
 			TreeNode root = new TreeNode();
 			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + Type + ")"));
-
+			// Node name to show
 			string text;
 			if (Type == SRType.Model
 				&& ID1 == 1 && ID2 == 2 && ID3 == 3 && (ID4 == 3 || ID4 == 4))
@@ -282,8 +283,7 @@ namespace xBot.Game.Objects
 				text = this.Name;
 			}
 			root.Text = text;
-
-
+			// Header info
 			switch (Type)
 			{
 				case SRType.Model:
@@ -291,14 +291,8 @@ namespace xBot.Game.Objects
 				case SRType.Teleport:
 					root.Nodes.Add(new TreeNode("Type ID's [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]"));
 					break;
-				case SRType.Mastery:
-
-					break;
-				case SRType.Skill:
-
-					break;
 			}
-
+			// Print all the nodes
 			foreach (KeyValuePair<SRProperty, object> Property in Properties)
 			{
 				switch (Property.Value.GetType().Name)
@@ -391,7 +385,7 @@ namespace xBot.Game.Objects
 		}
 		public bool hasAutoTransferEffect()
 		{
-			return ((string[])this[SRProperty.SkillParams])[0] == "1701213281";
+			return Params.Exists((string[])this[SRProperty.SkillParams], Params.Effect.AUTO_TRANSFER);
 		}
 		/// <summary>
 		/// Update the game position.
@@ -421,7 +415,7 @@ namespace xBot.Game.Objects
 				SRCoord PQUnit = new SRCoord((Q.PosX - P.PosX) / PQMod, (Q.PosY - P.PosY) / PQMod);
 
 				double SpeedPerMs = GetSpeed() * 0.1 / 1000;
-				double DistanceMsTillNow = DateTime.UtcNow.Subtract((DateTime)this[SRProperty.MovementDate]).TotalMilliseconds;
+				double DistanceMsTillNow = DateTime.UtcNow.Subtract((DateTime)this[SRProperty.LastUpdateTimeUtc]).TotalMilliseconds;
 				double DistanceMsMaximum = PQMod / SpeedPerMs;
 
 				if (DistanceMsTillNow >= DistanceMsMaximum)
@@ -477,6 +471,22 @@ namespace xBot.Game.Objects
 		public int GetDegreeAngle()
 		{
 			return (ushort)this[SRProperty.Angle] * 360 / 0xFFFF;
+		}
+		public bool isPet()
+		{
+			return ID1 == 1 && ID2 == 2 && ID3 == 3;
+		}
+		public bool isMob()
+		{
+			return ID1 == 1 && ID3 == 1;
+		}
+		public bool isNPC()
+		{
+			return ID1 == 1 && ID2 == 2 && ID3 != 3;
+		}
+		public bool isItem()
+		{
+			return ID1 == 3;
 		}
 		#endregion
 	}

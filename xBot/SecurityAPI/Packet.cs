@@ -635,7 +635,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteDouble(Double value)
+		public void WriteDouble(double value)
 		{
 			lock (m_lock)
 			{
@@ -646,11 +646,11 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteAscii(String value)
+		public void WriteAscii(string value)
 		{
 			WriteAscii(value, 1252);
 		}
-		public void WriteAscii(String value, int code_page)
+		public void WriteAscii(string value, int code_page)
 		{
 			lock (m_lock)
 			{
@@ -667,7 +667,7 @@ namespace SecurityAPI
 				m_writer.Write(bytes);
 			}
 		}
-		public void WriteUnicode(String value)
+		public void WriteUnicode(string value)
 		{
 			lock (m_lock)
 			{
@@ -682,8 +682,7 @@ namespace SecurityAPI
 				m_writer.Write(bytes);
 			}
 		}
-
-		public void WriteUInt8(object value)
+		public void WriteByte(object value)
 		{
 			lock (m_lock)
 			{
@@ -694,7 +693,7 @@ namespace SecurityAPI
 				m_writer.Write((byte)(Convert.ToUInt64(value) & 0xFF));
 			}
 		}
-		public void WriteInt8(object value)
+		public void WriteSByte(object value)
 		{
 			lock (m_lock)
 			{
@@ -705,7 +704,7 @@ namespace SecurityAPI
 				m_writer.Write((sbyte)(Convert.ToInt64(value) & 0xFF));
 			}
 		}
-		public void WriteUInt16(object value)
+		public void WriteUShort(object value)
 		{
 			lock (m_lock)
 			{
@@ -716,7 +715,7 @@ namespace SecurityAPI
 				m_writer.Write((ushort)(Convert.ToUInt64(value) & 0xFFFF));
 			}
 		}
-		public void WriteInt16(object value)
+		public void WriteShort(object value)
 		{
 			lock (m_lock)
 			{
@@ -724,10 +723,10 @@ namespace SecurityAPI
 				{
 					throw new Exception("Cannot Write to a locked Packet.");
 				}
-				m_writer.Write((ushort)(Convert.ToInt64(value) & 0xFFFF));
+				m_writer.Write((short)(Convert.ToInt64(value) & 0xFFFF));
 			}
 		}
-		public void WriteUInt32(object value)
+		public void WriteUInt(object value)
 		{
 			lock (m_lock)
 			{
@@ -738,7 +737,7 @@ namespace SecurityAPI
 				m_writer.Write((uint)(Convert.ToUInt64(value) & 0xFFFFFFFF));
 			}
 		}
-		public void WriteInt32(object value)
+		public void WriteInt(object value)
 		{
 			lock (m_lock)
 			{
@@ -749,7 +748,7 @@ namespace SecurityAPI
 				m_writer.Write((int)(Convert.ToInt64(value) & 0xFFFFFFFF));
 			}
 		}
-		public void WriteUInt64(object value)
+		public void WriteULong(object value)
 		{
 			lock (m_lock)
 			{
@@ -760,7 +759,7 @@ namespace SecurityAPI
 				m_writer.Write(Convert.ToUInt64(value));
 			}
 		}
-		public void WriteInt64(object value)
+		public void WriteLong(object value)
 		{
 			lock (m_lock)
 			{
@@ -1055,7 +1054,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteUInt8(values[x]);
+					WriteByte(values[x]);
 				}
 			}
 		}
@@ -1073,7 +1072,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteInt8(values[x]);
+					WriteSByte(values[x]);
 				}
 			}
 		}
@@ -1091,7 +1090,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteUInt16(values[x]);
+					WriteUShort(values[x]);
 				}
 			}
 		}
@@ -1109,7 +1108,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteInt16(values[x]);
+					WriteShort(values[x]);
 				}
 			}
 		}
@@ -1127,7 +1126,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteUInt32(values[x]);
+					WriteUInt(values[x]);
 				}
 			}
 		}
@@ -1145,7 +1144,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteInt32(values[x]);
+					WriteInt(values[x]);
 				}
 			}
 		}
@@ -1163,7 +1162,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteUInt64(values[x]);
+					WriteULong(values[x]);
 				}
 			}
 		}
@@ -1181,7 +1180,7 @@ namespace SecurityAPI
 				}
 				for (int x = index; x < index + count; ++x)
 				{
-					WriteInt64(values[x]);
+					WriteLong(values[x]);
 				}
 			}
 		}

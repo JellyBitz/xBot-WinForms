@@ -1,4 +1,4 @@
-﻿namespace xBot
+﻿namespace xBot.App
 {
 	partial class Ads
 	{

@@ -6,13 +6,16 @@ using System.IO;
 using xBot.Game;
 using xBot.Game.Objects;
 
-namespace xBot
+namespace xBot.App
 {
 	/// <summary>
 	/// Handle everything about bot logic.
 	/// </summary>
 	public partial class Bot
 	{
+		/// <summary>
+		/// Unique instance of this class.
+		/// </summary>
 		private static Bot _this = null;
 		private Random rand = new Random();
 		/// <summary>
@@ -99,6 +102,61 @@ namespace xBot
 				msg += "[" + packet.Opcode.ToString("X4") + "][" + WinAPI.ToHexString(packet.GetBytes()) + "]" + Environment.NewLine;
 			File.AppendAllText("erros.log", msg);
 		}
+
+		#region (HWID setup)
+		/// <summary>
+		/// Gets the context type to save the HWID (Can be Gateway, Agent, or Both)
+		/// </summary>
+		public string HWIDSaveFrom { get { return _HWIDSaveFrom; } }
+		private string _HWIDSaveFrom;
+		/// <summary>
+		/// Gets the context type to send the HWID (Can be Gateway, Agent, or Both)
+		/// </summary>
+		public string HWIDSendTo { get { return _HWIDSendTo; } }
+		private string _HWIDSendTo;
+		private bool _HWIDSent;
+		private bool _HWIDSendOnlyOnce;
+		/// <summary>
+		/// Set the HWID setup.
+		/// </summary>
+		/// <param name="cOp">Client opcode used to save the HWID packet</param>
+		/// <param name="SaveFrom">Save from Gateway/Server/Both</param>
+		/// <param name="sOp">Server opcode used to send the HWID packet</param>
+		/// <param name="SendTo">Send to from Gateway/Server/Both</param>
+		/// <param name="SendOnlyOnce">Send HWID packet only once</param>
+		/// <param name="Data">Packet string format</param>
+		public void SetHWID(ushort cOp, string SaveFrom, ushort sOp, string SendTo, bool SendOnlyOnce)
+		{
+			Agent.Opcode.CLIENT_HWID_RESPONSE = Gateway.Opcode.CLIENT_HWID_RESPONSE = cOp;
+			Agent.Opcode.SERVER_HWID_REQUEST = Gateway.Opcode.SERVER_HWID_REQUEST = sOp;
+			_HWIDSaveFrom = SaveFrom;
+			_HWIDSendTo = SendTo;
+			_HWIDSendOnlyOnce = SendOnlyOnce;
+			_HWIDSent = false;
+		}
+		/// <summary>
+		/// Saves the hwid data to be used later.
+		/// </summary>
+		public void SaveHWID(byte[] data)
+		{
+			Window.Get.LogProcess("HWID Detected : " + WinAPI.ToHexString(data));
+			File.WriteAllBytes("Data\\" + Info.Get.Silkroad + ".hwid", data);
+		}
+		/// <summary>
+		/// Loads the HWID previously saved. Returns null if is not found.
+		/// </summary>
+		public byte[] LoadHWID()
+		{
+			if (_HWIDSendOnlyOnce && _HWIDSent)
+				return null;
+			if (File.Exists("Data\\" + Info.Get.Silkroad + ".hwid"))
+			{
+				_HWIDSent = true;
+				return File.ReadAllBytes("Data\\" + Info.Get.Silkroad + ".hwid");
+			}
+			return null;
+		}
+		#endregion
 
 		#region (Methods)
 		private void CreateNickname()
@@ -385,8 +443,7 @@ namespace xBot
 				inTrace = true;
 				SetTraceName(PlayerName);
 				Window w = Window.Get;
-				WinAPI.InvokeIfRequired(w.Training_btnTraceStart, () =>
-				{
+				WinAPI.InvokeIfRequired(w.Training_btnTraceStart, () => {
 					w.Training_btnTraceStart.Text = "STOP";
 				});
 				return true;
@@ -395,10 +452,11 @@ namespace xBot
 		}
 		public void SetTraceName(string PlayerName)
 		{
+			// Normalize Key
 			TracePlayerName = PlayerName.Trim().ToUpper();
-
+			// Check if player is around and move it
 			SRObject player;
-      if (Info.Get.PlayersNear.TryGetValue(TracePlayerName, out player)){
+			if (inTrace && Info.Get.PlayersNear.TryGetValue(TracePlayerName, out player)){
 				MoveTo(player.GetPosition());
 			}
 		}
@@ -432,6 +490,80 @@ namespace xBot
 			{
 				PacketBuilder.MoveTo(position);
 			}
+		}
+		/// <summary>
+		/// Try to use and item at the slot specified but only if it's possible to use. Return success.
+		/// </summary>
+		public bool UseItem(byte slotInventory)
+		{
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+      if (slotInventory >= 13 && slotInventory < inventory.Capacity)
+			{
+				if (inventory[slotInventory] != null)
+				{
+					switch (inventory[slotInventory].ID2)
+					{
+						case 2: // Summon scroll
+							PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+							return true;
+						case 3: // Usable
+							switch(inventory[slotInventory].ID3)
+							{
+								case 1: // Potions
+									switch (inventory[slotInventory].ID4)
+									{
+										case 1: // HP
+										case 3: // MP
+										case 2: // Vigor
+											PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+											return true;
+									}
+									break;
+								case 2: // Pills
+									switch (inventory[slotInventory].ID4)
+									{
+										case 1: // Universal
+										case 6: // Purification
+											PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+											return true;
+									}
+									break;
+								case 3: // Event, vehicles, etc.
+									switch (inventory[slotInventory].ID4)
+									{
+										case 1: // All kind of scrolls, even customized ones (it can cause disconnect)
+										case 2: // Vehicle, Transport
+										case 6: // Fortress summon pet
+										case 7: // Fortress summon guard
+										case 9: // Fortress battle flag
+										case 10: // Exp/SP scroll
+										case 11: // Fortress summon unique
+										case 12: // Skill Points scroll
+											PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+											return true;
+									}
+									break;
+								case 13: // Buff scroll
+									PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+									return true;
+								case 15: // Monster scroll
+									PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+									return true;
+							}
+							break;
+					}
+
+					if(inventory[slotInventory].ID2 == 3 )
+					{
+						if (inventory[slotInventory].ID3 >= 1 && inventory[slotInventory].ID3 <= 3)
+						{
+							PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+							return true;
+						}
+					}
+				}
+			}
+			return false;
 		}
 		#endregion
 	}

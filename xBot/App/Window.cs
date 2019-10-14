@@ -4,18 +4,19 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-using xBot.Network;
 using CefSharp;
 using CefSharp.WinForms;
-using xBot.Game;
 using SecurityAPI;
 using System.Text.RegularExpressions;
 using System.Text;
 using xGraphics;
 using System.Threading;
+using xBot.Game;
+using xBot.App.PK2Extractor;
 using xBot.Game.Objects;
+using xBot.Network;
 
-namespace xBot
+namespace xBot.App
 {
 	/// <summary>
 	/// Main bot window GUI that handle all bot events.
@@ -41,7 +42,7 @@ namespace xBot
 		/// Advertising window.
 		/// </summary>
 		private Ads advertising;
-    private Window()
+		private Window()
 		{
 			InitializeComponent();
 			InitializeFonts(this);
@@ -93,6 +94,9 @@ namespace xBot
 
 			TabPageH_Option_Click(this.TabPageH_Party_Option01, null);
 
+			TabPageH_Option_Click(this.TabPageH_Skills_Option01, null);
+			Skills_cmbxAttackMobType.SelectedIndex = 0;
+
 			TabPageH_Option_Click(this.TabPageH_Training_Option01, null);
 
 			TabPageH_Option_Click(this.TabPageH_Chat_Option01, null);
@@ -118,8 +122,9 @@ namespace xBot
 			LoadCommandLine();
 			// Try to load adverstising
 			ShowAds();
-			// Force visible (because no title)
-			WinAPI.SetForegroundWindow(Handle);
+			// Force visible
+			Activate();
+			BringToFront();
 		}
 		private void Window_Closing(object sender, FormClosingEventArgs e)
 		{
@@ -217,159 +222,6 @@ namespace xBot
 				catch { /*Window closed or something else..*/ }
 			})).Start();
 		}
-		#region (GUI theme design)
-		/// <summary>
-		/// Set the control to be used as window drag from the current window.
-		/// </summary>
-		private void Window_Drag_MouseDown(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left)
-			{
-				WinAPI.ReleaseCapture();
-				WinAPI.SendMessage(Handle, WinAPI.WM_NCLBUTTONDOWN, WinAPI.HT_CAPTION, 0);
-			}
-		}
-		/// <summary>
-		/// Colors used on TabPage Vertical.
-		/// </summary>
-		private Color TabPageV_ColorHover = Color.FromArgb(74, 74, 76),
-			TabPageV_ColorSelected = Color.FromArgb(0, 122, 204);
-		/// <summary>
-		///  TabPage Vertical option click.
-		/// </summary>
-		private void TabPageV_Option_Click(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			List<Control> currentOption;
-			if (c.Parent.Tag != null)
-			{
-				currentOption = (List<Control>)c.Parent.Tag;
-				if (currentOption[0].Name == c.Name || currentOption[1].Name == c.Name)
-					return;
-				currentOption[0].BackColor = c.Parent.BackColor;
-				currentOption[1].BackColor = c.Parent.BackColor;
-				c.Parent.Parent.Controls[currentOption[0].Name + "_Panel"].Visible = false;
-			}
-			currentOption = new List<Control>();
-			currentOption.Add(c.Parent.Controls[c.Name.Replace("_Icon", "")]);
-			currentOption.Add(c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"]);
-			c.Parent.Tag = currentOption;
-			currentOption[0].BackColor = TabPageV_ColorSelected;
-			currentOption[1].BackColor = TabPageV_ColorSelected;
-			c.Parent.Parent.Controls[currentOption[1].Name.Replace("Icon", "Panel")].Visible = true;
-		}
-		/// <summary>
-		/// Creates a custom color focus on icon and option used on TabPage Vertical.
-		/// <para>Results are not truly as expected because Windows native focus...</para>
-		/// </summary>
-		private void TabPageV_Option_MouseEnter(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				List<Control> currentOption = (List<Control>)c.Parent.Tag;
-				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorHover;
-					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = TabPageV_ColorHover;
-				}
-				else
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
-				}
-			}
-		}
-		/// <summary>
-		/// Restore the changes made on <see cref="TabPageV_Option_MouseEnter(object, EventArgs)"/>
-		/// </summary>
-		private void TabPageV_Option_MouseLeave(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				List<Control> currentOption = (List<Control>)c.Parent.Tag;
-				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = c.Parent.BackColor;
-					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = c.Parent.BackColor;
-				}
-				else
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
-				}
-			}
-		}
-		/// <summary>
-		///  TabPage Horizontal option click.
-		/// </summary>
-		private void TabPageH_Option_Click(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				Control currentOption = (Control)c.Parent.Tag;
-				if (currentOption.Name == c.Name)
-					return;
-				currentOption.BackColor = c.Parent.Parent.BackColor;
-				c.Parent.Parent.Controls[currentOption.Name + "_Panel"].Visible = false;
-			}
-			c.Parent.Tag = c;
-			c.BackColor = c.Parent.BackColor;
-			c.Parent.Parent.Controls[c.Name + "_Panel"].Visible = true;
-		}
-		/// <summary>
-		/// Color the label associated (by name) to the current control focused.
-		/// </summary>
-		private void Control_FocusEnter(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
-			foreach (string t in controlTypes)
-			{
-				if (c.Name.Contains(t))
-				{
-					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
-					{
-						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
-					}
-					break;
-				}
-			}
-		}
-		/// <summary>
-		/// Restore the changes made on <see cref="Control_FocusEnter(object, EventArgs)"/>
-		/// </summary>
-		private void Control_FocusLeave(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
-			foreach (string t in controlTypes)
-			{
-				if (c.Name.Contains(t))
-				{
-					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
-					{
-						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
-					}
-					break;
-				}
-			}
-		}
-		/// <summary>
-		/// Forces the listview header to keep his width.
-		/// </summary>
-		private void ListView_ColumnWidthChanging_Cancel(object sender, ColumnWidthChangingEventArgs e)
-		{
-			e.Cancel = true;
-			e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
-		}
-		public void EnableControl(Control c, bool active)
-		{
-			WinAPI.InvokeIfRequired(c, () => {
-				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
-			});
-		}
-		#endregion
 		public void LogProcess(string text = "Ready", ProcessState state = ProcessState.Default)
 		{
 			WinAPI.InvokeIfRequired(lblBotState, () => {
@@ -552,6 +404,7 @@ namespace xBot
 								TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 								return;
 							}
+
 							TreeNode silkroad = Settings_lstrSilkroads.Nodes[i.Silkroad];
 
 							// SR_Client Path check
@@ -578,7 +431,7 @@ namespace xBot
 
 							i.Locale = byte.Parse(silkroad.Nodes["Locale"].Tag.ToString());
 							i.SR_Client = "SR_Client";
-              i.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
+							i.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
 
 							// Lock Silkroad selection
 							EnableControl(Login_btnLauncher, false);
@@ -664,7 +517,7 @@ namespace xBot
 						PacketBuilder.AddStatPointSTR();
 					}
 					break;
-        case "Inventory_btnRefresh":
+				case "Inventory_btnRefresh":
 					if (Bot.Get.inGame)
 						this.Inventory_Refresh();
 					else
@@ -757,19 +610,54 @@ namespace xBot
 					if (Bot.Get.inGame)
 					{
 						Info i = Info.Get;
-						GameInfo_lstrObjects.Nodes.Add(i.Character.Clone().ToNode());
 						// Making a copy because the list could be edited while iterating
 						List<SRObject> objects = new List<SRObject>(i.EntityList.Values);
+						// Pause drawing, possibly long data
+						GameInfo_lstrObjects.BeginUpdate();
+						// Add character always
+						GameInfo_lstrObjects.Nodes.Add(i.Character.Clone().ToNode());
+						// Filter and add entities
 						foreach (SRObject obj in objects)
-							GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+						{
+							if (obj.isPlayer())
+							{
+								if(this.GameInfo_cbxPlayer.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+							else if(obj.isPet())
+							{
+								if (this.GameInfo_cbxPet.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+							else if (obj.isMob())
+							{
+								if (this.GameInfo_cbxMob.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+							else if (obj.isNPC())
+							{
+								if (this.GameInfo_cbxNPC.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+							else if (obj.isItem())
+							{
+								if (this.GameInfo_cbxDrop.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+							else
+							{
+								if(this.GameInfo_cbxOthers.Checked)
+									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+							}
+						}
+						GameInfo_lstrObjects.EndUpdate();
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
-						GameInfo_tbxWheaterTime.Text = i.GetWheaterTime() + " " + i.GetWheater() + " | " + i.GetDayTime();
 					}
 					break;
 				case "Settings_btnPK2Path":
-					if (!Directory.Exists("Data"))
-						Directory.CreateDirectory("Data");
-					if (!Database.Exists(Settings_tbxSilkroadName.Text) || Database.Exists(Settings_tbxSilkroadName.Text) && MessageBox.Show(this, "The database \"" + Settings_tbxSilkroadName.Text + "\" already exists, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
+
+					if ( !Pk2Extractor.DirectoryExists(Settings_tbxSilkroadName.Text)
+						|| MessageBox.Show(this, "The Silkroad \"" + Settings_tbxSilkroadName.Text + "\" exist already, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
 					{
 						using (OpenFileDialog fileDialog = new OpenFileDialog())
 						{
@@ -783,12 +671,11 @@ namespace xBot
 							if (fileDialog.ShowDialog() == DialogResult.OK)
 							{
 								// Keep memory clean
-								using (PK2Extractor pk2 = new PK2Extractor(fileDialog.FileName, Settings_tbxSilkroadName.Text))
+								using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, Settings_tbxSilkroadName.Text))
 								{
 									pk2.ShowDialog(this);
 								}
 							}
-							WinAPI.SetForegroundWindow(this.Handle);
 						}
 					}
 					break;
@@ -838,7 +725,7 @@ namespace xBot
 						string silkroadkey = Settings_tbxSilkroadName.Text;
 						if (!CheckSilkroadName(ref silkroadkey))
 							return;
-						if (!Database.Exists(silkroadkey))
+						if (!File.Exists(Pk2Extractor.GetDatabasePath(silkroadkey)))
 							return;
 						byte locale;
 						if (Settings_tbxLocale.Text == "" || !byte.TryParse(Settings_tbxLocale.Text, out locale))
@@ -960,7 +847,7 @@ namespace xBot
 						{
 							string opcode = "0x" + hexNumber.ToString("X4");
 							// Check if exists
-							if (Settings_lstvOpcodes.Items.Find(opcode, false).Length == 0)
+							if (!Settings_lstvOpcodes.Items.ContainsKey(opcode))
 							{
 								ListViewItem item = new ListViewItem(opcode);
 								item.Name = opcode;
@@ -973,45 +860,50 @@ namespace xBot
 					}
 					break;
 				case "Settings_btnInjectPacket":
-					if (Settings_tbxInjectOpcode.Text != "" && Bot.Get.Proxy.isRunning)
 					{
-						int hexNumber;
-						if (int.TryParse(Settings_tbxInjectOpcode.Text.ToLower().Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out hexNumber))
+						Bot b = Bot.Get;
+						if (Settings_tbxInjectOpcode.Text != "" && b.Proxy!= null && b.Proxy.isRunning)
 						{
-							ushort opcode;
-							if (ushort.TryParse(hexNumber.ToString(), out opcode))
+							int hexNumber;
+							if (int.TryParse(Settings_tbxInjectOpcode.Text.ToLower().Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out hexNumber))
 							{
-								byte[] data = new byte[0];
-								if (Settings_tbxInjectData.Text != "")
+								ushort opcode;
+								if (ushort.TryParse(hexNumber.ToString(), out opcode))
 								{
-									try
+									byte[] data = new byte[0];
+									if (Settings_tbxInjectData.Text != "")
 									{
-										data = WinAPI.ToByteArray(Settings_tbxInjectData.Text.Replace(" ", ""));
+										try
+										{
+											data = WinAPI.ToByteArray(Settings_tbxInjectData.Text.Replace(" ", ""));
+										}
+										catch
+										{
+											MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+											return;
+										}
 									}
-									catch
-									{
-										MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-										return;
-									}
-								}
-								LogPacket("Packet injected 0x" + opcode.ToString("X4"));
+									LogPacket("Packet injected 0x" + opcode.ToString("X4"));
 
-								Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
-								if (Settings_cmbxInjectTo.SelectedIndex == 0) {
-									Bot.Get.Proxy.InjectToServer(p);
+									Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
+									if (Settings_cmbxInjectTo.SelectedIndex == 0)
+									{
+										b.Proxy.InjectToServer(p);
+									}
+									else
+									{
+										LogPacket(Utility.HexDump(p.GetBytes()) + Environment.NewLine);
+										b.Proxy.InjectToClient(p);
+									}
 								}
 								else
 								{
-									LogPacket(Utility.HexDump(p.GetBytes()) + Environment.NewLine);
-									Bot.Get.Proxy.InjectToClient(p);
+									MessageBox.Show(this, "Error: the opcode is not ushort.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 								}
-							}
-							else
-							{
-								MessageBox.Show(this, "Error: the opcode is not ushort.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							}
 						}
 					}
+					
 					break;
 			}
 		}
@@ -1076,6 +968,22 @@ namespace xBot
 					foreach (ListViewItem server in Login_lstvServers.Items)
 						if (Login_cmbxServer.Text == server.Text)
 							Info.Get.ServerID = server.Name;
+					break;
+				case "Skills_cmbxAttackMobType":
+					// Get the control selected and show it
+					string lstvName = "Skills_lstvAttackMobType_" + Skills_cmbxAttackMobType.Text;
+					Control lstvControl = Skills_cmbxAttackMobType.Parent.Controls[lstvName];
+					lstvControl.Visible = true;
+					// Check if exists an active control 
+					if (Skills_cmbxAttackMobType.Tag != null)
+					{
+						Control listview = (Control)Skills_cmbxAttackMobType.Tag;
+						if (listview.Name == lstvName)
+							return;
+						listview.Visible = false;
+					}
+					// Save the new control activated
+					Skills_cmbxAttackMobType.Tag = lstvControl;
 					break;
 				case "Chat_cmbxMsgType":
 					if (Chat_cmbxMsgType.Text == "Private")
@@ -1177,6 +1085,11 @@ namespace xBot
 				case "Party_cbxAcceptPartyList":
 				case "Party_cbxAcceptLeaderList":
 				case "Party_cbxRefusePartys":
+				case "Party_cbxMatchAutoReform":
+				case "Party_cbxMatchAcceptAll":
+				case "Party_cbxMatchAcceptPartyList":
+				case "Party_cbxMatchAcceptLeaderList":
+				case "Party_cbxMatchRefuse":
 					Settings.SaveCharacterSettings();
 					break;
 				case "Settings_cbxSelectFirstChar":
@@ -1385,6 +1298,73 @@ namespace xBot
 			}
 			return false;
 		}
+		public void AddBuff(SRObject Buff)
+		{
+			ListViewItem item = new ListViewItem();
+			item.ToolTipText = Buff.Name;
+			item.Name = Buff.ID.ToString();
+			item.ImageKey = (string)Buff[SRProperty.Icon];
+			LoadListVieWItemIcon(ref item, (string)Buff[SRProperty.Icon]);
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () =>{
+				Character_lstvBuffs.Items.Add(item);
+			});
+		}
+    public void RemoveBuff(uint SkillID)
+		{
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
+				Character_lstvBuffs.Items.RemoveByKey(SkillID.ToString());
+			});
+		}
+		public void ClearBuffs()
+		{
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
+				Character_lstvBuffs.Items.Clear();
+			});
+		}
+		public void AddSkill(SRObject Skill)
+		{
+			ListViewItem item = new ListViewItem(Skill.Name);
+			item.Name = Skill.ID.ToString();
+			LoadListVieWItemIcon(ref item, (string)Skill[SRProperty.Icon]);
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.Add(item);
+			});
+		}
+		public void RemoveSkill(uint SkillID)
+		{
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.RemoveByKey(SkillID.ToString());
+			});
+		}
+		public void ClearSkills()
+		{
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.Clear();
+			});
+		}
+		public void LoadListVieWItemIcon(ref ListViewItem item,string Pk2Path)
+		{
+			if (!lstimgIcons.Images.ContainsKey(Pk2Path))
+			{
+				string FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\" + Pk2Path;
+				FullPath = Path.ChangeExtension(FullPath, "png");
+				if (File.Exists(FullPath))
+				{
+					item.ImageKey = Pk2Path;
+					lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+				}
+				else
+				{
+					FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\icon_default.png";
+					// Try to load default image
+					if (File.Exists(FullPath))
+					{
+						item.ImageKey = Pk2Path;
+						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+					}
+				}
+			}
+		}
 		/// <summary>
 		/// Fix the text using a pattern restriction. Returns empty if the pattern is not found.
 		/// </summary>
@@ -1445,6 +1425,21 @@ namespace xBot
 						t.Text = "Hide";
 						BringToTop();
 					}
+					break;
+				case "Menu_lstvItems_Use":
+					if (Bot.Get.inGame && Inventory_lstvItems.SelectedItems.Count == 1)
+					{
+						if (!Bot.Get.UseItem(byte.Parse(Inventory_lstvItems.SelectedItems[0].Name)))
+						{
+							Log("This item cannot to be used");
+						}
+					}
+					break;
+				case "Menu_lstvItems_Drop":
+
+					break;
+				case "Menu_lstvItems_Equip":
+
 					break;
 				case "Menu_lstvPartyMembers_AddToPartyList":
 					if (Party_lstvPartyMembers.SelectedItems.Count == 1)
@@ -1542,13 +1537,13 @@ namespace xBot
 				case "Menu_rtbxPackets_Clear":
 					Settings_rtbxPackets.Clear();
 					break;
-				case "Menu_lstrSilkroads_remove":
+				case "Menu_lstrSilkroads_Remove":
 					if (Settings_lstrSilkroads.SelectedNode != null && Settings_lstrSilkroads.SelectedNode.Parent == null)
 					{
 						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == Settings_lstrSilkroads.SelectedNode.Name)
 							return; // Is actually being used
 						Login_cmbxSilkroad.Items.Remove(Settings_lstrSilkroads.SelectedNode.Name);
-						Database.Delete(Settings_lstrSilkroads.SelectedNode.Name);
+						Pk2Extractor.DirectoryDelete(Settings_lstrSilkroads.SelectedNode.Name);
 
 						Settings_lstrSilkroads.SelectedNode.Remove();
 						Settings.SaveBotSettings();
@@ -1637,8 +1632,22 @@ namespace xBot
 				}
 			}
 		}
-
-		#region (GUI updates)
+		private void Control_MouseClick(object sender, MouseEventArgs e)
+		{
+			Control c = (Control)sender;
+			switch (c.Name)
+			{
+				case "Character_lstvBuffs":
+					if (Bot.Get.inGame && e.Button == MouseButtons.Right){
+						ListViewItem itemClicked = this.Character_lstvBuffs.GetItemAt(e.X, e.Y);
+            if (itemClicked != null)
+						{
+							PacketBuilder.RemoveBuff(uint.Parse(itemClicked.Name));
+						}
+					}
+					break;
+			}
+		}
 		/// <summary>
 		/// Set the gold in Silkroad format color.
 		/// </summary>
@@ -1681,35 +1690,35 @@ namespace xBot
 		{
 			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
 				Inventory_lstvItems.Items.Clear();
+				Inventory_lstvItems.BeginUpdate();
 			});
-			Info i = Info.Get;
-			SRObjectCollection inventory = ((SRObjectCollection)i.Character[SRProperty.Inventory]).Clone();
 
-			ListViewItem[] items = new ListViewItem[inventory.Capacity];
-			for (int j = 0; j < items.Length; j++)
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			
+			for (int j = 0; j < inventory.Capacity; j++)
 			{
-				items[j] = new ListViewItem(j.ToString());
+				ListViewItem item = new ListViewItem();
+				item.Name = item.Text = j.ToString();
 				if (inventory[j] != null)
 				{
-					items[j].SubItems.Add((string)inventory[j][SRProperty.Icon]);
-					items[j].SubItems.Add(inventory[j].Name + (inventory[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventory[j][SRProperty.Plus] + ")" : ""));
-					items[j].SubItems.Add((ushort)inventory[j][SRProperty.QuantityMax] == 1 ? "1" : inventory[j][SRProperty.Quantity] + "/" + inventory[j][SRProperty.QuantityMax]);
-					items[j].SubItems.Add(inventory[j].ServerName);
+					item.SubItems.Add(inventory[j].Name + (inventory[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventory[j][SRProperty.Plus] + ")" : ""));
+					item.SubItems.Add((ushort)inventory[j][SRProperty.QuantityMax] == 1 ? "1" : inventory[j][SRProperty.Quantity] + "/" + inventory[j][SRProperty.QuantityMax]);
+					item.SubItems.Add(inventory[j].ServerName);
+					LoadListVieWItemIcon(ref item, (string)inventory[j][SRProperty.Icon]);
 					// TO DO:
 					// Add as tooltip the item stats
 				}
 				else
 				{
-					items[j].SubItems.Add("");
-					items[j].SubItems.Add("Empty");
+					item.SubItems.Add("Empty");
 				}
 			}
-
-			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
-				Inventory_lstvItems.Items.AddRange(items);
-			});
 			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
-				Inventory_lblCapacity.Text = "Capacity : "+ inventory.Count+"/"+inventory.Capacity;
+				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;
+			});
+			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.Items.Clear();
+				Inventory_lstvItems.EndUpdate();
 			});
 		}
 		public void Party_Clear()
@@ -1724,6 +1733,79 @@ namespace xBot
 			WinAPI.InvokeIfRequired(this, () => {
 				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
 			});
+		}
+		/// <summary>
+		/// Package all items selected to be moved.
+		/// </summary>
+		private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
+		{
+			ListView l = (ListView)sender;
+			// Create list to all selected items to move
+			List<ListViewItem> items = new List<ListViewItem>();
+			foreach (ListViewItem item in l.SelectedItems)
+				items.Add(item);
+			// Add moving animation
+			l.DoDragDrop(l.SelectedItems, DragDropEffects.Move);
+		}
+		private void ListView_DragOver(object sender, DragEventArgs e)
+		{
+			// Check if the drag is a ListViewItem list
+			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection))){
+				ListView listView = (ListView)sender;
+				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
+				// Disable drag movement in the same listview
+				if (items.Count == 0 
+					|| items[0].ListView == listView){
+					return;
+				}
+				e.Effect = DragDropEffects.Move;
+			}
+		}
+		private void ListView_DragDrop_RemoveFromSource(object sender, DragEventArgs e)
+		{
+			// Check if the drag is a ListViewItem list
+			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+			{
+				ListView l = (ListView)sender;
+				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
+				
+				foreach (ListViewItem item in items)
+				{
+					item.ListView.Items.Remove(item);
+					if (!l.Items.ContainsKey(item.Name))
+					{
+						l.Items.Add(item);
+          }
+				}
+				// Check if at least one item has been changed
+				if (items.Count > 0)
+					Settings.SaveCharacterSettings();
+			}
+		}
+		private void ListView_DragDrop_CopyFromSource(object sender, DragEventArgs e)
+		{
+			// Check if the drag is a ListViewItem list
+			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+			{
+				ListView l = (ListView)sender;
+				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
+
+				bool itemUpdated = false;
+				foreach (ListViewItem item in items)
+				{
+					if (!l.Items.ContainsKey(item.Name))
+					{
+						ListViewItem copy = (ListViewItem)item.Clone();
+						copy.Name = item.Name;
+            l.Items.Add(copy);
+
+						itemUpdated = true;
+          }
+				}
+				// Check if at least one item has been changed
+				if (itemUpdated)
+					Settings.SaveCharacterSettings();
+			}
 		}
 		/// <summary>
 		/// Load WebBrowser diplaying the Silkroad world map.
@@ -1780,6 +1862,5 @@ namespace xBot
 				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
 			}
 		}
-		#endregion
 	}
 }

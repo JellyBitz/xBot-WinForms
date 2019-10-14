@@ -14,7 +14,6 @@ namespace xGraphics
 	public class xProgressBar : Control
 	{
 		private ulong _Value;
-
 		private ulong _ValueMaximum;
 
 		public ulong Value
@@ -42,54 +41,15 @@ namespace xGraphics
 				Invalidate();
 			}
 		}
-
-		public int ColorDegradation
-		{
-			get;
-			set;
-		}
-
-		public xProgressBarDisplay Display
-		{
-			get;
-			set;
-		}
-
-		public string DisplayText
-		{
-			get;
-			set;
-		}
-
-		public Color DisplayShadow
-		{
-			get;
-			set;
-		}
-
-		public Font DisplayFont
-		{
-			get;
-			set;
-		}
-
-		private SolidBrush TextColorBrush
-		{
-			get;
-		}
-
-		private Pen FillColor
-		{
-			get;
-		}
-
-		private SolidBrush TextShadowBrush
-		{
-			get;
-		}
-
-		public double ValuePercentage => (double)Value * 100.0 / (double)ValueMaximum;
-
+		public int ColorDegradation {	get; set; }
+		public xProgressBarDisplay Display { get; set; }
+		public string DisplayText { get; set; }
+		public Color DisplayShadow { get; set; }
+		public Font DisplayFont { get; set; }
+		private SolidBrush TextColorBrush { get; }
+		private Pen FillColor { get; }
+		private SolidBrush TextShadowBrush { get; }
+		public double ValuePercentage { get { return (double)Value * 100.0 / (double)ValueMaximum; } } 
 		public xProgressBar()
 		{
 			SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, value: true);
@@ -114,9 +74,11 @@ namespace xGraphics
 			{
 				FillColor.Color = BackColor;
 			}
+
 			Rectangle rect = base.ClientRectangle;
 			Graphics g = e.Graphics;
 			ProgressBarRenderer.DrawHorizontalBar(g, rect);
+
 			rect.Inflate(-2, -2);
 			if (Value != 0)
 			{

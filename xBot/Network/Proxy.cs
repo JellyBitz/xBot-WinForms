@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using xBot.App;
 using xBot.Game;
 
 namespace xBot.Network
@@ -45,8 +46,7 @@ namespace xBot.Network
 		private Thread ThreadProxyReconnection;
 		private int CurrentAttemptReconnections;
 		private Thread PingHandler;
-		public bool isRunning { get{ return _running; } }
-		private bool _running;
+		public bool isRunning { get; private set; }
 		private int lastPortIndexSelected;
 		private int lastHostIndexSelected;
 		private List<ushort> GatewayPorts { get; }
@@ -84,7 +84,7 @@ namespace xBot.Network
 		/// </summary>
 		public void Start()
 		{
-			_running = true;
+			isRunning = true;
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Login_btnStart, ()=> {
 				w.Login_btnStart.Text = "STOP";
@@ -177,7 +177,7 @@ namespace xBot.Network
 				PingHandler = new Thread(ThreadPing);
 				PingHandler.Start();
 				// Running process
-				while (_running)
+				while (isRunning)
 				{
 					// Network input event processing
 					foreach (Context context in gws)
@@ -237,7 +237,7 @@ namespace xBot.Network
 										agPacket.WriteByte(result);
 										agPacket.WriteUInt(Agent.id);
 										agPacket.WriteAscii(((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString());
-										agPacket.WriteUInt16(((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1);
+										agPacket.WriteUShort(((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1);
 										context.RelaySecurity.Send(agPacket);
 									}
 									else if (result == 2)
@@ -412,7 +412,7 @@ namespace xBot.Network
 				}
 				PingHandler = new Thread(ThreadPing);
 				PingHandler.Start();
-				while (_running)
+				while (isRunning)
 				{
 					// Network input event processing
 					foreach (Context context in ags)
@@ -585,7 +585,7 @@ namespace xBot.Network
 		}
 		private void ThreadPing()
 		{
-			while (_running)
+			while (isRunning)
 			{
 				Thread.Sleep(6666);
 				// Keep only one connection alive at clientless mode
@@ -655,7 +655,7 @@ namespace xBot.Network
 		}
 		private void Reset()
 		{
-			_running = false;
+			isRunning = false;
 			if (PingHandler != null)
 				PingHandler.Abort();
 			CloseClient();
@@ -689,7 +689,7 @@ namespace xBot.Network
 
 			if (Bot.Get.inGame)
 			{
-				Bot.Get._Event_Disconnected();
+				Bot.Get._OnDisconnected();
 			}
 
 			// Relogin

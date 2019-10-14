@@ -1,5 +1,6 @@
 ﻿using SecurityAPI;
 using System.Collections.Generic;
+using xBot.App;
 using xBot.Game;
 
 namespace xBot.Network

@@ -201,38 +201,38 @@ namespace xBot.Game
 		public enum BadStatus : uint
 		{
 			None = 0,
-			Freezing = 1, // Universal
-			Frostbite = 2, // Universal
-			ElectricShock = 4, // Universal
-			Burn = 8, // Universal
-			Poisoning = 16, // Universal
-			Zombie = 32, // Universal
-			Sleep = 64, // nope
-			Bind = 128, // Purification
-			Dull = 256, // Purification
-			Fear = 512, // Purification
-			Unk07 = 1024,
-			Bleed = 2048, // Purification
-			Unk09 = 4096,
-			Unk10 = 8192,
-			Stun = 16384, // nope
-			Disease = 32768, // Purification
-			Unk13 = 65536,
-			Decay = 131072, // Purification
-			Weaken = 262144, // Purification
-			Impotent = 524288, // Purification
-			Division = 1048576, // Purification
-			Unk18 = 2097152,
-			Combustion = 4194304, // Purification
-			Unk20 = 8388608,
-			Hidden = 16777216, // Purification
-			Unk22 = 33554432,
-			Unk23 = 67108864,
-			Unk24 = 134217728,
-			Unk25 = 268435456,
-			Unk26 = 536870912,
-			Unk27 = 1073741824,
-			Unk28 = 2147483648
+			Freezing = 0x1, // Universal
+			Frostbite = 0x2, // None
+			ElectricShock = 0x4, // Universal
+			Burn = 0x8, // Universal
+			Poisoning = 0x10, // Universal
+			Zombie = 0x20, // Universal
+			Sleep = 0x40, // None
+			Bind = 0x80, // None
+			Dull = 0x100, // Purification
+			Fear = 0x200, // Purification
+			ShortSight = 0x400, // Purification
+			Bleed = 0x800, // Purification
+			Petrify = 0x1000, // None
+			Darkness = 0x2000, // Purification
+			Stun = 0x4000, // None
+			Disease = 0x8000, // Purification
+			Confusion = 0x10000, // Purification
+			Decay = 0x20000, // Purification
+			Weaken = 0x40000, // Purification
+			Impotent = 0x80000, // Purification
+			Division = 0x100000, // Purification
+			Panic = 0x200000, // Purification
+			Combustion = 0x400000, // Purification
+			Unk01 = 0x800000,
+			Hidden = 0x1000000, // Purification
+			Unk02 = 0x2000000,
+			Unk03 = 0x4000000,
+			Unk04 = 0x8000000,
+			Unk05 = 0x10000000,
+			Unk06 = 0x20000000,
+			Unk07 = 0x40000000,
+			Unk08 = 0x80000000
 		}
 		/// <summary>
 		/// Players interacting petitions.
@@ -326,12 +326,69 @@ namespace xBot.Game
 			MakeRentItem = 38,
 			SpawnUniqueLocation = 42
 		}
+
+		public enum CharacterAction : byte
+		{
+			BasicAttack = 1,
+			ItemPickUp = 2,
+      SkillCast = 4,
+			SkillRemove = 5
+		}
 		/// <summary>
 		/// All weapons types handled.
 		/// </summary>
-		public enum Weapons : byte
+		public enum Weapon : byte
 		{
-			None = byte.MaxValue
+			None = byte.MaxValue,
+			Bow = 6,
+			OneHandSword = 7,
+			TwoHandSword = 8,
+			DualAxes = 9,
+			TwoHandStaff = 11,
+			Crossbow = 12,
+			Daggers = 13
+		}
+	}
+	public static class Params
+	{
+		public enum Effect : uint
+		{
+			AUTO_TRANSFER = 1701213281
+		}
+		public enum Type : uint
+		{
+			/// <summary>
+			/// <para>1. On casting</para>
+			/// <para>2. Through time</para> 
+			/// </summary>
+			MP_CONSUME = 1869506150,
+			SKILL_DURATION = 1685418593
+		}
+		public static bool Exists(string[] Params, Effect Effect)
+		{
+			string strEffect = ((uint)Effect).ToString();
+			for (byte i = 0; i < Params.Length; i++)
+				if (Params[i] == strEffect)
+					return true;
+			return false;
+		}
+		public static bool Exists(string[] Params, Type Type)
+		{
+			string strType =  ((uint)Type).ToString();
+			for (byte i = 0; i < Params.Length; i++)
+				if (Params[i] == strType)
+					return true;
+			return false;
+		}
+		public static string ReadValue(string[] Params,Type Type, byte Position = 0)
+		{
+			string strType = ((uint)Type).ToString();
+			Position++;
+
+			for (byte i = 0; i < Params.Length; i++)
+				if (Params[i] == strType)
+					return Params[i + Position];
+			return "";
 		}
 	}
 }

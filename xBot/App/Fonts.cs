@@ -3,12 +3,15 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
 
-namespace xBot
+namespace xBot.App
 {
 	public class Fonts
 	{
-		private PrivateFontCollection myFonts = new PrivateFontCollection();
+		/// <summary>
+		/// Unique instance of this class.
+		/// </summary>
 		private static Fonts _this = null;
+		private PrivateFontCollection myFonts = new PrivateFontCollection();
 		private Fonts()
 		{
 			string[] fontFilenames = new string[]

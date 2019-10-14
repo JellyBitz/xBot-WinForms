@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace xBot
+namespace xBot.App
 {
 	/// <summary>
 	/// EdxLoader, used to create the process and inject the unmanaged DLL. (Thanks Drew!)

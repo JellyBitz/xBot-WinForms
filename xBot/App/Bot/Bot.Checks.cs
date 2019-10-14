@@ -4,11 +4,51 @@ using System.Timers;
 using xBot.Game;
 using xBot.Game.Objects;
 
-namespace xBot
+namespace xBot.App
 {
 	public partial class Bot
 	{
-		#region (Checking stuffs to do some action)
+		#region (Timers, checks & cooldown controls)
+		/// <summary>
+		/// Cooldown timer.
+		/// </summary>
+		Timer tUsingHP, tUsingMP, tUsingVigor,
+			tUsingUniversal, tUsingPurification,
+			tUsingRecoveryKit, tUsingAbnormalPill,
+			tUsingHGP,
+			tCycleAutoParty;
+
+		private void InitializeTimers()
+		{
+			// Preparing all neccesary timers
+			tUsingHP = new Timer();
+			tUsingMP = new Timer();
+			tUsingVigor = new Timer();
+			tUsingUniversal = new Timer();
+			tUsingPurification = new Timer();
+			tUsingRecoveryKit = new Timer();
+			tUsingAbnormalPill = new Timer();
+			tUsingHGP = new Timer();
+			tCycleAutoParty = new Timer();
+
+			// A second is enought for any potion cooldown
+			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
+			tUsingUniversal.Interval = tUsingPurification.Interval =
+			tUsingRecoveryKit.Interval = tUsingAbnormalPill.Interval;
+
+			tCycleAutoParty.Interval = 5000;
+
+			// Callbacks
+			tUsingHP.Elapsed += CheckUsingHP;
+			tUsingMP.Elapsed += CheckUsingMP;
+			tUsingVigor.Elapsed += CheckUsingVigor;
+			tUsingUniversal.Elapsed += CheckUsingUniversal;
+			tUsingPurification.Elapsed += CheckUsingPurification;
+			tCycleAutoParty.Elapsed += CheckAutoParty;
+			tUsingRecoveryKit.Elapsed += CheckUsingRecoveryKit;
+			tUsingAbnormalPill.Elapsed += CheckUsingAbnormalPill;
+			tUsingHGP.Elapsed += CheckUsingHGP;
+		}
 		public void CheckUsingHP()
 		{
 			if (!tUsingHP.Enabled)
@@ -133,7 +173,6 @@ namespace xBot
 				{
 					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
 					if (status.HasFlag(Types.BadStatus.Freezing
-						| Types.BadStatus.Frostbite 
 						| Types.BadStatus.ElectricShock 
 						| Types.BadStatus.Burn 
 						| Types.BadStatus.Poisoning 
@@ -163,15 +202,18 @@ namespace xBot
 				if (w.Character_cbxUsePillPurification.Checked)
 				{
 					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
-					if (status.HasFlag(Types.BadStatus.Bind 
-						| Types.BadStatus.Dull 
+					if (status.HasFlag( Types.BadStatus.Dull 
 						| Types.BadStatus.Fear 
+						| Types.BadStatus.ShortSight
 						| Types.BadStatus.Bleed
-						| Types.BadStatus.Disease 
+						| Types.BadStatus.Darkness
+						| Types.BadStatus.Disease
+						| Types.BadStatus.Confusion
 						| Types.BadStatus.Decay 
 						| Types.BadStatus.Weaken 
-						| Types.BadStatus.Impotent 
-						| Types.BadStatus.Division 
+						| Types.BadStatus.Impotent
+						| Types.BadStatus.Division
+						| Types.BadStatus.Panic
 						| Types.BadStatus.Combustion 
 						| Types.BadStatus.Hidden))
 					{
