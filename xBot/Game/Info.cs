@@ -369,11 +369,18 @@ namespace xBot.Game
 			return new List<SRObject>(PlayersNear.Values);
 		}
 		/// <summary>
-		 /// Returns all near players.
-		 /// </summary>
+		/// Returns all near NPCs.
+		/// </summary>
 		public List<SRObject> GetNPCs()
 		{
 			return (new List<SRObject>(EntityList.Values)).FindAll(e => e.isNPC());
+		}
+		/// <summary>
+		/// Returns all near teleports.
+		/// </summary>
+		public List<SRObject> GetTeleports()
+		{
+			return (new List<SRObject>(EntityList.Values)).FindAll(e => e.ID1 == 4);
 		}
 		/// <summary>
 		/// Returns all summoned pets players.

@@ -314,7 +314,7 @@ namespace xBot.App
 								uint destinationID = i.GetTeleportLinkDestinationID(sourceTeleportID, destinationTeleportID);
 								if (destinationID != 0)
 								{
-									SRObject teleport = i.GetNPCs().Find(npc => npc.ID == sourceTeleportID);
+									SRObject teleport = i.GetTeleports().Find(npc => npc.ID == sourceTeleportID);
 									if (teleport != null)
 									{
 										// Select teleport
@@ -331,7 +331,7 @@ namespace xBot.App
 							{
 								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
 								// Check if the teleport source is near
-								SRObject teleport = i.GetNPCs().Find(npc => npc.ID == sourceTeleportID);
+								SRObject teleport = i.GetTeleports().Find(npc => npc.ID == sourceTeleportID);
                 if (teleport != null)
 								{
 									// Select teleport
