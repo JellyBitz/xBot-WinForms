@@ -212,15 +212,17 @@ namespace xBot.Game.Objects
 			switch (Type)
 			{
 				case SRType.Model:
+					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
-					ID1 = 1;
+          ID1 = 1;
 					ID2 = byte.Parse(data["tid2"]);
 					ID3 = byte.Parse(data["tid3"]);
 					ID4 = byte.Parse(data["tid4"]);
 					this[SRProperty.HPMax] = this[SRProperty.HP] = uint.Parse(data["hp"]);
 					break;
 				case SRType.Item:
+					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
 					ID1 = 3;
@@ -231,6 +233,7 @@ namespace xBot.Game.Objects
 					this[SRProperty.QuantityMax] = ushort.Parse(data["stack"]);
 					break;
 				case SRType.Teleport:
+					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
 					ID1 = 4;
@@ -239,6 +242,7 @@ namespace xBot.Game.Objects
 					ID4 = byte.Parse(data["tid4"]);
 					break;
 				case SRType.Skill:
+					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
 					this[SRProperty.GroupID] = data["group_id"];

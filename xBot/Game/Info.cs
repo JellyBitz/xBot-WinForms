@@ -456,15 +456,29 @@ namespace xBot.Game
 			return 0;
 		}
 		/// <summary>
-		/// Gets the teleport destination ID. Return 0 if none is found.
+		/// Gets the teleport link data. Return null if link is not found.
 		/// </summary>
-		public uint GetTeleportDestinationID(string sourceTeleportName, string destinationTeleportName){
-			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '"+sourceTeleportName+"'' and destination LIKE '"+destinationTeleportName+"'";
+		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName){
+			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '"+ sourceTeleportName + "' AND destination LIKE '"+destinationTeleportName+"'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 			{
-				return uint.Parse(result[0]["sourceid"]);
+				return result[0];
+			}
+			return null;
+		}
+		/// <summary>
+		/// Gets the teleport destination ID. Return 0 if none is found.
+		/// </summary>
+		public uint GetTeleportLinkDestinationID(uint sourceTeleportID,uint destinationTeleportID)
+		{
+			string sql = "SELECT t1.destinationid FROM teleportlinks AS t1 JOIN teleportlinks AS t2 WHERE t1.destination=t2.name AND t2.destination=t1.name AND t1.id="+ sourceTeleportID + " AND t2.id="+ destinationTeleportID;
+			Database.ExecuteQuery(sql);
+			List<NameValueCollection> result = Database.GetResult();
+			if (result.Count > 0)
+			{
+				return uint.Parse(result[0]["destinationid"]);
 			}
 			return 0;
 		}

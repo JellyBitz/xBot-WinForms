@@ -44,9 +44,6 @@ namespace xBot.App
 		private Ads advertising;
 		private Window()
 		{
-			int x = -1875767296;
-			uint y = (uint)x;
-
 			InitializeComponent();
 			InitializeFonts(this);
 			InitializeValues();
@@ -1076,6 +1073,11 @@ namespace xBot.App
 						Bot.Get.CheckPartyLeaving();
 					Settings.SaveCharacterSettings();
 					break;
+				case "Party_cbxMatchAutoReform":
+					if (Bot.Get.inGame)
+						Bot.Get.CheckPartyMatchAutoReform();
+					Settings.SaveCharacterSettings();
+					break;
 				case "Character_cbxMessageExp":
 				case "Character_cbxMessageUniques":
 				case "Character_cbxMessageEvents":
@@ -1088,7 +1090,6 @@ namespace xBot.App
 				case "Party_cbxAcceptPartyList":
 				case "Party_cbxAcceptLeaderList":
 				case "Party_cbxRefusePartys":
-				case "Party_cbxMatchAutoReform":
 				case "Party_cbxMatchAcceptAll":
 				case "Party_cbxMatchAcceptPartyList":
 				case "Party_cbxMatchAcceptLeaderList":
@@ -1347,23 +1348,28 @@ namespace xBot.App
 		}
 		public void LoadListVieWItemIcon(ref ListViewItem item,string Pk2Path)
 		{
-			if (!lstimgIcons.Images.ContainsKey(Pk2Path))
+			// Check if image is loaded
+			if (lstimgIcons.Images.ContainsKey(Pk2Path))
+			{
+				item.ImageKey = Pk2Path;
+			}
+			else
 			{
 				string FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\" + Pk2Path;
 				FullPath = Path.ChangeExtension(FullPath, "png");
 				if (File.Exists(FullPath))
 				{
-					item.ImageKey = Pk2Path;
 					lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+					item.ImageKey = Pk2Path;
 				}
 				else
 				{
+					item.ImageKey = Pk2Path;
 					FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\icon_default.png";
-					// Try to load default image
 					if (File.Exists(FullPath))
 					{
-						item.ImageKey = Pk2Path;
 						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+						item.ImageKey = Pk2Path;
 					}
 				}
 			}

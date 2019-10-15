@@ -220,7 +220,7 @@
     <EmbeddedResource Include="Resources\fa-solid-900.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <EmbeddedResource Include="App.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

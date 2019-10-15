@@ -357,13 +357,13 @@ namespace xBot.Game
 			p.WriteByte(0);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void UseTeleport(uint sourceUniqueID,uint destinationID)
+		public static void UseTeleport(uint sourceUniqueID,uint destinationID,int waitDelay)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_USE_REQUEST);
 			p.WriteUInt(sourceUniqueID);
 			p.WriteByte(2); // unknown
 			p.WriteUInt(destinationID);
-			Bot.Get.Proxy.Agent.InjectToServer(p);
+			Bot.Get.Proxy.Agent.InjectToServer(p, waitDelay);
 		}
 		internal class Client
 		{

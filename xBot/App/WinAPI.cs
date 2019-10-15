@@ -173,7 +173,6 @@ namespace xBot.App
 				File.SetAttributes(file, FileAttributes.Normal);
 				File.Delete(file);
 			}
-
 			foreach (string dir in dirs)
 			{
 				DirectoryDelete(dir);

@@ -294,7 +294,6 @@ namespace xBot.App
 								StartTrace(data[0]);
 							}
 						}
-						
 					}
 					else if (message.StartsWith("TELEPORT "))
 					{
@@ -308,16 +307,46 @@ namespace xBot.App
 						// IF there is at least 2 params
 						if (data.Length > 1){
 							Info i = Info.Get;
-							// Check if npc name is near
-							SRObject teleportNPC = i.GetNPCs().Find(npc => npc.Name.Equals(data[0], StringComparison.OrdinalIgnoreCase));
-							if(teleportNPC != null)
+							// Check if the teleport link is with teleport model IDs
+							uint sourceTeleportID, destinationTeleportID;
+							if (uint.TryParse(data[0], out sourceTeleportID) && uint.TryParse(data[1], out destinationTeleportID))
 							{
-								// Check if the teleport link exists
-								uint teleportID = Info.Get.GetTeleportDestinationID(teleportNPC.Name,data[1]);
-								if (teleportID != 0)
+								uint destinationID = i.GetTeleportLinkDestinationID(sourceTeleportID, destinationTeleportID);
+								if (destinationID != 0)
 								{
-									PacketBuilder.UseTeleport((uint)teleportNPC[SRProperty.UniqueID], teleportID);
-                }
+									SRObject teleport = i.GetNPCs().Find(npc => npc.ID == sourceTeleportID);
+									if (teleport != null)
+									{
+										// Select teleport
+										PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
+										// Wait 2.5segs and use it
+										PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],destinationID, 2500);
+									}
+								}
+								return;
+							}
+							// Check if the teleport link name exists
+							System.Collections.Specialized.NameValueCollection teleportLinkData = i.GetTeleportLinkData(data[0], data[1]);
+							if(teleportLinkData != null)
+							{
+								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
+								// Check if the teleport source is near
+								SRObject teleport = i.GetNPCs().Find(npc => npc.ID == sourceTeleportID);
+                if (teleport != null)
+								{
+									// Select teleport
+									PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
+									// Wait 2.5segs and use it
+									PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], uint.Parse(teleportLinkData["destinationid"]), 2500);
+								}
+								else
+								{
+									w.Log("Teleport link is not near.");
+								}
+							}
+							else
+							{
+								w.Log("Teleport link not found. Please, verify the teleport locations correctly.");
 							}
 						}
 					}
