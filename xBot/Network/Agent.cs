@@ -488,7 +488,14 @@ namespace xBot.Network
 				case Opcode.SERVER_MASTERY_LEVELUP_RESPONSE:
 					PacketParser.MasteryLevelUpResponse(packet);
 					break;
-			}
+				case Opcode.SERVER_TELEPORT_READY_REQUEST:
+					if (ClientlessMode)
+					{
+						Packet protocol = new Packet(Opcode.CLIENT_TELEPORT_READY_RESPONSE);
+						this.InjectToServer(protocol);
+					}
+					break;
+      }
 			return false;
 		}
 		/// <summary>
