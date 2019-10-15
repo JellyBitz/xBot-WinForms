@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.6") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.8") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -9,6 +9,7 @@
 - Auto Party (Party matching included)
 - Leader [commands](#Chat-Leader-Commands) control from chat
 - Character inventory
+- Trace
 - Chatting
 - Minimap
 - Game info viewer, also known as "Spy" but better!
@@ -53,6 +54,7 @@ This commands will work only if you had **checked** the option from **Party > Se
 
 #### Tips:
 - Right click from the buff list will remove the buff
+- Click at Health/Mana bar to show the exact values
 
 ---
 > ### **Do you like this Project ?**

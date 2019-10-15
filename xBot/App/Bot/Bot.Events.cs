@@ -586,10 +586,11 @@ namespace xBot.App
 						});
 					}
 					
-					SRCoord P = i.Character.GetPosition();
-					SRCoord Q = player.GetPosition();
+					SRCoord Q = (SRCoord)player[SRProperty.MovementPosition];
 					if (distance > 0)
 					{
+						SRCoord P = i.Character.GetPosition();
+
 						double PQMod = P.DistanceTo(Q);
 						if (distance < PQMod)
 						{

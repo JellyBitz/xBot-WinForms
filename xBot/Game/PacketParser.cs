@@ -2282,7 +2282,10 @@ namespace xBot.Game
 					// Update/override if the skill is sharing the same groupname
 					SRObject skill = skills.Find(m => m.ID == lastSkillID);
 					skill.CopyFrom(newSkill);
-					// Update GUI
+					// TO DO:
+					// Remove or update from every list the skill name/key
+
+					// Update Main lisst
 					w.RemoveSkill(lastSkillID);
 					w.AddSkill(skill);
 				}

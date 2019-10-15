@@ -16,7 +16,7 @@ namespace xBot.App.PK2Extractor
 			db.ExecuteQuery(sql);
 
 			string path = GetDirectory(SilkroadName);
-      List<NameValueCollection> rows = db.GetResult();
+			List<NameValueCollection> rows = db.GetResult();
 
 			// Add default icon
 			NameValueCollection icon_default = new NameValueCollection();

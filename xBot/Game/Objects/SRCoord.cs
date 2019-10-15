@@ -68,7 +68,7 @@ namespace xBot.Game.Objects
 		}
 		public bool inDungeon()
 		{
-      return inDungeon(Region);
+			return inDungeon(Region);
 		}
 		public static bool inDungeon(ushort Region)
 		{
