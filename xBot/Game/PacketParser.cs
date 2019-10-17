@@ -388,19 +388,18 @@ namespace xBot.Game
 			character[SRProperty.SpeedRunning] = p.ReadFloat();
 			character[SRProperty.SpeedBerserk] = p.ReadFloat();
 			#region (Buffs)
-			SRObjectCollection Buffs = new SRObjectCollection();
-			byte buffCount = p.ReadByte();
+			SRObjectCollection Buffs = new SRObjectCollection(p.ReadByte());
 			DateTime utcNow = DateTime.UtcNow;
-			for (int j = 0; j < buffCount; j++)
+			for (int j = 0; j < Buffs.Capacity; j++)
 			{
-				SRObject buff = new SRObject(p.ReadUInt(),SRType.Skill);
-				buff[SRProperty.Duration] = p.ReadUInt();
-				buff[SRProperty.LastUpdateTimeUtc] = utcNow;
-				if (buff.hasAutoTransferEffect())
+				Buffs[j] = new SRObject(p.ReadUInt(),SRType.Skill);
+				Buffs[j][SRProperty.UniqueID] = p.ReadUInt();
+				if (Buffs[j].hasAutoTransferEffect())
 				{
-					buff[SRProperty.isOwner] = p.ReadByte() == 1;
+					Buffs[j][SRProperty.isOwner] = p.ReadByte() == 1;
 				}
-				Buffs.Add(buff);
+				// Easy tracking
+				Buffs[j][SRProperty.OwnerUniqueID] = character[SRProperty.UniqueID];
 			}
 			character[SRProperty.Buffs] = Buffs;
 			#endregion
@@ -827,18 +826,19 @@ namespace xBot.Game
 					entity[SRProperty.SpeedRunning] = packet.ReadFloat();
 					entity[SRProperty.SpeedBerserk] = packet.ReadFloat();
 					// Buffs
-					SRObjectCollection buffs = new SRObjectCollection(packet.ReadByte());
-					DateTime utcNow = DateTime.UtcNow;
-					for (int i = 0; i < buffs.Capacity; i++)
+					SRObjectCollection Buffs = new SRObjectCollection(packet.ReadByte());
+					for (int i = 0; i < Buffs.Capacity; i++)
 					{
-						buffs[i] = new SRObject(packet.ReadUInt(), SRType.Skill);
-						buffs[i][SRProperty.Duration] = packet.ReadUInt();
-						buffs[i][SRProperty.LastUpdateTimeUtc] = utcNow;
-            if (buffs[i].hasAutoTransferEffect()){
-							buffs[i][SRProperty.isOwner] = packet.ReadByte() == 1;
+						Buffs[i] = new SRObject(packet.ReadUInt(), SRType.Skill);
+						Buffs[i][SRProperty.UniqueID] = packet.ReadUInt();
+						if (Buffs[i].hasAutoTransferEffect()){
+							Buffs[i][SRProperty.isOwner] = packet.ReadByte() == 1;
 						}
+						// Easy tracking
+						Buffs[i][SRProperty.OwnerUniqueID] = entity[SRProperty.UniqueID];
 					}
-					entity[SRProperty.Buffs] = buffs;
+					entity[SRProperty.Buffs] = Buffs;
+
 					if (entity.ID3 == 1)
 					{
 						// MOB
@@ -2248,10 +2248,15 @@ namespace xBot.Game
 			SRObject buff = new SRObject(packet.ReadUInt(), SRType.Skill);
 			buff[SRProperty.UniqueID] = packet.ReadUInt();
 			// End of Packet
-			buff[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
-			buff[SRProperty.OwnerUniqueID] = uniqueID;
 
-			Bot.Get._OnEntityBuffAdded(uniqueID, ref buff);
+			// Ignore flashy buffs 
+			if((uint)buff[SRProperty.DurationMax] > 0){
+				SRObject entity = Info.Get.GetEntity(uniqueID);
+				// Easy tracking
+				buff[SRProperty.OwnerUniqueID] = uniqueID;
+
+				Bot.Get._OnEntityBuffAdded(ref entity, ref buff);
+			}
 		}
 		public static void EntitySkillBuffRemoved(Packet packet)
 		{
@@ -2260,7 +2265,7 @@ namespace xBot.Game
 			{
 				uint buffUniqueID = packet.ReadUInt();
 				Bot.Get._OnEntityBuffRemoved(buffUniqueID);
-      }
+			}
 		}
 		public static void MasterySkillLevelUpResponse(Packet packet)
 		{

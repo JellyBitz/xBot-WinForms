@@ -201,6 +201,7 @@ namespace xBot.App
 			});
 
 			SRObjectCollection Buffs = (SRObjectCollection)character[SRProperty.Buffs];
+			DateTime utcNow = DateTime.UtcNow;
 
 			w.Character_lstvBuffs.BeginUpdate();
 			for (int j = 0; j < Buffs.Capacity; j++)
@@ -221,10 +222,10 @@ namespace xBot.App
 			#region (Skills Tab)
 			SRObjectCollection Skills = (SRObjectCollection)character[SRProperty.Skills];
 			w.Skills_lstvSkills.BeginUpdate();
-      for (int j = 0; j < Skills.Capacity; j++)
+			for (int j = 0; j < Skills.Capacity; j++)
 			{
 				w.AddSkill(Skills[j]);
-      }
+			}
 			w.Skills_lstvSkills.EndUpdate();
 			#endregion
 
@@ -461,7 +462,7 @@ namespace xBot.App
 			// generate statistics
 
 			OnItemPickedUp(item);
-    }
+		}
 		public void _OnPetSummoned(uint uniqueID)
 		{
 			Info i = Info.Get;
@@ -590,7 +591,7 @@ namespace xBot.App
 			});
 
 			this.OnPartyJoined();
-    }
+		}
 		public void _OnMemberLeaved(uint joinID)
 		{
 			Info i = Info.Get;
@@ -685,15 +686,14 @@ namespace xBot.App
 		{
 			inStall = hasStall = false;
 		}
-		public void _OnEntityBuffAdded(uint uniqueID,ref SRObject buff){
+		public void _OnEntityBuffAdded(ref SRObject entity,ref SRObject buff){
 			// Keep on track the buff
 			Info i = Info.Get;
 			i.BuffList[(uint)buff[SRProperty.UniqueID]] = buff;
 
-			SRObject entity = i.GetEntity(uniqueID);
 			SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
-
 			Buffs.Add(buff);
+
 			if (entity == i.Character)
 			{
 				Window.Get.AddBuff(buff);
@@ -706,9 +706,9 @@ namespace xBot.App
 			if (i.BuffList.TryGetValue(buffUniqueID,out buff))
 			{
 				i.BuffList.Remove(buffUniqueID);
+
 				SRObject entity = i.GetEntity((uint)buff[SRProperty.OwnerUniqueID]);
 				SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
-
 				Buffs.Remove(buff);
 				if (i.Character == entity)
 				{

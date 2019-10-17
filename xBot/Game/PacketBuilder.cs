@@ -365,6 +365,12 @@ namespace xBot.Game
 			p.WriteUInt(destinationID);
 			Bot.Get.Proxy.Agent.InjectToServer(p, waitDelay);
 		}
+		public static void DesignateRecall(uint teleportUniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_RECALL_REQUEST);
+			p.WriteUInt(teleportUniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		internal class Client
 		{
 			public static void CreatePickUpPacket(SRObject item, byte inventorySlot)

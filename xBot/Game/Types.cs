@@ -331,7 +331,7 @@ namespace xBot.Game
 		{
 			BasicAttack = 1,
 			ItemPickUp = 2,
-      SkillCast = 4,
+			SkillCast = 4,
 			SkillRemove = 5
 		}
 		/// <summary>

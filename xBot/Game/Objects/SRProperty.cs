@@ -350,6 +350,13 @@ namespace xBot.Game.Objects
 		AttackSettingsFlags,
 		hasOwner,
 		OwnerUniqueID,
+		/// <summary>
+		/// <para>Type : <see cref="bool"/></para>
+		/// </summary>
+		TargetRequired,
+		/// <summary>
+		/// <para>Type : <see cref="string"/></para>
+		/// </summary>
 		OwnerName,
 		/// <summary>
 		/// <para>Type : <see cref="ushort"/></para>
@@ -372,8 +379,10 @@ namespace xBot.Game.Objects
 		HitRate,
 		ParryRatio,
 		OwnerJoinID,
-		
 
+
+		Slot,
+	
 
 		DropSource,
 		Rarity,
@@ -393,7 +402,6 @@ namespace xBot.Game.Objects
 		unkUInt01,
 		unkUInt02,
 		unkUInt03,
-		unkUInt04,
-		Slot
+		unkUInt04
 	}
 }

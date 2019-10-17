@@ -14,6 +14,8 @@
 - Minimap
 - Game info viewer, also known as "Spy" but better!
 - Packet analyzer (Filter & injector included)
+- Auto character creation
+- HWID support (only if is static)
 
 ---
 #### Command Line Options :
@@ -37,17 +39,19 @@
 |`NOTRACE`| Stop trace
 |`RETURN`| Use a return scroll from inventory
 |`INJECT *Opcode ?Encrypted ?Data`| Inject packet
-|`TELEPORT *SourceName *DestinationName`| Use a teleport
+|`TELEPORT *SourceZoneName *DestinationZoneName`| Use a teleport
 |`TELEPORT *SourceModelID *DestinationModelID`| Use a teleport
+|`RECALL *ZoneName`| Designate teleport recall
 
 All commands are **UPPERCASED**. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
 
 A few using examples from any chat:
 - `TRACE JellyBitz`
 - `INJECT 3091 false 01`
+- `INJECT 3091 01`
 - `TELEPORT Ferry ticket seller doji,Ferry ticket seller tayun`
 - `TELEPORT 2011 2056`
-- `INJECT 3091 01`
+- `RECALL hotan`
 
 Only the player(s) into the **Leader list** can use this commands
 This commands will work only if you had **checked** the option from **Party > Settings**
@@ -55,6 +59,7 @@ This commands will work only if you had **checked** the option from **Party > Se
 #### Tips:
 - Right click from the buff list will remove the buff
 - Click at Health/Mana bar to show the exact values
+- Double click to notify icon to show/hide bots!
 
 ---
 > ### **Do you like this Project ?**

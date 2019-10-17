@@ -1,6 +1,7 @@
 ﻿using SecurityAPI;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using xBot.Game;
 using xBot.Game.Objects;
@@ -167,7 +168,7 @@ namespace xBot.App
 			Window w = Window.Get;
 			if (w.Character_cbxMessagePicks.Checked)
 			{
-				w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STRGERR_LEVEL", item.Name));
+				w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STATE_GET_ITEM_NONEXPENDABLE", item.Name));
 			}
 		}
 		/// <summary>
@@ -278,6 +279,7 @@ namespace xBot.App
 									}
 								}
 								Proxy.Agent.InjectToServer(new Packet(opcode, encrypted,false, bytes.ToArray()));
+								PacketBuilder.SendChatPrivate(playerName,"Packet has been injected");
 							}
 						}
 					}
@@ -322,17 +324,24 @@ namespace xBot.App
 										// Wait 2.5segs and use it
 										PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],destinationID, 2500);
 									}
+									else{
+										PacketBuilder.SendChatPrivate(playerName,"Teleport link is not near");
+									}
+								}
+								else
+								{
+									PacketBuilder.SendChatPrivate(playerName,"Teleport link not found. Please, verify the teleports ID correctly");
 								}
 								return;
 							}
 							// Check if the teleport link name exists
-							System.Collections.Specialized.NameValueCollection teleportLinkData = i.GetTeleportLinkData(data[0], data[1]);
+							NameValueCollection teleportLinkData = i.GetTeleportLinkData(data[0], data[1]);
 							if(teleportLinkData != null)
 							{
 								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
 								// Check if the teleport source is near
 								SRObject teleport = i.GetTeleports().Find(npc => npc.ID == sourceTeleportID);
-                if (teleport != null)
+                				if (teleport != null)
 								{
 									// Select teleport
 									PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
@@ -341,12 +350,38 @@ namespace xBot.App
 								}
 								else
 								{
-									w.Log("Teleport link is not near.");
+									PacketBuilder.SendChatPrivate(playerName,"Teleport link is not near");
 								}
 							}
 							else
 							{
-								w.Log("Teleport link not found. Please, verify the teleport locations correctly.");
+								PacketBuilder.SendChatPrivate(playerName,"Teleport link not found. Please, verify the teleports location correctly");
+							}
+						}
+					}
+					else if (message.StartsWith("RECALL "))
+					{
+						message = message.Substring(7);
+						if(message != "")
+						{
+							Info i = Info.Get;
+							NameValueCollection teleportLinkData = i.GetTeleportLinkData(message);
+							if(teleportLinkData != null)
+							{
+								uint modelID = uint.Parse(teleportLinkData["id"]);
+								if(modelID != 0)
+								{
+									// Check if the teleport is near
+									SRObject teleport = i.GetTeleports().Find(npc => npc.ID == modelID);
+									if (teleport != null)
+										PacketBuilder.DesignateRecall((uint)teleport[SRProperty.UniqueID]);
+									else
+										PacketBuilder.SendChatPrivate(playerName,"Teleport is not near");
+								}
+							}
+							else
+							{
+								PacketBuilder.SendChatPrivate(playerName,"Wrong teleport name");
 							}
 						}
 					}
@@ -356,7 +391,9 @@ namespace xBot.App
 					}
 					else if (message == "RETURN")
 					{
-						UseReturnScroll();
+						if(!UseReturnScroll()){
+							PacketBuilder.SendChatPrivate(playerName,"Return scroll not found");
+						}
 					}
 				}
 			}

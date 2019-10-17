@@ -1,13 +1,11 @@
-﻿using System.Resources;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 // La información general de un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
 [assembly: AssemblyTitle("xBot")]
-[assembly: AssemblyDescription("xBot - Private Silkroad Bot")]
+[assembly: AssemblyDescription("Silkroad Online Bot")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("xBot")]
@@ -21,19 +19,13 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // El siguiente GUID sirve como id. de typelib si este proyecto se expone a COM.
-[assembly: Guid("9ca10f1f-1eb4-4ddf-befd-75e132969e73")]
+[assembly: Guid("26fa42c7-c27b-4987-bef4-9c9e542db496")]
 
-// La información de versión de un ensamblado consta de los cuatro valores siguientes:
-//
-//      Versión principal
-//      Versión secundaria 
-//      Número de compilación
-//      Revisión
-//
-// Puede especificar todos los valores o usar los valores predeterminados de número de compilación y de revisión 
-// mediante el carácter '*', como se muestra a continuación:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0")]
-[assembly: AssemblyFileVersion("0.0.8")]
-[assembly: NeutralResourcesLanguage("en-US")]
-
+[assembly: AssemblyVersion("0.0.0")]
+// 1. Mayor version
+// - Incompatibility between the most recent build
+// 2. Minor version 
+// - If only features has been added
+// 3. Revision :
+// - Any change done
+[assembly: AssemblyFileVersion("0.0.9")]

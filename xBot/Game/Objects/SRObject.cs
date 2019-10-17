@@ -251,6 +251,7 @@ namespace xBot.Game.Objects
 					this[SRProperty.DurationMax] = uint.Parse(data["duration"]);
 					this[SRProperty.Casttime] = uint.Parse(data["casttime"]);
 					this[SRProperty.MP] = uint.Parse(data["mana"]);
+					this[SRProperty.TargetRequired] = data["target_required"] == "1";
 					this[SRProperty.Level] = byte.Parse(data["level"]);
 					this[SRProperty.SkillParams] = data["params"].Split('|');
 					this[SRProperty.Icon] = data["icon"];
@@ -462,11 +463,27 @@ namespace xBot.Game.Objects
 		/// <summary>
 		/// Update and return the current game position.
 		/// </summary>
-		/// <returns></returns>
 		public SRCoord GetPosition()
 		{
 			UpdateTimePosition();
 			return (SRCoord)this[SRProperty.Position];
+		}
+		/// <summary>
+		/// Update and return the current active buffs.
+		/// </summary>
+		public SRObjectCollection GetBuffs()
+		{
+			DateTime utcNow = DateTime.UtcNow;
+			SRObjectCollection Buffs = (SRObjectCollection)this[SRProperty.Buffs];
+			for (int j = 0; j < Buffs.Capacity; j++)
+			{
+				DateTime LastUpdateTimeUtc = (DateTime)Buffs[j][SRProperty.LastUpdateTimeUtc];
+        if (utcNow.Subtract(LastUpdateTimeUtc).TotalMilliseconds > (uint)Buffs[j][SRProperty.Duration])
+				{
+					Buffs.RemoveAt(j--);
+        }
+			}
+			return (SRObjectCollection)this[SRProperty.Buffs];
 		}
 		public bool inDungeon()
 		{

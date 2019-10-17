@@ -156,6 +156,7 @@
     <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2File.cs" />
     <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Folder.cs" />
     <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Reader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityAPI\Blowfish.cs" />
     <Compile Include="SecurityAPI\Packet.cs" />
     <Compile Include="SecurityAPI\PacketReader.cs" />
@@ -174,7 +175,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="xGraphics\xProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -224,7 +224,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="Resources\banner_example.jpg" />

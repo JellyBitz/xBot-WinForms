@@ -465,7 +465,7 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets the teleport link data. Return null if link is not found.
 		/// </summary>
-		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName){
+		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName = "%"){
 			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '"+ sourceTeleportName + "' AND destination LIKE '"+destinationTeleportName+"'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
