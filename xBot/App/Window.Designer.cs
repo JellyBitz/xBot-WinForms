@@ -97,7 +97,6 @@ namespace xBot.App
 			this.Settings_btnAddOpcode = new System.Windows.Forms.Button();
 			this.Settings_tbxFilterOpcode = new System.Windows.Forms.TextBox();
 			this.Settings_lblFilterOpcode = new System.Windows.Forms.Label();
-			this.Settings_rtbxPackets = new xGraphics.xRichTextBox();
 			this.Menu_rtbxPackets = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.Menu_rtbxPackets_AutoScroll = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_rtbxPackets_AddTimestamp = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,7 +119,6 @@ namespace xBot.App
 			this.Menu_lstrSilkroads_Remove = new System.Windows.Forms.ToolStripMenuItem();
 			this.Settings_gbxHWID = new System.Windows.Forms.GroupBox();
 			this.Settings_panelHWIDdata = new System.Windows.Forms.Panel();
-			this.Settings_rtbxHWIDdata = new xGraphics.xRichTextBox();
 			this.Settings_cbxHWIDSendOnlyOnce = new System.Windows.Forms.CheckBox();
 			this.Settings_cmbxHWIDServerSendTo = new System.Windows.Forms.ComboBox();
 			this.Settings_cmbxHWIDClientSaveFrom = new System.Windows.Forms.ComboBox();
@@ -380,7 +378,6 @@ namespace xBot.App
 			this.Character_lblGold = new System.Windows.Forms.Label();
 			this.Character_lblGoldText = new System.Windows.Forms.Label();
 			this.Character_lblJobLevel = new System.Windows.Forms.Label();
-			this.Character_pgbJobExp = new xGraphics.xProgressBar();
 			this.Character_gbxStatPoints = new System.Windows.Forms.GroupBox();
 			this.Character_lblStatPoints = new System.Windows.Forms.Label();
 			this.Character_lblINT = new System.Windows.Forms.Label();
@@ -395,10 +392,6 @@ namespace xBot.App
 			this.Character_cbxMessagePicks = new System.Windows.Forms.CheckBox();
 			this.Character_cbxMessageUniques = new System.Windows.Forms.CheckBox();
 			this.Character_cbxMessageExp = new System.Windows.Forms.CheckBox();
-			this.Character_rtbxMessageFilter = new xGraphics.xRichTextBox();
-			this.Character_pgbExp = new xGraphics.xProgressBar();
-			this.Character_pgbMP = new xGraphics.xProgressBar();
-			this.Character_pgbHP = new xGraphics.xProgressBar();
 			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
 			this.Character_gbxPotionPet = new System.Windows.Forms.GroupBox();
 			this.Character_tbxUsePetHGP = new System.Windows.Forms.TextBox();
@@ -447,25 +440,17 @@ namespace xBot.App
 			this.TabPageH_Chat_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_Chat_Option01 = new System.Windows.Forms.Button();
 			this.TabPageH_Chat_Option01_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxAll = new xGraphics.xRichTextBox();
 			this.Chat_panel = new System.Windows.Forms.Panel();
 			this.Chat_tbxMsgPlayer = new System.Windows.Forms.TextBox();
 			this.Chat_cmbxMsgType = new System.Windows.Forms.ComboBox();
 			this.Chat_tbxMsg = new System.Windows.Forms.TextBox();
 			this.TabPageH_Chat_Option08_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxGlobal = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option07_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxStall = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option06_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxAcademy = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option05_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxUnion = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option04_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxGuild = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option03_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxParty = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option02_Panel = new System.Windows.Forms.Panel();
-			this.Chat_rtbxPrivate = new xGraphics.xRichTextBox();
 			this.TabPageV_Control01_Option12_Panel = new System.Windows.Forms.Panel();
 			this.Minimap_panelMap = new System.Windows.Forms.Panel();
 			this.Minimap_btnLoadMap = new System.Windows.Forms.Button();
@@ -486,7 +471,6 @@ namespace xBot.App
 			this.Menu_btnClientOptions_GoClientless = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnBotStart = new System.Windows.Forms.Button();
 			this.TabPageV_Control01_Option06_Panel = new System.Windows.Forms.Panel();
-			this.rtbxLogs = new xGraphics.xRichTextBox();
 			this.btnAnalyzer = new System.Windows.Forms.Button();
 			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.lblBotState = new System.Windows.Forms.Label();
@@ -496,6 +480,22 @@ namespace xBot.App
 			this.Menu_NotifyIcon_About = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_NotifyIcon_Separator01 = new System.Windows.Forms.ToolStripSeparator();
 			this.Menu_NotifyIcon_Exit = new System.Windows.Forms.ToolStripMenuItem();
+			this.Character_pgbJobExp = new xGraphics.xProgressBar();
+			this.Character_rtbxMessageFilter = new xGraphics.xRichTextBox();
+			this.Character_pgbExp = new xGraphics.xProgressBar();
+			this.Character_pgbMP = new xGraphics.xProgressBar();
+			this.Character_pgbHP = new xGraphics.xProgressBar();
+			this.Settings_rtbxPackets = new xGraphics.xRichTextBox();
+			this.Settings_rtbxHWIDdata = new xGraphics.xRichTextBox();
+			this.Chat_rtbxAll = new xGraphics.xRichTextBox();
+			this.Chat_rtbxGlobal = new xGraphics.xRichTextBox();
+			this.Chat_rtbxStall = new xGraphics.xRichTextBox();
+			this.Chat_rtbxAcademy = new xGraphics.xRichTextBox();
+			this.Chat_rtbxUnion = new xGraphics.xRichTextBox();
+			this.Chat_rtbxGuild = new xGraphics.xRichTextBox();
+			this.Chat_rtbxParty = new xGraphics.xRichTextBox();
+			this.Chat_rtbxPrivate = new xGraphics.xRichTextBox();
+			this.rtbxLogs = new xGraphics.xRichTextBox();
 			this.TabPageV_Control01.SuspendLayout();
 			this.pnlHeader.SuspendLayout();
 			this.TabPageV_Control01_Option14_Panel.SuspendLayout();
@@ -1657,26 +1657,6 @@ namespace xBot.App
 			this.Settings_lblFilterOpcode.Text = "Opcode";
 			this.Settings_lblFilterOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// Settings_rtbxPackets
-			// 
-			this.Settings_rtbxPackets.AutoScroll = false;
-			this.Settings_rtbxPackets.BackColor = System.Drawing.Color.Black;
-			this.Settings_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.Settings_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
-			this.Settings_rtbxPackets.DetectUrls = false;
-			this.Settings_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Settings_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Settings_rtbxPackets.Location = new System.Drawing.Point(178, 5);
-			this.Settings_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
-			this.Settings_rtbxPackets.MaxLines = 2048;
-			this.Settings_rtbxPackets.Name = "Settings_rtbxPackets";
-			this.Settings_rtbxPackets.ReadOnly = true;
-			this.Settings_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Settings_rtbxPackets.Size = new System.Drawing.Size(472, 247);
-			this.Settings_rtbxPackets.TabIndex = 15;
-			this.Settings_rtbxPackets.Tag = "Source Sans Pro";
-			this.Settings_rtbxPackets.Text = "";
-			// 
 			// Menu_rtbxPackets
 			// 
 			this.Menu_rtbxPackets.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1991,26 +1971,6 @@ namespace xBot.App
 			this.Settings_panelHWIDdata.Name = "Settings_panelHWIDdata";
 			this.Settings_panelHWIDdata.Size = new System.Drawing.Size(121, 88);
 			this.Settings_panelHWIDdata.TabIndex = 8;
-			// 
-			// Settings_rtbxHWIDdata
-			// 
-			this.Settings_rtbxHWIDdata.AutoScroll = false;
-			this.Settings_rtbxHWIDdata.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Settings_rtbxHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.Settings_rtbxHWIDdata.DetectUrls = false;
-			this.Settings_rtbxHWIDdata.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.Settings_rtbxHWIDdata.Font = new System.Drawing.Font("Source Sans Pro", 11.85F);
-			this.Settings_rtbxHWIDdata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Settings_rtbxHWIDdata.Location = new System.Drawing.Point(0, 0);
-			this.Settings_rtbxHWIDdata.MaxLines = 2147483647;
-			this.Settings_rtbxHWIDdata.Name = "Settings_rtbxHWIDdata";
-			this.Settings_rtbxHWIDdata.ReadOnly = true;
-			this.Settings_rtbxHWIDdata.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Settings_rtbxHWIDdata.Size = new System.Drawing.Size(119, 86);
-			this.Settings_rtbxHWIDdata.TabIndex = 6;
-			this.Settings_rtbxHWIDdata.Tag = "Source Sans Pro";
-			this.Settings_rtbxHWIDdata.Text = "";
-			this.ToolTips.SetToolTip(this.Settings_rtbxHWIDdata, "HWID saved from Client opcode");
 			// 
 			// Settings_cbxHWIDSendOnlyOnce
 			// 
@@ -5784,24 +5744,6 @@ namespace xBot.App
 			this.Character_lblJobLevel.Text = "Job Lv. - - -";
 			this.ToolTips.SetToolTip(this.Character_lblJobLevel, "Job Level");
 			// 
-			// Character_pgbJobExp
-			// 
-			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
-			this.Character_pgbJobExp.ColorDegradation = 4;
-			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbJobExp.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
-			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbJobExp.DisplayText = null;
-			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
-			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
-			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
-			this.Character_pgbJobExp.TabIndex = 23;
-			this.Character_pgbJobExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
-			this.Character_pgbJobExp.Value = ((ulong)(0ul));
-			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
-			// 
 			// Character_gbxStatPoints
 			// 
 			this.Character_gbxStatPoints.Controls.Add(this.Character_lblStatPoints);
@@ -6034,81 +5976,6 @@ namespace xBot.App
 			this.ToolTips.SetToolTip(this.Character_cbxMessageExp, "Experience & SP Experience");
 			this.Character_cbxMessageExp.UseVisualStyleBackColor = false;
 			this.Character_cbxMessageExp.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
-			// 
-			// Character_rtbxMessageFilter
-			// 
-			this.Character_rtbxMessageFilter.AutoScroll = true;
-			this.Character_rtbxMessageFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Character_rtbxMessageFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_rtbxMessageFilter.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Character_rtbxMessageFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_rtbxMessageFilter.Location = new System.Drawing.Point(1, 40);
-			this.Character_rtbxMessageFilter.Margin = new System.Windows.Forms.Padding(1);
-			this.Character_rtbxMessageFilter.MaxLines = 2048;
-			this.Character_rtbxMessageFilter.Name = "Character_rtbxMessageFilter";
-			this.Character_rtbxMessageFilter.ReadOnly = true;
-			this.Character_rtbxMessageFilter.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Character_rtbxMessageFilter.Size = new System.Drawing.Size(298, 267);
-			this.Character_rtbxMessageFilter.TabIndex = 6;
-			this.Character_rtbxMessageFilter.TabStop = false;
-			this.Character_rtbxMessageFilter.Tag = "Source Sans Pro";
-			this.Character_rtbxMessageFilter.Text = "";
-			// 
-			// Character_pgbExp
-			// 
-			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
-			this.Character_pgbExp.ColorDegradation = 5;
-			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbExp.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
-			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbExp.DisplayText = null;
-			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
-			this.Character_pgbExp.Name = "Character_pgbExp";
-			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
-			this.Character_pgbExp.TabIndex = 5;
-			this.Character_pgbExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
-			this.Character_pgbExp.Value = ((ulong)(0ul));
-			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
-			// 
-			// Character_pgbMP
-			// 
-			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
-			this.Character_pgbMP.ColorDegradation = 6;
-			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbMP.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
-			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbMP.DisplayText = null;
-			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
-			this.Character_pgbMP.Name = "Character_pgbMP";
-			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbMP.TabIndex = 4;
-			this.Character_pgbMP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
-			this.Character_pgbMP.Value = ((ulong)(0ul));
-			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
-			this.Character_pgbMP.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Character_pgbHP
-			// 
-			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
-			this.Character_pgbHP.ColorDegradation = 6;
-			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbHP.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
-			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbHP.DisplayText = null;
-			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
-			this.Character_pgbHP.Name = "Character_pgbHP";
-			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbHP.TabIndex = 3;
-			this.Character_pgbHP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
-			this.Character_pgbHP.Value = ((ulong)(0ul));
-			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
-			this.Character_pgbHP.Click += new System.EventHandler(this.Control_Click);
 			// 
 			// TabPageH_Character_Option02_Panel
 			// 
@@ -6942,23 +6809,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option01_Panel.TabIndex = 8;
 			this.TabPageH_Chat_Option01_Panel.Visible = false;
 			// 
-			// Chat_rtbxAll
-			// 
-			this.Chat_rtbxAll.AutoScroll = true;
-			this.Chat_rtbxAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxAll.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxAll.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxAll.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxAll.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxAll.MaxLines = 1024;
-			this.Chat_rtbxAll.Name = "Chat_rtbxAll";
-			this.Chat_rtbxAll.ReadOnly = true;
-			this.Chat_rtbxAll.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxAll.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxAll.TabIndex = 0;
-			this.Chat_rtbxAll.Text = "";
-			// 
 			// Chat_panel
 			// 
 			this.Chat_panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -7032,23 +6882,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option08_Panel.TabIndex = 12;
 			this.TabPageH_Chat_Option08_Panel.Visible = false;
 			// 
-			// Chat_rtbxGlobal
-			// 
-			this.Chat_rtbxGlobal.AutoScroll = true;
-			this.Chat_rtbxGlobal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxGlobal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxGlobal.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxGlobal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxGlobal.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxGlobal.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxGlobal.MaxLines = 1024;
-			this.Chat_rtbxGlobal.Name = "Chat_rtbxGlobal";
-			this.Chat_rtbxGlobal.ReadOnly = true;
-			this.Chat_rtbxGlobal.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxGlobal.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxGlobal.TabIndex = 7;
-			this.Chat_rtbxGlobal.Text = "";
-			// 
 			// TabPageH_Chat_Option07_Panel
 			// 
 			this.TabPageH_Chat_Option07_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -7058,23 +6891,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option07_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option07_Panel.TabIndex = 15;
 			this.TabPageH_Chat_Option07_Panel.Visible = false;
-			// 
-			// Chat_rtbxStall
-			// 
-			this.Chat_rtbxStall.AutoScroll = true;
-			this.Chat_rtbxStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxStall.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxStall.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxStall.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxStall.MaxLines = 1024;
-			this.Chat_rtbxStall.Name = "Chat_rtbxStall";
-			this.Chat_rtbxStall.ReadOnly = true;
-			this.Chat_rtbxStall.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxStall.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxStall.TabIndex = 6;
-			this.Chat_rtbxStall.Text = "";
 			// 
 			// TabPageH_Chat_Option06_Panel
 			// 
@@ -7086,23 +6902,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option06_Panel.TabIndex = 13;
 			this.TabPageH_Chat_Option06_Panel.Visible = false;
 			// 
-			// Chat_rtbxAcademy
-			// 
-			this.Chat_rtbxAcademy.AutoScroll = true;
-			this.Chat_rtbxAcademy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxAcademy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxAcademy.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxAcademy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxAcademy.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxAcademy.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxAcademy.MaxLines = 1024;
-			this.Chat_rtbxAcademy.Name = "Chat_rtbxAcademy";
-			this.Chat_rtbxAcademy.ReadOnly = true;
-			this.Chat_rtbxAcademy.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxAcademy.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxAcademy.TabIndex = 5;
-			this.Chat_rtbxAcademy.Text = "";
-			// 
 			// TabPageH_Chat_Option05_Panel
 			// 
 			this.TabPageH_Chat_Option05_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -7112,23 +6911,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option05_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option05_Panel.TabIndex = 14;
 			this.TabPageH_Chat_Option05_Panel.Visible = false;
-			// 
-			// Chat_rtbxUnion
-			// 
-			this.Chat_rtbxUnion.AutoScroll = true;
-			this.Chat_rtbxUnion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxUnion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxUnion.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxUnion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxUnion.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxUnion.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxUnion.MaxLines = 1024;
-			this.Chat_rtbxUnion.Name = "Chat_rtbxUnion";
-			this.Chat_rtbxUnion.ReadOnly = true;
-			this.Chat_rtbxUnion.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxUnion.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxUnion.TabIndex = 4;
-			this.Chat_rtbxUnion.Text = "";
 			// 
 			// TabPageH_Chat_Option04_Panel
 			// 
@@ -7140,23 +6922,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option04_Panel.TabIndex = 10;
 			this.TabPageH_Chat_Option04_Panel.Visible = false;
 			// 
-			// Chat_rtbxGuild
-			// 
-			this.Chat_rtbxGuild.AutoScroll = true;
-			this.Chat_rtbxGuild.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxGuild.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxGuild.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxGuild.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxGuild.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxGuild.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxGuild.MaxLines = 1024;
-			this.Chat_rtbxGuild.Name = "Chat_rtbxGuild";
-			this.Chat_rtbxGuild.ReadOnly = true;
-			this.Chat_rtbxGuild.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxGuild.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxGuild.TabIndex = 3;
-			this.Chat_rtbxGuild.Text = "";
-			// 
 			// TabPageH_Chat_Option03_Panel
 			// 
 			this.TabPageH_Chat_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -7167,23 +6932,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option03_Panel.TabIndex = 9;
 			this.TabPageH_Chat_Option03_Panel.Visible = false;
 			// 
-			// Chat_rtbxParty
-			// 
-			this.Chat_rtbxParty.AutoScroll = true;
-			this.Chat_rtbxParty.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxParty.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxParty.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxParty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxParty.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxParty.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxParty.MaxLines = 1024;
-			this.Chat_rtbxParty.Name = "Chat_rtbxParty";
-			this.Chat_rtbxParty.ReadOnly = true;
-			this.Chat_rtbxParty.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxParty.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxParty.TabIndex = 2;
-			this.Chat_rtbxParty.Text = "";
-			// 
 			// TabPageH_Chat_Option02_Panel
 			// 
 			this.TabPageH_Chat_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -7193,23 +6941,6 @@ namespace xBot.App
 			this.TabPageH_Chat_Option02_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option02_Panel.TabIndex = 11;
 			this.TabPageH_Chat_Option02_Panel.Visible = false;
-			// 
-			// Chat_rtbxPrivate
-			// 
-			this.Chat_rtbxPrivate.AutoScroll = true;
-			this.Chat_rtbxPrivate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxPrivate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxPrivate.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxPrivate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxPrivate.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxPrivate.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxPrivate.MaxLines = 1024;
-			this.Chat_rtbxPrivate.Name = "Chat_rtbxPrivate";
-			this.Chat_rtbxPrivate.ReadOnly = true;
-			this.Chat_rtbxPrivate.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxPrivate.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxPrivate.TabIndex = 1;
-			this.Chat_rtbxPrivate.Text = "";
 			// 
 			// TabPageV_Control01_Option12_Panel
 			// 
@@ -7427,19 +7158,21 @@ namespace xBot.App
             this.Menu_btnClientOptions_ShowHide,
             this.Menu_btnClientOptions_GoClientless});
 			this.Menu_btnClientOptions.Name = "Menu_rtbxPackets";
-			this.Menu_btnClientOptions.Size = new System.Drawing.Size(141, 48);
+			this.Menu_btnClientOptions.Size = new System.Drawing.Size(153, 70);
 			// 
 			// Menu_btnClientOptions_ShowHide
 			// 
 			this.Menu_btnClientOptions_ShowHide.Name = "Menu_btnClientOptions_ShowHide";
-			this.Menu_btnClientOptions_ShowHide.Size = new System.Drawing.Size(140, 22);
+			this.Menu_btnClientOptions_ShowHide.Size = new System.Drawing.Size(152, 22);
 			this.Menu_btnClientOptions_ShowHide.Text = "Show/Hide";
+			this.Menu_btnClientOptions_ShowHide.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Menu_btnClientOptions_GoClientless
 			// 
 			this.Menu_btnClientOptions_GoClientless.Name = "Menu_btnClientOptions_GoClientless";
-			this.Menu_btnClientOptions_GoClientless.Size = new System.Drawing.Size(140, 22);
+			this.Menu_btnClientOptions_GoClientless.Size = new System.Drawing.Size(152, 22);
 			this.Menu_btnClientOptions_GoClientless.Text = "Go clientless";
+			this.Menu_btnClientOptions_GoClientless.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// btnBotStart
 			// 
@@ -7470,25 +7203,6 @@ namespace xBot.App
 			this.TabPageV_Control01_Option06_Panel.Size = new System.Drawing.Size(657, 342);
 			this.TabPageV_Control01_Option06_Panel.TabIndex = 11;
 			this.TabPageV_Control01_Option06_Panel.Visible = false;
-			// 
-			// rtbxLogs
-			// 
-			this.rtbxLogs.AutoScroll = true;
-			this.rtbxLogs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.rtbxLogs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.rtbxLogs.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rtbxLogs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.rtbxLogs.Location = new System.Drawing.Point(162, 391);
-			this.rtbxLogs.Margin = new System.Windows.Forms.Padding(1);
-			this.rtbxLogs.MaxLines = 512;
-			this.rtbxLogs.Name = "rtbxLogs";
-			this.rtbxLogs.ReadOnly = true;
-			this.rtbxLogs.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.rtbxLogs.Size = new System.Drawing.Size(630, 76);
-			this.rtbxLogs.TabIndex = 0;
-			this.rtbxLogs.TabStop = false;
-			this.rtbxLogs.Tag = "Source Sans Pro";
-			this.rtbxLogs.Text = "";
 			// 
 			// btnAnalyzer
 			// 
@@ -7567,6 +7281,294 @@ namespace xBot.App
 			this.Menu_NotifyIcon_Exit.Size = new System.Drawing.Size(107, 22);
 			this.Menu_NotifyIcon_Exit.Text = "Exit";
 			this.Menu_NotifyIcon_Exit.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Character_pgbJobExp
+			// 
+			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
+			this.Character_pgbJobExp.ColorDegradation = 4;
+			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbJobExp.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
+			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbJobExp.DisplayText = null;
+			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
+			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
+			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
+			this.Character_pgbJobExp.TabIndex = 23;
+			this.Character_pgbJobExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
+			this.Character_pgbJobExp.Value = ((ulong)(0ul));
+			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_rtbxMessageFilter
+			// 
+			this.Character_rtbxMessageFilter.AutoScroll = true;
+			this.Character_rtbxMessageFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Character_rtbxMessageFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_rtbxMessageFilter.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Character_rtbxMessageFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_rtbxMessageFilter.Location = new System.Drawing.Point(1, 40);
+			this.Character_rtbxMessageFilter.Margin = new System.Windows.Forms.Padding(1);
+			this.Character_rtbxMessageFilter.MaxLines = 2048;
+			this.Character_rtbxMessageFilter.Name = "Character_rtbxMessageFilter";
+			this.Character_rtbxMessageFilter.ReadOnly = true;
+			this.Character_rtbxMessageFilter.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Character_rtbxMessageFilter.Size = new System.Drawing.Size(298, 267);
+			this.Character_rtbxMessageFilter.TabIndex = 6;
+			this.Character_rtbxMessageFilter.TabStop = false;
+			this.Character_rtbxMessageFilter.Tag = "Source Sans Pro";
+			this.Character_rtbxMessageFilter.Text = "";
+			// 
+			// Character_pgbExp
+			// 
+			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
+			this.Character_pgbExp.ColorDegradation = 5;
+			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbExp.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
+			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbExp.DisplayText = null;
+			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
+			this.Character_pgbExp.Name = "Character_pgbExp";
+			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
+			this.Character_pgbExp.TabIndex = 5;
+			this.Character_pgbExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
+			this.Character_pgbExp.Value = ((ulong)(0ul));
+			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_pgbMP
+			// 
+			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
+			this.Character_pgbMP.ColorDegradation = 6;
+			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbMP.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
+			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbMP.DisplayText = null;
+			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
+			this.Character_pgbMP.Name = "Character_pgbMP";
+			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbMP.TabIndex = 4;
+			this.Character_pgbMP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
+			this.Character_pgbMP.Value = ((ulong)(0ul));
+			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
+			this.Character_pgbMP.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Character_pgbHP
+			// 
+			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
+			this.Character_pgbHP.ColorDegradation = 6;
+			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbHP.DisplayFont = new System.Drawing.Font("Times New Roman", 12F);
+			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbHP.DisplayText = null;
+			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
+			this.Character_pgbHP.Name = "Character_pgbHP";
+			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbHP.TabIndex = 3;
+			this.Character_pgbHP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
+			this.Character_pgbHP.Value = ((ulong)(0ul));
+			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
+			this.Character_pgbHP.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Settings_rtbxPackets
+			// 
+			this.Settings_rtbxPackets.AutoScroll = false;
+			this.Settings_rtbxPackets.BackColor = System.Drawing.Color.Black;
+			this.Settings_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.Settings_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
+			this.Settings_rtbxPackets.DetectUrls = false;
+			this.Settings_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Settings_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Settings_rtbxPackets.Location = new System.Drawing.Point(178, 5);
+			this.Settings_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
+			this.Settings_rtbxPackets.MaxLines = 2048;
+			this.Settings_rtbxPackets.Name = "Settings_rtbxPackets";
+			this.Settings_rtbxPackets.ReadOnly = true;
+			this.Settings_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Settings_rtbxPackets.Size = new System.Drawing.Size(472, 247);
+			this.Settings_rtbxPackets.TabIndex = 15;
+			this.Settings_rtbxPackets.Tag = "Source Sans Pro";
+			this.Settings_rtbxPackets.Text = "";
+			// 
+			// Settings_rtbxHWIDdata
+			// 
+			this.Settings_rtbxHWIDdata.AutoScroll = false;
+			this.Settings_rtbxHWIDdata.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Settings_rtbxHWIDdata.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.Settings_rtbxHWIDdata.DetectUrls = false;
+			this.Settings_rtbxHWIDdata.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.Settings_rtbxHWIDdata.Font = new System.Drawing.Font("Source Sans Pro", 11.85F);
+			this.Settings_rtbxHWIDdata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Settings_rtbxHWIDdata.Location = new System.Drawing.Point(0, 0);
+			this.Settings_rtbxHWIDdata.MaxLines = 2147483647;
+			this.Settings_rtbxHWIDdata.Name = "Settings_rtbxHWIDdata";
+			this.Settings_rtbxHWIDdata.ReadOnly = true;
+			this.Settings_rtbxHWIDdata.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Settings_rtbxHWIDdata.Size = new System.Drawing.Size(119, 86);
+			this.Settings_rtbxHWIDdata.TabIndex = 6;
+			this.Settings_rtbxHWIDdata.Tag = "Source Sans Pro";
+			this.Settings_rtbxHWIDdata.Text = "";
+			this.ToolTips.SetToolTip(this.Settings_rtbxHWIDdata, "HWID saved from Client opcode");
+			// 
+			// Chat_rtbxAll
+			// 
+			this.Chat_rtbxAll.AutoScroll = true;
+			this.Chat_rtbxAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxAll.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxAll.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxAll.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxAll.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxAll.MaxLines = 1024;
+			this.Chat_rtbxAll.Name = "Chat_rtbxAll";
+			this.Chat_rtbxAll.ReadOnly = true;
+			this.Chat_rtbxAll.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxAll.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxAll.TabIndex = 0;
+			this.Chat_rtbxAll.Text = "";
+			// 
+			// Chat_rtbxGlobal
+			// 
+			this.Chat_rtbxGlobal.AutoScroll = true;
+			this.Chat_rtbxGlobal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxGlobal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxGlobal.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxGlobal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxGlobal.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxGlobal.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxGlobal.MaxLines = 1024;
+			this.Chat_rtbxGlobal.Name = "Chat_rtbxGlobal";
+			this.Chat_rtbxGlobal.ReadOnly = true;
+			this.Chat_rtbxGlobal.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxGlobal.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxGlobal.TabIndex = 7;
+			this.Chat_rtbxGlobal.Text = "";
+			// 
+			// Chat_rtbxStall
+			// 
+			this.Chat_rtbxStall.AutoScroll = true;
+			this.Chat_rtbxStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxStall.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxStall.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxStall.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxStall.MaxLines = 1024;
+			this.Chat_rtbxStall.Name = "Chat_rtbxStall";
+			this.Chat_rtbxStall.ReadOnly = true;
+			this.Chat_rtbxStall.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxStall.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxStall.TabIndex = 6;
+			this.Chat_rtbxStall.Text = "";
+			// 
+			// Chat_rtbxAcademy
+			// 
+			this.Chat_rtbxAcademy.AutoScroll = true;
+			this.Chat_rtbxAcademy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxAcademy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxAcademy.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxAcademy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxAcademy.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxAcademy.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxAcademy.MaxLines = 1024;
+			this.Chat_rtbxAcademy.Name = "Chat_rtbxAcademy";
+			this.Chat_rtbxAcademy.ReadOnly = true;
+			this.Chat_rtbxAcademy.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxAcademy.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxAcademy.TabIndex = 5;
+			this.Chat_rtbxAcademy.Text = "";
+			// 
+			// Chat_rtbxUnion
+			// 
+			this.Chat_rtbxUnion.AutoScroll = true;
+			this.Chat_rtbxUnion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxUnion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxUnion.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxUnion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxUnion.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxUnion.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxUnion.MaxLines = 1024;
+			this.Chat_rtbxUnion.Name = "Chat_rtbxUnion";
+			this.Chat_rtbxUnion.ReadOnly = true;
+			this.Chat_rtbxUnion.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxUnion.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxUnion.TabIndex = 4;
+			this.Chat_rtbxUnion.Text = "";
+			// 
+			// Chat_rtbxGuild
+			// 
+			this.Chat_rtbxGuild.AutoScroll = true;
+			this.Chat_rtbxGuild.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxGuild.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxGuild.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxGuild.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxGuild.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxGuild.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxGuild.MaxLines = 1024;
+			this.Chat_rtbxGuild.Name = "Chat_rtbxGuild";
+			this.Chat_rtbxGuild.ReadOnly = true;
+			this.Chat_rtbxGuild.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxGuild.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxGuild.TabIndex = 3;
+			this.Chat_rtbxGuild.Text = "";
+			// 
+			// Chat_rtbxParty
+			// 
+			this.Chat_rtbxParty.AutoScroll = true;
+			this.Chat_rtbxParty.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxParty.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxParty.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxParty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxParty.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxParty.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxParty.MaxLines = 1024;
+			this.Chat_rtbxParty.Name = "Chat_rtbxParty";
+			this.Chat_rtbxParty.ReadOnly = true;
+			this.Chat_rtbxParty.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxParty.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxParty.TabIndex = 2;
+			this.Chat_rtbxParty.Text = "";
+			// 
+			// Chat_rtbxPrivate
+			// 
+			this.Chat_rtbxPrivate.AutoScroll = true;
+			this.Chat_rtbxPrivate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxPrivate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxPrivate.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxPrivate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxPrivate.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxPrivate.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxPrivate.MaxLines = 1024;
+			this.Chat_rtbxPrivate.Name = "Chat_rtbxPrivate";
+			this.Chat_rtbxPrivate.ReadOnly = true;
+			this.Chat_rtbxPrivate.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxPrivate.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxPrivate.TabIndex = 1;
+			this.Chat_rtbxPrivate.Text = "";
+			// 
+			// rtbxLogs
+			// 
+			this.rtbxLogs.AutoScroll = true;
+			this.rtbxLogs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.rtbxLogs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.rtbxLogs.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rtbxLogs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.rtbxLogs.Location = new System.Drawing.Point(162, 391);
+			this.rtbxLogs.Margin = new System.Windows.Forms.Padding(1);
+			this.rtbxLogs.MaxLines = 512;
+			this.rtbxLogs.Name = "rtbxLogs";
+			this.rtbxLogs.ReadOnly = true;
+			this.rtbxLogs.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.rtbxLogs.Size = new System.Drawing.Size(630, 76);
+			this.rtbxLogs.TabIndex = 0;
+			this.rtbxLogs.TabStop = false;
+			this.rtbxLogs.Tag = "Source Sans Pro";
+			this.rtbxLogs.Text = "";
 			// 
 			// Window
 			// 

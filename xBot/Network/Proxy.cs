@@ -37,7 +37,7 @@ namespace xBot.Network
 			}
 		}
 		private Process sro_client;
-		public bool ClientlessMode { get { return sro_client == null; } }
+		public bool ClientlessMode { get { return SRO_Client == null; } }
 		/// <summary>
 		/// Check the current client mode.
 		/// </summary>
