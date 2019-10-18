@@ -1603,6 +1603,8 @@ namespace xBot.Game
 		}
 		private static void InventoryItemMovement_InventoryToInventory(Packet p)
 		{
+			// [04:38:06][A][S->C][B034][7 bytes]
+			// 0000000000   01 00 [16 18 01 00 00]                              ................
 			byte slotInitial = p.ReadByte();
 			byte slotFinal = p.ReadByte();
 			ushort quantityMoved = p.ReadUShort();

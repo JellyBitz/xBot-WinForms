@@ -23,6 +23,7 @@ namespace xBot.App.PK2Extractor
 			icon_default.Add("icon", "icon_default.ddj");
 			rows.Add(icon_default);
 
+			LogState("Checking item icon files...");
 			// Check and save every icon available
 			foreach (NameValueCollection column in rows)
 			{
@@ -59,35 +60,33 @@ namespace xBot.App.PK2Extractor
 
 			string path = GetDirectory(SilkroadName);
 			List<NameValueCollection> rows = db.GetResult();
-			if (rows != null)
+			LogState("Checking skill icon files...");
+			foreach (NameValueCollection column in rows)
 			{
-				foreach (NameValueCollection column in rows)
-				{
-					string iconPath = "icon\\" + column["icon"];
-					// Check if the icon exists into the pk2
-					Pk2File DDJFile = pk2.GetFile(iconPath);
-					if (DDJFile == null)
-						continue;
-					// Check path if the file already exists
-					string saveFilePath = Path.ChangeExtension(Path.GetFullPath(path + iconPath),"png");
-					if (File.Exists(saveFilePath))
-						continue;
-					// Check directory
-					string saveFolderPath = Path.GetDirectoryName(saveFilePath);
-					if (!Directory.Exists(saveFolderPath))
-						Directory.CreateDirectory(saveFolderPath);
+				string iconPath = "icon\\" + column["icon"];
+				// Check if the icon exists into the pk2
+				Pk2File DDJFile = pk2.GetFile(iconPath);
+				if (DDJFile == null)
+					continue;
+				// Check path if the file already exists
+				string saveFilePath = Path.ChangeExtension(Path.GetFullPath(path + iconPath), "png");
+				if (File.Exists(saveFilePath))
+					continue;
+				// Check directory
+				string saveFolderPath = Path.GetDirectoryName(saveFilePath);
+				if (!Directory.Exists(saveFolderPath))
+					Directory.CreateDirectory(saveFolderPath);
 
-					// 20% display
-					if (rand.Next(1, 1000) <= 200)
-						LogState("Creating " + iconPath);
+				// 20% display
+				if (rand.Next(1, 1000) <= 200)
+					LogState("Creating " + iconPath);
 
-					// Convert DDJ to DDS to Bitmap
-					Bitmap img = DDSReader.FromDDJ(pk2.GetFileBytes(DDJFile));
-					// Save as png
-					img.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
+				// Convert DDJ to DDS to Bitmap
+				Bitmap img = DDSReader.FromDDJ(pk2.GetFileBytes(DDJFile));
+				// Save as png
+				img.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
 
-					Thread.Sleep(CPU_BREAK);
-				}
+				Thread.Sleep(CPU_BREAK);
 			}
 		}
 	}

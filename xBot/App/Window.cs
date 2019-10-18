@@ -6,15 +6,15 @@ using System.IO;
 using System.Diagnostics;
 using CefSharp;
 using CefSharp.WinForms;
-using SecurityAPI;
 using System.Text.RegularExpressions;
 using System.Text;
-using xGraphics;
 using System.Threading;
 using xBot.Game;
 using xBot.App.PK2Extractor;
 using xBot.Game.Objects;
+using SecurityAPI;
 using xBot.Network;
+using xGraphics;
 
 namespace xBot.App
 {
@@ -23,13 +23,6 @@ namespace xBot.App
 	/// </summary>
 	public partial class Window : Form
 	{
-		public enum ProcessState
-		{
-			Default,
-			Warning,
-			Disconnected,
-			Error
-		}
 		/// <summary>
 		/// Unique instance of this class.
 		/// </summary>
@@ -41,7 +34,7 @@ namespace xBot.App
 		/// <summary>
 		/// Advertising window.
 		/// </summary>
-		private Ads advertising;
+		private Ads adsWindow;
 		private Window()
 		{
 			InitializeComponent();
@@ -65,9 +58,8 @@ namespace xBot.App
 		/// </summary>
 		private void InitializeFonts(Control c)
 		{
-			Fonts f = Fonts.Get;
 			// Using fontName as TAG to be selected from WinForms
-			c.Font = f.Load(c.Font, (string)c.Tag);
+			c.Font = Fonts.GetFont(c.Font, (string)c.Tag);
 			c.Tag = null;
 			for (int j = 0; j < c.Controls.Count; j++)
 				InitializeFonts(c.Controls[j]);
@@ -82,7 +74,7 @@ namespace xBot.App
 			this.lblHeaderText01.Text = this.ProductName + " -";
 			this.lblHeaderText02.Location = new Point(this.lblHeaderText01.Location.X + this.lblHeaderText01.Size.Width, this.lblHeaderText01.Location.Y);
 			this.lblHeaderText02.Text = "v" + this.ProductVersion;
-			advertising = new Ads(this);
+			adsWindow = new Ads(this);
 
 			// Vertical tabs
 			// Login
@@ -108,32 +100,6 @@ namespace xBot.App
 			Settings_cmbxCreateCharRace.SelectedIndex =
 			Settings_cmbxCreateCharGenre.SelectedIndex =
 			Settings_cmbxInjectTo.SelectedIndex = 0;
-		}
-		/// <summary>
-		/// Load all components (not visuals) to the App. Like settings and stuffs.
-		/// </summary>
-		private void Window_Load(object sender, EventArgs e)
-		{
-			// Welcome
-			rtbxLogs.AppendText(string.Format("{0} Welcome to {1} v{2} | Made by Engels \"JellyBitz\" Quintero{3}{0} Discord : JellyBitz#7643 | FaceBook : @ImJellyBitz", WinAPI.GetDate(), base.ProductName, base.ProductVersion, Environment.NewLine));
-			LogProcess();
-			// Load basic
-			Settings.LoadBotSettings();
-			LoadCommandLine();
-			// Try to load adverstising
-			ShowAds();
-			// Force visible
-			Activate();
-			BringToFront();
-		}
-		private void Window_Closing(object sender, FormClosingEventArgs e)
-		{
-			if (Bot.Get.Proxy != null){
-				Bot.Get.Proxy.Stop();
-			}
-			if (Minimap_wbrChromeMap != null){
-				Cef.Shutdown();
-			}
 		}
 		/// <summary>
 		/// Load command arguments to the App.
@@ -203,19 +169,19 @@ namespace xBot.App
 			{
 				try
 				{
-					if (!advertising.isLoaded() && advertising.TryLoad())
+					if (!adsWindow.isLoaded() && adsWindow.TryLoad())
 					{
 						// Load the banner in background
 						WinAPI.InvokeIfRequired(Login_pbxAds, ()=>{
-							Login_pbxAds.LoadAsync(advertising.GetData(Ads.EXCEL.URL_MINIBANNER));
-							ToolTips.SetToolTip(Login_pbxAds, advertising.GetData(Ads.EXCEL.TITLE));
+							Login_pbxAds.LoadAsync(adsWindow.GetData(Ads.EXCEL.URL_MINIBANNER));
+							ToolTips.SetToolTip(Login_pbxAds, adsWindow.GetData(Ads.EXCEL.TITLE));
 						});
 					}
-					if (advertising.isLoaded())
+					if (adsWindow.isLoaded())
 					{
 						// Show Advertising
-						WinAPI.InvokeIfRequired(this, ()=>{
-							advertising.ShowDialog(this);
+						WinAPI.InvokeIfRequired(this, () => {
+							adsWindow.ShowDialog(this);
 						});
 					}
 				}
@@ -321,13 +287,301 @@ namespace xBot.App
 			{
 			}
 		}
+		private bool isValidFilename(string FileName)
+		{
+			try
+			{
+				Path.GetFileName(FileName);
+			}
+			catch
+			{
+				return false;
+			}
+			return true;
+		}
+		public void AddBuff(SRObject Buff)
+		{
+			ListViewItem item = new ListViewItem();
+			item.ToolTipText = Buff.Name;
+			item.Name = Buff.ID.ToString();
+			item.ImageKey = GetImageKeyIcon((string)Buff[SRProperty.Icon]);
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () =>{
+				Character_lstvBuffs.Items.Add(item);
+			});
+		}
+    public void RemoveBuff(uint SkillID)
+		{
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
+				Character_lstvBuffs.Items.RemoveByKey(SkillID.ToString());
+			});
+		}
+		public void ClearBuffs()
+		{
+			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
+				Character_lstvBuffs.Items.Clear();
+			});
+		}
+		public void AddSkill(SRObject Skill)
+		{
+			ListViewItem item = new ListViewItem(Skill.Name);
+			item.Name = Skill.ID.ToString();
+			item.ImageKey = GetImageKeyIcon((string)Skill[SRProperty.Icon]);
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.Add(item);
+			});
+		}
+		public void RemoveSkill(uint SkillID)
+		{
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.RemoveByKey(SkillID.ToString());
+			});
+		}
+		public void ClearSkills()
+		{
+			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
+				Skills_lstvSkills.Items.Clear();
+			});
+		}
+		public string GetImageKeyIcon(string Pk2Path)
+		{
+			// Check if image is not loaded
+			if (!lstimgIcons.Images.ContainsKey(Pk2Path))
+			{
+				// Check if the file exists
+				string FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\" + Pk2Path;
+				FullPath = Path.ChangeExtension(FullPath, "png");
+				if (File.Exists(FullPath))
+				{
+					lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+				}
+				else
+				{
+					// Try to load the default image
+					FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\icon_default.png";
+					if (File.Exists(FullPath))
+					{
+						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+					}
+					else
+					{
+						return "";
+					}
+				}
+			}
+			return Pk2Path;
+		}
+		/// <summary>
+		/// Fix the text using a pattern restriction. Returns empty if the pattern is not found.
+		/// </summary>
+		private string FixTextRestriction(string Text, string Pattern, bool FirstMatch = false)
+		{
+			MatchCollection matches = Regex.Matches(Text, Pattern);
+			if (matches.Count > 0)
+			{
+				if (FirstMatch)
+					return matches[0].Value;
+				StringBuilder fixedText = new StringBuilder();
+				foreach (Match m in matches)
+					fixedText.Append(m.Value);
+				return fixedText.ToString();
+			}
+			return "";
+		}
+		
+		public void BringToTop() {
+			if (this.WindowState == FormWindowState.Minimized){
+				this.WindowState = FormWindowState.Normal;
+			}
+			this.Activate();
+		}
+		
+		
+		/// <summary>
+		/// Set the gold in Silkroad format color.
+		/// </summary>
+		public void Character_SetGold(ulong gold)
+		{
+			// 1000000 to 1.000.000
+			string Text = gold.ToString("#,0");
+			int GoldDigits = gold.ToString().Length;
+			// Visual color
+			Color ForeColor = Color.White; // Default
+			if(GoldDigits <= 4){
+				ForeColor = Color.White;
+			}
+			else if (GoldDigits <= 5){
+				ForeColor = Color.FromArgb(255, 250, 133); // Light Yellow
+			}
+			else if (GoldDigits <= 6)
+			{
+				ForeColor = Color.FromArgb(255, 211, 72); // Yellow
+			}
+			else if (GoldDigits <= 7)
+			{
+				ForeColor = Color.FromArgb(255, 173, 92); // Dark Orange
+			}
+			else if (GoldDigits <= 8)
+			{
+				ForeColor = Color.FromArgb(255, 154, 161); // Pink
+			}
+			else if (GoldDigits <= 9)
+			{
+				ForeColor = Color.FromArgb(235, 161, 255); // Purple
+			}
+			WinAPI.InvokeIfRequired(Character_lblGold, () => {
+				Character_lblGold.ForeColor = ForeColor;
+				Character_lblGold.Text = Text;
+			});
+		}
+		public void Inventory_Refresh()
+		{
+			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.Items.Clear();
+				Inventory_lstvItems.BeginUpdate();
+			});
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			
+			for (int j = 0; j < inventory.Capacity; j++)
+			{
+				ListViewItem item = new ListViewItem();
+				item.Name = item.Text = j.ToString();
+				if (inventory[j] != null)
+				{
+					item.SubItems.Add(inventory[j].Name + (inventory[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventory[j][SRProperty.Plus] + ")" : ""));
+					item.SubItems.Add((ushort)inventory[j][SRProperty.QuantityMax] == 1 ? "1" : inventory[j][SRProperty.Quantity] + "/" + inventory[j][SRProperty.QuantityMax]);
+					item.SubItems.Add(inventory[j].ServerName);
+					item.ImageKey = GetImageKeyIcon((string)inventory[j][SRProperty.Icon]);
+					// TO DO:
+					// Add as tooltip the item stats
+				}
+				else
+				{
+					item.SubItems.Add("Empty");
+				}
+
+				// Add
+				WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+					Inventory_lstvItems.Items.Add(item);
+				});
+			}
+			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
+				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;
+			});
+			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.EndUpdate();
+			});
+		}
+		public void Party_Clear()
+		{
+			WinAPI.InvokeIfRequired(Party_lstvPartyMembers, () => {
+				Party_lstvPartyMembers.Items.Clear();
+			});
+			WinAPI.InvokeIfRequired(Party_lblCurrentSetup, () => {
+				Party_lblCurrentSetup.Text = "";
+				Party_lblCurrentSetup.Tag = null;
+			});
+			WinAPI.InvokeIfRequired(this, () => {
+				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
+			});
+		}
+		/// <summary>
+		/// Load WebBrowser diplaying the Silkroad world map.
+		/// </summary>
+		public void Minimap_Load()
+		{
+			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
+			if (Minimap_wbrChromeMap == null && File.Exists(path))
+			{
+				// Initialize cef with the provided settings
+				CefSettings settings = new CefSettings();
+				Cef.Initialize(settings);
+				// Empty URL because DockStyle.Fill can (maybe) slow down the responsive process.
+				Minimap_wbrChromeMap = new ChromiumWebBrowser("");
+				Minimap_wbrChromeMap.Dock = DockStyle.Fill;
+				Minimap_wbrChromeMap.Load(path);
+				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
+			}
+		}
+		public void Minimap_ObjectPointer_Clear()
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveAllExtraPointers();", true);
+			}
+		}
+
+		public void Minimap_CharacterPointer_Move(SRCoord position)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MovePointer(" + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
+			}
+		}
+
+		public void Minimap_ObjectPointer_Add(uint UniqueID, string servername, string htmlPopup, SRCoord position)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.AddExtraPointer('" + UniqueID + "','" + servername + "','" + htmlPopup + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
+			}
+		}
+		public void Minimap_ObjectPointer_Move(uint UniqueID, SRCoord position)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
+			}
+		}
+		public void Minimap_ObjectPointer_Remove(uint UniqueID)
+		{
+			if (Minimap_wbrChromeMap != null)
+			{
+				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
+			}
+		}
+		#region (GUI events generated)
+		/// <summary>
+		/// Load all components (not visuals) to the App. Like settings and stuffs.
+		/// </summary>
+		private void Window_Load(object sender, EventArgs e)
+		{
+			// Welcome
+			rtbxLogs.AppendText(string.Format("{0} Welcome to {1} v{2} | Made by Engels \"JellyBitz\" Quintero{3}{0} Discord : JellyBitz#7643 | FaceBook : @ImJellyBitz", WinAPI.GetDate(), base.ProductName, base.ProductVersion, Environment.NewLine));
+			LogProcess();
+			// Load basic
+			Settings.LoadBotSettings();
+			LoadCommandLine();
+			// Try to load adverstising
+			ShowAds();
+			// Force visible
+			Activate();
+			BringToFront();
+		}
+		/// <summary>
+		/// Close all necessary to not leaving any background process.
+		/// </summary>
+		private void Window_Closing(object sender, FormClosingEventArgs e)
+		{
+			if (Bot.Get.Proxy != null)
+			{
+				Bot.Get.Proxy.Stop();
+			}
+			if (Minimap_wbrChromeMap != null)
+			{
+				Cef.Shutdown();
+			}
+		}
+		/// <summary>
+		/// Control OnClick event.
+		/// </summary>
 		public void Control_Click(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
 			// Check if control is disabled
 			if (c.Font.Strikeout)
 				return;
-
+			// Check his name
 			switch (c.Name)
 			{
 				case "btnWinMinimize":
@@ -345,45 +599,17 @@ namespace xBot.App
 					if (c.ForeColor == Color.Red)
 					{
 						c.ForeColor = Color.Lime;
+						ToolTips.SetToolTip(c, "Stop Bot");
 					}
 					else
 					{
 						c.ForeColor = Color.Red;
+						ToolTips.SetToolTip(c, "Start Bot");
 					}
 					break;
 				case "btnAnalyzer":
 					TabPageV_Option_Click(TabPageV_Control01_Option14, null);
 					TabPageH_Option_Click(TabPageH_Settings_Option04, null);
-					break;
-				case "btnShowHideClient":
-					if (Bot.Get.Proxy != null)
-					{
-						Process client = Bot.Get.Proxy.SRO_Client;
-						if (client != null)
-						{
-							IntPtr[] clientWindows = WinAPI.GetProcessWindows(client.Id);
-							if (btnShowHideClient.ForeColor == Color.DodgerBlue)
-							{
-								// visible > hide and reduce the memory usage
-								foreach (IntPtr p in clientWindows)
-								{
-									WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
-									WinAPI.EmptyWorkingSet(p);
-								}
-								btnShowHideClient.ForeColor = Color.RoyalBlue;
-							}
-							else
-							{
-								// hiden > show and make it front
-								foreach (IntPtr p in clientWindows)
-								{
-									WinAPI.ShowWindow(p, WinAPI.SW_SHOW);
-									WinAPI.SetForegroundWindow(p);
-								}
-								btnShowHideClient.ForeColor = Color.DodgerBlue;
-							}
-						}
-					}
 					break;
 				case "Login_btnAddSilkroad":
 					TabPageV_Option_Click(TabPageV_Control01_Option14, null);
@@ -582,6 +808,22 @@ namespace xBot.App
 						PacketBuilder.RequestPartyMatch(byte.Parse(Party_lblPageNumber.Text));
 					}
 					break;
+				case "Training_btnGetCoordinates":
+					if (Bot.Get.inGame && Training_lstvAreas.SelectedItems.Count == 1)
+					{
+						SRCoord Position = Info.Get.Character.GetPosition();
+						Training_tbxRegion.Text = Position.Region.ToString();
+						Training_tbxX.Text = Position.X.ToString();
+						Training_tbxY.Text = Position.Y.ToString();
+						Training_tbxZ.Text = Position.Z.ToString();
+					}
+					break;
+				case "Training_btnLoadScriptPath":
+					if (Bot.Get.inGame && Training_lstvAreas.SelectedItems.Count == 1)
+					{
+
+					}
+					break;
 				case "Training_btnTraceStart":
 					if (c.Text == "START")
 					{
@@ -621,10 +863,10 @@ namespace xBot.App
 						{
 							if (obj.isPlayer())
 							{
-								if(this.GameInfo_cbxPlayer.Checked)
+								if (this.GameInfo_cbxPlayer.Checked)
 									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
 							}
-							else if(obj.isPet())
+							else if (obj.isPet())
 							{
 								if (this.GameInfo_cbxPet.Checked)
 									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
@@ -646,7 +888,7 @@ namespace xBot.App
 							}
 							else
 							{
-								if(this.GameInfo_cbxOthers.Checked)
+								if (this.GameInfo_cbxOthers.Checked)
 									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
 							}
 						}
@@ -656,7 +898,7 @@ namespace xBot.App
 					break;
 				case "Settings_btnPK2Path":
 
-					if ( !Pk2Extractor.DirectoryExists(Settings_tbxSilkroadName.Text)
+					if (!Pk2Extractor.DirectoryExists(Settings_tbxSilkroadName.Text)
 						|| MessageBox.Show(this, "The Silkroad \"" + Settings_tbxSilkroadName.Text + "\" exist already, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
 					{
 						using (OpenFileDialog fileDialog = new OpenFileDialog())
@@ -722,10 +964,9 @@ namespace xBot.App
 				case "Settings_btnAddSilkroad":
 					if (Settings_tbxSilkroadName.Text != "")
 					{
-						string silkroadkey = Settings_tbxSilkroadName.Text;
-						if (!CheckSilkroadName(ref silkroadkey))
+						if (!isValidFilename(Settings_tbxSilkroadName.Text))
 							return;
-						if (!File.Exists(Pk2Extractor.GetDatabasePath(silkroadkey)))
+						if (!File.Exists(Pk2Extractor.GetDatabasePath(Settings_tbxSilkroadName.Text)))
 							return;
 						byte locale;
 						if (Settings_tbxLocale.Text == "" || !byte.TryParse(Settings_tbxLocale.Text, out locale))
@@ -745,8 +986,8 @@ namespace xBot.App
 						if (Settings_tbxHWIDServerOp.Text != "" && !ushort.TryParse(Settings_tbxHWIDServerOp.Text, System.Globalization.NumberStyles.HexNumber, null, out hwidServerOp))
 							return;
 						// Genearting the whole server node
-						TreeNode server = new TreeNode(silkroadkey);
-						server.Name = silkroadkey;
+						TreeNode server = new TreeNode(Settings_tbxSilkroadName.Text);
+						server.Name = server.Text;
 
 						TreeNode node = new TreeNode("Hosts");
 						node.Name = "Hosts";
@@ -815,8 +1056,8 @@ namespace xBot.App
 						hwid.Nodes.Add(serverNode);
 
 						string hwidData = "";
-						if (File.Exists("Data\\" + silkroadkey + ".hwid"))
-							hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + silkroadkey + ".hwid"));
+						if (File.Exists("Data\\" + server.Name + ".hwid"))
+							hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + server.Name + ".hwid"));
 
 						node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
 						node.Name = "Data";
@@ -862,7 +1103,7 @@ namespace xBot.App
 				case "Settings_btnInjectPacket":
 					{
 						Bot b = Bot.Get;
-						if (Settings_tbxInjectOpcode.Text != "" && b.Proxy!= null && b.Proxy.isRunning)
+						if (Settings_tbxInjectOpcode.Text != "" && b.Proxy != null && b.Proxy.isRunning)
 						{
 							int hexNumber;
 							if (int.TryParse(Settings_tbxInjectOpcode.Text.ToLower().Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out hexNumber))
@@ -903,7 +1144,7 @@ namespace xBot.App
 							}
 						}
 					}
-					
+
 					break;
 			}
 		}
@@ -1184,7 +1425,7 @@ namespace xBot.App
 						if (c.Text != "")
 						{
 							ulong value;
-              if (ulong.TryParse(c.Text, out value))
+							if (ulong.TryParse(c.Text, out value))
 							{
 								if (value > uint.MaxValue)
 								{
@@ -1212,7 +1453,7 @@ namespace xBot.App
 					{
 						// check byte
 						ulong value;
-            if (ulong.TryParse(c.Text, out value))
+						if (ulong.TryParse(c.Text, out value))
 						{
 							if (value > 255)
 							{
@@ -1240,25 +1481,34 @@ namespace xBot.App
 				case "Training_cmbxTracePlayer":
 					Bot.Get.SetTraceName(c.Text);
 					break;
+
 				case "Settings_tbxSilkroadName":
 					{
-						string silkroadkey = Settings_tbxSilkroadName.Text;
-						if (CheckSilkroadName(ref silkroadkey))
+						if (c.Text == "")
 						{
-							EnableControl(Settings_btnPK2Path, active: true);
-							Settings_btnPK2Path.Tag = silkroadkey;
-							EnableControl(Settings_btnLauncherPath, active: true);
-							EnableControl(Settings_btnClientPath, active: true);
-						}
-						else
-						{
+							// Disable controls
 							EnableControl(Settings_btnPK2Path, active: false);
 							Settings_btnPK2Path.Tag = null;
 							EnableControl(Settings_btnLauncherPath, active: false);
 							EnableControl(Settings_btnClientPath, active: false);
 						}
-						break;
+						else
+						{
+							if (!isValidFilename(c.Text))
+							{
+								c.Text = "";
+							}
+							else
+							{
+								// Enable it then
+								EnableControl(Settings_btnPK2Path, active: true);
+								Settings_btnPK2Path.Tag = c.Text;
+								EnableControl(Settings_btnLauncherPath, active: true);
+								EnableControl(Settings_btnClientPath, active: true);
+							}
+						}
 					}
+					break;
 				case "Settings_tbxCustomSequence":
 					if (c.Text != "")
 					{
@@ -1283,114 +1533,6 @@ namespace xBot.App
 					break;
 			}
 		}
-		/// <summary>
-		/// Check if the silkroad name choosen is correct to be used as filename and fix it if is necessary.
-		/// </summary>
-		private bool CheckSilkroadName(ref string SilkroadName)
-		{
-			SilkroadName = SilkroadName.Trim();
-			if (SilkroadName != "")
-			{
-				MatchCollection matches = Regex.Matches(SilkroadName, @"^[\w\-._ ]+$");
-				if (matches.Count > 0)
-				{
-					SilkroadName = "";
-					foreach (Match m in matches)
-						SilkroadName += m.Value;
-					return true;
-				}
-			}
-			return false;
-		}
-		public void AddBuff(SRObject Buff)
-		{
-			ListViewItem item = new ListViewItem();
-			item.ToolTipText = Buff.Name;
-			item.Name = Buff.ID.ToString();
-			item.ImageKey = (string)Buff[SRProperty.Icon];
-			LoadListVieWItemIcon(ref item, (string)Buff[SRProperty.Icon]);
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () =>{
-				Character_lstvBuffs.Items.Add(item);
-			});
-		}
-    public void RemoveBuff(uint SkillID)
-		{
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
-				Character_lstvBuffs.Items.RemoveByKey(SkillID.ToString());
-			});
-		}
-		public void ClearBuffs()
-		{
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
-				Character_lstvBuffs.Items.Clear();
-			});
-		}
-		public void AddSkill(SRObject Skill)
-		{
-			ListViewItem item = new ListViewItem(Skill.Name);
-			item.Name = Skill.ID.ToString();
-			LoadListVieWItemIcon(ref item, (string)Skill[SRProperty.Icon]);
-			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
-				Skills_lstvSkills.Items.Add(item);
-			});
-		}
-		public void RemoveSkill(uint SkillID)
-		{
-			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
-				Skills_lstvSkills.Items.RemoveByKey(SkillID.ToString());
-			});
-		}
-		public void ClearSkills()
-		{
-			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
-				Skills_lstvSkills.Items.Clear();
-			});
-		}
-		public void LoadListVieWItemIcon(ref ListViewItem item,string Pk2Path)
-		{
-			// Check if image is loaded
-			if (lstimgIcons.Images.ContainsKey(Pk2Path))
-			{
-				item.ImageKey = Pk2Path;
-			}
-			else
-			{
-				string FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\" + Pk2Path;
-				FullPath = Path.ChangeExtension(FullPath, "png");
-				if (File.Exists(FullPath))
-				{
-					lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
-					item.ImageKey = Pk2Path;
-				}
-				else
-				{
-					item.ImageKey = Pk2Path;
-					FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\icon_default.png";
-					if (File.Exists(FullPath))
-					{
-						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
-						item.ImageKey = Pk2Path;
-					}
-				}
-			}
-		}
-		/// <summary>
-		/// Fix the text using a pattern restriction. Returns empty if the pattern is not found.
-		/// </summary>
-		private string FixTextRestriction(string Text, string Pattern, bool FirstMatch = false)
-		{
-			MatchCollection matches = Regex.Matches(Text, Pattern);
-			if (matches.Count > 0)
-			{
-				if (FirstMatch)
-					return matches[0].Value;
-				StringBuilder fixedText = new StringBuilder();
-				foreach (Match m in matches)
-					fixedText.Append(m.Value);
-				return fixedText.ToString();
-			}
-			return "";
-		}
 		private void ComboBox_DropDown(object sender, EventArgs e)
 		{
 			ComboBox c = (ComboBox)sender;
@@ -1407,7 +1549,7 @@ namespace xBot.App
 						}
 					}
 					break;
-      }
+			}
 		}
 		private void Menu_Click(object sender, EventArgs e)
 		{
@@ -1418,7 +1560,8 @@ namespace xBot.App
 					this.Control_Click(btnWinExit, null);
 					break;
 				case "Menu_NotifyIcon_About":
-					using (About about = new About(this)) {
+					using (About about = new About(this))
+					{
 						about.ShowDialog(this);
 					}
 					break;
@@ -1430,9 +1573,47 @@ namespace xBot.App
 					}
 					else
 					{
-						this.Visible = true; 
+						this.Visible = true;
 						t.Text = "Hide";
 						BringToTop();
+					}
+					break;
+				case "Menu_btnClientOptions_ShowHide":
+					if (Bot.Get.inGame)
+					{
+						Process client = Bot.Get.Proxy.SRO_Client;
+						if (client != null)
+						{
+							Color ClientVisible = Color.FromArgb(0, 128, 255);
+
+							IntPtr[] clientWindows = WinAPI.GetProcessWindows(client.Id);
+							if (btnClientOptions.ForeColor == ClientVisible)
+							{
+								// visible > hide and reduce the memory usage
+								foreach (IntPtr p in clientWindows)
+								{
+									WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
+									WinAPI.EmptyWorkingSet(p);
+								}
+								btnClientOptions.BackColor = Color.FromArgb(0, 64, 191);
+							}
+							else
+							{
+								// hiden > show and make it front
+								foreach (IntPtr p in clientWindows)
+								{
+									WinAPI.ShowWindow(p, WinAPI.SW_SHOW);
+									WinAPI.SetForegroundWindow(p);
+								}
+								btnClientOptions.ForeColor = ClientVisible;
+							}
+						}
+					}
+					break;
+				case "Menu_btnClientOptions_GoClientless":
+					if (Bot.Get.inGame)
+					{
+						Bot.Get.GoClientless();
 					}
 					break;
 				case "Menu_lstvItems_Use":
@@ -1445,7 +1626,21 @@ namespace xBot.App
 					}
 					break;
 				case "Menu_lstvItems_Drop":
-
+					if (Bot.Get.inGame && Inventory_lstvItems.SelectedItems.Count == 1)
+					{
+						byte index = (byte)Inventory_lstvItems.SelectedIndices[0];
+						if (index >= 13)
+						{
+							SRObject item = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory])[index];
+							if (item != null)
+							{
+								if (MessageBox.Show(this, "Do you want to drop \"" + item.Name + "\"?", "xBot - Inventory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+								{
+									PacketBuilder.DropItem(index);
+								}
+							}
+						}
+					}
 					break;
 				case "Menu_lstvItems_Equip":
 
@@ -1465,8 +1660,9 @@ namespace xBot.App
 					}
 					break;
 				case "Menu_lstvPartyMembers_KickPlayer":
-					if (Party_lstvPartyMembers.SelectedItems.Count == 1){
-						if(Bot.Get.inParty)
+					if (Party_lstvPartyMembers.SelectedItems.Count == 1)
+					{
+						if (Bot.Get.inParty)
 						{
 							PacketBuilder.BanFromParty(uint.Parse(Party_lstvPartyMembers.SelectedItems[0].Name));
 						}
@@ -1512,7 +1708,7 @@ namespace xBot.App
 					if (Party_lstvPartyMatch.SelectedItems.Count > 0)
 					{
 						Bot b = Bot.Get;
-            if (b.inGame && !b.inParty)
+						if (b.inGame && !b.inParty)
 							PacketBuilder.JoinToPartyMatch(uint.Parse(Party_lstvPartyMatch.SelectedItems[0].Name));
 					}
 					break;
@@ -1571,30 +1767,6 @@ namespace xBot.App
 		{
 			this.Menu_Click(this.Menu_NotifyIcon_HideShow, e);
 		}
-		public void BringToTop() {
-			if (this.WindowState == FormWindowState.Minimized){
-				this.WindowState = FormWindowState.Normal;
-			}
-			this.Activate();
-		}
-		/// <summary>
-		/// Modified TabPage Horizontal behavior for better chat UX.
-		/// </summary>
-		private void TabPageH_ChatOption_Click(object sender, EventArgs e)
-		{
-			TabPageH_Option_Click(sender, e);
-			Control option = (Control)sender;
-			if (option.Font.Bold)
-				option.Font = new Font(option.Font, FontStyle.Regular);
-			Chat_cmbxMsgType.Text = option.Text; // If is not into the options, then will not change.
-		}
-		public void TabPageH_ChatOption_Notify(Control c)
-		{
-			WinAPI.InvokeIfRequired(c.Parent, () => {
-				if (c.Parent.Tag != c && !c.Font.Bold)
-					c.Font = new Font(c.Font, FontStyle.Bold);
-			});
-		}
 		private void Control_KeyDown(object sender, KeyEventArgs e)
 		{
 			Control c = (Control)sender;
@@ -1612,10 +1784,10 @@ namespace xBot.App
 									break;
 								case "Private":
 									Chat_tbxMsgPlayer.Text = Chat_tbxMsgPlayer.Text.Trim();
-                  if (Chat_tbxMsgPlayer.Text == "" || Chat_tbxMsgPlayer.Text.StartsWith("*"))
+									if (Chat_tbxMsgPlayer.Text == "" || Chat_tbxMsgPlayer.Text.StartsWith("*"))
 										return;
 									PacketBuilder.SendChatPrivate(Chat_tbxMsgPlayer.Text, Chat_tbxMsg.Text);
-									LogChatMessage(Chat_rtbxPrivate,Chat_tbxMsgPlayer.Text + "(To)",Chat_tbxMsg.Text);
+									LogChatMessage(Chat_rtbxPrivate, Chat_tbxMsgPlayer.Text + "(To)", Chat_tbxMsg.Text);
 									break;
 								case "Party":
 									PacketBuilder.SendChatParty(Chat_tbxMsg.Text);
@@ -1646,106 +1818,20 @@ namespace xBot.App
 			Control c = (Control)sender;
 			switch (c.Name)
 			{
+				case "btnClientOptions":
+					c.ContextMenuStrip.Show(c, new Point(e.X, e.Y));
+					break;
 				case "Character_lstvBuffs":
-					if (Bot.Get.inGame && e.Button == MouseButtons.Right){
+					if (Bot.Get.inGame && e.Button == MouseButtons.Right)
+					{
 						ListViewItem itemClicked = this.Character_lstvBuffs.GetItemAt(e.X, e.Y);
-            if (itemClicked != null)
+						if (itemClicked != null)
 						{
 							PacketBuilder.RemoveBuff(uint.Parse(itemClicked.Name));
 						}
 					}
 					break;
 			}
-		}
-		/// <summary>
-		/// Set the gold in Silkroad format color.
-		/// </summary>
-		/// <param name="gold"></param>
-		public void Character_SetGold(ulong gold)
-		{
-			// 1000000 to 1.000.000
-			string Text = gold.ToString("#,0");
-			int GoldDigits = gold.ToString().Length;
-			// Visual color
-			Color ForeColor = Color.White; // Default
-			if(GoldDigits <= 4){
-				ForeColor = Color.White;
-			}
-			else if (GoldDigits <= 5){
-				ForeColor = Color.FromArgb(255, 250, 133); // Light Yellow
-			}
-			else if (GoldDigits <= 6)
-			{
-				ForeColor = Color.FromArgb(255, 211, 72); // Yellow
-			}
-			else if (GoldDigits <= 7)
-			{
-				ForeColor = Color.FromArgb(255, 173, 92); // Dark Orange
-			}
-			else if (GoldDigits <= 8)
-			{
-				ForeColor = Color.FromArgb(255, 154, 161); // Pink
-			}
-			else if (GoldDigits <= 9)
-			{
-				ForeColor = Color.FromArgb(235, 161, 255); // Purple
-			}
-			WinAPI.InvokeIfRequired(Character_lblGold, () => {
-				Character_lblGold.ForeColor = ForeColor;
-				Character_lblGold.Text = Text;
-			});
-		}
-		public void Inventory_Refresh()
-		{
-			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
-				Inventory_lstvItems.Items.Clear();
-				Inventory_lstvItems.BeginUpdate();
-			});
-
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-			
-			for (int j = 0; j < inventory.Capacity; j++)
-			{
-				ListViewItem item = new ListViewItem();
-				item.Name = item.Text = j.ToString();
-				if (inventory[j] != null)
-				{
-					item.SubItems.Add(inventory[j].Name + (inventory[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventory[j][SRProperty.Plus] + ")" : ""));
-					item.SubItems.Add((ushort)inventory[j][SRProperty.QuantityMax] == 1 ? "1" : inventory[j][SRProperty.Quantity] + "/" + inventory[j][SRProperty.QuantityMax]);
-					item.SubItems.Add(inventory[j].ServerName);
-					LoadListVieWItemIcon(ref item, (string)inventory[j][SRProperty.Icon]);
-					// TO DO:
-					// Add as tooltip the item stats
-				}
-				else
-				{
-					item.SubItems.Add("Empty");
-				}
-
-				// Add
-				WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
-					Inventory_lstvItems.Items.Add(item);
-				});
-			}
-			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
-				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;
-			});
-			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
-				Inventory_lstvItems.EndUpdate();
-			});
-		}
-		public void Party_Clear()
-		{
-			WinAPI.InvokeIfRequired(Party_lstvPartyMembers, () => {
-				Party_lstvPartyMembers.Items.Clear();
-			});
-			WinAPI.InvokeIfRequired(Party_lblCurrentSetup, () => {
-				Party_lblCurrentSetup.Text = "";
-				Party_lblCurrentSetup.Tag = null;
-			});
-			WinAPI.InvokeIfRequired(this, () => {
-				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
-			});
 		}
 		/// <summary>
 		/// Package all items selected to be moved.
@@ -1763,12 +1849,14 @@ namespace xBot.App
 		private void ListView_DragOver(object sender, DragEventArgs e)
 		{
 			// Check if the drag is a ListViewItem list
-			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection))){
+			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+			{
 				ListView listView = (ListView)sender;
 				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
 				// Disable drag movement in the same listview
-				if (items.Count == 0 
-					|| items[0].ListView == listView){
+				if (items.Count == 0
+					|| items[0].ListView == listView)
+				{
 					return;
 				}
 				e.Effect = DragDropEffects.Move;
@@ -1781,14 +1869,14 @@ namespace xBot.App
 			{
 				ListView l = (ListView)sender;
 				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-				
+
 				foreach (ListViewItem item in items)
 				{
 					item.ListView.Items.Remove(item);
 					if (!l.Items.ContainsKey(item.Name))
 					{
 						l.Items.Add(item);
-          }
+					}
 				}
 				// Check if at least one item has been changed
 				if (items.Count > 0)
@@ -1810,70 +1898,199 @@ namespace xBot.App
 					{
 						ListViewItem copy = (ListViewItem)item.Clone();
 						copy.Name = item.Name;
-            l.Items.Add(copy);
+						l.Items.Add(copy);
 
 						itemUpdated = true;
-          }
+					}
 				}
 				// Check if at least one item has been changed
 				if (itemUpdated)
 					Settings.SaveCharacterSettings();
 			}
 		}
+		#endregion
+
+		#region (GUI theme design behaviour)
 		/// <summary>
-		/// Load WebBrowser diplaying the Silkroad world map.
+		/// Set the control to be used as window drag.
 		/// </summary>
-		public void Minimap_Load()
+		private void Window_Drag_MouseDown(object sender, MouseEventArgs e)
 		{
-			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
-			if (Minimap_wbrChromeMap == null && File.Exists(path))
+			if (e.Button == MouseButtons.Left)
 			{
-				// Initialize cef with the provided settings
-				CefSettings settings = new CefSettings();
-				Cef.Initialize(settings);
-				// Empty URL because DockStyle.Fill can (maybe) slow down the responsive process.
-				Minimap_wbrChromeMap = new ChromiumWebBrowser("");
-				Minimap_wbrChromeMap.Dock = DockStyle.Fill;
-				Minimap_wbrChromeMap.Load(path);
-				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
-      }
-		}
-		public void Minimap_ObjectPointer_Clear()
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveAllExtraPointers();", true);
+				WinAPI.ReleaseCapture();
+				WinAPI.SendMessage(Handle, WinAPI.WM_NCLBUTTONDOWN, WinAPI.HT_CAPTION, 0);
 			}
 		}
+		/// <summary>
+		/// Color the label associated (by name) to the current control focused.
+		/// </summary>
+		private void Control_Focus_Enter(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
+			foreach (string t in controlTypes)
+			{
+				if (c.Name.Contains(t))
+				{
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
+					}
+					break;
+				}
+			}
+		}
+		/// <summary>
+		/// Restore the changes made on <see cref="Control_Focus_Enter(object, EventArgs)"/>
+		/// </summary>
+		private void Control_Focus_Leave(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
+			foreach (string t in controlTypes)
+			{
+				if (c.Name.Contains(t))
+				{
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
+					}
+					break;
+				}
+			}
+		}
+		/// <summary>
+		/// Colors used on TabPage Vertical.
+		/// </summary>
+		private Color TabPageV_ColorHover = Color.FromArgb(74, 74, 76),
+			TabPageV_ColorSelected = Color.FromArgb(0, 122, 204);
+		/// <summary>
+		///  TabPage Vertical option click.
+		/// </summary>
+		private void TabPageV_Option_Click(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			List<Control> currentOption;
+			if (c.Parent.Tag != null)
+			{
+				currentOption = (List<Control>)c.Parent.Tag;
+				if (currentOption[0].Name == c.Name || currentOption[1].Name == c.Name)
+					return;
+				currentOption[0].BackColor = c.Parent.BackColor;
+				currentOption[1].BackColor = c.Parent.BackColor;
+				c.Parent.Parent.Controls[currentOption[0].Name + "_Panel"].Visible = false;
+			}
+			currentOption = new List<Control>();
+			currentOption.Add(c.Parent.Controls[c.Name.Replace("_Icon", "")]);
+			currentOption.Add(c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"]);
+			c.Parent.Tag = currentOption;
+			currentOption[0].BackColor = TabPageV_ColorSelected;
+			currentOption[1].BackColor = TabPageV_ColorSelected;
+			c.Parent.Parent.Controls[currentOption[1].Name.Replace("Icon", "Panel")].Visible = true;
+		}
+		/// <summary>
+		/// Creates a custom color focus on icon and option used on TabPage Vertical.
+		/// <para>Results are not as expected because Windows native focus interference...</para>
+		/// </summary>
+		private void TabPageV_Option_MouseEnter(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				List<Control> currentOption = (List<Control>)c.Parent.Tag;
+				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorHover;
+					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = TabPageV_ColorHover;
+				}
+				else
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
+				}
+			}
+		}
+		/// <summary>
+		/// Restore the changes made on <see cref="TabPageV_Option_MouseEnter(object, EventArgs)"/>
+		/// </summary>
+		private void TabPageV_Option_MouseLeave(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				List<Control> currentOption = (List<Control>)c.Parent.Tag;
+				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = c.Parent.BackColor;
+					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = c.Parent.BackColor;
+				}
+				else
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
+				}
+			}
+		}
+		/// <summary>
+		///  TabPage Horizontal option click.
+		/// </summary>
+		private void TabPageH_Option_Click(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				Control currentOption = (Control)c.Parent.Tag;
+				if (currentOption.Name == c.Name)
+					return;
+				currentOption.BackColor = c.Parent.Parent.BackColor;
+				c.Parent.Parent.Controls[currentOption.Name + "_Panel"].Visible = false;
+			}
+			c.Parent.Tag = c;
+			c.BackColor = c.Parent.BackColor;
+			c.Parent.Parent.Controls[c.Name + "_Panel"].Visible = true;
+		}
+		/// <summary>
+		/// Modified TabPage Horizontal behavior for better chat UX.
+		/// </summary>
+		private void TabPageH_ChatOption_Click(object sender, EventArgs e)
+		{
+			TabPageH_Option_Click(sender, e);
+			Control option = (Control)sender;
+			if (option.Font.Bold)
+				option.Font = new Font(option.Font, FontStyle.Regular);
+			Chat_cmbxMsgType.Text = option.Text; // If is not into the options, then will not change.
+		}
+		/// <summary>
+		/// Activate notify on chat.
+		/// </summary>
+		public void TabPageH_ChatOption_Notify(Control c)
+		{
+			WinAPI.InvokeIfRequired(c.Parent, () => {
+				if (c.Parent.Tag != c && !c.Font.Bold)
+					c.Font = new Font(c.Font, FontStyle.Bold);
+			});
+		}
+		/// <summary>
+		/// Forces the listview header to keep his width.
+		/// </summary>
+		private void ListView_ColumnWidthChanging_Cancel(object sender, ColumnWidthChangingEventArgs e)
+		{
+			e.Cancel = true;
+			e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
+		}
+		public void EnableControl(Control c, bool active)
+		{
+			WinAPI.InvokeIfRequired(c, () => {
+				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
+			});
+		}
+		#endregion
 
-		public void Minimap_CharacterPointer_Move(SRCoord position)
+		public enum ProcessState
 		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MovePointer(" + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-
-		public void Minimap_ObjectPointer_Add(uint UniqueID, string servername, string htmlPopup, SRCoord position)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.AddExtraPointer('" + UniqueID + "','" + servername + "','" + htmlPopup + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Move(uint UniqueID, SRCoord position)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Remove(uint UniqueID)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
-			}
+			Default,
+			Warning,
+			Disconnected,
+			Error
 		}
 	}
 }

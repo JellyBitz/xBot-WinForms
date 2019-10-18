@@ -54,9 +54,8 @@ namespace xBot.App.PK2Extractor
 		}
 		private void InitializeFonts(Control c)
 		{
-			Fonts f = Fonts.Get;
 			// Using fontName as TAG to be selected from WinForms
-			c.Font = f.Load(c.Font, (string)c.Tag);
+			c.Font = Fonts.GetFont(c.Font, (string)c.Tag);
 			c.Tag = null;
 			for (int j = 0; j < c.Controls.Count; j++)
 				InitializeFonts(c.Controls[j]);
@@ -128,7 +127,7 @@ namespace xBot.App.PK2Extractor
 				});
 				return;
 			}
-			Log("PK2 file opened!");
+			Log("Pk2 file opened!");
 			LogState();
 
 			// Fill info to Main GUI
@@ -289,8 +288,11 @@ namespace xBot.App.PK2Extractor
 			Log("Creating Skill icons...");
 			AddSkillIcons();
 			Log("All has been generated succesfully, Enjoy! :)");
-			db.Close();
+			pk2.Close();
 			pk2.Dispose();
+			db.Close();
+			LogState("Closing Pk2 file...");
+			Thread.Sleep(1000);
 
 			WinAPI.InvokeIfRequired(this, () => {
 				this.Activate();

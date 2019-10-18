@@ -149,6 +149,7 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Tag = "Font Awesome 5 Pro Regular";
 			this.Text = "Ads";
+			this.TopMost = true;
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Ads_Closing);
 			this.Load += new System.EventHandler(this.Ads_Load);
 			this.panelAdvertising.ResumeLayout(false);

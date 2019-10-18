@@ -15,9 +15,8 @@ namespace xBot.App
     }
 		private void InitializeFonts(Control c)
 		{
-			Fonts f = Fonts.Get;
 			// Using fontName as TAG to be selected from WinForms
-			c.Font = f.Load(c.Font, (string)c.Tag);
+			c.Font = Fonts.GetFont(c.Font, (string)c.Tag);
 			c.Tag = null;
 			for (int j = 0; j < c.Controls.Count; j++)
         InitializeFonts(c.Controls[j]);

@@ -123,6 +123,13 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 			}
 		}
 		/// <summary>
+		/// Close the Pk2 file.
+		/// </summary>
+		public void Close()
+		{
+			m_FileStream.Close();
+		}		
+		/// <summary>
 		/// Gets all the root files.
 		/// </summary>
 		public List<Pk2File> GetRootFiles()

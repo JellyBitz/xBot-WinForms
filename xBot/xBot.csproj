@@ -170,10 +170,6 @@
     <Compile Include="App\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="App\Window.Graphics.cs">
-      <DependentUpon>Window.cs</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="xGraphics\xProgressBar.cs">
       <SubType>Component</SubType>

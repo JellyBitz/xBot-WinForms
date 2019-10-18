@@ -1,4 +1,5 @@
 ﻿using SecurityAPI;
+using System;
 using xBot.App;
 using xBot.Game.Objects;
 using xBot.Network;
@@ -348,13 +349,56 @@ namespace xBot.Game
 			p.WriteByte(2);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void RemoveBuff(uint skillID)
+		public static void CastSkill(uint skillID, uint targetUniqueID = 0)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
+			p.WriteByte(1);
+			p.WriteByte(Types.CharacterAction.SkillCast);
+			p.WriteUInt(skillID);
+			if (targetUniqueID != 0)
+			{
+				p.WriteByte(1);
+				p.WriteUInt(targetUniqueID);
+			}
+			else
+			{
+				p.WriteByte(0);
+			}
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void RemoveBuff(uint skillID, uint targetUniqueID = 0)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
 			p.WriteByte(1);
 			p.WriteByte(Types.CharacterAction.SkillRemove);
 			p.WriteUInt(skillID);
-			p.WriteByte(0);
+			if (targetUniqueID == 0)
+			{
+				p.WriteByte(1);
+				p.WriteUInt(targetUniqueID);
+			}
+			else
+			{
+				p.WriteByte(0);
+			}
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void AttackTarget(uint targetUniqueID, uint skillID = 0)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
+			p.WriteByte(1);
+			if (skillID == 0)
+			{
+				p.WriteByte(Types.CharacterAction.BasicAttack);
+				p.WriteByte(1);
+			}
+			else
+			{
+				p.WriteByte(Types.CharacterAction.SkillCast);
+				p.WriteUInt(skillID);
+			} 
+			p.WriteByte(1);
+			p.WriteUInt(targetUniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void UseTeleport(uint sourceUniqueID,uint destinationID,int waitDelay)
@@ -369,6 +413,13 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_RECALL_REQUEST);
 			p.WriteUInt(teleportUniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void DropItem(byte slot)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(Types.InventoryItemMovement.InventoryToGround);
+			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		internal class Client

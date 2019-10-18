@@ -28,4 +28,4 @@ using System.Runtime.InteropServices;
 // - If only features has been added
 // 3. Revision :
 // - Any change done
-[assembly: AssemblyFileVersion("0.0.9")]
+[assembly: AssemblyFileVersion("0.0.10")]

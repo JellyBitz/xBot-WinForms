@@ -493,7 +493,7 @@ namespace xBot.App
 			if (w.Character_cbxUsePetHGP.Checked)
 			{
 				Info i = Info.Get;
-        SRObject pet = i.GetPets().Find(p => p.ID4 == 3);
+				SRObject pet = i.GetPets().Find(p => p.ID4 == 3);
 				if(pet != null)
 				{
 					byte usePercent = 0;
@@ -502,7 +502,7 @@ namespace xBot.App
 					});
 					// Check hgp %
 					int HGPPercent = (int)(((ushort)pet[SRProperty.HGP])*0.01); // 10000 = 100%
-          if (HGPPercent <= usePercent)
+					if (HGPPercent <= usePercent)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 9, ref slot))

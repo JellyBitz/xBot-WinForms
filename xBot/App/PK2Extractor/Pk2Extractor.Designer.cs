@@ -79,7 +79,7 @@
 			this.rtbxLogs.TabIndex = 5;
 			this.rtbxLogs.TabStop = false;
 			this.rtbxLogs.Tag = "Source Sans Pro";
-			this.rtbxLogs.Text = " PK2 Extractor v1.1.0 - Made by JellyBitz";
+			this.rtbxLogs.Text = " Pk2 Extractor v1.1.1 - Made by JellyBitz";
 			this.rtbxLogs.TextChanged += new System.EventHandler(this.RichTextBox_TextChanged_AutoScroll);
 			// 
 			// pnlLogs

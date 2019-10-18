@@ -142,8 +142,10 @@ namespace xBot.App
 			if (w.Login_cbxUseReturnScroll.Checked)
 				UseReturnScroll();
 
+			if (w.Party_cbxMatchAutoReform.Checked)
+				CheckPartyMatchAutoReform();
+
 			CheckAutoParty();
-			CheckPartyMatchAutoReform();
 		}
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.

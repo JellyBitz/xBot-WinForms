@@ -43,7 +43,7 @@ namespace xBot.Game.Objects
 		private SRObject(SRObject value)
 		{
 			CopyFrom(value);
-    }
+		}
 		/// <summary>
 		/// Create an object from the type specified.
 		/// </summary>
@@ -96,7 +96,7 @@ namespace xBot.Game.Objects
 			this.ID4 = value.ID4;
 			this.Name = value.Name;
 			this.ServerName = value.ServerName;
-			this.Properties = value.Properties;
+			this.Properties = new Dictionary<SRProperty,object>(value.Properties);
 		}
 		public bool isType(byte ID1, byte ID2, byte ID3, byte ID4)
 		{

@@ -7,13 +7,10 @@ namespace xBot.App
 {
 	public class Fonts
 	{
-		/// <summary>
-		/// Unique instance of this class.
-		/// </summary>
-		private static Fonts _this = null;
-		private PrivateFontCollection myFonts = new PrivateFontCollection();
-		private Fonts()
+		private static PrivateFontCollection myFonts = null;
+		private static void LoadFonts()
 		{
+			myFonts = new PrivateFontCollection();
 			string[] fontFilenames = new string[]
 			{
 				"fa_regular_400",
@@ -33,28 +30,16 @@ namespace xBot.App
 				Marshal.FreeCoTaskMem(fontPtr);
 			}
 		}
-		public static Fonts Get
+		public static Font GetFont(Font prototype, string fontName = "")
 		{
-			get
-			{
-				if (_this == null)
-					_this = new Fonts();
-				return _this;
-			}
-		}
-		public Font Load(Font prototype, string fontName="")
-		{
+			if (myFonts == null)
+				LoadFonts();
 			if (string.IsNullOrEmpty(fontName))
 				fontName = prototype.FontFamily.Name;
 			for (int i = 0; i < myFonts.Families.Length; i++)
 				if (myFonts.Families[i].Name == fontName)
 					return new Font(myFonts.Families[i], prototype.Size, prototype.Style, prototype.Unit, prototype.GdiCharSet, prototype.GdiVerticalFont);
 			return prototype;
-		}
-		public static string UniToChar(int unicode)
-		{
-			string unicodeString = char.ConvertFromUtf32(unicode);
-			return unicodeString;
 		}
 	}
 }

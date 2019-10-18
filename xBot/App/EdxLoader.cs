@@ -85,7 +85,7 @@ namespace xBot.App
 				Window w = Window.Get;
 				WinAPI.InvokeIfRequired(w, () =>{
 					System.Windows.Forms.MessageBox.Show(w, "xBotLoader files not found! Try to download it again.", "xBot", System.Windows.Forms.MessageBoxButtons.OK);
-				});
+				}); 
 				return null;
 			}
 			// Generate config used by the DLL
