@@ -48,7 +48,7 @@ namespace xBot.Game
 			uint model, chest, legs, shoes, weapon;
 			try {
 				Info i = Info.Get;
-        if (type == "CH")
+				if (type == "CH")
 				{
 					if (male)
 					{

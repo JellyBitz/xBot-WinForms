@@ -9,12 +9,26 @@
 		public enum Type : uint
 		{
 			/// <summary>
-			/// <para>1. On casting</para>
-			/// <para>2. Through time</para> 
+			/// <para>0. On casting</para>
+			/// <para>1. Through time</para> 
 			/// </summary>
 			MP_CONSUME = 1869506150,
+			/// <summary>
+			/// <para>0. Duration (ms)</para> 
+			/// </summary>
 			SKILL_DURATION = 1685418593,
-
+			/// <summary>
+			/// <para>0. Damage type</para>
+			/// <para>1. Damage % (Monsers)</para>
+			/// <para>2. Min. Damage</para>
+			/// <para>3. Max. Damage</para>
+			/// <para>4. Damage % (Players)</para>
+			/// </summary>
+			SKILL_ATTACK = 6386804,
+			/// <summary>
+			/// <para>0. Absolute Damage (Ignore defense)</para> 
+			/// </summary>
+			ABSOLUTENESS_DAMAGE = 1885629799
 		}
 		public static bool Exists(string[] Params, Effect Effect)
 		{

@@ -180,7 +180,7 @@ namespace xBot.Network
 							string DownloadServerIP = packet.ReadAscii();
 							ushort DownloadServerPort = packet.ReadUShort();
 							uint DownloadServerCurVersion = packet.ReadUInt();
-							Window.Get.Log("Version outdate. Please, check the client and database it's up to date (v" + DownloadServerCurVersion + ")");
+							Window.Get.Log("Version outdate. Please, verify that client and database (v" + Info.Get.Version + ") are up to date (v" + DownloadServerCurVersion + ")");
 						}
 						else
 						{

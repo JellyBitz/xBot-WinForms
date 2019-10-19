@@ -288,9 +288,9 @@ namespace xBot.App.PK2Extractor
 			Log("Creating Skill icons...");
 			AddSkillIcons();
 			Log("All has been generated succesfully, Enjoy! :)");
+			db.Close();
 			pk2.Close();
 			pk2.Dispose();
-			db.Close();
 			LogState("Closing Pk2 file...");
 			Thread.Sleep(1000);
 
@@ -333,7 +333,11 @@ namespace xBot.App.PK2Extractor
 						if (db != null)
 						{
 							db.Close();
-              DirectoryDelete(this.SilkroadName);
+							DirectoryDelete(this.SilkroadName);
+						}
+						if(pk2 != null){
+							pk2.Close();
+							pk2.Dispose();
 						}
 					}
 					this.Close();

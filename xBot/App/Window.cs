@@ -30,11 +30,12 @@ namespace xBot.App
 		/// <summary>
 		/// Used to show interactive extern minimap.
 		/// </summary>
-		private ChromiumWebBrowser Minimap_wbrChromeMap;
+		private ChromiumWebBrowser Minimap_wbrChromeMap = null;
 		/// <summary>
 		/// Advertising window.
 		/// </summary>
 		private Ads adsWindow;
+		private Thread tAdsWindow;
 		private Window()
 		{
 			InitializeComponent();
@@ -165,14 +166,13 @@ namespace xBot.App
 		}
 		private void ShowAds()
 		{
-			(new Thread((ThreadStart)delegate
-			{
+			tAdsWindow = new Thread((ThreadStart)delegate{
 				try
 				{
 					if (!adsWindow.isLoaded() && adsWindow.TryLoad())
 					{
 						// Load the banner in background
-						WinAPI.InvokeIfRequired(Login_pbxAds, ()=>{
+						WinAPI.InvokeIfRequired(Login_pbxAds, () => {
 							Login_pbxAds.LoadAsync(adsWindow.GetData(Ads.EXCEL.URL_MINIBANNER));
 							ToolTips.SetToolTip(Login_pbxAds, adsWindow.GetData(Ads.EXCEL.TITLE));
 						});
@@ -186,7 +186,8 @@ namespace xBot.App
 					}
 				}
 				catch { /*Window closed or something else..*/ }
-			})).Start();
+			});
+			tAdsWindow.Start();
 		}
 		public void LogProcess(string text = "Ready", ProcessState state = ProcessState.Default)
 		{
@@ -321,14 +322,37 @@ namespace xBot.App
 				Character_lstvBuffs.Items.Clear();
 			});
 		}
+		/// <summary>
+		/// Add an skill (learned) to the skill list
+		/// </summary>
 		public void AddSkill(SRObject Skill)
 		{
 			ListViewItem item = new ListViewItem(Skill.Name);
 			item.Name = Skill.ID.ToString();
-			item.ImageKey = GetImageKeyIcon((string)Skill[SRProperty.Icon]);
+			// Keep a whole reference, easier skill checks
+			item.Tag = Skill;
+      item.ImageKey = GetImageKeyIcon((string)Skill[SRProperty.Icon]);
 			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
 				Skills_lstvSkills.Items.Add(item);
 			});
+		}
+		public void UpdateSkillNames(uint oldSkillID, uint newSkillID)
+		{
+			ListViewItem temp;
+			string key = oldSkillID.ToString();
+			string newkey = newSkillID.ToString();
+			// Not necessary update the TAG, it's already updated (by reference)
+			if ((temp = this.Skills_lstvSkills.Items[key]) != null) temp.Name = newkey;
+			// An array of references cannot be possible.. Using the long way "copy & paste" code :(
+			if ((temp = this.Skills_lstvAttackMobType_General.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_Champion.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_Giant.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_PartyGeneral.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_PartyChampion.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_PartyGiant.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_Unique.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_Elite.Items[key]) != null) temp.Name = newkey;
+			if ((temp = this.Skills_lstvAttackMobType_Event.Items[key]) != null) temp.Name = newkey;
 		}
 		public void RemoveSkill(uint SkillID)
 		{
@@ -540,6 +564,182 @@ namespace xBot.App
 				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
 			}
 		}
+
+		#region (GUI theme design behaviour)
+		/// <summary>
+		/// Set the control to be used as window drag.
+		/// </summary>
+		private void Window_Drag_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				WinAPI.ReleaseCapture();
+				WinAPI.SendMessage(Handle, WinAPI.WM_NCLBUTTONDOWN, WinAPI.HT_CAPTION, 0);
+			}
+		}
+		/// <summary>
+		/// Color the label associated (by name) to the current control focused.
+		/// </summary>
+		private void Control_Focus_Enter(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
+			foreach (string t in controlTypes)
+			{
+				if (c.Name.Contains(t))
+				{
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
+					}
+					break;
+				}
+			}
+		}
+		/// <summary>
+		/// Restore the changes made on <see cref="Control_Focus_Enter(object, EventArgs)"/>
+		/// </summary>
+		private void Control_Focus_Leave(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
+			foreach (string t in controlTypes)
+			{
+				if (c.Name.Contains(t))
+				{
+					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+					{
+						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
+					}
+					break;
+				}
+			}
+		}
+		/// <summary>
+		/// Colors used on TabPage Vertical.
+		/// </summary>
+		private Color TabPageV_ColorHover = Color.FromArgb(74, 74, 76),
+			TabPageV_ColorSelected = Color.FromArgb(0, 122, 204);
+		/// <summary>
+		///  TabPage Vertical option click.
+		/// </summary>
+		private void TabPageV_Option_Click(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			List<Control> currentOption;
+			if (c.Parent.Tag != null)
+			{
+				currentOption = (List<Control>)c.Parent.Tag;
+				if (currentOption[0].Name == c.Name || currentOption[1].Name == c.Name)
+					return;
+				currentOption[0].BackColor = c.Parent.BackColor;
+				currentOption[1].BackColor = c.Parent.BackColor;
+				c.Parent.Parent.Controls[currentOption[0].Name + "_Panel"].Visible = false;
+			}
+			currentOption = new List<Control>();
+			currentOption.Add(c.Parent.Controls[c.Name.Replace("_Icon", "")]);
+			currentOption.Add(c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"]);
+			c.Parent.Tag = currentOption;
+			currentOption[0].BackColor = TabPageV_ColorSelected;
+			currentOption[1].BackColor = TabPageV_ColorSelected;
+			c.Parent.Parent.Controls[currentOption[1].Name.Replace("Icon", "Panel")].Visible = true;
+		}
+		/// <summary>
+		/// Creates a custom color focus on icon and option used on TabPage Vertical.
+		/// <para>Results are not as expected because Windows native focus interference...</para>
+		/// </summary>
+		private void TabPageV_Option_MouseEnter(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				List<Control> currentOption = (List<Control>)c.Parent.Tag;
+				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorHover;
+					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = TabPageV_ColorHover;
+				}
+				else
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
+				}
+			}
+		}
+		/// <summary>
+		/// Restore the changes made on <see cref="TabPageV_Option_MouseEnter(object, EventArgs)"/>
+		/// </summary>
+		private void TabPageV_Option_MouseLeave(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				List<Control> currentOption = (List<Control>)c.Parent.Tag;
+				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = c.Parent.BackColor;
+					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = c.Parent.BackColor;
+				}
+				else
+				{
+					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
+				}
+			}
+		}
+		/// <summary>
+		///  TabPage Horizontal option click.
+		/// </summary>
+		private void TabPageH_Option_Click(object sender, EventArgs e)
+		{
+			Control c = (Control)sender;
+			if (c.Parent.Tag != null)
+			{
+				Control currentOption = (Control)c.Parent.Tag;
+				if (currentOption.Name == c.Name)
+					return;
+				currentOption.BackColor = c.Parent.Parent.BackColor;
+				c.Parent.Parent.Controls[currentOption.Name + "_Panel"].Visible = false;
+			}
+			c.Parent.Tag = c;
+			c.BackColor = c.Parent.BackColor;
+			c.Parent.Parent.Controls[c.Name + "_Panel"].Visible = true;
+		}
+		/// <summary>
+		/// Modified TabPage Horizontal behavior for better chat UX.
+		/// </summary>
+		private void TabPageH_ChatOption_Click(object sender, EventArgs e)
+		{
+			TabPageH_Option_Click(sender, e);
+			Control option = (Control)sender;
+			if (option.Font.Bold)
+				option.Font = new Font(option.Font, FontStyle.Regular);
+			Chat_cmbxMsgType.Text = option.Text; // If is not into the options, then will not change.
+		}
+		/// <summary>
+		/// Activate notify on chat.
+		/// </summary>
+		public void TabPageH_ChatOption_Notify(Control c)
+		{
+			WinAPI.InvokeIfRequired(c.Parent, () => {
+				if (c.Parent.Tag != c && !c.Font.Bold)
+					c.Font = new Font(c.Font, FontStyle.Bold);
+			});
+		}
+		/// <summary>
+		/// Forces the listview header to keep his width.
+		/// </summary>
+		private void ListView_ColumnWidthChanging_Cancel(object sender, ColumnWidthChangingEventArgs e)
+		{
+			e.Cancel = true;
+			e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
+		}
+		public void EnableControl(Control c, bool active)
+		{
+			WinAPI.InvokeIfRequired(c, () => {
+				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
+			});
+		}
+		#endregion
+
 		#region (GUI events generated)
 		/// <summary>
 		/// Load all components (not visuals) to the App. Like settings and stuffs.
@@ -566,6 +766,10 @@ namespace xBot.App
 			if (Bot.Get.Proxy != null)
 			{
 				Bot.Get.Proxy.Stop();
+			}
+			if(tAdsWindow.ThreadState == System.Threading.ThreadState.Running)
+			{
+				tAdsWindow.Abort();
 			}
 			if (Minimap_wbrChromeMap != null)
 			{
@@ -816,12 +1020,33 @@ namespace xBot.App
 						Training_tbxX.Text = Position.X.ToString();
 						Training_tbxY.Text = Position.Y.ToString();
 						Training_tbxZ.Text = Position.Z.ToString();
+
+						Training_lstvAreas.SelectedItems[0].SubItems[1].Text = Training_tbxRegion.Text;
+						Training_lstvAreas.SelectedItems[0].SubItems[2].Text = Training_tbxX.Text;
+						Training_lstvAreas.SelectedItems[0].SubItems[3].Text = Training_tbxY.Text;
+						Training_lstvAreas.SelectedItems[0].SubItems[4].Text = Training_tbxZ.Text;
+
+						Settings.SaveCharacterSettings();
 					}
 					break;
 				case "Training_btnLoadScriptPath":
 					if (Bot.Get.inGame && Training_lstvAreas.SelectedItems.Count == 1)
 					{
-
+						using (OpenFileDialog fileDialog = new OpenFileDialog())
+						{
+							fileDialog.Multiselect = false;
+							fileDialog.ValidateNames = true;
+							fileDialog.Title = "Select your Script file";
+							fileDialog.FileName = "Media.pk2";
+							fileDialog.Filter = "Script files (*.xcript)|*.xcript|All files (*.*)|*.*";
+							fileDialog.FilterIndex = 0;
+							if (fileDialog.ShowDialog() == DialogResult.OK)
+							{
+								Training_tbxScriptPath.Text = fileDialog.FileName;
+								Training_lstvAreas.SelectedItems[0].SubItems[6].Text = fileDialog.FileName;
+								Settings.SaveCharacterSettings();
+							}
+						}
 					}
 					break;
 				case "Training_btnTraceStart":
@@ -1198,6 +1423,19 @@ namespace xBot.App
 					if (l.SelectedItems.Count == 1)
 						Login_cmbxCharacter.Text = l.SelectedItems[0].Name;
 					break;
+				case "Training_lstvAreas":
+					if (l.SelectedItems.Count == 1)
+					{
+						ListViewItem area = l.SelectedItems[0];
+
+            Training_tbxRegion.Text = area.SubItems[1].Text;
+						Training_tbxX.Text = area.SubItems[2].Text;
+						Training_tbxY.Text = area.SubItems[3].Text;
+						Training_tbxZ.Text = area.SubItems[4].Text;
+						Training_tbxRadius.Text = area.SubItems[5].Text;
+						Training_tbxScriptPath.Text = area.SubItems[6].Text;
+					}
+					break;
 			}
 		}
 		private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1244,12 +1482,12 @@ namespace xBot.App
 					if (Login_rbnClient.Checked)
 					{
 						Login_btnLauncher.Visible = true;
-						Login_btnStart.Location = new Point(110, 16);
+						Login_btnStart.Location = new Point(110, 15);
 					}
 					else
 					{
 						Login_btnLauncher.Visible = false;
-						Login_btnStart.Location = new Point(110, 34);
+						Login_btnStart.Location = new Point(110, 29);
 					}
 					break;
 				case "Character_cbxUseHP":
@@ -1481,10 +1719,26 @@ namespace xBot.App
 				case "Training_cmbxTracePlayer":
 					Bot.Get.SetTraceName(c.Text);
 					break;
-
-				case "Settings_tbxSilkroadName":
+				case "Training_tbxRadius":
+					if (Bot.Get.inGame && Training_lstvAreas.SelectedItems.Count == 1)
 					{
-						if (c.Text == "")
+						// Check it's positive number
+						ushort dummy;
+						if (c.Text == "" || !ushort.TryParse(c.Text,out dummy))
+						{
+							// Trigger to recursive it
+							c.Text = "0";
+						}
+						else
+						{
+							Training_lstvAreas.SelectedItems[0].SubItems[5].Text = c.Text;
+							Settings.SaveCharacterSettings();
+						}
+					}
+					break;
+        case "Settings_tbxSilkroadName":
+					{
+						if (c.Text == "" || !isValidFilename(c.Text))
 						{
 							// Disable controls
 							EnableControl(Settings_btnPK2Path, active: false);
@@ -1494,18 +1748,11 @@ namespace xBot.App
 						}
 						else
 						{
-							if (!isValidFilename(c.Text))
-							{
-								c.Text = "";
-							}
-							else
-							{
-								// Enable it then
-								EnableControl(Settings_btnPK2Path, active: true);
-								Settings_btnPK2Path.Tag = c.Text;
-								EnableControl(Settings_btnLauncherPath, active: true);
-								EnableControl(Settings_btnClientPath, active: true);
-							}
+							// Enable
+							EnableControl(Settings_btnPK2Path, active: true);
+							Settings_btnPK2Path.Tag = c.Text;
+							EnableControl(Settings_btnLauncherPath, active: true);
+							EnableControl(Settings_btnClientPath, active: true);
 						}
 					}
 					break;
@@ -1713,13 +1960,73 @@ namespace xBot.App
 					}
 					break;
 				case "Menu_lstvPartyMatch_PrivateMsg":
-					if (Party_lstvPartyMatch.SelectedItems.Count > 0)
+					if (Party_lstvPartyMatch.SelectedItems.Count == 1)
 					{
 						Chat_cmbxMsgType.Text = "Private";
 						Chat_tbxMsgPlayer.Text = Party_lstvPartyMatch.SelectedItems[0].SubItems[1].Text;
 						TabPageV_Option_Click(TabPageV_Control01_Option11, e); // Go to chat
 						TabPageH_Option_Click(TabPageH_Chat_Option02, e); // Go to private
 						Chat_tbxMsg.Focus();
+					}
+					break;
+				case "Menu_lstvArea_Add":
+					if (Bot.Get.inGame)
+					{
+						// Create 
+						int defaultKey = 1;
+						string defaultAreaName;
+						while (Training_lstvAreas.Items.ContainsKey(defaultAreaName = "Area #" + defaultKey))
+						{
+							defaultKey++;
+						}
+
+						ListViewItem newArea = new ListViewItem(defaultAreaName);
+						newArea.Name = defaultAreaName;
+
+						// Name,Region,X,Y,Z,Radius,Script
+						newArea.SubItems.Add("0");
+						newArea.SubItems.Add("0");
+						newArea.SubItems.Add("0");
+						newArea.SubItems.Add("0");
+						newArea.SubItems.Add("0");
+						newArea.SubItems.Add("");
+
+						Training_lstvAreas.Items.Add(newArea);
+						newArea.Selected = true;
+
+						Settings.SaveCharacterSettings();
+					}
+					break;
+				case "Menu_lstvArea_Remove":
+					if (Bot.Get.inGame)
+					{
+						if (Training_lstvAreas.SelectedItems.Count == 1)
+						{
+							ListViewItem area = Training_lstvAreas.SelectedItems[0];
+							// Remove from activated area if it's the same
+							if (Training_lstvAreas.Tag != null && area == (ListViewItem)Training_lstvAreas.Tag)
+								Training_lstvAreas.Tag = null;
+							area.Remove();
+              Settings.SaveCharacterSettings();
+						}
+					}
+					break;
+				case "Menu_lstvArea_Activate":
+					if (Bot.Get.inGame)
+					{
+						if (Training_lstvAreas.SelectedItems.Count == 1)
+						{
+							// Deactivate
+							if(Training_lstvAreas.Tag != null)
+							{
+								ListViewItem lastActivated = (ListViewItem)Training_lstvAreas.Tag;
+								lastActivated.ForeColor = Training_lstvAreas.ForeColor;
+              }
+							// Activate it
+							Training_lstvAreas.SelectedItems[0].ForeColor = Color.FromArgb(0, 180, 255);
+							Training_lstvAreas.Tag = Training_lstvAreas.SelectedItems[0];
+              Settings.SaveCharacterSettings();
+						}
 					}
 					break;
 				case "Menu_lstvOpcodes_Remove":
@@ -1883,7 +2190,7 @@ namespace xBot.App
 					Settings.SaveCharacterSettings();
 			}
 		}
-		private void ListView_DragDrop_CopyFromSource(object sender, DragEventArgs e)
+		private void ListView_DragDrop_CopyFromSource_AttacksOnly(object sender, DragEventArgs e)
 		{
 			// Check if the drag is a ListViewItem list
 			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
@@ -1896,11 +2203,15 @@ namespace xBot.App
 				{
 					if (!l.Items.ContainsKey(item.Name))
 					{
-						ListViewItem copy = (ListViewItem)item.Clone();
-						copy.Name = item.Name;
-						l.Items.Add(copy);
-
-						itemUpdated = true;
+						SRObject skill = (SRObject)item.Tag;
+						// Check if is an attacking skill
+            if (skill.isAttackingSkill())
+						{
+							ListViewItem copy = (ListViewItem)item.Clone();
+							copy.Name = item.Name;
+							l.Items.Add(copy);
+							itemUpdated = true;
+						}
 					}
 				}
 				// Check if at least one item has been changed
@@ -1908,180 +2219,33 @@ namespace xBot.App
 					Settings.SaveCharacterSettings();
 			}
 		}
-		#endregion
-
-		#region (GUI theme design behaviour)
-		/// <summary>
-		/// Set the control to be used as window drag.
-		/// </summary>
-		private void Window_Drag_MouseDown(object sender, MouseEventArgs e)
+		private void ListView_AfterLabelEdit(object sender, LabelEditEventArgs e)
 		{
-			if (e.Button == MouseButtons.Left)
+			ListView l = (ListView)sender;
+			switch (l.Name)
 			{
-				WinAPI.ReleaseCapture();
-				WinAPI.SendMessage(Handle, WinAPI.WM_NCLBUTTONDOWN, WinAPI.HT_CAPTION, 0);
-			}
-		}
-		/// <summary>
-		/// Color the label associated (by name) to the current control focused.
-		/// </summary>
-		private void Control_Focus_Enter(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
-			foreach (string t in controlTypes)
-			{
-				if (c.Name.Contains(t))
-				{
-					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
+				case "Training_lstvAreas":
+					if (string.IsNullOrEmpty(e.Label))
 					{
-						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = Color.FromArgb(30, 150, 220);
+						e.CancelEdit = true;
+						MessageBox.Show(this, "Please, insert a valid name!", "xBot", MessageBoxButtons.OK);
+					}
+					else
+					{
+						ListViewItem item = Training_lstvAreas.Items[e.Item];
+            if (item.Text != e.Label && Training_lstvAreas.Items.ContainsKey(e.Label))
+						{
+							e.CancelEdit = true;
+							MessageBox.Show(this, "This name has been used before!", "xBot", MessageBoxButtons.OK);
+						}
+						else
+						{
+							item.Name = e.Label;
+							Settings.SaveCharacterSettings();
+            }
 					}
 					break;
-				}
 			}
-		}
-		/// <summary>
-		/// Restore the changes made on <see cref="Control_Focus_Enter(object, EventArgs)"/>
-		/// </summary>
-		private void Control_Focus_Leave(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			string[] controlTypes = new string[] { "cbx", "cmbx", "rtbx", "tbx", "lstv", "btn" };
-			foreach (string t in controlTypes)
-			{
-				if (c.Name.Contains(t))
-				{
-					if (c.Parent.Controls.ContainsKey(c.Name.Replace(t, "lbl")))
-					{
-						c.Parent.Controls[c.Name.Replace(t, "lbl")].BackColor = c.Parent.BackColor;
-					}
-					break;
-				}
-			}
-		}
-		/// <summary>
-		/// Colors used on TabPage Vertical.
-		/// </summary>
-		private Color TabPageV_ColorHover = Color.FromArgb(74, 74, 76),
-			TabPageV_ColorSelected = Color.FromArgb(0, 122, 204);
-		/// <summary>
-		///  TabPage Vertical option click.
-		/// </summary>
-		private void TabPageV_Option_Click(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			List<Control> currentOption;
-			if (c.Parent.Tag != null)
-			{
-				currentOption = (List<Control>)c.Parent.Tag;
-				if (currentOption[0].Name == c.Name || currentOption[1].Name == c.Name)
-					return;
-				currentOption[0].BackColor = c.Parent.BackColor;
-				currentOption[1].BackColor = c.Parent.BackColor;
-				c.Parent.Parent.Controls[currentOption[0].Name + "_Panel"].Visible = false;
-			}
-			currentOption = new List<Control>();
-			currentOption.Add(c.Parent.Controls[c.Name.Replace("_Icon", "")]);
-			currentOption.Add(c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"]);
-			c.Parent.Tag = currentOption;
-			currentOption[0].BackColor = TabPageV_ColorSelected;
-			currentOption[1].BackColor = TabPageV_ColorSelected;
-			c.Parent.Parent.Controls[currentOption[1].Name.Replace("Icon", "Panel")].Visible = true;
-		}
-		/// <summary>
-		/// Creates a custom color focus on icon and option used on TabPage Vertical.
-		/// <para>Results are not as expected because Windows native focus interference...</para>
-		/// </summary>
-		private void TabPageV_Option_MouseEnter(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				List<Control> currentOption = (List<Control>)c.Parent.Tag;
-				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorHover;
-					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = TabPageV_ColorHover;
-				}
-				else
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
-				}
-			}
-		}
-		/// <summary>
-		/// Restore the changes made on <see cref="TabPageV_Option_MouseEnter(object, EventArgs)"/>
-		/// </summary>
-		private void TabPageV_Option_MouseLeave(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				List<Control> currentOption = (List<Control>)c.Parent.Tag;
-				if (c.Name != currentOption[0].Name && c.Name != currentOption[1].Name)
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = c.Parent.BackColor;
-					c.Parent.Controls[c.Name.Contains("_Icon") ? c.Name : c.Name + "_Icon"].BackColor = c.Parent.BackColor;
-				}
-				else
-				{
-					c.Parent.Controls[c.Name.Replace("_Icon", "")].BackColor = TabPageV_ColorSelected;
-				}
-			}
-		}
-		/// <summary>
-		///  TabPage Horizontal option click.
-		/// </summary>
-		private void TabPageH_Option_Click(object sender, EventArgs e)
-		{
-			Control c = (Control)sender;
-			if (c.Parent.Tag != null)
-			{
-				Control currentOption = (Control)c.Parent.Tag;
-				if (currentOption.Name == c.Name)
-					return;
-				currentOption.BackColor = c.Parent.Parent.BackColor;
-				c.Parent.Parent.Controls[currentOption.Name + "_Panel"].Visible = false;
-			}
-			c.Parent.Tag = c;
-			c.BackColor = c.Parent.BackColor;
-			c.Parent.Parent.Controls[c.Name + "_Panel"].Visible = true;
-		}
-		/// <summary>
-		/// Modified TabPage Horizontal behavior for better chat UX.
-		/// </summary>
-		private void TabPageH_ChatOption_Click(object sender, EventArgs e)
-		{
-			TabPageH_Option_Click(sender, e);
-			Control option = (Control)sender;
-			if (option.Font.Bold)
-				option.Font = new Font(option.Font, FontStyle.Regular);
-			Chat_cmbxMsgType.Text = option.Text; // If is not into the options, then will not change.
-		}
-		/// <summary>
-		/// Activate notify on chat.
-		/// </summary>
-		public void TabPageH_ChatOption_Notify(Control c)
-		{
-			WinAPI.InvokeIfRequired(c.Parent, () => {
-				if (c.Parent.Tag != c && !c.Font.Bold)
-					c.Font = new Font(c.Font, FontStyle.Bold);
-			});
-		}
-		/// <summary>
-		/// Forces the listview header to keep his width.
-		/// </summary>
-		private void ListView_ColumnWidthChanging_Cancel(object sender, ColumnWidthChangingEventArgs e)
-		{
-			e.Cancel = true;
-			e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
-		}
-		public void EnableControl(Control c, bool active)
-		{
-			WinAPI.InvokeIfRequired(c, () => {
-				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
-			});
 		}
 		#endregion
 

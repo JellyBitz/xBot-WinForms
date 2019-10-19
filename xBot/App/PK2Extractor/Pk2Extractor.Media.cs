@@ -18,10 +18,13 @@ namespace xBot.App.PK2Extractor
 			string path = GetDirectory(SilkroadName);
 			List<NameValueCollection> rows = db.GetResult();
 
-			// Add default icon
-			NameValueCollection icon_default = new NameValueCollection();
-			icon_default.Add("icon", "icon_default.ddj");
-			rows.Add(icon_default);
+			// Adding default icons
+			NameValueCollection defaultIcons = new NameValueCollection();
+			defaultIcons.Add("icon", "icon_default.ddj"); // Not Image
+			rows.Add(defaultIcons);
+			defaultIcons = new NameValueCollection();
+			defaultIcons.Add("icon", "action\\icon_cha_auto_attack.ddj"); // Common attack
+			rows.Add(defaultIcons);
 
 			LogState("Checking item icon files...");
 			// Check and save every icon available

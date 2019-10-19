@@ -408,10 +408,24 @@ namespace xBot.App
 					#region (Training Tab)
 					JObject Training = new JObject();
 					root["Training"] = Training;
+					
+					JObject Area = new JObject();
+					Training["Area"] = Area;
+					foreach (ListViewItem item in w.Training_lstvAreas.Items)
+					{
+						JObject area = new JObject();
+						area["Region"] = item.SubItems[1].Text;
+						area["X"] = item.SubItems[2].Text;
+						area["Y"] = item.SubItems[3].Text;
+						area["Z"] = item.SubItems[4].Text;
+						area["Radius"] = item.SubItems[5].Text;
+						area["Path"] = item.SubItems[6].Text;
+						Area[item.Name] = area;
+          }
+					Training["AreaActivated"] = w.Training_lstvAreas.Tag != null ? ((ListViewItem)w.Training_lstvAreas.Tag).Name : "";
 
 					JObject Trace = new JObject();
 					Training["Trace"] = Trace;
-
 					Trace["TracePartyMaster"] = w.Training_cbxTraceMaster.Checked;
 					Trace["UseTraceDistance"] = w.Training_cbxTraceDistance.Checked;
 					Trace["TraceDistance"] = w.Training_tbxTraceDistance.Text;
@@ -469,10 +483,9 @@ namespace xBot.App
 			{
 				LoadingCharacterSettings = true;
 				JObject root;
-				if(path == "")
-					root = new JObject();
-				else
-					root = JObject.Parse(File.ReadAllText(path));
+
+				// Load or create config
+				root = path == "" ? new JObject() : JObject.Parse(File.ReadAllText(path));
 
 				Window w = Window.Get;
 				Info i = Info.Get;
@@ -481,56 +494,21 @@ namespace xBot.App
 				JObject Character = root.ContainsKey("Character") ? (JObject)root["Character"] : new JObject();
 
 				JObject Inf = Character.ContainsKey("Info") ? (JObject)Character["Info"] : new JObject();
-				if (Inf.ContainsKey("ShowExp"))
-					w.Character_cbxMessageExp.Checked = (bool)Inf["ShowExp"];
-				else
-					w.Character_cbxMessageExp.Checked = false;
-				if (Inf.ContainsKey("ShowUniques"))
-					w.Character_cbxMessageUniques.Checked = (bool)Inf["ShowUniques"];
-				else
-					w.Character_cbxMessageUniques.Checked = false;
-				if (Inf.ContainsKey("ShowEvents"))
-					w.Character_cbxMessageEvents.Checked = (bool)Inf["ShowEvents"];
-				else
-					w.Character_cbxMessageEvents.Checked = false;
-				if (Inf.ContainsKey("ShowPicks"))
-					w.Character_cbxMessagePicks.Checked = (bool)Inf["ShowPicks"];
-				else
-					w.Character_cbxMessagePicks.Checked = false;
+				w.Character_cbxMessageExp.Checked = Inf.ContainsKey("ShowExp") ? (bool)Inf["ShowExp"] : false;
+				w.Character_cbxMessageUniques.Checked = Inf.ContainsKey("ShowUniques") ? (bool)Inf["ShowUniques"] : false;
+				w.Character_cbxMessageEvents.Checked = Inf.ContainsKey("ShowEvents") ? (bool)Inf["ShowEvents"] : false;
+				w.Character_cbxMessagePicks.Checked = Inf.ContainsKey("ShowPicks") ? (bool)Inf["ShowPicks"] : false;
 
 				JObject Potions = Character.ContainsKey("Potions") ? (JObject)Character["Potions"] : new JObject();
-				if (Potions.ContainsKey("UseHP"))
-					w.Character_cbxUseHP.Checked = (bool)Potions["UseHP"];
-				else
-					w.Character_cbxUseHP.Checked = false;
-				if (Potions.ContainsKey("UseHPPercent"))
-					w.Character_tbxUseHP.Text = (string)Potions["UseHPPercent"];
-				else
-					w.Character_tbxUseHP.Text = "50";
-				if (Potions.ContainsKey("UseHPGrain"))
-					w.Character_cbxUseHPGrain.Checked = (bool)Potions["UseHPGrain"];
-				else
-					w.Character_cbxUseHPGrain.Checked = false;
-				if (Potions.ContainsKey("UseHPVigor"))
-					w.Character_cbxUseHPVigor.Checked = (bool)Potions["UseHPVigor"];
-				else
-					w.Character_cbxUseHPVigor.Checked = false;
-				if (Potions.ContainsKey("UseMP"))
-					w.Character_cbxUseMP.Checked = (bool)Potions["UseMP"];
-				else
-					w.Character_cbxUseHPVigor.Checked = false;
-				if (Potions.ContainsKey("UseMPPercent"))
-					w.Character_tbxUseMP.Text = (string)Potions["UseMPPercent"];
-				else
-					w.Character_tbxUseMP.Text = "50";
-				if (Potions.ContainsKey("UseMPGrain"))
-					w.Character_cbxUseMPGrain.Checked = (bool)Potions["UseMPGrain"];
-				else
-					w.Character_cbxUseMPGrain.Checked = false;
-				if (Potions.ContainsKey("UseMPVigor"))
-					w.Character_cbxUseMPVigor.Checked = (bool)Potions["UseMPVigor"];
-				else
-					w.Character_cbxUseMPVigor.Checked = false;
+				w.Character_cbxUseHP.Checked = Potions.ContainsKey("UseHP") ? (bool)Potions["UseHP"] : false;
+				w.Character_tbxUseHP.Text = Potions.ContainsKey("UseHPPercent") ? (string)Potions["UseHPPercent"] : "50";
+				w.Character_cbxUseHPGrain.Checked = Potions.ContainsKey("UseHPGrain") ? (bool)Potions["UseHPGrain"] : false;
+				w.Character_cbxUseHPVigor.Checked = Potions.ContainsKey("UseHPVigor") ? (bool)Potions["UseHPVigor"] : false;
+				w.Character_cbxUseMP.Checked = Potions.ContainsKey("UseMP") ? (bool)Potions["UseMP"] : false;
+				w.Character_tbxUseMP.Text = Potions.ContainsKey("UseMPPercent") ? (string)Potions["UseMPPercent"] : "50";
+				w.Character_cbxUseMPGrain.Checked = Potions.ContainsKey("UseMPGrain") ? (bool)Potions["UseMPGrain"] : false;
+				w.Character_cbxUseMPVigor.Checked = Potions.ContainsKey("UseMPVigor") ? (bool)Potions["UseMPVigor"] : false;
+
 				if (Potions.ContainsKey("UseUniversalPills"))
 					w.Character_cbxUsePillUniversal.Checked = (bool)Potions["UseUniversalPills"];
 				else
@@ -711,6 +689,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_General.Items.Add(item);
 						}
 					}
@@ -726,6 +705,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_Champion.Items.Add(item);
 						}
 					}
@@ -741,6 +721,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_Giant.Items.Add(item);
 						}
 					}
@@ -756,6 +737,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_PartyGeneral.Items.Add(item);
 						}
 					}
@@ -771,6 +753,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_PartyChampion.Items.Add(item);
 						}
 					}
@@ -786,6 +769,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_PartyGiant.Items.Add(item);
 						}
 					}
@@ -801,6 +785,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_Unique.Items.Add(item);
 						}
 					}
@@ -816,6 +801,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_Elite.Items.Add(item);
 						}
 					}
@@ -831,6 +817,7 @@ namespace xBot.App
 						{
 							ListViewItem item = new ListViewItem(skillName);
 							item.Name = skill.ID.ToString();
+							item.Tag = skill;
 							w.Skills_lstvAttackMobType_Event.Items.Add(item);
 						}
 					}
@@ -841,18 +828,33 @@ namespace xBot.App
 				JObject Training = root.ContainsKey("Training") ? (JObject)root["Training"] : new JObject();
 
 				JObject Area = Training.ContainsKey("Area") ? (JObject)Training["Area"] : new JObject();
-				if (Area.ContainsKey("TracePartyMaster"))
-					w.Training_cbxTraceMaster.Checked = (bool)Area["TracePartyMaster"];
-				else
-					w.Training_cbxTraceMaster.Checked = false;
-				if (Area.ContainsKey("UseTraceDistance"))
-					w.Training_cbxTraceDistance.Checked = (bool)Area["UseTraceDistance"];
-				else
-					w.Training_cbxTraceDistance.Checked = false;
-				if (Area.ContainsKey("TraceDistance"))
-					w.Training_tbxTraceDistance.Text = (string)Area["TraceDistance"];
-				else
-					w.Training_tbxTraceDistance.Text = "5";
+				string AreaActivated = Training.ContainsKey("AreaActivated") ? (string)Training["AreaActivated"] : "";
+        foreach (JProperty key in Area.Properties())
+				{
+					JObject area = (JObject)Area[key.Name];
+
+					ListViewItem item = new ListViewItem(key.Name);
+					item.Name = key.Name;
+					item.SubItems.Add(area.ContainsKey("Region") ? (string)area["Region"] : "0");
+					item.SubItems.Add(area.ContainsKey("X") ? (string)area["X"] : "0");
+					item.SubItems.Add(area.ContainsKey("Y") ? (string)area["Y"] : "0");
+					item.SubItems.Add(area.ContainsKey("Z") ? (string)area["Z"] : "0");
+					item.SubItems.Add(area.ContainsKey("Radius") ? (string)area["Radius"] : "0");
+					item.SubItems.Add(area.ContainsKey("Path") ? (string)area["Path"] : "");
+					// Check if this area is activated
+					if (AreaActivated != "" && AreaActivated == item.Name)
+					{
+						item.ForeColor = System.Drawing.Color.FromArgb(0, 180, 255);
+						w.Training_lstvAreas.Tag = item;
+						AreaActivated = "";
+					}
+					w.Training_lstvAreas.Items.Add(item);
+				}
+				
+				JObject Trace = Training.ContainsKey("Trace") ? (JObject)Training["Trace"] : new JObject();
+				w.Training_cbxTraceMaster.Checked = Trace.ContainsKey("TracePartyMaster") ? (bool)Trace["TracePartyMaster"] : false;
+				w.Training_cbxTraceDistance.Checked = Trace.ContainsKey("UseTraceDistance") ? (bool)Trace["UseTraceDistance"] : false;
+				w.Training_tbxTraceDistance.Text = Trace.ContainsKey("TraceDistance") ? (string)Trace["TraceDistance"] : "5";
 				#endregion
 
 				LoadingCharacterSettings = false;

@@ -221,12 +221,19 @@ namespace xBot.App
 
 			#region (Skills Tab)
 			SRObjectCollection Skills = (SRObjectCollection)character[SRProperty.Skills];
+			// Add basic attack
+			SRObject commonAttack = new SRObject(1u, SRType.Skill);
+			commonAttack.Name = "Common Attack";
+			commonAttack[SRProperty.Icon] = "action\\icon_cha_auto_attack.ddj";
+			commonAttack[SRProperty.MP] = commonAttack.ID; // Trigger attack as skill
+			Skills.Add(commonAttack);
+
 			w.Skills_lstvSkills.BeginUpdate();
 			for (int j = 0; j < Skills.Capacity; j++)
 			{
-				w.AddSkill(Skills[j]);
+        w.AddSkill(Skills[j]);
 			}
-			w.Skills_lstvSkills.EndUpdate();
+      w.Skills_lstvSkills.EndUpdate();
 			#endregion
 
 			#region (Minimap Tab)

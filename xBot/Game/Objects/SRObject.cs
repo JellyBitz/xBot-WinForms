@@ -231,7 +231,8 @@ namespace xBot.Game.Objects
 					ID4 = byte.Parse(data["tid4"]);
 					this[SRProperty.Icon] = data["icon"];
 					this[SRProperty.QuantityMax] = ushort.Parse(data["stack"]);
-					break;
+					this[SRProperty.Quantity] = this[SRProperty.QuantityMax];
+          break;
 				case SRType.Teleport:
 					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
@@ -508,6 +509,12 @@ namespace xBot.Game.Objects
 		public bool isItem()
 		{
 			return ID1 == 3;
+		}
+		public bool isAttackingSkill()
+		{
+			if ((uint)this[SRProperty.MP] > 0 && (uint)this[SRProperty.DurationMax] == 0)
+				return true;
+			return false;
 		}
 		#endregion
 	}

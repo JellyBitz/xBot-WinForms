@@ -75,10 +75,11 @@ namespace xBot.App
 		}
 		private void LoadMediaData()
 		{
-			lblServerName.Text = GetData(EXCEL.TITLE);
+			lblAdName.Text = GetData(EXCEL.TITLE);
+			ToolTips.SetToolTip(lblAdName,GetData(EXCEL.TITLE));
 			pbxBanner.Load(GetData(EXCEL.URL_BANNER));
 			pbxBanner.Tag = GetData(EXCEL.URL_WEBSITE);
-			ToolTips.SetToolTip(pbxBanner, GetData(EXCEL.URL_WEBSITE));
+			ToolTipLink.SetToolTip(pbxBanner, GetData(EXCEL.URL_WEBSITE));
 		}
 		public bool isLoaded()
 		{
@@ -86,7 +87,11 @@ namespace xBot.App
 		}
 		public string GetData(EXCEL type)
 		{
-			return ExcelData[(uint)type];
+			// Fix the csv behaviour
+			string data = ExcelData[(uint)type];
+			if (data.StartsWith("\"") && data.EndsWith("\""))
+				data = data.Substring(1, data.Length - 2);
+			return data;
 		}
 		private void Ads_Load(object sender, EventArgs e)
 		{

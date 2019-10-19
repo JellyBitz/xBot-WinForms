@@ -34,7 +34,8 @@
 			this.panelAdvertising = new System.Windows.Forms.Panel();
 			this.pbxBanner = new System.Windows.Forms.PictureBox();
 			this.btnWinExit = new System.Windows.Forms.Button();
-			this.lblServerName = new System.Windows.Forms.Label();
+			this.lblAdName = new System.Windows.Forms.Label();
+			this.ToolTipLink = new System.Windows.Forms.ToolTip(this.components);
 			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.panelAdvertising.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbxBanner)).BeginInit();
@@ -112,31 +113,39 @@
 			// 
 			// lblServerName
 			// 
-			this.lblServerName.AutoEllipsis = true;
-			this.lblServerName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.lblServerName.Font = new System.Drawing.Font("Source Sans Pro", 19F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-			this.lblServerName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.lblServerName.Location = new System.Drawing.Point(242, 10);
-			this.lblServerName.Name = "lblServerName";
-			this.lblServerName.Size = new System.Drawing.Size(303, 24);
-			this.lblServerName.TabIndex = 24;
-			this.lblServerName.Tag = "Source Sans Pro";
-			this.lblServerName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lblAdName.AutoEllipsis = true;
+			this.lblAdName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.lblAdName.Font = new System.Drawing.Font("Source Sans Pro", 19F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+			this.lblAdName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.lblAdName.Location = new System.Drawing.Point(242, 10);
+			this.lblAdName.Name = "lblServerName";
+			this.lblAdName.Size = new System.Drawing.Size(303, 24);
+			this.lblAdName.TabIndex = 24;
+			this.lblAdName.Tag = "Source Sans Pro";
+			this.lblAdName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lblAdName.UseMnemonic = false;
+			// 
+			// ToolTipLink
+			// 
+			this.ToolTipLink.AutoPopDelay = 5000;
+			this.ToolTipLink.InitialDelay = 250;
+			this.ToolTipLink.ReshowDelay = 100;
+			this.ToolTipLink.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+			this.ToolTipLink.ToolTipTitle = "Go to website";
 			// 
 			// ToolTips
 			// 
+			this.ToolTips.AutomaticDelay = 100;
 			this.ToolTips.AutoPopDelay = 5000;
-			this.ToolTips.InitialDelay = 250;
-			this.ToolTips.ReshowDelay = 100;
-			this.ToolTips.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-			this.ToolTips.ToolTipTitle = "Go to website";
+			this.ToolTips.InitialDelay = 100;
+			this.ToolTips.ReshowDelay = 20;
 			// 
 			// Ads
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
 			this.ClientSize = new System.Drawing.Size(600, 400);
-			this.Controls.Add(this.lblServerName);
+			this.Controls.Add(this.lblAdName);
 			this.Controls.Add(this.btnWinExit);
 			this.Controls.Add(this.panelAdvertising);
 			this.Controls.Add(this.lblHeaderIcon);
@@ -146,7 +155,7 @@
 			this.MinimizeBox = false;
 			this.Name = "Ads";
 			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Tag = "Font Awesome 5 Pro Regular";
 			this.Text = "Ads";
 			this.TopMost = true;
@@ -163,8 +172,9 @@
 		private System.Windows.Forms.Label lblHeaderIcon;
 		private System.Windows.Forms.Panel panelAdvertising;
 		private System.Windows.Forms.Button btnWinExit;
-		private System.Windows.Forms.Label lblServerName;
+		private System.Windows.Forms.Label lblAdName;
 		private System.Windows.Forms.PictureBox pbxBanner;
+		private System.Windows.Forms.ToolTip ToolTipLink;
 		private System.Windows.Forms.ToolTip ToolTips;
 	}
 }

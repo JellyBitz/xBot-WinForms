@@ -1603,8 +1603,6 @@ namespace xBot.Game
 		}
 		private static void InventoryItemMovement_InventoryToInventory(Packet p)
 		{
-			// [04:38:06][A][S->C][B034][7 bytes]
-			// 0000000000   01 00 [16 18 01 00 00]                              ................
 			byte slotInitial = p.ReadByte();
 			byte slotFinal = p.ReadByte();
 			ushort quantityMoved = p.ReadUShort();
@@ -2289,18 +2287,14 @@ namespace xBot.Game
 					// Update/override if the skill is sharing the same groupname
 					SRObject skill = skills.Find(m => m.ID == lastSkillID);
 					skill.CopyFrom(newSkill);
-					// TO DO:
-					// Remove or update from every list the skill name/key
-
-					// Update Main lisst
-					w.RemoveSkill(lastSkillID);
-					w.AddSkill(skill);
+					// Update the skill name/key from every list
+					w.UpdateSkillNames(lastSkillID, newSkill.ID);
 				}
 				else
 				{
 					// Add new skill
 					skills.Add(newSkill);
-					Window.Get.AddSkill(newSkill);
+					w.AddSkill(newSkill);
 				}
 			}
 		}
