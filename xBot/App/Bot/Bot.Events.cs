@@ -132,20 +132,23 @@ namespace xBot.App
 		{
 			Window w = Window.Get;
 			Info i = Info.Get;
+
 			w.Log("You has been joined to the game");
 			w.LogChatMessage(w.Chat_rtbxAll, "(Welcome)", i.GetUIFormat("UIIT_STT_STARTING_MSG").Replace("\\n", "\n"));
 
-			// Check login options
-			if (w.Login_cbxGoClientless.Checked)
-				GoClientless();
-
-			if (w.Login_cbxUseReturnScroll.Checked)
-				UseReturnScroll();
-
-			if (w.Party_cbxMatchAutoReform.Checked)
-				CheckPartyMatchAutoReform();
-
-			CheckAutoParty();
+			if (!Proxy.ClientlessMode)
+			{
+				// Avoid client getting freezed generating issues
+				// 10s is enough to leave the client totally loaded
+				System.Timers.Timer check = new System.Timers.Timer(10000);
+				check.AutoReset = false;
+        check.Elapsed += this.CheckLoginOptions;
+				check.Start();
+			}
+			else
+			{
+				CheckLoginOptions(null,null);
+			}
 		}
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
@@ -241,7 +244,7 @@ namespace xBot.App
 		/// <param name="uniqueID"></param>
 		private void OnPetUnsummoned(uint uniqueID)
 		{
-			if (Info.Get.Pets[uniqueID].ID4 == 3){
+			if (Info.Get.MyPets[uniqueID].ID4 == 3){
 				tUsingHGP.Stop();
 			}
 		}
@@ -318,7 +321,7 @@ namespace xBot.App
 								uint destinationID = i.GetTeleportLinkDestinationID(sourceTeleportID, destinationTeleportID);
 								if (destinationID != 0)
 								{
-									SRObject teleport = i.GetTeleports().Find(npc => npc.ID == sourceTeleportID);
+									SRObject teleport = i.Teleports.Find(npc => npc.ID == sourceTeleportID);
 									if (teleport != null)
 									{
 										// Select teleport
@@ -342,7 +345,7 @@ namespace xBot.App
 							{
 								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
 								// Check if the teleport source is near
-								SRObject teleport = i.GetTeleports().Find(npc => npc.ID == sourceTeleportID);
+								SRObject teleport = i.Teleports.Find(npc => npc.ID == sourceTeleportID);
                 				if (teleport != null)
 								{
 									// Select teleport
@@ -374,7 +377,7 @@ namespace xBot.App
 								if(modelID != 0)
 								{
 									// Check if the teleport is near
-									SRObject teleport = i.GetTeleports().Find(npc => npc.ID == modelID);
+									SRObject teleport = i.Teleports.Find(npc => npc.ID == modelID);
 									if (teleport != null)
 										PacketBuilder.DesignateRecall((uint)teleport[SRProperty.UniqueID]);
 									else
@@ -572,7 +575,7 @@ namespace xBot.App
 				{
 					Info i = Info.Get;
 					if (!inParty
-						|| i.PartyList[0].Name == i.Charname)
+						|| i.PartyMembers.ElementAt(0).Name == i.Charname)
 					{
 						PacketBuilder.CreatePartyMatch(GetPartyMatchSetup());
 					}
@@ -614,8 +617,8 @@ namespace xBot.App
 					|| 
 					inParty
 					&& w.Training_cbxTraceMaster.Checked
-					&& i.PartyList[0].Name == player.Name
-					&& !i.PlayersNear.ContainsKey(TracePlayerName))
+					&& i.PartyMembers.ElementAt(0).Name == player.Name
+					&& i.Players[TracePlayerName] == null)
 				{
 					byte distance = 0;
 					if (w.Training_cbxTraceDistance.Checked)
@@ -676,7 +679,7 @@ namespace xBot.App
 					SRObject player = i.GetEntity(uniqueID);
 					if(player != null)
 					{
-						if (i.GetPartyMember(player.Name) != null)
+						if (i.PartyMembers.Find( p => p.Name == player.Name) != null)
 						{
 							PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.Resurrection);
 						}

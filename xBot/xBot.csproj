@@ -116,6 +116,7 @@
       <DependentUpon>Ads.cs</DependentUpon>
     </Compile>
     <Compile Include="App\Bot\Bot.Events.cs" />
+    <Compile Include="App\Bot\Bot.IA.cs" />
     <Compile Include="App\Bot\Bot.System.cs" />
     <Compile Include="App\Bot\Bot.Checks.cs" />
     <Compile Include="App\PK2Extractor\DDSReader.cs" />
@@ -133,6 +134,7 @@
       <DependentUpon>Pk2Extractor.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="App\Script.cs" />
     <Compile Include="App\Settings.cs" />
     <Compile Include="App\EdxLoader.cs" />
     <Compile Include="App\SQLDatabase.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Game\Objects\SRCoord.cs" />
     <Compile Include="Game\Objects\SRObject.cs" />
     <Compile Include="Game\Objects\SRObjectCollection.cs" />
+    <Compile Include="Game\Objects\SRObjectDictionary.cs" />
     <Compile Include="Game\Objects\SRPartyMatch.cs" />
     <Compile Include="Game\Objects\SRProperty.cs" />
     <Compile Include="Game\Params.cs" />

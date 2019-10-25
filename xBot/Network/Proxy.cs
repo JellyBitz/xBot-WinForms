@@ -205,7 +205,7 @@ namespace xBot.Network
 								{
 									bool opcodeFound = false;
 									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
-										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -311,7 +311,7 @@ namespace xBot.Network
 										bool opcodeFound = false;
 										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -453,7 +453,7 @@ namespace xBot.Network
 									bool opcodeFound = false;
 									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 									{
-										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -489,7 +489,7 @@ namespace xBot.Network
 										bool opcodeFound = false;
 										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey("0x" + packet.Opcode.ToString("X4"));
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -668,7 +668,6 @@ namespace xBot.Network
 			Reset();
 			Info.Get.Database.Close();
 			Window w = Window.Get;
-			w.LogProcess("Disconnected");
 			// Reset locket controls
 			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
 				w.Login_cmbxSilkroad.Enabled = true;
@@ -691,20 +690,45 @@ namespace xBot.Network
 			{
 				Bot.Get._OnDisconnected();
 			}
-
+			w.LogProcess("Disconnected");
 			// Relogin
 			if (w.Login_cbxRelogin.Checked)
 			{
-				(new Thread((ThreadStart)delegate
-				{
-					Thread.Sleep(10000);
-					try{
-						if (w.Login_cbxRelogin.Checked){
-							w.Control_Click(w.Login_btnStart, null);
+				System.Timers.Timer Relogin = new System.Timers.Timer(1000);
+				Relogin.AutoReset = true;
+				byte countdown = 10;
+				Relogin.Elapsed += delegate {
+					 try
+					{
+						if (w.Login_cbxRelogin.Checked)
+						{
+							if (countdown > 0)
+							{
+								w.LogProcess("Relogin at " + countdown + " seconds...");
+								countdown = (byte)(countdown - 1);
+							}
+							else
+							{
+								WinAPI.InvokeIfRequired(w.Login_btnStart, ()=> {
+									if(w.Login_btnStart.Text == "START")
+									{
+										w.LogProcess("Relogin...");
+										WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
+											w.Control_Click(w.Login_btnStart, null);
+										});
+									}
+									else
+									{
+										w.LogProcess("Relogin canceled...");
+									}
+									Relogin.Stop();
+								});
+							}
 						}
-					}
-					catch	{	}
-				})).Start();
+					 }
+					 catch { Relogin.Stop(); }
+				 };
+				Relogin.Start();
 			}
 		}
 		/// <summary>

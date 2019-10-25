@@ -21,11 +21,11 @@ using System.Runtime.InteropServices;
 // El siguiente GUID sirve como id. de typelib si este proyecto se expone a COM.
 [assembly: Guid("26fa42c7-c27b-4987-bef4-9c9e542db496")]
 
-[assembly: AssemblyVersion("0.0.0")]
+[assembly: AssemblyVersion("1.0.0")]
 // 1. Mayor version
 // - Incompatibility between the most recent build
 // 2. Minor version 
-// - If only features has been added
+// - If a lot of changes has been made, has to include new features
 // 3. Revision :
-// - Any change done
-[assembly: AssemblyFileVersion("0.0.11")]
+// - Any change done, bugfix or not
+[assembly: AssemblyFileVersion("0.1.0")]

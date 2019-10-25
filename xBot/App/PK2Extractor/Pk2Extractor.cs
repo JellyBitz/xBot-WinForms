@@ -114,7 +114,7 @@ namespace xBot.App.PK2Extractor
 		{
 			Log("Opening Pk2 file using " + (tbxBlowfishKey.Text != "" ? "blowfish key: " + tbxBlowfishKey.Text : "default blowfish key"));
 			LogState("Opening Pk2 file...");
-			try
+      try
 			{
 				pk2 = new Pk2Reader(MediaPk2Path, tbxBlowfishKey.Text);
 			}
@@ -287,12 +287,12 @@ namespace xBot.App.PK2Extractor
 			AddItemIcons();
 			Log("Creating Skill icons...");
 			AddSkillIcons();
+			
 			Log("All has been generated succesfully, Enjoy! :)");
-			db.Close();
+      db.Close();
 			pk2.Close();
 			pk2.Dispose();
 			LogState("Closing Pk2 file...");
-			Thread.Sleep(1000);
 
 			WinAPI.InvokeIfRequired(this, () => {
 				this.Activate();

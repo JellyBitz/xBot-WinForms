@@ -310,13 +310,13 @@ namespace xBot.App
 				Character_lstvBuffs.Items.Add(item);
 			});
 		}
-    public void RemoveBuff(uint SkillID)
+		public void RemoveBuff(uint SkillID)
 		{
 			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
 				Character_lstvBuffs.Items.RemoveByKey(SkillID.ToString());
 			});
 		}
-		public void ClearBuffs()
+		public void Buffs_Clear()
 		{
 			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
 				Character_lstvBuffs.Items.Clear();
@@ -331,7 +331,7 @@ namespace xBot.App
 			item.Name = Skill.ID.ToString();
 			// Keep a whole reference, easier skill checks
 			item.Tag = Skill;
-      item.ImageKey = GetImageKeyIcon((string)Skill[SRProperty.Icon]);
+			item.ImageKey = GetImageKeyIcon((string)Skill[SRProperty.Icon]);
 			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
 				Skills_lstvSkills.Items.Add(item);
 			});
@@ -341,18 +341,21 @@ namespace xBot.App
 			ListViewItem temp;
 			string key = oldSkillID.ToString();
 			string newkey = newSkillID.ToString();
-			// Not necessary update the TAG, it's already updated (by reference)
-			if ((temp = this.Skills_lstvSkills.Items[key]) != null) temp.Name = newkey;
-			// An array of references cannot be possible.. Using the long way "copy & paste" code :(
-			if ((temp = this.Skills_lstvAttackMobType_General.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_Champion.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_Giant.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_PartyGeneral.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_PartyChampion.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_PartyGiant.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_Unique.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_Elite.Items[key]) != null) temp.Name = newkey;
-			if ((temp = this.Skills_lstvAttackMobType_Event.Items[key]) != null) temp.Name = newkey;
+			// Invoke the TabPageV that contains the Skill list to drag
+			WinAPI.InvokeIfRequired(Skills_lstvSkills.Parent, () => {
+				// Not necessary update the TAG, it's already updated (by reference)
+				if ((temp = this.Skills_lstvSkills.Items[key]) != null) temp.Name = newkey;
+				// An array of references cannot be possible.. Using the long way "copy & paste" code :(
+				if ((temp = this.Skills_lstvAttackMobType_General.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_Champion.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_Giant.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_PartyGeneral.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_PartyChampion.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_PartyGiant.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_Unique.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_Elite.Items[key]) != null) temp.Name = newkey;
+				if ((temp = this.Skills_lstvAttackMobType_Event.Items[key]) != null) temp.Name = newkey;
+			});
 		}
 		public void RemoveSkill(uint SkillID)
 		{
@@ -360,10 +363,16 @@ namespace xBot.App
 				Skills_lstvSkills.Items.RemoveByKey(SkillID.ToString());
 			});
 		}
-		public void ClearSkills()
+		public void Skills_Clear()
 		{
 			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
 				Skills_lstvSkills.Items.Clear();
+			});
+		}
+		public void TrainingAreas_Clear()
+		{
+			WinAPI.InvokeIfRequired(Training_lstvAreas, () => {
+				Training_lstvAreas.Items.Clear();
 			});
 		}
 		public string GetImageKeyIcon(string Pk2Path)
@@ -376,7 +385,10 @@ namespace xBot.App
 				FullPath = Path.ChangeExtension(FullPath, "png");
 				if (File.Exists(FullPath))
 				{
-					lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+					// The image list it's being used by multiples controls
+					WinAPI.InvokeIfRequired(this,()=> {
+						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+					});
 				}
 				else
 				{
@@ -384,7 +396,9 @@ namespace xBot.App
 					FullPath = Pk2Extractor.GetDirectory(Info.Get.Silkroad) + "icon\\icon_default.png";
 					if (File.Exists(FullPath))
 					{
-						lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+						WinAPI.InvokeIfRequired(this, () => {
+							lstimgIcons.Images.Add(Pk2Path, Image.FromFile(FullPath));
+						});
 					}
 					else
 					{
@@ -411,15 +425,6 @@ namespace xBot.App
 			}
 			return "";
 		}
-		
-		public void BringToTop() {
-			if (this.WindowState == FormWindowState.Minimized){
-				this.WindowState = FormWindowState.Normal;
-			}
-			this.Activate();
-		}
-		
-		
 		/// <summary>
 		/// Set the gold in Silkroad format color.
 		/// </summary>
@@ -457,7 +462,7 @@ namespace xBot.App
 				Character_lblGold.Text = Text;
 			});
 		}
-		public void Inventory_Refresh()
+		public void Inventory_ItemsRefresh()
 		{
 			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
 				Inventory_lstvItems.Items.Clear();
@@ -496,6 +501,39 @@ namespace xBot.App
 				Inventory_lstvItems.EndUpdate();
 			});
 		}
+		public void Inventory_AvatarItemsRefresh()
+		{
+			WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+				Inventory_lstvAvatarItems.Items.Clear();
+				Inventory_lstvAvatarItems.BeginUpdate();
+			});
+
+			SRObjectCollection inventoryAvatar = (SRObjectCollection)Info.Get.Character[SRProperty.InventoryAvatar];
+
+			for (int j = 0; j < inventoryAvatar.Capacity; j++)
+			{
+				ListViewItem item = new ListViewItem();
+				item.Name = item.Text = j.ToString();
+				if (inventoryAvatar[j] != null)
+				{
+					item.SubItems.Add(inventoryAvatar[j].Name + (inventoryAvatar[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventoryAvatar[j][SRProperty.Plus] + ")" : ""));
+					item.SubItems.Add((ushort)inventoryAvatar[j][SRProperty.QuantityMax] == 1 ? "1" : inventoryAvatar[j][SRProperty.Quantity] + "/" + inventoryAvatar[j][SRProperty.QuantityMax]);
+					item.SubItems.Add(inventoryAvatar[j].ServerName);
+					item.ImageKey = GetImageKeyIcon((string)inventoryAvatar[j][SRProperty.Icon]);
+				}
+				else
+				{
+					item.SubItems.Add("Empty");
+				}
+				// Add
+				WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+					Inventory_lstvAvatarItems.Items.Add(item);
+				});
+			}
+			WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+				Inventory_lstvAvatarItems.EndUpdate();
+			});
+		}
 		public void Party_Clear()
 		{
 			WinAPI.InvokeIfRequired(Party_lstvPartyMembers, () => {
@@ -508,6 +546,140 @@ namespace xBot.App
 			WinAPI.InvokeIfRequired(this, () => {
 				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
 			});
+		}
+		public SRCoord TrainingArea_GetPosition()
+		{
+			SRCoord result = null;
+			WinAPI.InvokeIfRequired(this.Training_lstvAreas, () =>
+			{
+				if (this.Training_lstvAreas.Tag != null)
+				{
+					ListViewItem item = (ListViewItem)this.Training_lstvAreas.Tag;
+          result = new SRCoord((ushort)item.SubItems[1].Tag, (int)item.SubItems[2].Tag, (int)item.SubItems[4].Tag, (int)item.SubItems[3].Tag);
+				}
+			});
+			return result;
+    }
+		public int TrainingArea_GetRadius()
+		{
+			int result = 0;
+			WinAPI.InvokeIfRequired(this.Training_lstvAreas, () =>
+			{
+				if (this.Training_lstvAreas.Tag != null)
+					result = (int)((ListViewItem)this.Training_lstvAreas.Tag).SubItems[5].Tag;
+			});
+			return result;
+		}
+		public string TrainingArea_GetScript()
+		{
+			string result = "";
+			WinAPI.InvokeIfRequired(this.Training_lstvAreas, () =>
+			{
+				if (this.Training_lstvAreas.Tag != null)
+					result = ((ListViewItem)this.Training_lstvAreas.Tag).SubItems[6].Text;
+			});
+			return result;
+		}
+		/// <summary>
+		/// Get all skillshots used for an specific mob type. If it's an empty list, it will try to add from a lower mob type.
+		/// Returns null if the mob type is unknown.
+		/// </summary>
+		public SRObject[] Skills_GetSkillShots(Types.Mob type)
+		{
+			SRObject[] SkillShots = null;
+			switch (type)
+			{
+				case Types.Mob.General:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_General, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_General.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_General.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_General.Items[j].Tag;
+					});
+					break;
+				case Types.Mob.Champion:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_Champion, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_Champion.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_Champion.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_Champion.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.General;
+					else
+						break;
+				case Types.Mob.Giant:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_Giant, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_Giant.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_Giant.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_Giant.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.Champion;
+					else
+						break;
+				case Types.Mob.PartyGeneral:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_PartyGeneral, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_PartyGeneral.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_PartyGeneral.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_PartyGeneral.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.Giant;
+					else
+						break;
+				case Types.Mob.PartyChampion:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_PartyChampion, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_PartyChampion.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_PartyChampion.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_PartyChampion.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.PartyGeneral;
+					else
+						break;
+				case Types.Mob.PartyGiant:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_PartyGiant, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_PartyGiant.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_PartyGiant.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_PartyGiant.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.PartyChampion;
+					else
+						break;
+				case Types.Mob.Unique:
+				case Types.Mob.Titan:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_Unique, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_Unique.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_Unique.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_Unique.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.PartyGiant;
+					else
+						break;
+				case Types.Mob.Elite:
+				case Types.Mob.Strong:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_Elite, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_Elite.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_Elite.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_Elite.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.Unique;
+					else
+						break;
+				case Types.Mob.Event:
+					WinAPI.InvokeIfRequired(Skills_lstvAttackMobType_Event, () => {
+						SkillShots = new SRObject[Skills_lstvAttackMobType_Event.Items.Count];
+						for (int j = 0; j < Skills_lstvAttackMobType_Event.Items.Count; j++)
+							SkillShots[j] = (SRObject)Skills_lstvAttackMobType_Event.Items[j].Tag;
+					});
+					if (SkillShots.Length == 0)
+						goto case Types.Mob.Elite;
+					else
+						break;
+			}
+			return SkillShots;
 		}
 		/// <summary>
 		/// Load WebBrowser diplaying the Silkroad world map.
@@ -800,15 +972,10 @@ namespace xBot.App
 					Application.Exit();
 					break;
 				case "btnBotStart":
-					if (c.ForeColor == Color.Red)
-					{
-						c.ForeColor = Color.Lime;
-						ToolTips.SetToolTip(c, "Stop Bot");
-					}
-					else
-					{
-						c.ForeColor = Color.Red;
-						ToolTips.SetToolTip(c, "Start Bot");
+					if (Bot.Get.isBotting){
+						Bot.Get.Stop();
+					}else{
+						Bot.Get.Start();
 					}
 					break;
 				case "btnAnalyzer":
@@ -827,7 +994,7 @@ namespace xBot.App
 								return;
 							Info i = Info.Get;
 							// Check if database has been generated previously
-							if (!i.SelectDatabase(Login_cmbxSilkroad.Text))
+							if (!i.ConnectToDatabase(Login_cmbxSilkroad.Text))
 							{
 								MessageBox.Show(this, "The database \"" + Settings_tbxSilkroadName.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
 								TabPageV_Option_Click(TabPageV_Control01_Option14, null);
@@ -947,11 +1114,17 @@ namespace xBot.App
 						PacketBuilder.AddStatPointSTR();
 					}
 					break;
-				case "Inventory_btnRefresh":
+				case "Inventory_btnItemsRefresh":
 					if (Bot.Get.inGame)
-						this.Inventory_Refresh();
+						this.Inventory_ItemsRefresh();
 					else
 						this.Inventory_lstvItems.Items.Clear();
+					break;
+				case "Inventory_btnAvatarItemsRefresh":
+					if (Bot.Get.inGame)
+						this.Inventory_AvatarItemsRefresh();
+					else
+						this.Inventory_lstvAvatarItems.Items.Clear();
 					break;
 				case "Party_btnAddPlayer":
 					if (Bot.Get.inGame)
@@ -1020,11 +1193,11 @@ namespace xBot.App
 						Training_tbxX.Text = Position.X.ToString();
 						Training_tbxY.Text = Position.Y.ToString();
 						Training_tbxZ.Text = Position.Z.ToString();
-
-						Training_lstvAreas.SelectedItems[0].SubItems[1].Text = Training_tbxRegion.Text;
-						Training_lstvAreas.SelectedItems[0].SubItems[2].Text = Training_tbxX.Text;
-						Training_lstvAreas.SelectedItems[0].SubItems[3].Text = Training_tbxY.Text;
-						Training_lstvAreas.SelectedItems[0].SubItems[4].Text = Training_tbxZ.Text;
+						
+						Training_lstvAreas.SelectedItems[0].SubItems[1].Tag = Position.Region;
+						Training_lstvAreas.SelectedItems[0].SubItems[2].Tag = Position.X;
+						Training_lstvAreas.SelectedItems[0].SubItems[3].Tag = Position.Y;
+						Training_lstvAreas.SelectedItems[0].SubItems[4].Tag = Position.Z;
 
 						Settings.SaveCharacterSettings();
 					}
@@ -1078,7 +1251,7 @@ namespace xBot.App
 					{
 						Info i = Info.Get;
 						// Making a copy because the list could be edited while iterating
-						List<SRObject> objects = new List<SRObject>(i.EntityList.Values);
+						List<SRObject> objects = new List<SRObject>(i.SpawnList.ToArray());
 						// Pause drawing, possibly long data
 						GameInfo_lstrObjects.BeginUpdate();
 						// Add character always
@@ -1308,20 +1481,27 @@ namespace xBot.App
 				case "Settings_btnAddOpcode":
 					if (Settings_tbxFilterOpcode.Text != "")
 					{
-						int hexNumber;
-						if (int.TryParse(Settings_tbxFilterOpcode.Text.ToLower().Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out hexNumber))
+						ushort opcode;
+						string text = Settings_tbxFilterOpcode.Text.ToLower();
+            if (text.StartsWith("0x"))
 						{
-							string opcode = "0x" + hexNumber.ToString("X4");
-							// Check if exists
-							if (!Settings_lstvOpcodes.Items.ContainsKey(opcode))
-							{
-								ListViewItem item = new ListViewItem(opcode);
-								item.Name = opcode;
-								item.Tag = opcode;
-								Settings_lstvOpcodes.Items.Add(item);
-								Settings_tbxFilterOpcode.Text = "";
-								Settings.SaveBotSettings();
-							}
+							if (!ushort.TryParse(text.Substring(2, text.Length-2), System.Globalization.NumberStyles.HexNumber,null,out opcode))
+								return;
+						}
+						else
+						{
+							if (!ushort.TryParse(text, out opcode))
+								return;
+						}
+						// Check if exists
+						string key = opcode.ToString("X4");
+            if (!Settings_lstvOpcodes.Items.ContainsKey(key))
+						{
+							ListViewItem item = new ListViewItem(key);
+							item.Name = key;
+							Settings_lstvOpcodes.Items.Add(item);
+							Settings_tbxFilterOpcode.Text = "";
+							Settings.SaveBotSettings();
 						}
 					}
 					break;
@@ -1330,46 +1510,50 @@ namespace xBot.App
 						Bot b = Bot.Get;
 						if (Settings_tbxInjectOpcode.Text != "" && b.Proxy != null && b.Proxy.isRunning)
 						{
-							int hexNumber;
-							if (int.TryParse(Settings_tbxInjectOpcode.Text.ToLower().Replace("0x", ""), System.Globalization.NumberStyles.HexNumber, null, out hexNumber))
+							// Check opcode
+							ushort opcode;
+							string text = Settings_tbxInjectOpcode.Text.ToLower();
+							if (text.StartsWith("0x"))
 							{
-								ushort opcode;
-								if (ushort.TryParse(hexNumber.ToString(), out opcode))
-								{
-									byte[] data = new byte[0];
-									if (Settings_tbxInjectData.Text != "")
-									{
-										try
-										{
-											data = WinAPI.ToByteArray(Settings_tbxInjectData.Text.Replace(" ", ""));
-										}
-										catch
-										{
-											MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-											return;
-										}
-									}
-									LogPacket("Packet injected 0x" + opcode.ToString("X4"));
-
-									Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
-									if (Settings_cmbxInjectTo.SelectedIndex == 0)
-									{
-										b.Proxy.InjectToServer(p);
-									}
-									else
-									{
-										LogPacket(Utility.HexDump(p.GetBytes()) + Environment.NewLine);
-										b.Proxy.InjectToClient(p);
-									}
-								}
-								else
+								if (!ushort.TryParse(text.Substring(2, text.Length - 2), System.Globalization.NumberStyles.HexNumber, null, out opcode))
+									return;
+							}
+							else
+							{
+								if (!ushort.TryParse(text, out opcode))
 								{
 									MessageBox.Show(this, "Error: the opcode is not ushort.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									return;
 								}
+							}
+							// Check data
+							byte[] data = new byte[0];
+							if (Settings_tbxInjectData.Text != "")
+							{
+								try
+								{
+									data = WinAPI.ToByteArray(Settings_tbxInjectData.Text);
+								}
+								catch
+								{
+									MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									return;
+								}
+							}
+
+							LogPacket("Injecting Packet [0x" + opcode.ToString("X4") + "]");
+							Packet p = new Packet(opcode, Settings_cbxInjectEncrypted.Checked, Settings_cbxInjectMassive.Checked, data);
+							if (Settings_cmbxInjectTo.SelectedIndex == 0)
+							{
+								b.Proxy.InjectToServer(p);
+							}
+							else
+							{
+								LogPacket(Utility.HexDump(p.GetBytes()) + Environment.NewLine);
+								b.Proxy.InjectToClient(p);
 							}
 						}
 					}
-
 					break;
 			}
 		}
@@ -1428,11 +1612,11 @@ namespace xBot.App
 					{
 						ListViewItem area = l.SelectedItems[0];
 
-            Training_tbxRegion.Text = area.SubItems[1].Text;
-						Training_tbxX.Text = area.SubItems[2].Text;
-						Training_tbxY.Text = area.SubItems[3].Text;
-						Training_tbxZ.Text = area.SubItems[4].Text;
-						Training_tbxRadius.Text = area.SubItems[5].Text;
+						Training_tbxRegion.Text = area.SubItems[1].Tag.ToString();
+						Training_tbxX.Text = area.SubItems[2].Tag.ToString();
+						Training_tbxY.Text = area.SubItems[3].Tag.ToString();
+						Training_tbxZ.Text = area.SubItems[4].Tag.ToString();
+						Training_tbxRadius.Text = area.SubItems[5].Tag.ToString();
 						Training_tbxScriptPath.Text = area.SubItems[6].Text;
 					}
 					break;
@@ -1569,10 +1753,14 @@ namespace xBot.App
 				case "Party_cbxAcceptPartyList":
 				case "Party_cbxAcceptLeaderList":
 				case "Party_cbxRefusePartys":
+				case "Party_cbxActivateLeaderCommands":
 				case "Party_cbxMatchAcceptAll":
 				case "Party_cbxMatchAcceptPartyList":
 				case "Party_cbxMatchAcceptLeaderList":
 				case "Party_cbxMatchRefuse":
+				case "Training_cbxWalkToCenter":
+				case "Training_cbxTraceMaster":
+				case "Training_cbxTraceDistance":
 					Settings.SaveCharacterSettings();
 					break;
 				case "Settings_cbxSelectFirstChar":
@@ -1731,12 +1919,12 @@ namespace xBot.App
 						}
 						else
 						{
-							Training_lstvAreas.SelectedItems[0].SubItems[5].Text = c.Text;
+							Training_lstvAreas.SelectedItems[0].SubItems[5].Tag = int.Parse(c.Text);
 							Settings.SaveCharacterSettings();
 						}
 					}
 					break;
-        case "Settings_tbxSilkroadName":
+					case "Settings_tbxSilkroadName":
 					{
 						if (c.Text == "" || !isValidFilename(c.Text))
 						{
@@ -1789,8 +1977,9 @@ namespace xBot.App
 					c.Items.Clear();
 					if (Bot.Get.inGame)
 					{
-						List<SRObject> players = Info.Get.GetPlayers();
-						for (int j = 0; j < players.Count; j++)
+						Info i = Info.Get;
+						List<SRObject> players = new List<SRObject>(i.Players.ToArray());
+						for (int j = 0; j < i.Players.Count; j++)
 						{
 							c.Items.Add(players[j].Name);
 						}
@@ -1822,7 +2011,10 @@ namespace xBot.App
 					{
 						this.Visible = true;
 						t.Text = "Hide";
-						BringToTop();
+						// Quick window fix
+						if (this.WindowState == FormWindowState.Minimized)
+							this.WindowState = FormWindowState.Normal;
+						this.Activate();
 					}
 					break;
 				case "Menu_btnClientOptions_ShowHide":
@@ -1842,7 +2034,7 @@ namespace xBot.App
 									WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
 									WinAPI.EmptyWorkingSet(p);
 								}
-								btnClientOptions.BackColor = Color.FromArgb(0, 64, 191);
+								btnClientOptions.ForeColor = Color.FromArgb(0, 64, 191);
 							}
 							else
 							{
@@ -1890,7 +2082,22 @@ namespace xBot.App
 					}
 					break;
 				case "Menu_lstvItems_Equip":
-
+					if (Bot.Get.inGame && Inventory_lstvItems.SelectedItems.Count == 1)
+					{
+						if (!Bot.Get.EquipItem((byte)Inventory_lstvItems.SelectedIndices[0]))
+						{
+							Log("Item cannot be equiped/unequiped");
+            }
+					}
+					break;
+				case "Menu_lstvAvatarItems_UnEquip":
+					if (Bot.Get.inGame && Inventory_lstvAvatarItems.SelectedItems.Count == 1)
+					{
+						if (!Bot.Get.EquipItem((byte)Inventory_lstvAvatarItems.SelectedIndices[0],true))
+						{
+							Log("Item cannot be unequiped");
+						}
+					}
 					break;
 				case "Menu_lstvPartyMembers_AddToPartyList":
 					if (Party_lstvPartyMembers.SelectedItems.Count == 1)
@@ -1984,12 +2191,23 @@ namespace xBot.App
 						newArea.Name = defaultAreaName;
 
 						// Name,Region,X,Y,Z,Radius,Script
-						newArea.SubItems.Add("0");
-						newArea.SubItems.Add("0");
-						newArea.SubItems.Add("0");
-						newArea.SubItems.Add("0");
-						newArea.SubItems.Add("0");
-						newArea.SubItems.Add("");
+						// Handling almost everything as TAG since will be required a lot
+						ListViewItem.ListViewSubItem subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = (ushort)0; // Region
+						newArea.SubItems.Add(subitem);
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = 0; // X
+						newArea.SubItems.Add(subitem);
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = 0; // Y
+						newArea.SubItems.Add(subitem);
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = 0; // Y
+						newArea.SubItems.Add(subitem);
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = 0; // Radius
+						newArea.SubItems.Add(subitem);
+						newArea.SubItems.Add(""); // Path
 
 						Training_lstvAreas.Items.Add(newArea);
 						newArea.Selected = true;
@@ -2087,6 +2305,12 @@ namespace xBot.App
 							switch (Chat_cmbxMsgType.Text)
 							{
 								case "All":
+									if(Chat_tbxMsg.Text == "PING")
+									{
+										Info i = Info.Get;
+                    i.Ping = new Stopwatch();
+										i.Ping.Start();
+									}
 									PacketBuilder.SendChatAll(Chat_tbxMsg.Text);
 									break;
 								case "Private":
@@ -2225,24 +2449,27 @@ namespace xBot.App
 			switch (l.Name)
 			{
 				case "Training_lstvAreas":
-					if (string.IsNullOrEmpty(e.Label))
+					if (e.Label != null)
 					{
-						e.CancelEdit = true;
-						MessageBox.Show(this, "Please, insert a valid name!", "xBot", MessageBoxButtons.OK);
-					}
-					else
-					{
-						ListViewItem item = Training_lstvAreas.Items[e.Item];
-            if (item.Text != e.Label && Training_lstvAreas.Items.ContainsKey(e.Label))
+						if (e.Label == string.Empty)
 						{
 							e.CancelEdit = true;
-							MessageBox.Show(this, "This name has been used before!", "xBot", MessageBoxButtons.OK);
+							MessageBox.Show(this, "Please, insert a valid name!", "xBot", MessageBoxButtons.OK);
 						}
 						else
 						{
-							item.Name = e.Label;
-							Settings.SaveCharacterSettings();
-            }
+							ListViewItem item = Training_lstvAreas.Items[e.Item];
+							if (item.Text != e.Label && Training_lstvAreas.Items.ContainsKey(e.Label))
+							{
+								e.CancelEdit = true;
+								MessageBox.Show(this, "This name is being used!", "xBot", MessageBoxButtons.OK);
+							}
+							else
+							{
+								item.Name = e.Label;
+								Settings.SaveCharacterSettings();
+							}
+						}
 					}
 					break;
 			}

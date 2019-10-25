@@ -31,7 +31,7 @@ namespace xBot.App
 			InitializeFonts(this);
 			base.Icon = w.Icon;
 			Text = base.ProductName + " - Advertising";
-			base.Tag = base.ProductName + " | Advertising ";
+			base.Tag = "Advertising ";
 			lblHeader.Text = base.Tag + "...";
 		}
 		private void InitializeFonts(Control c)

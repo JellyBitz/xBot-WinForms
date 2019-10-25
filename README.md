@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.0.8") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.1.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -8,14 +8,15 @@
 - Auto Potions (Pets & transport included)
 - Auto Party (Party matching included)
 - Leader [commands](#Chat-Leader-Commands) control from chat
-- Character inventory
+- Inventory & Avatar inventory viewer (Equip, Unequip, Drop and Use item included)
+- Auto Training (Only attacking at training area has been implemented)
 - Trace
 - Chatting
 - Minimap
 - Game info viewer, also known as "Spy" but better!
 - Packet analyzer (Filter & injector included)
 - Auto character creation
-- HWID support (only if is static)
+- Statics HWID support (Used for clientless mode)
 
 ---
 #### Command Line Options :
@@ -57,9 +58,10 @@ Only the player(s) into the **Leader list** can use this commands
 This commands will work only if you had **checked** the option from **Party > Settings**
 
 #### Tips:
-- Right click from the buff list will remove the buff
+- Right click at buff list will remove the buff
 - Click at Health/Mana bar to show the exact values
 - Double click to notify icon to show/hide bots!
+- You can write "PING" at All chat to see your current ping!
 
 ---
 > ### **Do you like this Project ?**

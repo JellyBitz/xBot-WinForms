@@ -173,11 +173,11 @@ namespace xBot.Game
 			Packet p;
 			if (petUniqueID == 0)
 			{
-				p = new Packet(28705);
+				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_MOVEMENT);
 			}
 			else
 			{
-				p = new Packet(28869);
+				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_TRANSPORT_MOVEMENT);
 				p.WriteUInt(petUniqueID);
 				p.WriteByte(1); // Unknkown
 			}
@@ -316,6 +316,22 @@ namespace xBot.Game
 				p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void MoveItem(byte slotInitial,byte slotFinal,Types.InventoryItemMovement type,ushort quantity = 0)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(type);
+			p.WriteByte(slotInitial);
+			p.WriteByte(slotFinal);
+			p.WriteUShort(quantity);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void DropItem(byte slot)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(Types.InventoryItemMovement.InventoryToGround);
+			p.WriteByte(slot);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void OpenStall(string title,string annotation)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_CREATE_REQUEST);
@@ -366,6 +382,24 @@ namespace xBot.Game
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void AttackTarget(uint targetUniqueID, uint skillID = 1)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
+			p.WriteByte(1);
+			// Check if is common attack
+			if (skillID == 1)
+			{
+				p.WriteByte(1);
+			}
+			else
+			{
+				p.WriteByte(Types.CharacterAction.SkillCast);
+				p.WriteUInt(skillID);
+			}
+			p.WriteByte(1); // has target? always.
+			p.WriteUInt(targetUniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void RemoveBuff(uint skillID, uint targetUniqueID = 0)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
@@ -383,24 +417,6 @@ namespace xBot.Game
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void AttackTarget(uint targetUniqueID, uint skillID = 0)
-		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
-			p.WriteByte(1);
-			if (skillID == 0)
-			{
-				p.WriteByte(Types.CharacterAction.BasicAttack);
-				p.WriteByte(1);
-			}
-			else
-			{
-				p.WriteByte(Types.CharacterAction.SkillCast);
-				p.WriteUInt(skillID);
-			} 
-			p.WriteByte(1);
-			p.WriteUInt(targetUniqueID);
-			Bot.Get.Proxy.Agent.InjectToServer(p);
-		}
 		public static void UseTeleport(uint sourceUniqueID,uint destinationID,int waitDelay)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_USE_REQUEST);
@@ -413,13 +429,6 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_RECALL_REQUEST);
 			p.WriteUInt(teleportUniqueID);
-			Bot.Get.Proxy.Agent.InjectToServer(p);
-		}
-		public static void DropItem(byte slot)
-		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
-			p.WriteByte(Types.InventoryItemMovement.InventoryToGround);
-			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		internal class Client
@@ -599,7 +608,7 @@ namespace xBot.Game
 				p.WriteAscii((string)item[SRProperty.OwnerName]);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
-			public static void SendNoticeToClient(string message)
+			public static void SendNotice(string message)
 			{
 				Packet p = new Packet(Agent.Opcode.SERVER_CHAT_UPDATE);
 				p.WriteByte((byte)Types.Chat.Notice);
@@ -607,10 +616,10 @@ namespace xBot.Game
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
 		}
-		public static void GMConsole(Types.GMConsoleAction action, string message)
+		public static void SendGMCommand(Types.GMCommandAction action, string message)
 		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_PET_UNSUMMON_REQUEST);
-			p.WriteByte((byte)action);
+			Packet p = new Packet(Agent.Opcode.CLIENT_GAMEMASTER_COMMAND_REQUEST);
+			p.WriteUShort(action);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}

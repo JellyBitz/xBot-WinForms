@@ -215,7 +215,7 @@ namespace xBot.Game.Objects
 					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
-          ID1 = 1;
+					ID1 = 1;
 					ID2 = byte.Parse(data["tid2"]);
 					ID3 = byte.Parse(data["tid3"]);
 					ID4 = byte.Parse(data["tid4"]);
@@ -232,7 +232,7 @@ namespace xBot.Game.Objects
 					this[SRProperty.Icon] = data["icon"];
 					this[SRProperty.QuantityMax] = ushort.Parse(data["stack"]);
 					this[SRProperty.Quantity] = this[SRProperty.QuantityMax];
-          break;
+					break;
 				case SRType.Teleport:
 					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
@@ -250,9 +250,10 @@ namespace xBot.Game.Objects
 					this[SRProperty.GroupName] = data["group_name"];
 					this[SRProperty.Cooldown] = uint.Parse(data["cooldown"]);
 					this[SRProperty.DurationMax] = uint.Parse(data["duration"]);
-					this[SRProperty.Casttime] = uint.Parse(data["casttime"]);
+					this[SRProperty.Casttime] = int.Parse(data["casttime"]);
 					this[SRProperty.MP] = uint.Parse(data["mana"]);
-					this[SRProperty.TargetRequired] = data["target_required"] == "1";
+					this[SRProperty.isEnabled] = true;
+          this[SRProperty.TargetRequired] = data["target_required"] == "1";
 					this[SRProperty.Level] = byte.Parse(data["level"]);
 					this[SRProperty.SkillParams] = data["params"].Split('|');
 					this[SRProperty.Icon] = data["icon"];
@@ -298,7 +299,7 @@ namespace xBot.Game.Objects
 					root.Nodes.Add(new TreeNode("Type ID's [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]"));
 					break;
 			}
-			// Print all the nodes
+			// Print all the nodes inside object
 			foreach (KeyValuePair<SRProperty, object> Property in Properties)
 			{
 				switch (Property.Value.GetType().Name)
@@ -312,6 +313,19 @@ namespace xBot.Game.Objects
 						{
 							TreeNode obj = new TreeNode(Property.Key.ToString());
 							obj.Nodes.AddRange(((SRObjectCollection)Property.Value).ToNodes());
+							root.Nodes.Add(obj);
+							break;
+						}
+					case "SRObjectDictionary`1":
+						{
+							string GenericType = Property.Value.ToString().Split('[', ']')[1];
+							TreeNode obj = new TreeNode(Property.Key.ToString());
+							switch (GenericType)
+							{
+								case "System.UInt32":
+									obj.Nodes.AddRange(((SRObjectDictionary<uint>)Property.Value).ToNodes());
+									break;
+							}
 							root.Nodes.Add(obj);
 							break;
 						}
@@ -401,29 +415,26 @@ namespace xBot.Game.Objects
 			// Check if the player is using a horse
 			if (this.isPlayer() && (bool)this[SRProperty.isRiding])
 			{
-				SRObject Ride = Info.Get.EntityList[(uint)this[SRProperty.RidingUniqueID]];
+				SRObject Ride = Info.Get.SpawnList[(uint)this[SRProperty.RidingUniqueID]];
 				this[SRProperty.Position] = Ride.GetPosition();
 				return;
 			}
-
 			if ((bool)this[SRProperty.hasMovement])
 			{
 				SRCoord P = (SRCoord)this[SRProperty.Position];
 				SRCoord Q = (SRCoord)this[SRProperty.MovementPosition];
 
-				if ((int)Math.Round(P.PosX) == (int)Math.Round(Q.PosX)
-					&& (int)Math.Round(P.PosY) == (int)Math.Round(Q.PosY))
+				if (P.Equals(Q))
 				{
-					// Do nothing, it's updated.
+					// Do nothing, it's updated
 					return;
 				}
 				double PQMod = P.DistanceTo(Q);
 				SRCoord PQUnit = new SRCoord((Q.PosX - P.PosX) / PQMod, (Q.PosY - P.PosY) / PQMod);
-
+				// Scale 10:1 to ms
 				double SpeedPerMs = GetSpeed() * 0.1 / 1000;
 				double DistanceMsTillNow = DateTime.UtcNow.Subtract((DateTime)this[SRProperty.LastUpdateTimeUtc]).TotalMilliseconds;
-				double DistanceMsMaximum = PQMod / SpeedPerMs;
-
+				double DistanceMsMaximum = PQMod /  SpeedPerMs;
 				if (DistanceMsTillNow >= DistanceMsMaximum)
 				{
 					// The entity has reached the position long ago.
@@ -443,7 +454,6 @@ namespace xBot.Game.Objects
 				}
 			}
 		}
-
 		public Types.MotionState GetSpeedMotionState()
 		{
 			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
@@ -452,8 +462,7 @@ namespace xBot.Game.Objects
 			}
 			return Types.MotionState.Walking;
 		}
-
-		private float GetSpeed()
+		public float GetSpeed()
 		{
 			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
 			{
@@ -462,29 +471,12 @@ namespace xBot.Game.Objects
 			return (float)this[SRProperty.SpeedWalking];
 		}
 		/// <summary>
-		/// Update and return the current game position.
+		/// Gets the current game position updated.
 		/// </summary>
 		public SRCoord GetPosition()
 		{
 			UpdateTimePosition();
 			return (SRCoord)this[SRProperty.Position];
-		}
-		/// <summary>
-		/// Update and return the current active buffs.
-		/// </summary>
-		public SRObjectCollection GetBuffs()
-		{
-			DateTime utcNow = DateTime.UtcNow;
-			SRObjectCollection Buffs = (SRObjectCollection)this[SRProperty.Buffs];
-			for (int j = 0; j < Buffs.Capacity; j++)
-			{
-				DateTime LastUpdateTimeUtc = (DateTime)Buffs[j][SRProperty.LastUpdateTimeUtc];
-        if (utcNow.Subtract(LastUpdateTimeUtc).TotalMilliseconds > (uint)Buffs[j][SRProperty.Duration])
-				{
-					Buffs.RemoveAt(j--);
-        }
-			}
-			return (SRObjectCollection)this[SRProperty.Buffs];
 		}
 		public bool inDungeon()
 		{
@@ -510,11 +502,25 @@ namespace xBot.Game.Objects
 		{
 			return ID1 == 3;
 		}
+		public bool isTeleport()
+		{
+			return ID1 == 4;
+		}
 		public bool isAttackingSkill()
 		{
 			if ((uint)this[SRProperty.MP] > 0 && (uint)this[SRProperty.DurationMax] == 0)
 				return true;
 			return false;
+		}
+		public bool isCastingEnabled()
+		{
+			if (!(bool)this[SRProperty.isEnabled])
+			{
+				int intervalMiliseconds = (int)DateTime.UtcNow.Subtract((DateTime)this[SRProperty.LastUpdateTimeUtc]).TotalMilliseconds;
+				this[SRProperty.isEnabled] = intervalMiliseconds >= (uint)this[SRProperty.Cooldown];
+				return (bool)this[SRProperty.isEnabled];
+			}
+			return true;
 		}
 		#endregion
 	}

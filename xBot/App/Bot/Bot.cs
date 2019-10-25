@@ -59,7 +59,7 @@ namespace xBot.App
 		/// <summary>
 		/// Keep the last entity selected by the character
 		/// </summary>
-		private uint EntitySelected;
+		public uint EntitySelected { get; private set; }
 		/// <summary>
 		/// Check if the character has his own stall opened.
 		/// </summary>
@@ -315,6 +315,13 @@ namespace xBot.App
 				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
 		}
 		/// <summary>
+		/// Returns the max. member count from the current party.
+		/// </summary>
+		public byte GetPartyMaxMembers()
+		{
+			return (byte)(!PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 4 : 8);
+		}
+		/// <summary>
 		/// Returns the current party match setup used by the GUI.
 		/// </summary>
 		public SRPartyMatch GetPartyMatchSetup()
@@ -361,20 +368,17 @@ namespace xBot.App
 		/// <param name="servername">Rule the search to contains string specified</param>
 		public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
 		{
-			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]).Clone();
-			for (byte i = 13; i < inventory.Capacity; i++)
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			int index = inventory.FindIndex(item => item != null  && item.isType(3, ID2, ID3, ID4) && item.ServerName.Contains(servername), 13);
+			if(index == -1)
 			{
-				if (inventory[i] != null)
-				{
-					// ID1 = Item (3)
-					if (inventory[i].isType(3, ID2, ID3, ID4) && inventory[i].ServerName.Contains(servername))
-					{
-						slot = i;
-						return true;
-					}
-				}
+				return false;
 			}
-			return false;
+			else
+			{
+				slot = (byte)index;
+				return true;
+			}
 		}
 		/// <summary>
 		/// Try to change to clientless mode.
@@ -384,8 +388,7 @@ namespace xBot.App
 			if (!Proxy.ClientlessMode)
 			{
 				Window w = Window.Get;
-				System.Timers.Timer CloseClient = new System.Timers.Timer();
-				CloseClient.Interval = 1000;
+				System.Timers.Timer CloseClient = new System.Timers.Timer(1000);
 
 				byte s = 5;
 				CloseClient.Elapsed += delegate	{
@@ -412,7 +415,7 @@ namespace xBot.App
 		/// </summary>
 		public bool UseReturnScroll()
 		{
-			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]).Clone();
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
 			for (byte j = 13; j < inventory.Capacity; j++)
 			{
 				if (inventory[j] != null && inventory[j].isType(3, 3, 3, 1))
@@ -454,10 +457,13 @@ namespace xBot.App
 		{
 			// Normalize Key
 			TracePlayerName = PlayerName.Trim().ToUpper();
-			// Check if player is around and move it
-			SRObject player;
-			if (inTrace && Info.Get.PlayersNear.TryGetValue(TracePlayerName, out player)){
-				MoveTo(player.GetPosition());
+			if (inTrace)
+			{
+				// Check if player is around and move it
+				SRObject player = Info.Get.Players[TracePlayerName];
+				if (player != null){
+					MoveTo(player.GetPosition());
+				}
 			}
 		}
 		/// <summary>
@@ -492,12 +498,12 @@ namespace xBot.App
 			}
 		}
 		/// <summary>
-		/// Try to use and item at the slot specified but only if it's possible to use. Return success.
+		/// Try to use and item at the slot specified. Return success.
 		/// </summary>
 		public bool UseItem(byte slotInventory)
 		{
 			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-      if (slotInventory >= 13 && slotInventory < inventory.Capacity)
+			if (slotInventory >= 13 && slotInventory < inventory.Capacity)
 			{
 				if (inventory[slotInventory] != null)
 				{
@@ -531,7 +537,7 @@ namespace xBot.App
 								case 3: // Event, vehicles, etc.
 									switch (inventory[slotInventory].ID4)
 									{
-										case 1: // All kind of scrolls, even customized ones (it can cause disconnect)
+										case 1: // All kind of scrolls, return scrolls, even customized ones (it can cause disconnect)
 										case 2: // Vehicle, Transport
 										case 6: // Fortress summon pet
 										case 7: // Fortress summon guard
@@ -552,14 +558,110 @@ namespace xBot.App
 							}
 							break;
 					}
-
-					if(inventory[slotInventory].ID2 == 3 )
+				}
+			}
+			return false;
+		}
+		/// <summary>
+		/// Try to equip or unequip an item from the inventory. Return success.
+		/// </summary>
+		public bool EquipItem(byte slotInventory,bool useInventoryAvatar = false)
+		{
+			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]);
+			SRObject item = inventory[slotInventory];
+			if(item != null && item.ID2 == 1)
+			{
+				// EQUIPABLES
+				if (slotInventory < 13)
+				{
+					// UnEquip
+					// Find an empty slot
+					int newSlot = inventory.FindIndex(i => i == null,13);
+					if (newSlot != -1){
+						PacketBuilder.MoveItem(slotInventory, (byte)newSlot, useInventoryAvatar ? Types.InventoryItemMovement.AvatarToInventory : Types.InventoryItemMovement.InventoryToInventory);
+						return true;
+					}
+				}
+				else
+				{
+					// Equip
+					switch (item.ID3)
 					{
-						if (inventory[slotInventory].ID3 >= 1 && inventory[slotInventory].ID3 <= 3)
-						{
-							PacketBuilder.UseItem(inventory[slotInventory], slotInventory);
+						case 1: // GARMENT
+						case 2: // PROTECTOR
+						case 3: // ARMOR
+						case 9: // ROBE
+						case 10: // LIGHT ARMOR
+						case 11: // HEAVY ARMOR
+							switch (item.ID4)
+							{
+								case 1: // HEAD
+									PacketBuilder.MoveItem(slotInventory, 0, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 2: // SHOULDERS
+									PacketBuilder.MoveItem(slotInventory, 2, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 3: // CHEST
+									PacketBuilder.MoveItem(slotInventory, 1, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 4: // PANTS
+									PacketBuilder.MoveItem(slotInventory, 4, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 5: // GLOVES
+									PacketBuilder.MoveItem(slotInventory, 3, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 6: // BOOTS
+									PacketBuilder.MoveItem(slotInventory, 5, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+							}
+							break;
+						case 4: // SHIELD (CH & EU)
+							PacketBuilder.MoveItem(slotInventory, 7, Types.InventoryItemMovement.InventoryToInventory);
 							return true;
-						}
+						case 5: // ACCESSORIES (CH)
+						case 12: // ACCESSORIES (EU)
+							switch (item.ID4)
+							{
+								case 1: // Earring
+									PacketBuilder.MoveItem(slotInventory, 9, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 2: // Necklace
+									PacketBuilder.MoveItem(slotInventory, 10, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+								case 3: // Ring
+									if(inventory[12] == null)
+										PacketBuilder.MoveItem(slotInventory, 12, Types.InventoryItemMovement.InventoryToInventory);
+									else
+										PacketBuilder.MoveItem(slotInventory, 11, Types.InventoryItemMovement.InventoryToInventory);
+									return true;
+							}
+							break;
+						case 6: // WEAPONS (CH & EU)
+							PacketBuilder.MoveItem(slotInventory, 6, Types.InventoryItemMovement.InventoryToInventory);
+							return true;
+						case 7: // JOB SUIT
+							PacketBuilder.MoveItem(slotInventory, 8, Types.InventoryItemMovement.InventoryToInventory);
+							return true;
+						case 13: // Avatar
+							switch (item.ID4)
+							{
+								case 1: // Hat
+									PacketBuilder.MoveItem(slotInventory, 0, Types.InventoryItemMovement.InventoryToAvatar);
+									return true;
+								case 2: // Dress
+									PacketBuilder.MoveItem(slotInventory, 1, Types.InventoryItemMovement.InventoryToAvatar);
+									return true;
+								case 3: // Accessory
+									PacketBuilder.MoveItem(slotInventory, 2, Types.InventoryItemMovement.InventoryToAvatar);
+									return true;
+								case 4: // Flag
+									PacketBuilder.MoveItem(slotInventory, 3, Types.InventoryItemMovement.InventoryToAvatar);
+									return true;
+							}
+							break;
+						case 14: // Devil Spirit
+							PacketBuilder.MoveItem(slotInventory, 4, Types.InventoryItemMovement.InventoryToAvatar);
+							return true;
 					}
 				}
 			}

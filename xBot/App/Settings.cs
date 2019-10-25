@@ -86,10 +86,8 @@ namespace xBot.App
 					root["PacketAnalyzer"] = packetAnalyzer;
 
 					JArray opcodes = new JArray();
-					WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
-						foreach (ListViewItem opcode in w.Settings_lstvOpcodes.Items)
-							opcodes.Add(opcode.Text);
-					});
+					foreach (ListViewItem opcode in w.Settings_lstvOpcodes.Items)
+						opcodes.Add(opcode.Text);
 
 					packetAnalyzer["Filter"] = opcodes;
 					packetAnalyzer["FilterOnlyShow"] = w.Settings_rbnPacketOnlyShow.Checked;
@@ -260,7 +258,7 @@ namespace xBot.App
 
 				foreach (JToken opcode in (JArray)packetAnalyzer["Filter"])
 				{
-					ListViewItem item = new ListViewItem((string)opcode);
+          ListViewItem item = new ListViewItem((string)opcode);
 					item.Name = item.Text;
 					w.Settings_lstvOpcodes.Items.Add(item);
 				}
@@ -403,6 +401,7 @@ namespace xBot.App
 					foreach (ListViewItem item in w.Skills_lstvAttackMobType_Event.Items)
 						skills.Add(item.Text);
 					Attack["Event"] = skills;
+					Attack["WalkToCenter"] = w.Training_cbxWalkToCenter.Checked;
 					#endregion
 
 					#region (Training Tab)
@@ -414,14 +413,14 @@ namespace xBot.App
 					foreach (ListViewItem item in w.Training_lstvAreas.Items)
 					{
 						JObject area = new JObject();
-						area["Region"] = item.SubItems[1].Text;
-						area["X"] = item.SubItems[2].Text;
-						area["Y"] = item.SubItems[3].Text;
-						area["Z"] = item.SubItems[4].Text;
-						area["Radius"] = item.SubItems[5].Text;
+						area["Region"] = (ushort)item.SubItems[1].Tag;
+						area["X"] = (int)item.SubItems[2].Tag;
+						area["Y"] = (int)item.SubItems[3].Tag;
+						area["Z"] = (int)item.SubItems[4].Tag;
+						area["Radius"] = (int)item.SubItems[5].Tag;
 						area["Path"] = item.SubItems[6].Text;
 						Area[item.Name] = area;
-          }
+					}
 					Training["AreaActivated"] = w.Training_lstvAreas.Tag != null ? ((ListViewItem)w.Training_lstvAreas.Tag).Name : "";
 
 					JObject Trace = new JObject();
@@ -438,7 +437,7 @@ namespace xBot.App
 			}
 		}
 		/// <summary>
-		/// Load character settings if exists or load default if it's required.
+		/// Load character settings if exists or try to load default if it's checked.
 		/// </summary>
 		public static void LoadCharacterSettings()
 		{
@@ -450,32 +449,31 @@ namespace xBot.App
 			Info i = Info.Get;
 			// Check config path
 			string cfgPath = "Config\\"+i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json";
-			WinAPI.InvokeIfRequired(w,()=> {
-				try {
-					if (File.Exists(cfgPath))
-					{
-						LoadCharacterSettings(cfgPath);
-						w.Log("Configs loaded successfully");
-					}
-					else if (w.Settings_cbxLoadDefaultConfigs.Checked && File.Exists("Config\\Default.json"))
-					{
-						LoadCharacterSettings("Config\\Default.json");
-						w.Log("Configs by default loaded successfully");
-					}
-					else
-					{
-						LoadCharacterSettings("");
-						w.Log("Configs created successfully");
-					}
-				}
-				catch
+			try
+			{
+				if (File.Exists(cfgPath))
 				{
-					LoadingCharacterSettings = false;
-					File.Move(cfgPath, cfgPath + ".bkp");
-					w.Log("Error loading character configs... Using the configs partially loaded");
-					SaveCharacterSettings();
+					LoadCharacterSettings(cfgPath);
+					w.Log("Configs loaded successfully");
 				}
-			});
+				else if (w.Settings_cbxLoadDefaultConfigs.Checked && File.Exists("Config\\Default.json"))
+				{
+					LoadCharacterSettings("Config\\Default.json");
+					w.Log("Configs by default loaded successfully");
+				}
+				else
+				{
+					LoadCharacterSettings("");
+					w.Log("Configs created successfully");
+				}
+			}
+			catch
+			{
+				LoadingCharacterSettings = false;
+				File.Move(cfgPath, cfgPath + ".bkp");
+				w.Log("Error loading character configs... Using the configs partially loaded");
+				SaveCharacterSettings();
+			}
 		}
 		private static void LoadCharacterSettings(string path)
 		{
@@ -508,11 +506,8 @@ namespace xBot.App
 				w.Character_tbxUseMP.Text = Potions.ContainsKey("UseMPPercent") ? (string)Potions["UseMPPercent"] : "50";
 				w.Character_cbxUseMPGrain.Checked = Potions.ContainsKey("UseMPGrain") ? (bool)Potions["UseMPGrain"] : false;
 				w.Character_cbxUseMPVigor.Checked = Potions.ContainsKey("UseMPVigor") ? (bool)Potions["UseMPVigor"] : false;
+				w.Character_cbxUsePillUniversal.Checked = Potions.ContainsKey("UseUniversalPills")?(bool)Potions["UseUniversalPills"]:false;
 
-				if (Potions.ContainsKey("UseUniversalPills"))
-					w.Character_cbxUsePillUniversal.Checked = (bool)Potions["UseUniversalPills"];
-				else
-					w.Character_cbxUsePillUniversal.Checked = false;
 				if (Potions.ContainsKey("UsePurificationPills"))
 					w.Character_cbxUsePillPurification.Checked = (bool)Potions["UsePurificationPills"];
 				else
@@ -675,7 +670,7 @@ namespace xBot.App
 
 				#region (Skills Tab)
 				JObject Skills = root.ContainsKey("Skills") ? (JObject)root["Skills"] : new JObject();
-				SRObjectCollection charSkills = (SRObjectCollection)i.Character[SRProperty.Skills];
+				SRObjectDictionary<uint> charSkills = (SRObjectDictionary<uint>)i.Character[SRProperty.Skills];
 
 				JObject Attack = Skills.ContainsKey("Attack") ? (JObject)Skills["Attack"] : new JObject();
 				w.Skills_lstvAttackMobType_General.Items.Clear();
@@ -822,6 +817,7 @@ namespace xBot.App
 						}
 					}
 				}
+				w.Training_cbxWalkToCenter.Checked = Attack.ContainsKey("WalkToCenter") ? (bool)Attack["WalkToCenter"] : false;
 				#endregion
 
 				#region (Training Tab)
@@ -829,17 +825,28 @@ namespace xBot.App
 
 				JObject Area = Training.ContainsKey("Area") ? (JObject)Training["Area"] : new JObject();
 				string AreaActivated = Training.ContainsKey("AreaActivated") ? (string)Training["AreaActivated"] : "";
-        foreach (JProperty key in Area.Properties())
+				foreach (JProperty key in Area.Properties())
 				{
 					JObject area = (JObject)Area[key.Name];
 
 					ListViewItem item = new ListViewItem(key.Name);
 					item.Name = key.Name;
-					item.SubItems.Add(area.ContainsKey("Region") ? (string)area["Region"] : "0");
-					item.SubItems.Add(area.ContainsKey("X") ? (string)area["X"] : "0");
-					item.SubItems.Add(area.ContainsKey("Y") ? (string)area["Y"] : "0");
-					item.SubItems.Add(area.ContainsKey("Z") ? (string)area["Z"] : "0");
-					item.SubItems.Add(area.ContainsKey("Radius") ? (string)area["Radius"] : "0");
+
+					ListViewItem.ListViewSubItem subitem = new ListViewItem.ListViewSubItem();
+					subitem.Tag = area.ContainsKey("Region") ? (ushort)area["Region"] : (ushort)0;
+					item.SubItems.Add(subitem);
+					subitem = new ListViewItem.ListViewSubItem();
+					subitem.Tag = area.ContainsKey("X") ? (int)area["X"] : 0;
+					item.SubItems.Add(subitem);
+					subitem = new ListViewItem.ListViewSubItem();
+					subitem.Tag = area.ContainsKey("Y") ? (int)area["Y"] : 0;
+					item.SubItems.Add(subitem);
+					subitem = new ListViewItem.ListViewSubItem();
+					subitem.Tag = area.ContainsKey("Z") ? (int)area["Z"] : 0;
+					item.SubItems.Add(subitem);
+					subitem = new ListViewItem.ListViewSubItem();
+					subitem.Tag = area.ContainsKey("Radius") ? (int)area["Radius"] : 0;
+					item.SubItems.Add(subitem);
 					item.SubItems.Add(area.ContainsKey("Path") ? (string)area["Path"] : "");
 					// Check if this area is activated
 					if (AreaActivated != "" && AreaActivated == item.Name)

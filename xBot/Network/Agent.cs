@@ -17,6 +17,7 @@ namespace xBot.Network
 				SERVER_HWID_REQUEST = 0;
 			public const ushort
 				CLIENT_AUTH_REQUEST = 0x6103,
+				CLIENT_GAMEMASTER_COMMAND_REQUEST = 0x7010,
 				CLIENT_CHARACTER_SELECTION_JOIN_REQUEST = 0x7001,
 				CLIENT_CHARACTER_SELECTION_ACTION_REQUEST = 0x7007,
 				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
@@ -61,6 +62,8 @@ namespace xBot.Network
 				CLIENT_TELEPORT_RECALL_REQUEST = 0x7059,
 				CLIENT_TELEPORT_READY_RESPONSE = 0x34B6,
 				CLIENT_CONSIGNMENT_LIST_REQUEST = 0x750E,
+				CLIENT_CONSIGNMENT_REGISTER_REQUEST = 0x7508,
+				CLIENT_CONSIGNMENT_UNREGISTER_REQUEST = 0x7509,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -83,6 +86,7 @@ namespace xBot.Network
 				SERVER_STORAGE_DATA_END = 0x3048,
 				SERVER_ENTITY_SELECTION = 0xB045,
 				SERVER_ENTITY_SKILL_USE = 0xB070,
+				SERVER_ENTITY_SKILL_DATA = 0xB071,
 				SERVER_ENTITY_SKILL_BUFF_ADDED = 0xB0BD,
 				SERVER_ENTITY_SKILL_BUFF_REMOVED = 0xB072,
 				SERVER_ENTITY_SPAWN = 0x3015,
@@ -100,8 +104,9 @@ namespace xBot.Network
 				SERVER_ENTITY_STALL_CREATE = 0x30B8,
 				SERVER_ENTITY_STALL_DESTROY = 0x30B9,
 				SERVER_ENTITY_EMOTE_USE = 0x3091,
-				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
+				SERVER_CHAT_RESPONSE = 0xB025,
 				SERVER_CHAT_UPDATE = 0x3026,
+				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
 				SERVER_MAIL_SEND_RESPONSE = 0xB309,
 				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
 				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
@@ -131,6 +136,8 @@ namespace xBot.Network
 				SERVER_TELEPORT_USE_RESPONSE = 0xB05A,
 				SERVER_TELEPORT_RECALL_RESPONSE = 0xB059,
 				SERVER_TELEPORT_READY_REQUEST = 0x34B5,
+				SERVER_CONSIGNMENT_REGISTER_RESPONSE = 0xB508,
+				SERVER_CONSIGNMENT_UNREGISTER_RESPONSE = 0xB509,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -231,6 +238,16 @@ namespace xBot.Network
 							Window w = Window.Get;
 							w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
 						}
+						else if (t == Types.Chat.All)
+						{
+							string message = packet.ReadAscii();
+							if(message == "PING")
+							{
+								Info i = Info.Get;
+								i.Ping = new System.Diagnostics.Stopwatch();
+								i.Ping.Start();
+							}
+						}
 					}
 					break;
       }
@@ -277,7 +294,7 @@ namespace xBot.Network
 							this.InjectToServer(protocol);
 						}
 					}
-          break;
+					break;
 				case Opcode.SERVER_AUTH_RESPONSE:
 					{
 						byte success = packet.ReadByte();
@@ -389,6 +406,9 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_SKILL_USE:
 					PacketParser.EntitySkillUse(packet);
 					break;
+				case Opcode.SERVER_ENTITY_SKILL_DATA:
+					PacketParser.EntitySkillData(packet);
+					break;
 				case Opcode.SERVER_ENTITY_SKILL_BUFF_ADDED:
 					PacketParser.EntitySkillBuffAdded(packet);
 					break;
@@ -451,6 +471,21 @@ namespace xBot.Network
 				case Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE:
 					PacketParser.InventoryItemStateUpdate(packet);
 					break;
+				case Opcode.SERVER_STORAGE_DATA_BEGIN:
+					PacketParser.StorageDataBegin(packet);
+					break;
+				case Opcode.SERVER_STORAGE_DATA:
+					PacketParser.StorageData(packet);
+					break;
+				case Opcode.SERVER_STORAGE_DATA_END:
+					PacketParser.StorageDataEnd(packet);
+					break;
+				case Opcode.SERVER_CONSIGNMENT_REGISTER_RESPONSE:
+					PacketParser.ConsigmentRegisterResponse(packet);
+					break;
+				case Opcode.SERVER_CONSIGNMENT_UNREGISTER_RESPONSE:
+					PacketParser.ConsigmentUnregisterResponse(packet);
+					break;
 				case Opcode.SERVER_STALL_CREATE_RESPONSE:
 					PacketParser.StallCreateResponse(packet);
 					break;
@@ -462,15 +497,6 @@ namespace xBot.Network
 					break;
 				case Opcode.SERVER_STALL_LEAVE_RESPONSE:
 					PacketParser.StallLeaveResponse(packet);
-					break;
-				case Opcode.SERVER_STORAGE_DATA_BEGIN:
-					PacketParser.StorageDataBegin(packet);
-					break;
-				case Opcode.SERVER_STORAGE_DATA:
-					PacketParser.StorageData(packet);
-					break;
-				case Opcode.SERVER_STORAGE_DATA_END:
-					PacketParser.StorageDataEnd(packet);
 					break;
 				case Opcode.SERVER_PET_DATA:
 					PacketParser.PetData(packet);
@@ -497,7 +523,7 @@ namespace xBot.Network
 						this.InjectToServer(protocol);
 					}
 					break;
-      }
+			}
 			return false;
 		}
 		/// <summary>

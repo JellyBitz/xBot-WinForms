@@ -142,9 +142,10 @@ namespace xBot.Game
 			Strong = 6,
 			Elite = 7,
 			Unique = 8,
-			Party = 0x10,
+			PartyGeneral = 0x10,
 			PartyChampion = 0x11,
-			PartyGiant = 0x14
+			PartyGiant = 0x14,
+			Event = 0xFF // unknown actually
 		}
 		public enum ScrollMode
 		{
@@ -273,8 +274,11 @@ namespace xBot.Game
 			GroundToTransport = 17,
 			ShopToTransport = 19,
 			TransportToShop = 20,
+			
+			ShopBuyBack = 34,
 
-			ShopBuyBack = 34
+			AvatarToInventory = 35,
+			InventoryToAvatar = 36
 		}
 		/// <summary>
 		/// All possible pet pick settings (handled by the client).
@@ -303,16 +307,16 @@ namespace xBot.Game
 		/// <summary>
 		/// Game consola commands.
 		/// </summary>
-		public enum GMConsoleAction : byte
+		public enum GMCommandAction : ushort
 		{
 			FindUser = 1,
 			GoTown = 2,
 			ToTown = 3,
 			WorldStatus = 4,
-			LoadMonster = 6,
+			CreateMob = 6,
 			MakeItem = 7,
 			MoveToUser = 8,
-			WP = 10,
+			Warp = 10,
 			Zoe = 12,
 			Ban = 13,
 			Invisible = 14,
@@ -320,16 +324,18 @@ namespace xBot.Game
 			RecallUser = 17,
 			RecallGuild = 18,
 			LieName = 19,
-			MobKill = 20,
+			KillMob = 20,
 			ResetQ = 28,
 			MoveToNPC = 31,
 			MakeRentItem = 38,
 			SpawnUniqueLocation = 42
 		}
-
+		/// <summary>
+		/// All basic actions that character can do.
+		/// </summary>
 		public enum CharacterAction : byte
 		{
-			BasicAttack = 1,
+			CommonAttack = 1,
 			ItemPickUp = 2,
 			SkillCast = 4,
 			SkillRemove = 5
@@ -340,13 +346,18 @@ namespace xBot.Game
 		public enum Weapon : byte
 		{
 			None = byte.MaxValue,
+			Sword = 2,
+			Spear = 4,
 			Bow = 6,
 			OneHandSword = 7,
 			TwoHandSword = 8,
 			DualAxes = 9,
+			Warlock = 10,
 			TwoHandStaff = 11,
 			Crossbow = 12,
-			Daggers = 13
+			Daggers = 13,
+			Harp = 14,
+			Cleric = 15
 		}
 	}
 }

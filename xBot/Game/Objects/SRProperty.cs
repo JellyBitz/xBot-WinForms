@@ -186,7 +186,8 @@ namespace xBot.Game.Objects
 		/// </summary>
 		Masteries,
 		/// <summary>
-		/// <para>Type : <see cref="SRObjectCollection"/></para>
+		/// Contains all skills mastered by the character.
+		/// <para>Type : <see cref="SRObjectDictionary{T}"/> Where <see cref="{T}"/> : <see cref="uint"/></para>
 		/// </summary>
 		Skills,
 		/// <summary>
@@ -266,7 +267,14 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="uint"/></para>
 		/// </summary>
 		DurationMax,
+		/// <summary>
+		/// Time for re-using it.
+		/// <para>Type : <see cref="uint"/></para>
+		/// </summary>
 		Cooldown,
+		/// <summary>
+		/// <para>Type : <see cref="int"/></para>
+		/// </summary>
 		Casttime,
 		isOwner,
 		/// <summary>

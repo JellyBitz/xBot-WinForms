@@ -31,13 +31,19 @@ namespace xBot.App
 			tUsingHGP = new Timer();
 			tCycleAutoParty = new Timer();
 
+			// Manual reset
+			tUsingHP.AutoReset = tUsingMP.AutoReset = tUsingVigor.AutoReset =
+			tUsingUniversal.AutoReset = tUsingPurification.AutoReset =
+			tUsingRecoveryKit.AutoReset = tUsingAbnormalPill.AutoReset = 
+			tCycleAutoParty.AutoReset = false;
+
 			// A second is enought for any potion cooldown
 			tUsingHP.Interval = tUsingMP.Interval = tUsingVigor.Interval =
 			tUsingUniversal.Interval = tUsingPurification.Interval =
-			tUsingRecoveryKit.Interval = tUsingAbnormalPill.Interval;
+			tUsingRecoveryKit.Interval = tUsingAbnormalPill.Interval = 1000;
 
 			tCycleAutoParty.Interval = 5000;
-
+			
 			// Callbacks
 			tUsingHP.Elapsed += CheckUsingHP;
 			tUsingMP.Elapsed += CheckUsingMP;
@@ -239,17 +245,17 @@ namespace xBot.App
 
 			if (w.Party_cbxInviteAll.Checked)
 			{
-				if (i.PlayersNear.Count > 0)
+				if (i.Players.Count > 0)
 				{
 					if (inParty)
 					{
-						Dictionary<string, SRObject> PlayersNearWithNoParty = new Dictionary<string, SRObject>(i.PlayersNear);
+						SRObjectDictionary<string> PlayersNearWithNoParty = new SRObjectDictionary<string>(i.Players);
 						// Remove players nears with party
-						for (byte j = 0; j < i.PartyList.Count; j++)
+						for (byte j = 0; j < i.PartyMembers.Count; j++)
 						{
-							string PlayerName = i.PartyList[j].Name.ToUpper();
-							if (PlayersNearWithNoParty.ContainsKey(PlayerName)){
-								PlayersNearWithNoParty.Remove(PlayerName);
+							string PlayerName = i.PartyMembers.ElementAt(j).Name.ToUpper();
+							if (PlayersNearWithNoParty[PlayerName] != null){
+								PlayersNearWithNoParty.RemoveKey(PlayerName);
 							}
 						}
 						if (PlayersNearWithNoParty.Count == 0)
@@ -259,19 +265,16 @@ namespace xBot.App
 						if (!w.Party_cbxInviteOnlyPartySetup.Checked
 							|| PartySetupFlags == GetPartySetup())
 						{
-							int memberMax = PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
-							if (i.PartyList.Count < memberMax)
+							if (i.PartyMembers.Count < GetPartyMaxMembers())
 							{
-								List<SRObject> randomizePlayers = new List<SRObject>(PlayersNearWithNoParty.Values);
-								PacketBuilder.InviteToParty((uint)randomizePlayers[rand.Next(randomizePlayers.Count)][SRProperty.UniqueID]);
+								PacketBuilder.InviteToParty((uint)PlayersNearWithNoParty.ElementAt(rand.Next(PlayersNearWithNoParty.Count))[SRProperty.UniqueID]);
 								tCycleAutoParty.Start();
 							}
 						}
 					}
 					else
 					{
-						List<SRObject> randomizePlayers = new List<SRObject>(i.PlayersNear.Values);
-						PacketBuilder.CreateParty((uint)randomizePlayers[rand.Next(randomizePlayers.Count)][SRProperty.UniqueID], GetPartySetup());
+						PacketBuilder.CreateParty((uint)i.Players.ElementAt(rand.Next(i.Players.Count))[SRProperty.UniqueID], GetPartySetup());
 						tCycleAutoParty.Start();
 					}
 				}
@@ -282,7 +285,7 @@ namespace xBot.App
 			}
 			else if(w.Party_cbxInvitePartyList.Checked)
 			{
-				if (i.PlayersNear.Count > 0)
+				if (i.Players.Count > 0)
 				{
 					List<string> PlayersToInvite = new List<string>();
 					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
@@ -294,9 +297,9 @@ namespace xBot.App
 					// Remove if are in party already
 					for (int j = 0; j < PlayersToInvite.Count; j++)
 					{
-						for (int k = 0; k < i.PartyList.Count; k++)
+						for (byte k = 0; k < i.PartyMembers.Count; k++)
 						{
-							if (PlayersToInvite[j].Equals(i.PartyList[k].Name, StringComparison.OrdinalIgnoreCase))
+							if (PlayersToInvite[j].Equals(i.PartyMembers.ElementAt(k).Name, StringComparison.OrdinalIgnoreCase))
 							{
 								PlayersToInvite.RemoveAt(j--);
 								break;
@@ -310,7 +313,7 @@ namespace xBot.App
 						SRObject PlayerToInvite = null;
 						for (int j = 0; j < PlayersToInvite.Count; j++)
 						{
-							if (i.PlayersNear.TryGetValue(PlayersToInvite[j],out PlayerToInvite)){
+							if ((PlayerToInvite = i.Players[PlayersToInvite[j]]) != null){
 								break;
 							}
 						}
@@ -321,8 +324,7 @@ namespace xBot.App
 								if (!w.Party_cbxInviteOnlyPartySetup.Checked
 									|| PartySetupFlags == GetPartySetup())
 								{
-									int maxMembers = PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 8 : 4;
-									if (i.PartyList.Count < maxMembers)
+									if (i.PartyMembers.Count < GetPartyMaxMembers())
 									{
 										PacketBuilder.InviteToParty((uint)PlayerToInvite[SRProperty.UniqueID]);
 										tCycleAutoParty.Start();
@@ -355,12 +357,11 @@ namespace xBot.App
 			if (w.Party_cbxLeavePartyNoneLeader.Checked)
 			{
 				Info i = Info.Get;
-				SRObject[] members = i.PartyList.ToArray();
 
 				bool found = false;
 				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
-					for (byte j = 0; j < i.PartyList.Count; j++){
-						if (w.Party_lstvLeaderList.Items.ContainsKey(i.PartyList[j].Name.ToUpper()))
+					for (byte j = 0; j < i.PartyMembers.Count; j++){
+						if (w.Party_lstvLeaderList.Items.ContainsKey(i.PartyMembers.ElementAt(j).Name.ToUpper()))
 						{
 							found = true;
 							break;
@@ -396,7 +397,7 @@ namespace xBot.App
 
 			// Vehicle or Transport
 			if (w.Character_cbxUseTransportHP.Checked){
-				pet = i.GetPets().Find(p => p.ID4 == 1 || p.ID4 == 2);
+				pet = i.MyPets.Find(p => p.ID4 == 1 || p.ID4 == 2);
 				// Check % if there is at least one pet
 				if(pet != null)
 				{
@@ -419,7 +420,7 @@ namespace xBot.App
 
 			// Attacking pet
 			if (w.Character_cbxUsePetHP.Checked){
-				pet = i.GetPets().Find(p => p.ID4 == 3);
+				pet = i.MyPets.Find(p => p.ID4 == 3);
 				// Check % if there is at least one pet
 				if(pet != null)
 				{
@@ -455,14 +456,14 @@ namespace xBot.App
 				// Checking pet bad status for using abnormal
 				SRObject pet = null;
 				// As priority pet transport
-				pet = i.GetPets().Find(p =>
+				pet = i.MyPets.Find(p =>
 					(p.ID4 == 1 || p.ID4 == 2)
 					&& p.Contains(SRProperty.BadStatusFlags)
 					&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
 				);
 				if (pet == null)
 				{
-					pet = i.GetPets().Find(p =>
+					pet = i.MyPets.Find(p =>
 						p.ID4 == 3
 						&& p.Contains(SRProperty.BadStatusFlags)
 						&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
@@ -493,7 +494,7 @@ namespace xBot.App
 			if (w.Character_cbxUsePetHGP.Checked)
 			{
 				Info i = Info.Get;
-				SRObject pet = i.GetPets().Find(p => p.ID4 == 3);
+				SRObject pet = i.MyPets.Find(p => p.ID4 == 3);
 				if(pet != null)
 				{
 					byte usePercent = 0;
@@ -515,6 +516,21 @@ namespace xBot.App
 					WinAPI.ResetTimer(ref tUsingHGP, 300000); // 1% decrease : -100 HGP every 5min
 				}
 			}
+		}
+		private void CheckLoginOptions(object sender, ElapsedEventArgs e)
+		{
+			Window w = Window.Get;
+
+			if (w.Login_cbxGoClientless.Checked)
+				GoClientless();
+
+			if (w.Login_cbxUseReturnScroll.Checked)
+				UseReturnScroll();
+
+			if (w.Party_cbxMatchAutoReform.Checked)
+				CheckPartyMatchAutoReform();
+
+			CheckAutoParty();
 		}
 		#endregion
 	}

@@ -272,7 +272,7 @@ namespace xBot.Game
 				byte slot = p.ReadByte();
 				InventoryAvatar[slot] = ItemParsing(p);
 			}
-			character[SRProperty.InventoryAvatar] = Inventory;
+			character[SRProperty.InventoryAvatar] = InventoryAvatar;
 			#endregion
 			character[SRProperty.unkByte01] = p.ReadByte();
 			#region (Masteries)
@@ -288,13 +288,13 @@ namespace xBot.Game
 			#endregion
 			character[SRProperty.unkByte02] = p.ReadByte();
 			#region (Skills)
-			SRObjectCollection Skills = new SRObjectCollection();
+			SRObjectDictionary<uint> Skills = new SRObjectDictionary<uint>();
 			while (p.ReadByte() == 1)
 			{
 				SRObject skill = new SRObject(p.ReadUInt(),SRType.Skill);
 				skill[SRProperty.isEnabled] = p.ReadByte() == 1;
 
-				Skills.Add(skill);
+				Skills[skill.ID] = skill;
 			}
 			character[SRProperty.Skills] = Skills;
 			#endregion
@@ -1285,7 +1285,7 @@ namespace xBot.Game
 
 			// Keep on track players for updates
 			Info i = Info.Get;
-			i.PartyList.Add(player);
+			i.PartyMembers[(uint)player[SRProperty.JoinID]] = player;
 
 			// Add player to GUI
 			ListViewItem item = new ListViewItem(name);
@@ -1334,7 +1334,7 @@ namespace xBot.Game
 					break;
 				case 6: // Member update
 					joinID = packet.ReadUInt();
-					SRObject player = i.GetPartyMember(joinID);
+					SRObject player = i.PartyMembers[joinID];
 
 					updateType = packet.ReadByte();
 					switch (updateType)
@@ -1411,10 +1411,10 @@ namespace xBot.Game
 		{
 
 		}
-
 		public static void PartyMatchDeleteResponse(Packet packet)
 		{
-
+			// Generate events to remake party match
+			// PacketBuilder.RequestPartyMatch();
 		}
 		public static void PartyMatchJoinRequest(Packet packet)
 		{
@@ -1472,66 +1472,6 @@ namespace xBot.Game
 					w.Character_btnAddINT.Enabled = w.Character_btnAddSTR.Enabled = false;
 				});
 			}
-		}
-		public static void InventoryItemUse(Packet packet)
-		{
-			bool success = packet.ReadByte() == 1;
-			if (success)
-			{
-				byte slot = packet.ReadByte();
-				ushort quantityUpdate = packet.ReadUShort();
-				//ushort usageType = packet.ReadUShort();
-
-				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-				if (quantityUpdate == 0)
-					inventory[slot] = null; // Item consumed
-				else
-					inventory[slot][SRProperty.Quantity] = quantityUpdate;
-			}
-		}
-		public static void InventoryItemDurabilityUpdate(Packet packet)
-		{
-			byte slotInventory = packet.ReadByte();
-			uint durability = packet.ReadUInt();
-
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-			inventory[slotInventory][SRProperty.Durability] = durability;
-		}
-		public static void InventoryItemStateUpdate(Packet packet)
-		{
-			byte slotInventory = packet.ReadByte();
-			byte updateType = packet.ReadByte();
-
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-			switch(updateType){
-				case 0x40: // Pet State
-					inventory[slotInventory][SRProperty.PetState] = (Types.PetState)packet.ReadByte();
-					break;
-			}
-		}
-		private static Packet storageDataPacket;
-		public static void StorageDataBegin(Packet packet)
-		{
-			Info.Get.Character[SRProperty.StorageGold] = packet.ReadULong();
-			storageDataPacket = new Packet(Agent.Opcode.SERVER_STORAGE_DATA);
-		}
-		public static void StorageData(Packet packet)
-		{
-			storageDataPacket.WriteByteArray(packet.GetBytes());
-		}
-		public static void StorageDataEnd(Packet packet)
-		{
-			storageDataPacket.Lock();
-			Packet p = storageDataPacket;
-
-			SRObjectCollection storage = new SRObjectCollection(p.ReadByte());
-			byte itemsCount = p.ReadByte();
-			for (int j = 0; j < itemsCount; j++)
-			{
-				byte slot = p.ReadByte();
-				storage[slot] = ItemParsing(p);
-			}
-			Info.Get.Character[SRProperty.Storage] = storage;
 		}
 		public static bool InventoryItemMovement(Packet packet)
 		{
@@ -1596,6 +1536,12 @@ namespace xBot.Game
 						break;
 					case Types.InventoryItemMovement.ShopBuyBack:
 						InventoryItemMovement_ShopBuyBack(packet);
+						break;
+					case Types.InventoryItemMovement.AvatarToInventory:
+						InventoryItemMovement_AvatarToInventory(packet);
+						break;
+					case Types.InventoryItemMovement.InventoryToAvatar:
+						InventoryItemMovement_InventoryToAvatar(packet);
 						break;
 				}
 			}
@@ -2058,6 +2004,133 @@ namespace xBot.Game
 			inventory[slotInventory] = buyBack[slotBuyBack];
 			buyBack.RemoveAt(slotBuyBack);
 		}
+		private static void InventoryItemMovement_AvatarToInventory(Packet p)
+		{               
+			byte slotInventoryAvatar = p.ReadByte();
+			byte slotInventory = p.ReadByte();
+			
+			Info i = Info.Get;
+			SRObjectCollection inventoryAvatar = (SRObjectCollection)i.Character[SRProperty.InventoryAvatar];
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
+			// Switch
+			SRObject item = inventory[slotInventory];
+			inventory[slotInventory] = inventoryAvatar[slotInventoryAvatar];
+			inventoryAvatar[slotInventoryAvatar] = item;
+    }
+		private static void InventoryItemMovement_InventoryToAvatar(Packet p)
+		{
+			byte slotInventory = p.ReadByte();
+			byte slotInventoryAvatar = p.ReadByte();
+
+			Info i = Info.Get;
+			SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
+			SRObjectCollection inventoryAvatar = (SRObjectCollection)i.Character[SRProperty.InventoryAvatar];
+			// Switch
+			SRObject item = inventory[slotInventory];
+			inventory[slotInventory] = inventoryAvatar[slotInventoryAvatar];
+			inventoryAvatar[slotInventoryAvatar] = item;
+		}
+		public static void InventoryItemUse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				byte slot = packet.ReadByte();
+				ushort quantityUpdate = packet.ReadUShort();
+				//ushort usageType = packet.ReadUShort();
+
+				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+				if (quantityUpdate == 0)
+					inventory[slot] = null; // Item consumed
+				else
+					inventory[slot][SRProperty.Quantity] = quantityUpdate;
+			}
+		}
+		public static void InventoryItemDurabilityUpdate(Packet packet)
+		{
+			byte slotInventory = packet.ReadByte();
+			uint durability = packet.ReadUInt();
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			inventory[slotInventory][SRProperty.Durability] = durability;
+		}
+		public static void InventoryItemStateUpdate(Packet packet)
+		{
+			byte slotInventory = packet.ReadByte();
+			byte updateType = packet.ReadByte();
+
+			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			switch (updateType)
+			{
+				case 0x40: // Pet State
+					inventory[slotInventory][SRProperty.PetState] = (Types.PetState)packet.ReadByte();
+					break;
+			}
+		}
+		private static Packet storageDataPacket;
+		public static void StorageDataBegin(Packet packet)
+		{
+			Info.Get.Character[SRProperty.StorageGold] = packet.ReadULong();
+			storageDataPacket = new Packet(Agent.Opcode.SERVER_STORAGE_DATA);
+		}
+		public static void StorageData(Packet packet)
+		{
+			storageDataPacket.WriteByteArray(packet.GetBytes());
+		}
+		public static void StorageDataEnd(Packet packet)
+		{
+			storageDataPacket.Lock();
+			Packet p = storageDataPacket;
+
+			SRObjectCollection storage = new SRObjectCollection(p.ReadByte());
+			byte itemsCount = p.ReadByte();
+			for (int j = 0; j < itemsCount; j++)
+			{
+				byte slot = p.ReadByte();
+				storage[slot] = ItemParsing(p);
+			}
+			Info.Get.Character[SRProperty.Storage] = storage;
+		}
+		public static void ConsigmentRegisterResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+
+				byte itemCount = packet.ReadByte();
+				for (byte j = 0; j < itemCount; j++)
+				{
+					byte slotInventory = packet.ReadByte();
+					byte saleStatus = packet.ReadByte();
+					uint slotConsigment = packet.ReadUInt();
+					uint itemID = packet.ReadUInt();
+					ulong goldDeposited = packet.ReadULong();
+					ulong goldSellingFee = packet.ReadULong();
+					uint EndDate = packet.ReadUInt();
+
+					// remove it from inventory
+					inventory[slotInventory] = null;
+				}
+			}
+		}
+		public static void ConsigmentUnregisterResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+
+				byte itemCount = packet.ReadByte();
+				for (byte j = 0; j < itemCount; j++)
+				{
+					uint slotConsigment = packet.ReadUInt();
+					byte slotInventory = packet.ReadByte();
+					// Add to inventory
+					inventory[slotInventory] = ItemParsing(packet);
+				}
+			}
+		}
 		public static void PetData(Packet packet)
 		{
 			uint uniqueID = packet.ReadUInt();
@@ -2224,23 +2297,57 @@ namespace xBot.Game
 		}
 		public static void EntitySkillUse(Packet packet)
 		{
-			// bool success = packet.ReadByte() == 1;
-			// if (success)
-			// {
-			// 	byte skillType = packet.ReadByte();
-			// 	switch (skillType)
-			// 	{
-			// 		case 0: // Buff
-			// 			byte unkByte01 = packet.ReadByte();
-			// 			uint skillID = packet.ReadUInt();
-			// 			uint sourceUniqueID = packet.ReadUInt();
-			// 			ushort unkUShort01 = packet.ReadUShort();
-			// 			ushort unkUShort02 = packet.ReadUShort();
-			// 			uint targetUniqueID = packet.ReadUInt();
-			// 			byte unkByte02 = packet.ReadByte();
-			// 			break;
-			// 	}
-			// }
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				byte skillType = packet.ReadByte();
+				byte unkByte01 = packet.ReadByte();
+				uint skillID = packet.ReadUInt();
+				uint sourceUniqueID = packet.ReadUInt();
+				uint skillUniqueID = packet.ReadUInt();
+				uint targetUniqueID = packet.ReadUInt();
+				//byte unkByte02 = packet.ReadByte();
+				// End of Packet
+				Bot.Get._OnEntitySkillCast(skillType, skillID, sourceUniqueID, targetUniqueID);
+			}
+		}
+		public static void EntitySkillData(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				uint skillUniqueID = packet.ReadUInt();
+				uint targetUniqueID = packet.ReadUInt();
+				if(targetUniqueID != 0)
+				{
+					byte unkByte01 = packet.ReadByte();
+					if (unkByte01 == 1)
+					{
+						byte unkByte02 = packet.ReadByte();
+						byte unkByte03 = packet.ReadByte();
+						targetUniqueID = packet.ReadUInt();
+						byte unkByte04 = packet.ReadByte();
+						if (unkByte04 == 128)
+						{
+							Bot.Get._OnEntityDead(targetUniqueID);
+						}
+						//	byte unkByte05 = packet.ReadByte();
+						//	uint damage = packet.ReadUInt();
+						// byte unkByte06 = packet.ReadByte();
+						//	byte unkByte07 = packet.ReadByte();
+						//	byte unkByte08 = packet.ReadByte();
+						//	if(unkByte02 == 2)
+						//	{
+						//		unkByte04 = packet.ReadByte();
+						//		unkByte05 = packet.ReadByte();
+						//		damage = packet.ReadUInt();
+						//		unkByte06 = packet.ReadByte();
+						//		unkByte07 = packet.ReadByte();
+						//		unkByte08 = packet.ReadByte();
+						//	}
+					}
+				}
+			}
 		}
 		public static void EntitySkillBuffAdded(Packet packet)
 		{
@@ -2276,7 +2383,7 @@ namespace xBot.Game
 
 				// Update skills
 				Info i = Info.Get;
-				SRObjectCollection skills = (SRObjectCollection)i.Character[SRProperty.Skills];
+				SRObjectDictionary<uint> Skills = (SRObjectDictionary<uint>)i.Character[SRProperty.Skills];
 
 				// Look for the skill with the last groupname
 				uint lastSkillID = i.GetLastSkillID(newSkill);
@@ -2285,7 +2392,9 @@ namespace xBot.Game
 				if (lastSkillID != 0)
 				{
 					// Update/override if the skill is sharing the same groupname
-					SRObject skill = skills.Find(m => m.ID == lastSkillID);
+					Skills.SetKey(lastSkillID, newSkill.ID);
+
+					SRObject skill = Skills[newSkill.ID];
 					skill.CopyFrom(newSkill);
 					// Update the skill name/key from every list
 					w.UpdateSkillNames(lastSkillID, newSkill.ID);
@@ -2293,7 +2402,7 @@ namespace xBot.Game
 				else
 				{
 					// Add new skill
-					skills.Add(newSkill);
+					Skills[newSkill.ID] = newSkill;
 					w.AddSkill(newSkill);
 				}
 			}

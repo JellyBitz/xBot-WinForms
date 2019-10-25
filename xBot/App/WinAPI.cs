@@ -99,11 +99,12 @@ namespace xBot.App
 		public static byte[] ToByteArray(string hexString)
 		{
 			hexString = hexString.Replace(" ", "");
-			return Enumerable.Range(0, hexString.Length)
-											 .Where(x => x % 2 == 0)
-											 .Select(x => Convert.ToByte(hexString.Substring(x, 2), 16))
-											 .ToArray();
-		}
+			byte[] result = new byte[hexString.Length / 2];
+			int j = 0;
+      for (int i = 0; i < hexString.Length; i+=2)
+				result[j++] = Convert.ToByte(hexString.Substring(i, 2), 16);
+			return result;
+    }
 		/// <summary>
 		/// StreamReader extension support for using differents limiters.
 		/// </summary>

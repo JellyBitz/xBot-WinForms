@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using xBot.App;
 using xBot.App.PK2Extractor;
 using xBot.Game.Objects;
@@ -16,6 +17,7 @@ namespace xBot.Game
 		/// Unique instance of this class.
 		/// </summary>
 		private static Info _this = null;
+		#region Basic Properties
 		/// <summary>
 		/// Unique name from the Silkroad.
 		/// </summary>
@@ -52,6 +54,9 @@ namespace xBot.Game
 		/// The current path to the SR_Client.
 		/// </summary>
 		public string ClientPath { get; set; }
+		#endregion
+
+		#region Game Properties
 		/// <summary>
 		/// Reference to the selected character for playing.
 		/// </summary>
@@ -59,47 +64,65 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets all pets from character.
 		/// </summary>
-		public Dictionary<uint, SRObject> Pets { get; }
+		public SRObjectDictionary<uint> MyPets { get; }
 		/// <summary>
-		/// Gets all pets from character.
+		/// Gets all players near the character.
 		/// </summary>
-		public Dictionary<string, SRObject> PlayersNear { get; }
+		public SRObjectDictionary<string> Players { get; }
+		/// <summary>
+		/// Gets all mobs near the character.
+		/// </summary>
+		public SRObjectDictionary<uint> Mobs { get; }
+		/// <summary>
+		/// Gets all mobs near the character.
+		/// </summary>
+		public SRObjectDictionary<uint> Teleports { get; }
 		/// <summary>
 		/// Gets all entity that spawn closer.
 		/// </summary>
-		public Dictionary<uint,SRObject> EntityList { get; }
+		public SRObjectDictionary<uint> SpawnList { get; }
 		/// <summary>
 		/// Keep on track all buffs from near entity.
 		/// </summary>
-		public Dictionary<uint, SRObject> BuffList { get; }
+		public SRObjectDictionary<uint> BuffList { get; }
 		/// <summary>
-		/// Gets all party members. The master will be at the first position.
+		/// Gets all party members. The master will be always at the first position.
 		/// </summary>
-		public List<SRObject> PartyList { get; }
+		public SRObjectDictionary<uint> PartyMembers { get; }
 		/// <summary>
 		/// SROTimestamp.
 		/// </summary>
-		public uint ServerTime {
-			get {
+		public uint ServerTime
+		{
+			get
+			{
 				return _ServerTime;
-      }
-			set {
+			}
+			set
+			{
 				_ServerTimeDate = DateTime.UtcNow;
 				_ServerTime = value;
-      }
+			}
 		}
 		private uint _ServerTime;
 		private DateTime _ServerTimeDate;
+		/// <summary>
+		/// Keeps the most recent PING test.
+		/// </summary>
+		public Stopwatch Ping { get; set; }
+		#endregion
 		private Info()
 		{
 			Character = null;
-			Pets = new Dictionary<uint, SRObject>();
-			PlayersNear = new Dictionary<string, SRObject>();
-			EntityList = new Dictionary<uint, SRObject>();
-			BuffList = new Dictionary<uint, SRObject>();
-			PartyList = new List<SRObject>();
+			MyPets = new SRObjectDictionary<uint>();
+			Players = new SRObjectDictionary<string>();
+			Mobs = new SRObjectDictionary<uint>();
+			Teleports = new SRObjectDictionary<uint>();
+			SpawnList = new SRObjectDictionary<uint>();
+			BuffList = new SRObjectDictionary<uint>();
+			PartyMembers = new SRObjectDictionary<uint>();
 			Database = null;
-    }
+		}
 		/// <summary>
 		/// GetInstance. Secures an unique class creation for being used anywhere at the project.
 		/// </summary>
@@ -111,6 +134,37 @@ namespace xBot.Game
 					_this = new Info();
 				return _this;
 			}
+		}
+		/// <summary>
+		/// Select the database if exists. Return success.
+		/// </summary>
+		/// <param name="name">Database unique name</param>
+		public bool ConnectToDatabase(string SilkroadName)
+		{
+			if (Pk2Extractor.DirectoryExists(SilkroadName))
+			{
+				this.Database = new SQLDatabase(Pk2Extractor.GetDatabasePath(SilkroadName));
+				bool connected = this.Database.Connect();
+				if (connected)
+					this.Silkroad = SilkroadName;
+				return connected;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Get an entity by his unique ID.
+		/// </summary>
+		/// <param name="uniqueid">Spawn object reference</param>
+		/// <returns><see cref="null"/> if cannot be found</returns>
+		public SRObject GetEntity(uint uniqueID)
+		{
+			if ((uint)Character[SRProperty.UniqueID] == uniqueID)
+				return Character;
+			SRObject entity = MyPets[uniqueID];
+			if (entity == null)
+				entity = SpawnList[uniqueID];
+			return entity;
 		}
 		/// <summary>
 		/// Server time generated with the SROTimeStamp.
@@ -126,30 +180,15 @@ namespace xBot.Game
 				int hour = (int)(ServerTime >> 15) & 31;
 				int minute = (int)(ServerTime >> 20) & 63;
 				int second = (int)(ServerTime >> 26) & 63;
-				DateTime time = new DateTime(year, month, day,hour,minute,second);
+				DateTime time = new DateTime(year, month, day, hour, minute, second);
 				// Sync time lapsed from last time saved
 				time = time.Add(DateTime.UtcNow.Subtract(_ServerTimeDate));
 				return time.ToString("HH:mm:ss | dd/MM/yyyy");
 			}
 			return "??:??:?? | ??/??/????";
 		}
-		/// <summary>
-		/// Select the database if exists. Return success.
-		/// </summary>
-		/// <param name="name">Database unique name</param>
-		/// <returns></returns>
-		public bool SelectDatabase(string SilkroadName)
-		{
-			if (Pk2Extractor.DirectoryExists(SilkroadName))
-			{
-				this.Database = new SQLDatabase(Pk2Extractor.GetDatabasePath(SilkroadName));
-				bool connected = this.Database.Connect();
-        if (connected)
-					this.Silkroad = SilkroadName;
-				return connected;
-      }
-			return false;
-		}
+
+		#region Gets from Database
 		/// <summary>
 		/// Gets the maximum exp required for the level specified.
 		/// </summary>
@@ -158,7 +197,7 @@ namespace xBot.Game
 			string sql = "SELECT player FROM leveldata WHERE level=" + level;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
-			if(result.Count > 0)
+			if (result.Count > 0)
 				return ulong.Parse(result[0]["player"]);
 			return 0;
 		}
@@ -179,9 +218,9 @@ namespace xBot.Game
 		/// </summary>
 		/// <param name="level">Job level</param>
 		/// <param name="type">Trader, Thief or Hunter</param>
-		public uint GetJobExpMax(byte level,Types.Job type)
+		public uint GetJobExpMax(byte level, Types.Job type)
 		{
-			if(type == Types.Job.None)
+			if (type == Types.Job.None)
 				return 0;
 			string sql = "SELECT * FROM leveldata WHERE level=" + level;
 			Database.ExecuteQuery(sql);
@@ -207,7 +246,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetModel(string servername)
 		{
-			string sql = "SELECT * FROM models WHERE servername='" + servername+"'";
+			string sql = "SELECT * FROM models WHERE servername='" + servername + "'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
@@ -231,7 +270,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetTeleport(string servername)
 		{
-			string sql = "SELECT * FROM teleportbuildings WHERE servername='" + servername+"'";
+			string sql = "SELECT * FROM teleportbuildings WHERE servername='" + servername + "'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
@@ -279,7 +318,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetItem(string servername)
 		{
-			string sql = "SELECT * FROM items WHERE servername='" + servername+"'";
+			string sql = "SELECT * FROM items WHERE servername='" + servername + "'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
@@ -347,79 +386,22 @@ namespace xBot.Game
 			return "";
 		}
 		/// <summary>
-		/// Get an entity by his unique ID.
-		/// </summary>
-		/// <param name="uniqueid">Spawn object reference</param>
-		/// <returns><see cref="null"/> if cannot be found</returns>
-		public SRObject GetEntity(uint uniqueID)
-		{
-			if ((uint)Character[SRProperty.UniqueID] == uniqueID)
-				return Character;
-			SRObject entity = null;
-			if (EntityList.TryGetValue(uniqueID, out entity) // Entity near
-				|| Pets.TryGetValue(uniqueID,out entity)) // Pet near
-				return entity;
-			return null;
-		}
-		/// <summary>
-		/// Returns all near players.
-		/// </summary>
-		public List<SRObject> GetPlayers()
-		{
-			return new List<SRObject>(PlayersNear.Values);
-		}
-		/// <summary>
-		/// Returns all near NPCs.
-		/// </summary>
-		public List<SRObject> GetNPCs()
-		{
-			return (new List<SRObject>(EntityList.Values)).FindAll(e => e.isNPC());
-		}
-		/// <summary>
-		/// Returns all near teleports.
-		/// </summary>
-		public List<SRObject> GetTeleports()
-		{
-			return (new List<SRObject>(EntityList.Values)).FindAll(e => e.ID1 == 4);
-		}
-		/// <summary>
-		/// Returns all summoned pets players.
-		/// </summary>
-		public List<SRObject> GetPets()
-		{
-			return new List<SRObject>(Pets.Values);
-		}
-		/// <summary>
-		/// Get's a party member by his joinID. Returns null if is not found.
-		/// </summary>
-		public SRObject GetPartyMember(uint joinID)
-		{
-			return PartyList.Find(member => (uint)member[SRProperty.JoinID] == joinID);
-		}
-		/// <summary>
-		/// Find a party member by his nickname. Returns null if is not found.
-		/// </summary>
-		public SRObject GetPartyMember(string name)
-		{
-			return PartyList.Find(member => (name.Equals(member.Name,StringComparison.OrdinalIgnoreCase)));
-		}
-		/// <summary>
 		/// Get's an item object from the shop at slot specified.
 		/// </summary>
-		public SRObject GetItemFromShop(string npc_servername,byte tabNumber, byte tabSlot)
+		public SRObject GetItemFromShop(string npc_servername, byte tabNumber, byte tabSlot)
 		{
-			string sql = "SELECT * FROM shops WHERE model_servername='"+ npc_servername + "' AND tab="+ tabNumber+ " AND slot="+tabSlot;
+			string sql = "SELECT * FROM shops WHERE model_servername='" + npc_servername + "' AND tab=" + tabNumber + " AND slot=" + tabSlot;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
 			{
-				SRObject item = new SRObject(result[0]["item_servername"],SRType.Item);
+				SRObject item = new SRObject(result[0]["item_servername"], SRType.Item);
 				if (item.ID1 == 3 && item.ID2 == 1)
 				{
 					item[SRProperty.Plus] = byte.Parse(result[0]["plus"]);
 					item[SRProperty.Durability] = uint.Parse(result[0]["durability"]);
 				}
-				if(result[0]["magic_params"] != "0")
+				if (result[0]["magic_params"] != "0")
 				{
 					string[] mParams = result[0]["magic_params"].Split('|');
 					SRObjectCollection MagicParams = new SRObjectCollection((uint)mParams.Length);
@@ -440,10 +422,11 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetLastSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level<" + skill[SRProperty.Level]+" ORDER BY level DESC LIMIT 1";
+			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level<" + skill[SRProperty.Level] + " ORDER BY level DESC LIMIT 1";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0){
+			if (result.Count > 0)
+			{
 				return uint.Parse(result[0]["id"]);
 			}
 			return 0;
@@ -465,8 +448,9 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets the teleport link data. Return null if link is not found.
 		/// </summary>
-		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName = "%"){
-			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '"+ sourceTeleportName + "' AND destination LIKE '"+destinationTeleportName+"'";
+		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName = "%")
+		{
+			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '" + sourceTeleportName + "' AND destination LIKE '" + destinationTeleportName + "'";
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
@@ -478,9 +462,9 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets the teleport destination ID. Return 0 if none is found.
 		/// </summary>
-		public uint GetTeleportLinkDestinationID(uint sourceTeleportID,uint destinationTeleportID)
+		public uint GetTeleportLinkDestinationID(uint sourceTeleportID, uint destinationTeleportID)
 		{
-			string sql = "SELECT t1.destinationid FROM teleportlinks AS t1 JOIN teleportlinks AS t2 WHERE t1.destination=t2.name AND t2.destination=t1.name AND t1.id="+ sourceTeleportID + " AND t2.id="+ destinationTeleportID;
+			string sql = "SELECT t1.destinationid FROM teleportlinks AS t1 JOIN teleportlinks AS t2 WHERE t1.destination=t2.name AND t2.destination=t1.name AND t1.id=" + sourceTeleportID + " AND t2.id=" + destinationTeleportID;
 			Database.ExecuteQuery(sql);
 			List<NameValueCollection> result = Database.GetResult();
 			if (result.Count > 0)
@@ -489,5 +473,6 @@ namespace xBot.Game
 			}
 			return 0;
 		}
+		#endregion
 	}
 }

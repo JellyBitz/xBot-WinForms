@@ -629,7 +629,7 @@ namespace xBot.App.PK2Extractor
 							db.Bind("servername", data[DSKILL.Basic_Code]);
 							db.Bind("name", name);
 							db.Bind("description", desc);
-							db.Bind("casttime", data[DSKILL.Action_ActionDuration]);
+							db.Bind("casttime", int.Parse(data[DSKILL.Action_PreparingTime])+ int.Parse(data[DSKILL.Action_CastingTime])+ int.Parse(data[DSKILL.Action_ActionDuration]));
 							db.Bind("duration", duration);
 							db.Bind("cooldown", data[DSKILL.Action_ReuseDelay]);
 							db.Bind("mana", data[DSKILL.Consume_MP]);

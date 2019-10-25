@@ -1,15 +1,19 @@
-﻿using System.IO;
-using xBot.Game;
+﻿using xBot.Game;
 using xBot.Network;
 using xBot.Game.Objects;
 using System.Collections.Generic;
 using System;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace xBot.App
 {
 	public partial class Bot
 	{
+		private AutoResetEvent MonitorEntitySelected = new AutoResetEvent(false);
+		private AutoResetEvent MonitorSkillCast = new AutoResetEvent(false);
+		private AutoResetEvent MonitorMobSpawnDespawnOrBuffChanged = new AutoResetEvent(false);
+
 		#region (Logical System Controller)
 		public void _OnConnected()
 		{
@@ -70,37 +74,42 @@ namespace xBot.App
 		public void _OnDisconnected()
 		{
 			inGame = false;
-			inTeleport = false;
-			hasStall = false;
-
-			Window w = Window.Get;
-			Info i = Info.Get;
-
-			// Reset data
-			i.Character = null;
-			
-			EntitySelected = 0;
-			i.Pets.Clear();
-			i.PlayersNear.Clear();
-			i.EntityList.Clear();
-			w.Minimap_ObjectPointer_Clear();
-
-			inParty = false;
-			i.PartyList.Clear();
-			w.Party_Clear();
+			// Try stop bot
+			Stop();
+			// Try stop trace
 			StopTrace();
 
-			w.ClearSkills();
-			w.ClearBuffs();
-			i.BuffList.Clear();
+			// Set states
+			inTeleport = false;
+			hasStall = false;
+			inParty = false;
 
 			// Stop timers
 			tUsingHP.Enabled = tUsingMP.Enabled = tUsingVigor.Enabled =
 				tUsingUniversal.Enabled = tUsingPurification.Enabled =
-				tUsingRecoveryKit.Enabled = tUsingAbnormalPill.Enabled = 
+				tUsingRecoveryKit.Enabled = tUsingAbnormalPill.Enabled =
 				tUsingHGP.Enabled =
 				tCycleAutoParty.Enabled = false;
 
+			Window w = Window.Get;
+			Info i = Info.Get;
+			// Reset data
+			i.Character = null;
+			EntitySelected = 0;
+			i.SpawnList.Clear();
+			i.MyPets.Clear();
+			i.Players.Clear();
+			i.Mobs.Clear();
+			i.PartyMembers.Clear();
+			i.BuffList.Clear();
+
+			// Clear GUI
+			w.Party_Clear();
+			w.Skills_Clear();
+			w.Buffs_Clear();
+			w.Minimap_ObjectPointer_Clear();
+
+			// Hacks
 			LoggedFromBot = false;
 			_HWIDSent = false;
 
@@ -124,29 +133,28 @@ namespace xBot.App
 		}
 		public void _OnTeleporting()
 		{
+			// Set states
 			inTeleport = true;
+			inParty = false;
 
 			Window w = Window.Get;
 			Info i = Info.Get;
-
-			// Reset entity data
+			// Reset data
 			EntitySelected = 0;
-
-			i.Pets.Clear();
-			i.PlayersNear.Clear();
-			i.EntityList.Clear();
-
-			w.Minimap_ObjectPointer_Clear();
-
-			// Reset party data
-			inParty = false;
-			i.PartyList.Clear();
-			w.Party_Clear();
-
-			w.ClearSkills();
-			w.ClearBuffs();
+			i.SpawnList.Clear();
+			i.MyPets.Clear();
+			i.Players.Clear();
+			i.Mobs.Clear();
+			i.PartyMembers.Clear();
 			i.BuffList.Clear();
 
+			// Clear GUI
+			w.Buffs_Clear();
+			w.Party_Clear();
+			w.Skills_Clear();
+			w.TrainingAreas_Clear();
+			w.Minimap_ObjectPointer_Clear();
+			
 			this.OnTeleporting();
 		}
 		public void _OnCharacterSpawn()
@@ -201,14 +209,17 @@ namespace xBot.App
 			});
 
 			SRObjectCollection Buffs = (SRObjectCollection)character[SRProperty.Buffs];
-			DateTime utcNow = DateTime.UtcNow;
 
-			w.Character_lstvBuffs.BeginUpdate();
+			WinAPI.InvokeIfRequired(w.Character_lstvBuffs, () => {
+				w.Character_lstvBuffs.BeginUpdate();
+			});
 			for (int j = 0; j < Buffs.Capacity; j++)
 			{
 				w.AddBuff(Buffs[j]);
 			}
-			w.Character_lstvBuffs.EndUpdate();
+			WinAPI.InvokeIfRequired(w.Character_lstvBuffs, () => {
+				w.Character_lstvBuffs.EndUpdate();
+			});
 
 			WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
 				w.Character_lblStatPoints.Text = character[SRProperty.StatPoints].ToString();
@@ -220,20 +231,22 @@ namespace xBot.App
 			#endregion
 
 			#region (Skills Tab)
-			SRObjectCollection Skills = (SRObjectCollection)character[SRProperty.Skills];
+			SRObjectDictionary<uint> Skills = (SRObjectDictionary<uint>)character[SRProperty.Skills];
 			// Add basic attack
 			SRObject commonAttack = new SRObject(1u, SRType.Skill);
 			commonAttack.Name = "Common Attack";
+			commonAttack[SRProperty.MP] = 1u; // Trigger attack as skill
 			commonAttack[SRProperty.Icon] = "action\\icon_cha_auto_attack.ddj";
-			commonAttack[SRProperty.MP] = commonAttack.ID; // Trigger attack as skill
-			Skills.Add(commonAttack);
-
-			w.Skills_lstvSkills.BeginUpdate();
-			for (int j = 0; j < Skills.Capacity; j++)
-			{
-        w.AddSkill(Skills[j]);
-			}
-      w.Skills_lstvSkills.EndUpdate();
+			Skills[commonAttack.ID] = commonAttack;
+			
+			WinAPI.InvokeIfRequired(w.Skills_lstvSkills, () => {
+				w.Skills_lstvSkills.BeginUpdate();
+			});
+			for (int j = 0; j < Skills.Count; j++)
+				w.AddSkill(Skills.ElementAt(j));
+			WinAPI.InvokeIfRequired(w.Skills_lstvSkills, () => {
+				w.Skills_lstvSkills.EndUpdate();
+			});
 			#endregion
 
 			#region (Minimap Tab)
@@ -246,21 +259,31 @@ namespace xBot.App
 			});
 			w.Minimap_CharacterPointer_Move(myPos);
 			#endregion
+
+			if (!inGame)
+			{
+				WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
+					Settings.LoadCharacterSettings();
+				});
+				// Set window title
+				w.SetTitle(i.Server, i.Charname, Proxy.SRO_Client);
+			}
 		}
 		public void _OnTeleported()
 		{
 			inTeleport = false;
-
 			if (!inGame)
 			{
 				inGame = true;
+				// Let disconnection anytime
+				Window w = Window.Get;
+				WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
+					w.Login_btnStart.Text = "STOP";
+				});
+				w.EnableControl(w.Login_btnStart, true);
 
-				Info i = Info.Get;
-				Settings.LoadCharacterSettings();
-				Window.Get.SetTitle(i.Server, i.Charname, Proxy.SRO_Client);
 				OnGameJoined();
 			}
-
 			this.OnTeleported();
 		}
 		public void _OnSpawn(ref SRObject entity)
@@ -269,22 +292,53 @@ namespace xBot.App
 			uint uniqueID = (uint)entity[SRProperty.UniqueID];
 			if (entity.isPlayer())
 			{
-				i.PlayersNear[entity.Name.ToUpper()] = entity;
+				i.Players[entity.Name.ToUpper()] = entity;
 			}
-			i.EntityList[uniqueID] = entity;
+			else if (entity.isMob())
+			{
+				i.Mobs[uniqueID] = entity;
+				MonitorMobSpawnDespawnOrBuffChanged.Set();
+			}
+			else if (entity.isTeleport())
+			{
+				i.Teleports[uniqueID] = entity;
+			}
+			i.SpawnList[uniqueID] = entity;
 			Window.Get.Minimap_ObjectPointer_Add((uint)entity[SRProperty.UniqueID], entity.ServerName, entity.Name,(SRCoord)entity[SRProperty.Position]);
 			OnSpawn(ref entity);
 		}
 		public void _OnDespawn(uint uniqueID)
 		{
 			Info i = Info.Get;
-			SRObject entity = i.EntityList[uniqueID];
+			SRObject entity = i.SpawnList[uniqueID];
 			if (entity.isPlayer())
 			{
-				i.PlayersNear.Remove(entity.Name.ToUpper());
+				i.Players.RemoveKey(entity.Name.ToUpper());
 			}
-			i.EntityList.Remove(uniqueID);
+			else if (entity.isMob())
+			{
+				i.Mobs.RemoveKey(uniqueID);
+				MonitorMobSpawnDespawnOrBuffChanged.Set();
+			}
+			else if (entity.isTeleport())
+			{
+				i.Teleports.RemoveKey(uniqueID);
+			}
+			i.SpawnList.RemoveKey(uniqueID);
 			Window.Get.Minimap_ObjectPointer_Remove(uniqueID);
+		}
+		public void _OnEntityDead(uint uniqueID){
+			Info i = Info.Get;
+			// Entity target has been killed
+			SRObject entity = i.GetEntity(uniqueID);
+			// Check if the entity it's despawn already
+			if(entity != null){
+				if(entity.isMob())
+				{
+					i.Mobs.RemoveKey(uniqueID);
+					MonitorMobSpawnDespawnOrBuffChanged.Set();
+				}
+			}
 		}
 		public void _OnEntityMovement(ref SRObject entity)
 		{
@@ -315,17 +369,18 @@ namespace xBot.App
 					w.Minimap_CharacterPointer_Move(p);
 					return;
 				}
+				
 				if (entity.isPlayer())
 				{
 					OnPlayerMovement(ref entity);
 				}
-				else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
+				else if (entity.isPet())
 				{
 					if (entity.ID4 == 1)
 					{
 						// Vehicle
 						uint vehicleUniqueID = (uint)entity[SRProperty.UniqueID];
-						SRObject player = i.GetPlayers().Find(p => (bool)p[SRProperty.isRiding] && (uint)p[SRProperty.RidingUniqueID] == vehicleUniqueID);
+						SRObject player = i.Players.Find(p => (bool)p[SRProperty.isRiding] && (uint)p[SRProperty.RidingUniqueID] == vehicleUniqueID);
 						if (player != null)
 						{
 							player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
@@ -356,13 +411,9 @@ namespace xBot.App
 				case Types.EntityStateUpdate.HPMP:
 				case Types.EntityStateUpdate.EntityHPMP:
 					if ((uint)entity[SRProperty.HP] == 0)
-					{
 						entity[SRProperty.LifeState] = Types.LifeState.Dead;
-					}
 					else if ((Types.LifeState)entity[SRProperty.LifeState] != Types.LifeState.Alive)
-					{
 						entity[SRProperty.LifeState] = Types.LifeState.Alive;
-					}
 					break;
 			}
 			Info i = Info.Get;
@@ -373,12 +424,20 @@ namespace xBot.App
 			}
 			else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
 			{
-				// Check entity is a pet
-				if (entity.ID4 == 1 && (string)entity[SRProperty.OwnerName] == i.Charname // vehicle
-					|| (entity.ID4 != 1 && (uint)entity[SRProperty.OwnerUniqueID] == (uint)i.Character[SRProperty.UniqueID]))
+				if (entity.ID4 != 1) 
 				{
 					// Check if it's my pet
-					_OnPetStateUpdated(type);
+					if((uint)entity[SRProperty.OwnerUniqueID] == (uint)i.Character[SRProperty.UniqueID])
+						_OnPetStateUpdated(type);
+				}
+				else
+				{
+					// Check if it's my vehicle
+					if ((bool)i.Character[SRProperty.isRiding] 
+						&& (uint)i.Character[SRProperty.RidingUniqueID] == (uint)entity[SRProperty.UniqueID])
+					{
+						_OnPetStateUpdated(type);
+					}
 				}
 			}
 		}
@@ -473,14 +532,14 @@ namespace xBot.App
 		public void _OnPetSummoned(uint uniqueID)
 		{
 			Info i = Info.Get;
-			i.Pets[uniqueID] = i.EntityList[uniqueID];
+			i.MyPets[uniqueID] = i.SpawnList[uniqueID];
 
 			this.OnPetSummoned(uniqueID);
 		}
 		public void _OnPetUnsummoned(uint uniqueID)
 		{
 			OnPetUnsummoned(uniqueID);
-			Info.Get.Pets.Remove(uniqueID);
+			Info.Get.MyPets.RemoveKey(uniqueID);
 		}
 		public void _OnPetStateUpdated(Types.EntityStateUpdate type)
 		{
@@ -517,8 +576,19 @@ namespace xBot.App
 			switch (type)
 			{
 				case Types.Chat.All:
-					w.LogChatMessage(w.Chat_rtbxAll, player, message);
-					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
+					{
+						Info i = Info.Get;
+						if (player == Info.Get.Charname && message == "PING" && i.Ping != null)
+						{
+							i.Ping.Stop();
+							player = "xBot";
+							message = "Your current ping: "+i.Ping.ElapsedMilliseconds+"(ms)";
+							PacketBuilder.Client.SendNotice(message);
+							i.Ping = null;
+						}
+						w.LogChatMessage(w.Chat_rtbxAll, player, message);
+						w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option01);
+					}
 					break;
 				case Types.Chat.GM:
 					w.LogChatMessage(w.Chat_rtbxAll, player, message);
@@ -570,10 +640,11 @@ namespace xBot.App
 		public void _OnEntitySelected(uint uniqueID)
 		{
 			EntitySelected = uniqueID;
+			MonitorEntitySelected.Set();
 		}
 		public void _OnPartyInvitation(uint uniqueID, Types.PartySetup PartySetup)
 		{
-			OnPartyInvitation(Info.Get.EntityList[uniqueID].Name, PartySetup);
+			OnPartyInvitation(Info.Get.SpawnList[uniqueID].Name, PartySetup);
 		}
 		public void _OnPartyJoined(Types.PartySetup PartySetupFlags,Types.PartyPurpose PartyPurposeType)
 		{
@@ -602,15 +673,14 @@ namespace xBot.App
 		public void _OnMemberLeaved(uint joinID)
 		{
 			Info i = Info.Get;
-
-			SRObject player = i.GetPartyMember(joinID);
-			if (player.Name == i.Charname)
+			
+			if (i.PartyMembers[joinID].Name == i.Charname)
 			{
 				_OnPartyLeaved();
 			}
 			else
 			{
-				i.PartyList.Remove(player);
+				i.PartyMembers.RemoveKey(joinID);
 
 				Window w = Window.Get;
 				WinAPI.InvokeIfRequired(w.Party_lstvPartyMembers, () => {
@@ -622,7 +692,7 @@ namespace xBot.App
 		public void _OnPartyLeaved()
 		{
 			inParty = false;
-			Info.Get.PartyList.Clear();
+			Info.Get.PartyMembers.Clear();
 			Window.Get.Party_Clear();
 
 			this.OnPartyLeaved();
@@ -665,11 +735,11 @@ namespace xBot.App
 				Item.SubItems.Add(Match.MemberCount + "/" + Match.MemberMax);
 				Item.SubItems.Add(Match.Purpose.ToString());
 				Item.ToolTipText = "Exp. " + (Match.Setup.HasFlag(Types.PartySetup.ExpShared) ? "Shared" : "Free - For - All") + "\nItem " + (Match.Setup.HasFlag(Types.PartySetup.ItemShared) ? "Shared" : "Free-For-All") + "\n" + (Match.Setup.HasFlag(Types.PartySetup.AnyoneCanInvite) ? "Anyone" : "Only Master") + " Can Invite";
-				if ((inParty && Match.Owner == i.PartyList[0].Name) || Match.Owner == i.Charname){
+				if ((inParty && Match.Owner == i.PartyMembers.ElementAt(0).Name) || Match.Owner == i.Charname){
 					myMatch = Match;
 					Item.BackColor = System.Drawing.Color.FromArgb(120, 120, 120);
 				}
-				WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch,()=>{
+				WinAPI.InvokeIfRequired(w.Party_lstvPartyMatch, () => {
 					w.Party_lstvPartyMatch.Items.Add(Item);
 				});
 			}
@@ -703,24 +773,42 @@ namespace xBot.App
 
 			if (entity == i.Character)
 			{
-				Window.Get.AddBuff(buff);
+				MonitorMobSpawnDespawnOrBuffChanged.Set();
+        Window.Get.AddBuff(buff);
 			}
 		}
 		public void _OnEntityBuffRemoved(uint buffUniqueID)
 		{
 			Info i = Info.Get;
-			SRObject buff;
-			if (i.BuffList.TryGetValue(buffUniqueID,out buff))
+			SRObject buff = i.BuffList[buffUniqueID];
+			if (buff != null)
 			{
-				i.BuffList.Remove(buffUniqueID);
+				i.BuffList.RemoveKey(buffUniqueID);
 
 				SRObject entity = i.GetEntity((uint)buff[SRProperty.OwnerUniqueID]);
 				SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
 				Buffs.Remove(buff);
 				if (i.Character == entity)
 				{
-					Window.Get.RemoveBuff(buff.ID);
+					MonitorMobSpawnDespawnOrBuffChanged.Set();
+          Window.Get.RemoveBuff(buff.ID);
+        }
+			}
+		}
+		public void _OnEntitySkillCast(byte skillType, uint skillID, uint sourceUniqueID, uint targetUniqueID)
+		{
+			Info i = Info.Get;
+			if (sourceUniqueID == (uint)i.Character[SRProperty.UniqueID])
+			{
+				// Put the skill at cooldown
+				SRObjectDictionary<uint> Skills = (SRObjectDictionary<uint>)i.Character[SRProperty.Skills];
+				SRObject Skill = Skills[skillID];
+				// Avoid tracking basic attacks
+				if (Skill != null) {
+					Skill[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
+					Skill[SRProperty.isEnabled] = false;
 				}
+				MonitorSkillCast.Set();
 			}
 		}
 		#endregion

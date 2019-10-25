@@ -54,6 +54,16 @@ namespace xBot.Game.Objects
 			this.Y = Y;
 			this.Z = Z;
 		}
+		public bool Equals(SRCoord Coord){
+			double x = PosX-Coord.PosX;
+			if(x <= 1){
+				double y = PosY-Coord.PosY;
+				if(y <= 1){
+					return Region == Coord.Region;
+				}
+			}
+			return false;
+		}
 		public double DistanceTo(double PosX, double PosY)
 		{
 			return Math.Sqrt(Math.Pow(PosX - this.PosX, 2.0) + Math.Pow(PosY - this.PosY, 2.0));
@@ -61,6 +71,10 @@ namespace xBot.Game.Objects
 		public double DistanceTo(SRCoord Coord)
 		{
 			return DistanceTo(Coord.PosX, Coord.PosY);
+		}
+		public int TimeTo(SRCoord Coord,double SpeedPerMs)
+		{
+			return (int)(DistanceTo(Coord) / SpeedPerMs);
 		}
 		public override string ToString()
 		{
@@ -74,5 +88,17 @@ namespace xBot.Game.Objects
 		{
 			return Region >= short.MaxValue;
 		}
+		public SRLocation GetLocation()
+		{
+			switch (Region)
+			{
+				default:
+					return SRLocation.WorldMap;
+			}
+		}
+	}
+	public enum SRLocation
+	{
+		WorldMap
 	}
 }

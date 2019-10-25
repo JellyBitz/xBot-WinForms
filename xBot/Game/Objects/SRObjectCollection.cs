@@ -11,22 +11,20 @@ namespace xBot.Game.Objects
 	{
 		#region Propierties
 		/// <summary>
+		/// List acting as dynamic and static.
+		/// </summary>
+		private List<SRObject> Objects;
+		/// <summary>
 		/// Maximum capacity.
 		/// </summary>
-		public int Capacity {
-			get
-			{
-				return Objects.Count;
-			}
-		}
+		public int Capacity { get { return Objects.Count; } }
 		/// <summary>
 		/// Counter of objects not null.
 		/// </summary>
-		public int Count
-		{
-			get; private set;
-		}
-		private List<SRObject> Objects;
+		public int Count { get; private set; }
+		/// <summary>
+		/// Gets or sets a value.
+		/// </summary>
 		public SRObject this[int index]
 		{
 			get
@@ -73,10 +71,16 @@ namespace xBot.Game.Objects
 		{
 			Objects = new List<SRObject>((int)Capacity);
 			for (int i = 0; i < Capacity; i++)
-			{
 				Objects.Add(null);
-			}
 			Count = 0;
+		}
+		public SRObjectCollection(SRObject[] Array)
+		{
+			Count = 0;
+			Objects = new List<SRObject>(Array);
+			for (int i = 0; i < Array.Length; i++)
+				if (Array[i] != null)
+					Count++;
 		}
 		/// <summary>
 		/// Only for clonation.
@@ -129,17 +133,28 @@ namespace xBot.Game.Objects
 		{
 			return Objects.Find(match);
 		}
+		public int FindIndex(Predicate<SRObject> match,int startIndex = 0){
+			return FindIndex(match,startIndex,this.Capacity-1);
+		}
+		public int FindIndex(Predicate<SRObject> match,int startIndex,int endIndex){
+			for (int i = startIndex; i <= endIndex; i++)
+				if(match(Objects[i]))
+					return i;
+			return -1;
+		}
 		public TreeNode[] ToNodes()
 		{
-			List<TreeNode> nodes = new List<TreeNode>();
+			TreeNode[] nodes = new TreeNode[Objects.Count];
+			int i = 0;
 			foreach (SRObject value in Objects)
 			{
 				if (value == null)
-					nodes.Add(new TreeNode("Empty"));
+					nodes[i] = new TreeNode("Empty");
 				else
-					nodes.Add(value.ToNode());
+					nodes[i] = value.ToNode();
+				i++;
 			}
-			return nodes.ToArray();
+			return nodes;
 		}
 		#endregion
 	}

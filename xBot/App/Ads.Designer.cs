@@ -49,11 +49,11 @@
 			this.lblHeader.Location = new System.Drawing.Point(1, 1);
 			this.lblHeader.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
 			this.lblHeader.Name = "lblHeader";
-			this.lblHeader.Padding = new System.Windows.Forms.Padding(44, 0, 0, 0);
+			this.lblHeader.Padding = new System.Windows.Forms.Padding(48, 0, 0, 0);
 			this.lblHeader.Size = new System.Drawing.Size(598, 42);
 			this.lblHeader.TabIndex = 0;
 			this.lblHeader.Tag = "Source Sans Pro";
-			this.lblHeader.Text = "xBot | Advertising xx ...";
+			this.lblHeader.Text = "Advertising xx ...";
 			this.lblHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblHeader.UseMnemonic = false;
 			// 
@@ -111,15 +111,15 @@
 			this.btnWinExit.UseVisualStyleBackColor = false;
 			this.btnWinExit.Click += new System.EventHandler(this.Control_Click);
 			// 
-			// lblServerName
+			// lblAdName
 			// 
 			this.lblAdName.AutoEllipsis = true;
 			this.lblAdName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
 			this.lblAdName.Font = new System.Drawing.Font("Source Sans Pro", 19F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
 			this.lblAdName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.lblAdName.Location = new System.Drawing.Point(242, 10);
-			this.lblAdName.Name = "lblServerName";
-			this.lblAdName.Size = new System.Drawing.Size(303, 24);
+			this.lblAdName.Location = new System.Drawing.Point(204, 10);
+			this.lblAdName.Name = "lblAdName";
+			this.lblAdName.Size = new System.Drawing.Size(341, 24);
 			this.lblAdName.TabIndex = 24;
 			this.lblAdName.Tag = "Source Sans Pro";
 			this.lblAdName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
