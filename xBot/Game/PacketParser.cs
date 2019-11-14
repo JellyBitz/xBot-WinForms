@@ -1,6 +1,7 @@
 ﻿using SecurityAPI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 using xBot.App;
 using xBot.Game.Objects;
@@ -364,21 +365,23 @@ namespace xBot.Game
 			character[SRProperty.UniqueID] = p.ReadUInt();
 			character[SRProperty.Position] = new SRCoord(p.ReadUShort(), (int)p.ReadFloat(), (int)p.ReadFloat(), (int)p.ReadFloat());
 			character[SRProperty.Angle] = p.ReadUShort();
-			character[SRProperty.hasMovement] = p.ReadByte() == 1;
-			character[SRProperty.MovementSpeedType] = (Types.MovementSpeed)p.ReadByte();
-			if ((bool)character[SRProperty.hasMovement])
+			bool hasMovement = p.ReadByte() == 1;
+			character[SRProperty.MovementSpeedType] =(Types.MovementSpeed)p.ReadByte();
+			if (hasMovement)
 			{
 				if (character.inDungeon())
 					character[SRProperty.MovementPosition] = new SRCoord(p.ReadUShort(), p.ReadInt(), p.ReadInt(), p.ReadInt());
 				else
-					character[SRProperty.MovementPosition] = new SRCoord(p.ReadUShort(), p.ReadShort(), p.ReadShort(), p.ReadShort());
+					character[SRProperty.MovementPosition] = new SRCoord(p.ReadUShort(),(int)p.ReadUShort(), (int)p.ReadUShort(), (int)p.ReadUShort());
 			}
 			else
 			{
 				character[SRProperty.MovementActionType] = (Types.MovementAction)p.ReadByte();
 				character[SRProperty.Angle] = p.ReadUShort();
+				// Update movement position
+				character[SRProperty.MovementPosition] = character[SRProperty.Position];
 			}
-			character[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
+			character[SRProperty.LastUpdateTime] = Stopwatch.StartNew();
 			#endregion
 			character[SRProperty.LifeState] = (Types.LifeState)p.ReadByte();
 			character[SRProperty.unkByte04] = p.ReadByte();
@@ -388,18 +391,20 @@ namespace xBot.Game
 			character[SRProperty.SpeedRunning] = p.ReadFloat();
 			character[SRProperty.SpeedBerserk] = p.ReadFloat();
 			#region (Buffs)
-			SRObjectCollection Buffs = new SRObjectCollection(p.ReadByte());
-			DateTime utcNow = DateTime.UtcNow;
-			for (int j = 0; j < Buffs.Capacity; j++)
+			SRObjectDictionary<uint> Buffs = new SRObjectDictionary<uint>();
+			byte buffCount = p.ReadByte();
+			for (byte j = 0; j < buffCount; j++)
 			{
-				Buffs[j] = new SRObject(p.ReadUInt(),SRType.Skill);
-				Buffs[j][SRProperty.UniqueID] = p.ReadUInt();
-				if (Buffs[j].hasAutoTransferEffect())
+				SRObject buff = new SRObject(p.ReadUInt(),SRType.Skill);
+				uint buffUniqueID = p.ReadUInt();
+				buff[SRProperty.UniqueID] = buffUniqueID;
+				if (buff.hasAutoTransferEffect())
 				{
-					Buffs[j][SRProperty.isOwner] = p.ReadByte() == 1;
+					buff[SRProperty.isOwner] = p.ReadByte() == 1;
 				}
 				// Easy tracking
-				Buffs[j][SRProperty.OwnerUniqueID] = character[SRProperty.UniqueID];
+				buff[SRProperty.OwnerUniqueID] = character[SRProperty.UniqueID];
+				Buffs[buffUniqueID] = buff;
 			}
 			character[SRProperty.Buffs] = Buffs;
 			#endregion
@@ -411,9 +416,9 @@ namespace xBot.Game
 			character[SRProperty.JobExp] = p.ReadUInt();
 			character[SRProperty.JobContribution] = p.ReadUInt();
 			character[SRProperty.JobReward] = p.ReadUInt();
-			character[SRProperty.PVPState] = (Types.PVPState)p.ReadByte();
+			character[SRProperty.PVPStateType] = (Types.PVPState)p.ReadByte();
 			character[SRProperty.isRiding] = p.ReadByte() == 1;
-			character[SRProperty.isFighting] = p.ReadByte() == 1;
+			character[SRProperty.inCombat] = p.ReadByte() == 1;
 			if ((bool)character[SRProperty.isRiding])
 			{
 				character[SRProperty.RidingUniqueID] = p.ReadUInt();
@@ -610,36 +615,8 @@ namespace xBot.Game
 			i.Character[SRProperty.STR] = packet.ReadUShort();
 			i.Character[SRProperty.INT] = packet.ReadUShort();
 			// End of Packet
-
-			// Update GUI & game logic
-			Window w = Window.Get;
-			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
-				w.Character_pgbHP.ValueMaximum = (uint)i.Character[SRProperty.HPMax];
-			});
-			WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-				w.Character_pgbMP.ValueMaximum = (uint)i.Character[SRProperty.MPMax];
-			});
-			if ((uint)i.Character[SRProperty.HP] > (uint)i.Character[SRProperty.HPMax])
-			{
-				i.Character[SRProperty.HP] = (uint)i.Character[SRProperty.HPMax];
-				WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
-					w.Character_pgbHP.Value = (uint)i.Character[SRProperty.HP];
-				});
-			}
-			if ((uint)i.Character[SRProperty.MP] > (uint)i.Character[SRProperty.MPMax])
-			{
-				i.Character[SRProperty.MP] = (uint)i.Character[SRProperty.MPMax];
-				WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
-					w.Character_pgbMP.Value = (uint)i.Character[SRProperty.MP];
-				});
-			}
-			WinAPI.InvokeIfRequired(w.Character_lblSTR, () => {
-				w.Character_lblSTR.Text = i.Character[SRProperty.STR].ToString();
-			});
-			WinAPI.InvokeIfRequired(w.Character_lblINT, () => {
-				w.Character_lblINT.Text = i.Character[SRProperty.INT].ToString();
-			});
-		}
+			Bot.Get._OnCharacterStatsUpdated();
+    }
 		public static void CharacterExperienceUpdate(Packet packet)
 		{
 			Info i = Info.Get;
@@ -801,21 +778,21 @@ namespace xBot.Game
 					entity[SRProperty.Position] = new SRCoord(packet.ReadUShort(), (int)packet.ReadFloat(), (int)packet.ReadFloat(), (int)packet.ReadFloat());
 					entity[SRProperty.Angle] = packet.ReadUShort();
 					// Movement
-					entity[SRProperty.hasMovement] = packet.ReadByte() == 1;
+					bool hasMovement = packet.ReadByte() == 1;
 					entity[SRProperty.MovementSpeedType] = (Types.MovementSpeed)packet.ReadByte();
-					if ((bool)entity[SRProperty.hasMovement])
+					if (hasMovement)
 					{
 						if (entity.inDungeon())
 							entity[SRProperty.MovementPosition] = new SRCoord(packet.ReadUShort(), packet.ReadInt(), packet.ReadInt(), packet.ReadInt());
 						else
-							entity[SRProperty.MovementPosition] = new SRCoord(packet.ReadUShort(), packet.ReadShort(), packet.ReadShort(), packet.ReadShort());
+							entity[SRProperty.MovementPosition] = new SRCoord(packet.ReadUShort(), (int)packet.ReadUShort(), (int)packet.ReadUShort(), (int)packet.ReadUShort());
 					}
 					else
 					{
 						entity[SRProperty.MovementActionType] = (Types.MovementAction)packet.ReadByte();
 						entity[SRProperty.Angle] = packet.ReadUShort();
 					}
-					entity[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
+					entity[SRProperty.LastUpdateTime] = Stopwatch.StartNew();
 					// States
 					entity[SRProperty.LifeState] = (Types.LifeState)packet.ReadByte();
 					entity[SRProperty.unkByte01] = packet.ReadByte(); // Possibly bad status flag
@@ -826,16 +803,19 @@ namespace xBot.Game
 					entity[SRProperty.SpeedRunning] = packet.ReadFloat();
 					entity[SRProperty.SpeedBerserk] = packet.ReadFloat();
 					// Buffs
-					SRObjectCollection Buffs = new SRObjectCollection(packet.ReadByte());
-					for (int i = 0; i < Buffs.Capacity; i++)
+					SRObjectDictionary<uint> Buffs = new SRObjectDictionary<uint>();
+					byte buffCount = packet.ReadByte();
+					for (byte j = 0; j < buffCount; j++)
 					{
-						Buffs[i] = new SRObject(packet.ReadUInt(), SRType.Skill);
-						Buffs[i][SRProperty.UniqueID] = packet.ReadUInt();
-						if (Buffs[i].hasAutoTransferEffect()){
-							Buffs[i][SRProperty.isOwner] = packet.ReadByte() == 1;
+						SRObject buff = new SRObject(packet.ReadUInt(), SRType.Skill);
+						uint buffUniqueID = packet.ReadUInt();
+						buff[SRProperty.UniqueID] = buffUniqueID;
+						if (buff.hasAutoTransferEffect()){
+							buff[SRProperty.isOwner] = packet.ReadByte() == 1;
 						}
 						// Easy tracking
-						Buffs[i][SRProperty.OwnerUniqueID] = entity[SRProperty.UniqueID];
+						buff[SRProperty.OwnerUniqueID] = entity[SRProperty.UniqueID];
+						Buffs[buffUniqueID] = buff;
 					}
 					entity[SRProperty.Buffs] = Buffs;
 
@@ -853,9 +833,9 @@ namespace xBot.Game
 						entity.Name = packet.ReadAscii();
 						entity[SRProperty.JobType] = (Types.Job)packet.ReadByte();
 						entity[SRProperty.JobLevel] = packet.ReadByte();
-						entity[SRProperty.PVPState] = (Types.PVPState)packet.ReadByte();
+						entity[SRProperty.PVPStateType] = (Types.PVPState)packet.ReadByte();
 						entity[SRProperty.isRiding] = packet.ReadByte() == 1;
-						entity[SRProperty.isFighting] = packet.ReadByte();
+						entity[SRProperty.inCombat] = packet.ReadByte() == 1;
 						if ((bool)entity[SRProperty.isRiding])
 						{
 							entity[SRProperty.RidingUniqueID] = packet.ReadUInt();
@@ -927,7 +907,7 @@ namespace xBot.Game
 								if (entity.ID4 != 4)
 								{
 									// Not pet pick (Ability)
-									entity[SRProperty.PVPState] = (Types.PVPState)packet.ReadByte();
+									entity[SRProperty.PVPStateType] = (Types.PVPState)packet.ReadByte();
 								}
 								if (entity.ID4 == 5)
 								{
@@ -1067,27 +1047,80 @@ namespace xBot.Game
 		public static void EntityMovement(Packet packet)
 		{
 			SRObject entity = Info.Get.GetEntity(packet.ReadUInt());
-			entity.GetPosition(); // Force update the position
-			entity[SRProperty.hasMovement] = packet.ReadByte() == 1;
-			if ((bool)entity[SRProperty.hasMovement])
+			SRCoord currentPosition = entity.GetPosition(); // Force update the position
+			bool hasMovement = packet.ReadByte() == 1;
+			if (hasMovement)
 			{
-				if (entity.inDungeon()) 
-					entity[SRProperty.MovementPosition] = new SRCoord(packet.ReadUShort(), packet.ReadInt(), packet.ReadInt(), packet.ReadInt());
+				SRCoord newPosition;
+				if (entity.inDungeon())
+					newPosition = new SRCoord(packet.ReadUShort(), packet.ReadInt(), packet.ReadInt(), packet.ReadInt());
 				else
-					entity[SRProperty.MovementPosition] = new SRCoord(packet.ReadUShort(), packet.ReadShort(), packet.ReadShort(), packet.ReadShort());
+					newPosition = new SRCoord(packet.ReadUShort(), (int)packet.ReadUShort(), (int)packet.ReadUShort(), (int)packet.ReadUShort());
+				entity[SRProperty.MovementPosition] = newPosition;
+				// Create an angle pointing to the movement position
+				if (entity == Info.Get.Character)
+				{
+					double xTranslate = newPosition.PosX - currentPosition.PosX;
+					double yTranslate = newPosition.PosY - currentPosition.PosY;
+					if (xTranslate == 0)
+					{
+						// 90° or 270° to SRO Angle
+						entity[SRProperty.Angle] = ushort.MaxValue / 4 * (yTranslate > 0?1:3);
+					}
+					else
+					{
+						if (yTranslate == 0)
+						{
+							// 0° or 180° to SRO Angle
+							entity[SRProperty.Angle] = (xTranslate > 0 ? 0 : ushort.MaxValue / 2);
+						}
+						else
+						{
+							double angleRadians = Math.Atan(yTranslate / xTranslate);
+							// Fix direction manually
+							if(yTranslate < 0 || xTranslate < 0)
+							{
+								angleRadians += Math.PI;
+								if(xTranslate > 0)
+									angleRadians += Math.PI;
+							}
+							// Radians to SRO Angle
+							entity[SRProperty.Angle] = (ushort)Math.Round(angleRadians * ushort.MaxValue / (Math.PI * 2.0));
+						}
+					}
+				}
 			}
-			//bool flag = packet.ReadByte() == 1;
-			//if (flag)
-			//{
-			//	packet.ReadUShort(); // Region
-			//	packet.ReadUShort(); // ???
-			//	packet.ReadUShort(); // ???
-			//	packet.ReadUShort(); // ???
-			//	packet.ReadUShort(); // ???
-			//}
+			bool flag = packet.ReadByte() == 1;
+			if (flag)
+			{
+				if (hasMovement)
+				{
+					// ushort oldRegion = packet.ReadUShort();
+					// ushort unkUShort01
+					// ushort unkUShort02
+					// ushort unkUShort03
+					// ushort unkUShort04
+				}
+				else
+				{
+					// SKY WALKING
+					entity[SRProperty.Angle] = packet.ReadUShort();
+					// short unkShort01 = packet.ReadShort();
+					// short unkShort02 = packet.ReadShort();
+					// short unkShort03 = packet.ReadShort();
+					// short unkShort04 = packet.ReadShort();
+
+					// Create a long sky walking movement to calculate realtime coords
+					double angle = entity.GetRadianAngle();
+					double MovementPosX = Math.Cos(angle) * ushort.MaxValue + currentPosition.PosX;
+					double MovementPosY = Math.Sin(angle) * ushort.MaxValue + currentPosition.PosY;
+					if (entity.inDungeon())
+						entity[SRProperty.MovementPosition] = new SRCoord(MovementPosX, MovementPosY, currentPosition.Region, currentPosition.Z);
+					else
+						entity[SRProperty.MovementPosition] = new SRCoord(MovementPosX, MovementPosY);
+				}
+			}
 			// End of Packet
-			entity[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
-			entity[SRProperty.MotionStateType] = entity.GetSpeedMotionState();
 			Bot.Get._OnEntityMovement(ref entity);
 		}
 		public static void EntityMovementStuck(Packet packet)
@@ -1095,7 +1128,15 @@ namespace xBot.Game
 			SRObject entity = Info.Get.GetEntity(packet.ReadUInt());
 			entity[SRProperty.Position] = new SRCoord(packet.ReadUShort(), (int)packet.ReadFloat(), (int)packet.ReadFloat(), (int)packet.ReadFloat());
 			entity[SRProperty.Angle] = packet.ReadUShort();
-			entity[SRProperty.hasMovement] = false;
+			// End of Packet
+			entity[SRProperty.MovementPosition] = entity[SRProperty.Position];
+			Stopwatch LastUpdateTime = (Stopwatch)entity[SRProperty.LastUpdateTime];
+			LastUpdateTime.Restart();
+		}
+		public static void EntityMovementAngle(Packet packet)
+		{
+			SRObject entity = Info.Get.GetEntity(packet.ReadUInt());
+			entity[SRProperty.Angle] = packet.ReadUShort();
 		}
 		public static void EnviromentCelestialPosition(Packet packet)
 		{
@@ -1151,7 +1192,7 @@ namespace xBot.Game
 			// uint uniqueID = packet.ReadUInt();
 			// End of Packet
 		}
-		public static void EntityStateUpdate(Packet packet)
+		public static void EntityStatusUpdate(Packet packet)
 		{
 			SRObject entity = Info.Get.GetEntity(packet.ReadUInt());
 			// Check if the entity has been despawned already
@@ -1180,7 +1221,7 @@ namespace xBot.Game
 					break;
 			}
 			// End of Packet
-			Bot.Get._OnEntityStateUpdated(ref entity, updateType);
+			Bot.Get._OnEntityStatusUpdated(ref entity, updateType);
 		}
 		public static void EnviromentWheaterUpdate(Packet packet)
 		{
@@ -1269,7 +1310,7 @@ namespace xBot.Game
 			if (SRCoord.inDungeon(region))
 				player[SRProperty.Position] = new SRCoord(region, packet.ReadInt(), packet.ReadInt(), packet.ReadInt());
 			else
-				player[SRProperty.Position] = new SRCoord(region, packet.ReadShort(), packet.ReadShort(), packet.ReadShort());
+				player[SRProperty.Position] = new SRCoord(region, (int)packet.ReadUShort(), (int)packet.ReadUShort(), (int)packet.ReadUShort());
 			player[SRProperty.unkByte02] = packet.ReadByte(); // 2 = unkByte08.
 			player[SRProperty.unkByte03] = packet.ReadByte();
 			player[SRProperty.unkByte04] = packet.ReadByte();
@@ -1599,6 +1640,12 @@ namespace xBot.Game
 					inventory[slotInitial][SRProperty.Quantity] = (ushort)((ushort)inventory[slotInitial][SRProperty.Quantity] - quantityMoved);
 				}
 			}
+
+			if (slotInitial == 6 || slotFinal == 6)
+			{
+				Bot.Get._OnWeaponChanged();
+			}
+
 			bool isDoubleMovement = p.ReadByte() == 1;
 			if (isDoubleMovement)
 				InventoryItemMovement_InventoryToInventory(p);
@@ -1691,9 +1738,20 @@ namespace xBot.Game
 			else
 			{
 				SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-				inventory[slotInventory] = ItemParsing(p);
+				
+				// Check quantity picked
+				ushort quantityPickedUp = 1;
+				if(inventory[slotInventory] != null){
+					quantityPickedUp = (ushort)inventory[slotInventory][SRProperty.Quantity];
+					inventory[slotInventory] = ItemParsing(p);
+					quantityPickedUp = (ushort)((ushort)inventory[slotInventory][SRProperty.Quantity] - quantityPickedUp);
+				}
+				else
+				{
+					inventory[slotInventory] = ItemParsing(p);
+				}
 
-				Bot.Get._OnItemPickedUp(inventory[slotInventory]);
+				Bot.Get._OnItemPickedUp(inventory[slotInventory],quantityPickedUp);
 			}
 		}
 		private static void InventoryItemMovement_InventoryToGround(Packet p)
@@ -1766,7 +1824,7 @@ namespace xBot.Game
 				buyBack[slotBuyBack - 1] = inventory[slotInventory].Clone();
 				buyBack[slotBuyBack - 1][SRProperty.Quantity] = quantitySold;
 				inventory[slotInventory][SRProperty.Quantity] = (ushort)((ushort)inventory[slotInventory][SRProperty.Quantity] - quantitySold);
-      }
+			}
 		}
 		private static void InventoryItemMovement_PetToPet(Packet p)
 		{
@@ -2358,11 +2416,9 @@ namespace xBot.Game
 
 			// Ignore flashy buffs 
 			if((uint)buff[SRProperty.DurationMax] > 0){
-				SRObject entity = Info.Get.GetEntity(uniqueID);
 				// Easy tracking
 				buff[SRProperty.OwnerUniqueID] = uniqueID;
-
-				Bot.Get._OnEntityBuffAdded(ref entity, ref buff);
+				Bot.Get._OnEntityBuffAdded(uniqueID,buff);
 			}
 		}
 		public static void EntitySkillBuffRemoved(Packet packet)
@@ -2389,7 +2445,13 @@ namespace xBot.Game
 				uint lastSkillID = i.GetLastSkillID(newSkill);
 
 				Window w = Window.Get;
-				if (lastSkillID != 0)
+				if (lastSkillID == 0)
+				{
+					// Add new skill
+					Skills[newSkill.ID] = newSkill;
+					w.AddSkill(newSkill);
+				}
+				else
 				{
 					// Update/override if the skill is sharing the same groupname
 					Skills.SetKey(lastSkillID, newSkill.ID);
@@ -2399,15 +2461,63 @@ namespace xBot.Game
 					// Update the skill name/key from every list
 					w.UpdateSkillNames(lastSkillID, newSkill.ID);
 				}
-				else
+			}
+		}
+		public static void MasterySkillLevelDownResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				SRObject newSkill = new SRObject(packet.ReadUInt(), SRType.Skill);
+
+				// Update skills
+				Info i = Info.Get;
+				SRObjectDictionary<uint> Skills = (SRObjectDictionary<uint>)i.Character[SRProperty.Skills];
+
+				// Look for the skill with the next groupname
+				uint nextSkillID = i.GetNextSkillID(newSkill);
+
+				Window w = Window.Get;
+				if (nextSkillID == 0) // Just in case
 				{
 					// Add new skill
 					Skills[newSkill.ID] = newSkill;
 					w.AddSkill(newSkill);
 				}
+				else
+				{
+					SRObject skill = Skills[nextSkillID];
+					if (skill == null)
+					{
+						// Remove skill from mastery
+						w.RemoveSkill(newSkill.ID);
+						Skills.RemoveKey(newSkill.ID);
+          }
+					else
+					{
+						// Update/override if the skill is sharing the same groupname
+						Skills.SetKey(nextSkillID, newSkill.ID);
+
+						skill.CopyFrom(newSkill);
+						// Update the skill name/key from every list
+						w.UpdateSkillNames(nextSkillID, newSkill.ID);
+					}
+				}
 			}
 		}
 		public static void MasteryLevelUpResponse(Packet packet)
+		{
+			bool success = packet.ReadByte() == 1;
+			if (success)
+			{
+				uint masteryID = packet.ReadUInt();
+
+				SRObjectCollection masteries = (SRObjectCollection)Info.Get.Character[SRProperty.Masteries];
+				SRObject mastery = masteries.Find(m => m.ID == masteryID);
+				mastery[SRProperty.Level] = packet.ReadByte();
+			}
+		}
+		public static void MasteryLevelDownResponse(Packet packet)
 		{
 			bool success = packet.ReadByte() == 1;
 			if (success)
@@ -2426,24 +2536,40 @@ namespace xBot.Game
 			entity[SRProperty.SpeedWalking] = packet.ReadFloat();
 			entity[SRProperty.SpeedRunning] = packet.ReadFloat();
 		}
-
-		public static void EntityMotionUpdate(Packet packet)
+		public static void EntityStateUpdate(Packet packet)
 		{
 			SRObject entity = Info.Get.GetEntity(packet.ReadUInt());
-			entity.GetPosition(); // Force update the current position
-
-			byte unkByte01 = packet.ReadByte();
-			Types.MotionState newMotionState = (Types.MotionState)packet.ReadByte();
-			switch (newMotionState)
+			byte updateType = packet.ReadByte();
+			byte updateState = packet.ReadByte();
+			switch (updateType)
 			{
-				case Types.MotionState.Running:
-					entity[SRProperty.MovementSpeedType] = Types.MovementSpeed.Running;
+				case 0: // LifeState
+					entity[SRProperty.LifeState] = (Types.LifeState)updateState;
 					break;
-				case Types.MotionState.Walking:
-					entity[SRProperty.MovementSpeedType] = Types.MovementSpeed.Walking;
+				case 1: // MotionState
+					entity.GetPosition(); // Force update the position before changing
+					entity[SRProperty.MotionStateType] = (Types.MotionState)updateState;
+					switch ((Types.MotionState)updateState)
+					{
+						case Types.MotionState.Running:
+							entity[SRProperty.MovementSpeedType] = Types.MovementSpeed.Running;
+							break;
+						case Types.MotionState.Walking:
+							entity[SRProperty.MovementSpeedType] = Types.MovementSpeed.Walking;
+							break;
+					}
 					break;
-				default:
-					entity[SRProperty.MotionStateType] = newMotionState;
+				case 4:
+					entity[SRProperty.PlayerStateType] = (Types.PlayerState)updateState;
+					break;
+				case 7:
+					entity[SRProperty.PVPStateType] = (Types.PVPState)updateState;
+					break;
+				case 8:
+					entity[SRProperty.inCombat] = updateState == 1;
+					break;
+				case 11:
+					entity[SRProperty.ScrollMode] = (Types.ScrollMode)updateState;
 					break;
 			}
 		}

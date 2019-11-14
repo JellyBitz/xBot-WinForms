@@ -9,59 +9,79 @@ namespace xBot.Game.Objects
 		public double PosX { get; }
 		public double PosY { get; }
 		public ushort Region { get; }
+		public byte ySector { get; }
+		public byte xSector { get; }
 		public SRCoord(double PosX, double PosY)
 		{
 			this.PosX = PosX;
 			this.PosY = PosY;
 
-			X = (int)Math.Round(PosX) % 192 * 10;
-			Y = (int)Math.Round(PosY) % 192 * 10;
-			Z = 0;
+			this.X = (int)(Math.Abs(PosX) % 192.0 * 10.0);
+			if (PosX < 0)
+				this.X = 1920 - X;
+			this.Y = (int)(Math.Abs(PosY) % 192.0 * 10.0);
+			if (PosY < 0)
+				this.Y = 1920 - Y;
+			this.Z = 0;
 
-			byte xSector = (byte)(((int)Math.Round(PosX) - (int)Math.Round(PosX) % 192) / 192 + 135);
-			byte ySector = (byte)(((int)Math.Round(PosY) - (int)Math.Round(PosY) % 192) / 192 + 92);
-			Region = (ushort)((ySector << 8) | xSector);
+			this.xSector = (byte)Math.Round((PosX - X / 10.0) / 192.0 + 135);
+			this.ySector = (byte)Math.Round((PosY - Y / 10.0) / 192.0 + 92);
+			this.Region = (ushort)((ySector << 8) | xSector);
 		}
+		public SRCoord(ushort Region, int X, int Z, int Y)
+		{
+			this.Region = Region;
+			if (inDungeon())
+			{
+				this.PosX = 128 * 192 + X / 10;
+				this.PosY = 128 * 192 + Y / 10;
+				this.xSector = (byte)(((128.0 * 192.0 + this.PosX) / 192.0) - 128);
+				this.ySector = (byte)(((128.0 * 192.0 + this.PosY) / 192.0) - 128);
+			}
+			else
+			{
+				this.xSector = (byte)(Region & 0xFF);
+				this.ySector = (byte)(Region >> 8);
+				this.PosX = (xSector - 135) * 192 + X / 10;
+				this.PosY = (ySector - 92) * 192 + Y / 10;
+			}
 
+			this.X = X;
+			this.Y = Y;
+			this.Z = Z;
+		}
 		public SRCoord(double PosX, double PosY, ushort Region, int Z = 0)
 		{
 			this.PosX = PosX;
 			this.PosY = PosY;
 
-			X = (int)Math.Round(PosX) % 192 * 10;
-			Y = (int)Math.Round(PosY) % 192 * 10;
-			this.Z = Z;
-
-			this.Region = Region;
-		}
-		public SRCoord(ushort Region, int X, int Z, int Y)
-		{
-			byte ySector = (byte)(Region >> 8);
-			byte xSector = (byte)(Region & 0xFF);
-
 			this.Region = Region;
 			if (inDungeon())
 			{
-				PosX = (xSector - 128) * 192 + X / 10;
-				PosY = (ySector - 128) * 192 + Y / 10;
+				this.xSector = (byte)(((128.0 * 192.0 + this.PosX) / 192.0) - 128);
+				this.ySector = (byte)(((128.0 * 192.0 + this.PosY) / 192.0) - 128);
+				X = (int)Math.Round((this.PosX - 128.0 * 192.0) * 10.0);
+				Y = (int)Math.Round((this.PosY - 128.0 * 192.0) * 10.0);
 			}
 			else
 			{
-				PosX = (xSector - 135) * 192 + X / 10;
-				PosY = (ySector - 92) * 192 + Y / 10;
+				this.xSector = (byte)Math.Round((PosX - X / 10.0) / 192.0 + 135);
+				this.ySector = (byte)Math.Round((PosY - Y / 10.0) / 192.0 + 92);
+
+				this.X = (int)(Math.Abs(PosX) % 192.0 * 10.0);
+				if (PosX < 0)
+					this.X = 1920 - X;
+				this.Y = (int)(Math.Abs(PosY) % 192.0 * 10.0);
+				if (PosY < 0)
+					this.Y = 1920 - Y;
 			}
-			this.X = X;
-			this.Y = Y;
+
 			this.Z = Z;
 		}
-		public bool Equals(SRCoord Coord){
-			double x = PosX-Coord.PosX;
-			if(x <= 1){
-				double y = PosY-Coord.PosY;
-				if(y <= 1){
-					return Region == Coord.Region;
-				}
-			}
+		public bool Equals(SRCoord Coord)
+		{
+			if (this.Region == this.Region)
+				return this.DistanceTo(Coord) <= 1;
 			return false;
 		}
 		public double DistanceTo(double PosX, double PosY)
@@ -72,9 +92,9 @@ namespace xBot.Game.Objects
 		{
 			return DistanceTo(Coord.PosX, Coord.PosY);
 		}
-		public int TimeTo(SRCoord Coord,double SpeedPerMs)
+		public long TimeTo(SRCoord Coord, double SpeedPerMs)
 		{
-			return (int)(DistanceTo(Coord) / SpeedPerMs);
+			return (long)Math.Round(DistanceTo(Coord) / SpeedPerMs);
 		}
 		public override string ToString()
 		{
@@ -86,7 +106,7 @@ namespace xBot.Game.Objects
 		}
 		public static bool inDungeon(ushort Region)
 		{
-			return Region >= short.MaxValue;
+			return Region > short.MaxValue;
 		}
 		public SRLocation GetLocation()
 		{
@@ -95,6 +115,10 @@ namespace xBot.Game.Objects
 				default:
 					return SRLocation.WorldMap;
 			}
+		}
+		private static double GetModule(double value, double module)
+		{
+			return value - (module * (int)(value / module));
 		}
 	}
 	public enum SRLocation

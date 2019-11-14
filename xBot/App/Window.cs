@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
-using CefSharp;
-using CefSharp.WinForms;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Threading;
@@ -15,6 +13,8 @@ using xBot.Game.Objects;
 using SecurityAPI;
 using xBot.Network;
 using xGraphics;
+using AutoUpdaterDotNET;
+using System.Reflection;
 
 namespace xBot.App
 {
@@ -28,18 +28,16 @@ namespace xBot.App
 		/// </summary>
 		private static Window _this = null;
 		/// <summary>
-		/// Used to show interactive extern minimap.
-		/// </summary>
-		private ChromiumWebBrowser Minimap_wbrChromeMap = null;
-		/// <summary>
 		/// Advertising window.
 		/// </summary>
 		private Ads adsWindow;
 		private Thread tAdsWindow;
+		private bool isUpdateAvailable;
 		private Window()
 		{
 			InitializeComponent();
 			InitializeFonts(this);
+			InitializePerformance(this);
 			InitializeValues();
 		}
 		/// <summary>
@@ -62,6 +60,17 @@ namespace xBot.App
 			// Using fontName as TAG to be selected from WinForms
 			c.Font = Fonts.GetFont(c.Font, (string)c.Tag);
 			c.Tag = null;
+			for (int j = 0; j < c.Controls.Count; j++)
+				InitializeFonts(c.Controls[j]);
+		}
+		private void InitializePerformance(Control c)
+		{
+			if(typeof(Panel) == c.GetType())
+			{
+				typeof(Panel).InvokeMember("DoubleBuffered",
+					BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+					null, c, new object[] { true });
+			}
 			for (int j = 0; j < c.Controls.Count; j++)
 				InitializeFonts(c.Controls[j]);
 		}
@@ -96,8 +105,6 @@ namespace xBot.App
 			Chat_cmbxMsgType.SelectedIndex = 0;
 
 			TabPageH_Option_Click(this.TabPageH_Settings_Option01, null);
-			Settings_cmbxHWIDClientSaveFrom.SelectedIndex =
-			Settings_cmbxHWIDServerSendTo.SelectedIndex =
 			Settings_cmbxCreateCharRace.SelectedIndex =
 			Settings_cmbxCreateCharGenre.SelectedIndex =
 			Settings_cmbxInjectTo.SelectedIndex = 0;
@@ -164,7 +171,7 @@ namespace xBot.App
 				Control_Click(Login_btnStart, null);
 			}
 		}
-		private void ShowAds()
+		private void ShowAdvertising()
 		{
 			tAdsWindow = new Thread((ThreadStart)delegate{
 				try
@@ -180,7 +187,8 @@ namespace xBot.App
 					if (adsWindow.isLoaded())
 					{
 						// Show Advertising
-						WinAPI.InvokeIfRequired(this, () => {
+						WinAPI.InvokeIfRequired(this, () =>
+						{
 							adsWindow.ShowDialog(this);
 						});
 					}
@@ -302,24 +310,29 @@ namespace xBot.App
 		}
 		public void AddBuff(SRObject Buff)
 		{
-			ListViewItem item = new ListViewItem();
-			item.ToolTipText = Buff.Name;
-			item.Name = Buff.ID.ToString();
+			Label item = new Label();
+			item.Size = lstimgIcons.ImageSize;
+      item.Name = "pnlBuffs_"+Buff[SRProperty.UniqueID];
+			item.ImageList = this.lstimgIcons;
 			item.ImageKey = GetImageKeyIcon((string)Buff[SRProperty.Icon]);
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () =>{
-				Character_lstvBuffs.Items.Add(item);
+			item.MouseClick += new MouseEventHandler(this.Label_pnlBuffs_MouseClick);
+			ToolTips.SetToolTip(item, Buff.Name);
+			// Keep a whole reference, easier skill checks
+			item.Tag = Buff;
+			WinAPI.InvokeIfRequired(Character_pnlBuffs, () =>{
+				Character_pnlBuffs.Controls.Add(item);
 			});
 		}
-		public void RemoveBuff(uint SkillID)
+		public void RemoveBuff(uint buffUniqueID)
 		{
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
-				Character_lstvBuffs.Items.RemoveByKey(SkillID.ToString());
+			WinAPI.InvokeIfRequired(Character_pnlBuffs, () => {
+				Character_pnlBuffs.Controls.RemoveByKey("pnlBuffs_"+buffUniqueID);
 			});
 		}
 		public void Buffs_Clear()
 		{
-			WinAPI.InvokeIfRequired(Character_lstvBuffs, () => {
-				Character_lstvBuffs.Items.Clear();
+			WinAPI.InvokeIfRequired(Character_pnlBuffs, () => {
+				Character_pnlBuffs.Controls.Clear();
 			});
 		}
 		/// <summary>
@@ -359,8 +372,23 @@ namespace xBot.App
 		}
 		public void RemoveSkill(uint SkillID)
 		{
+			string key = SkillID.ToString();
+			// Invoke the TabPageV that contains the Skill list to drag
+			WinAPI.InvokeIfRequired(Skills_lstvSkills.Parent, () => {
+				this.Skills_lstvSkills.Items.RemoveByKey(key);
+				// An array of references cannot be possible.. Using the long way "copy & paste" code :(
+				this.Skills_lstvAttackMobType_General.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_Champion.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_Giant.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_PartyGeneral.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_PartyChampion.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_PartyGiant.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_Unique.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_Elite.Items.RemoveByKey(key);
+				this.Skills_lstvAttackMobType_Event.Items.RemoveByKey(key);
+			});
 			WinAPI.InvokeIfRequired(Skills_lstvSkills, () => {
-				Skills_lstvSkills.Items.RemoveByKey(SkillID.ToString());
+				Skills_lstvSkills.Items.RemoveByKey(key);
 			});
 		}
 		public void Skills_Clear()
@@ -408,6 +436,7 @@ namespace xBot.App
 			}
 			return Pk2Path;
 		}
+
 		/// <summary>
 		/// Fix the text using a pattern restriction. Returns empty if the pattern is not found.
 		/// </summary>
@@ -460,6 +489,25 @@ namespace xBot.App
 			WinAPI.InvokeIfRequired(Character_lblGold, () => {
 				Character_lblGold.ForeColor = ForeColor;
 				Character_lblGold.Text = Text;
+			});
+		}
+		public void Character_SetPosition(SRCoord p)
+		{
+			WinAPI.InvokeIfRequired(Character_lblLocation, () => {
+				if (p.Region.ToString() != Character_lblLocation.Text)
+					Character_lblLocation.Text = Info.Get.GetRegion(p.Region);
+			});
+			WinAPI.InvokeIfRequired(Minimap_panelCoords, () => {
+				Minimap_tbxX.Text = p.X.ToString();
+				Minimap_tbxY.Text = p.Y.ToString();
+				Minimap_tbxZ.Text = p.Z.ToString();
+				Minimap_tbxRegion.Text = p.Region.ToString();
+			});
+			WinAPI.InvokeIfRequired(Character_lblCoordX, () => {
+				Character_lblCoordX.Text = "X : " + Math.Round(p.PosX);
+			});
+			WinAPI.InvokeIfRequired(Character_lblCoordY, () => {
+				Character_lblCoordY.Text = "Y : " + Math.Round(p.PosY);
 			});
 		}
 		public void Inventory_ItemsRefresh()
@@ -555,11 +603,11 @@ namespace xBot.App
 				if (this.Training_lstvAreas.Tag != null)
 				{
 					ListViewItem item = (ListViewItem)this.Training_lstvAreas.Tag;
-          result = new SRCoord((ushort)item.SubItems[1].Tag, (int)item.SubItems[2].Tag, (int)item.SubItems[4].Tag, (int)item.SubItems[3].Tag);
+					result = new SRCoord((ushort)item.SubItems[1].Tag, (int)item.SubItems[2].Tag, (int)item.SubItems[4].Tag, (int)item.SubItems[3].Tag);
 				}
 			});
 			return result;
-    }
+		}
 		public int TrainingArea_GetRadius()
 		{
 			int result = 0;
@@ -681,63 +729,105 @@ namespace xBot.App
 			}
 			return SkillShots;
 		}
-		/// <summary>
-		/// Load WebBrowser diplaying the Silkroad world map.
-		/// </summary>
-		public void Minimap_Load()
+		public void Minimap_Character_View(SRCoord position,double degreeAngle)
 		{
-			string path = Directory.GetCurrentDirectory() + "\\Minimap\\index.html";
-			if (Minimap_wbrChromeMap == null && File.Exists(path))
+			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
+				Minimap_pnlMap.ViewPoint = position;
+				// Bring to front
+				if(Minimap_pnlMap.Controls.GetChildIndex(Minimap_xmcCharacterMark) != 0)
+					Minimap_pnlMap.Controls.SetChildIndex(Minimap_xmcCharacterMark, -1);
+			});
+			Minimap_Character_Angle(degreeAngle);
+		}
+		public void Minimap_Character_Angle(double degreeAngle)
+		{
+			Bitmap mm_sign_character = Properties.Resources.mm_sign_character;
+			// Generate an image rotation
+			Bitmap mm_sign_character_rotated = new Bitmap(mm_sign_character.Width, mm_sign_character.Height);
+			mm_sign_character_rotated.SetResolution(mm_sign_character.HorizontalResolution, mm_sign_character.VerticalResolution);
+			Graphics g = Graphics.FromImage(mm_sign_character_rotated);
+			g.TranslateTransform(mm_sign_character.Width / 2, mm_sign_character.Height / 2);
+			g.RotateTransform(-(float)degreeAngle);
+			g.TranslateTransform(-mm_sign_character.Width / 2, -mm_sign_character.Height / 2);
+			g.DrawImage(mm_sign_character, new Point(0, 0));
+			// Update pointer Image angle
+			WinAPI.InvokeIfRequired(Minimap_xmcCharacterMark, () => {
+				Minimap_xmcCharacterMark.Image = mm_sign_character_rotated;
+      });
+		}
+    public void Minimap_Object_Add(uint UniqueID, SRObject Object)
+		{
+			xMapControl marker = new xMapControl();
+			// Add image
+			if (Object.isMob())
 			{
-				// Initialize cef with the provided settings
-				CefSettings settings = new CefSettings();
-				Cef.Initialize(settings);
-				// Empty URL because DockStyle.Fill can (maybe) slow down the responsive process.
-				Minimap_wbrChromeMap = new ChromiumWebBrowser("");
-				Minimap_wbrChromeMap.Dock = DockStyle.Fill;
-				Minimap_wbrChromeMap.Load(path);
-				Minimap_panelMap.Controls.Add(Minimap_wbrChromeMap);
+				Types.Mob type = (Types.Mob)Object[SRProperty.MobType];
+				if (type == Types.Mob.Unique || type == Types.Mob.Titan)
+					marker.Image = Properties.Resources.mm_sign_unique;
+				else
+				marker.Image = Properties.Resources.mm_sign_monster;
+			}
+			else if(Object.isNPC())
+				marker.Image = Properties.Resources.mm_sign_npc;
+			else if (Object.isPlayer())
+				marker.Image = Properties.Resources.mm_sign_otherplayer;
+			else if (Object.isPet())
+				marker.Image = Properties.Resources.mm_sign_animal;
+			else if (Object.isTeleport())
+			{
+				ContextMenuStrip menuTeleport = new ContextMenuStrip();
+				SRObjectCollection teleportOptions = (SRObjectCollection)Object[SRProperty.TeleportOptions];
+        for(int t = 0; t < teleportOptions.Capacity; t++)
+				{
+					ToolStripMenuItem item = new ToolStripMenuItem();
+					item.Text = teleportOptions[t].Name;
+					item.Name = teleportOptions[t].ID.ToString();
+					item.Tag = Object;
+					item.Click += Menu_Teleport_Click;
+
+					menuTeleport.Items.Add(item);
+        }
+				if (menuTeleport.Items.Count > 0)
+				{
+					marker.ContextMenuStrip = menuTeleport;
+					marker.Image = Properties.Resources.xy_gate;
+				}
+      }
+
+			// Add only if has image
+			if (marker.Image != null)
+			{
+				// Expand PictureBox size
+				marker.Size = marker.Image.Size;
+				// Fix center
+				Point location = Minimap_pnlMap.GetPoint(Object.GetPosition());
+				location.X -= marker.Image.Size.Width/2;
+				location.Y -= marker.Image.Size.Height/2;
+				marker.Location = location;
+				// Save full reference
+				marker.Tag = Object;
+				WinAPI.InvokeIfRequired(this, () => {
+					ToolTips.SetToolTip(marker, Object.Name);
+				});
+				WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
+					Minimap_pnlMap.AddMarker(UniqueID, marker);
+        });
 			}
 		}
-		public void Minimap_ObjectPointer_Clear()
+		public void Minimap_Object_Remove(uint UniqueID)
 		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveAllExtraPointers();", true);
-			}
+			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
+				Minimap_pnlMap.RemoveMarker(UniqueID);
+			});
+		}
+		public void Minimap_Objects_Clear()
+		{
+			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
+				Minimap_pnlMap.ClearMarkers();
+			});
 		}
 
-		public void Minimap_CharacterPointer_Move(SRCoord position)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MovePointer(" + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-
-		public void Minimap_ObjectPointer_Add(uint UniqueID, string servername, string htmlPopup, SRCoord position)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.AddExtraPointer('" + UniqueID + "','" + servername + "','" + htmlPopup + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Move(uint UniqueID, SRCoord position)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.MoveExtraPointer('" + UniqueID + "'," + position.Region + "," + position.X + "," + position.Y + "," + position.Z + ");", true);
-			}
-		}
-		public void Minimap_ObjectPointer_Remove(uint UniqueID)
-		{
-			if (Minimap_wbrChromeMap != null)
-			{
-				WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded(Minimap_wbrChromeMap, "SilkroadMap.RemoveExtraPointer('" + UniqueID + "');", true);
-			}
-		}
-
-		#region (GUI theme design behaviour)
+		#region (GUI theme design behavior)
 		/// <summary>
 		/// Set the control to be used as window drag.
 		/// </summary>
@@ -921,31 +1011,37 @@ namespace xBot.App
 			// Welcome
 			rtbxLogs.AppendText(string.Format("{0} Welcome to {1} v{2} | Made by Engels \"JellyBitz\" Quintero{3}{0} Discord : JellyBitz#7643 | FaceBook : @ImJellyBitz", WinAPI.GetDate(), base.ProductName, base.ProductVersion, Environment.NewLine));
 			LogProcess();
-			// Load basic
 			Settings.LoadBotSettings();
+			// Load basic
 			LoadCommandLine();
-			// Try to load adverstising
-			ShowAds();
 			// Force visible
 			Activate();
 			BringToFront();
+			// Check for updates
+			AutoUpdater.ReportErrors = true;
+			AutoUpdater.OpenDownloadPage = true;
+			AutoUpdater.CheckForUpdateEvent += new AutoUpdater.CheckForUpdateEventHandler(this.CheckUpdates_Completed);
+			AutoUpdater.Start("http://bit.ly/xBot-update-check");
 		}
 		/// <summary>
 		/// Close all necessary to not leaving any background process.
 		/// </summary>
 		private void Window_Closing(object sender, FormClosingEventArgs e)
 		{
-			if (Bot.Get.Proxy != null)
-			{
+			if (Bot.Get.Proxy != null && Bot.Get.Proxy.isRunning)
 				Bot.Get.Proxy.Stop();
-			}
-			if(tAdsWindow.ThreadState == System.Threading.ThreadState.Running)
-			{
+			if(tAdsWindow != null && tAdsWindow.ThreadState == System.Threading.ThreadState.Running)
 				tAdsWindow.Abort();
-			}
-			if (Minimap_wbrChromeMap != null)
-			{
-				Cef.Shutdown();
+		}
+		/// <summary>
+		/// Updates checked.
+		/// </summary>
+		private void CheckUpdates_Completed(UpdateInfoEventArgs e)
+		{
+			// Try to load adverstising after checking updates
+			if(e != null){
+				this.isUpdateAvailable = e.IsUpdateAvailable;
+				ShowAdvertising();
 			}
 		}
 		/// <summary>
@@ -990,63 +1086,59 @@ namespace xBot.App
 					switch (c.Text)
 					{
 						case "START":
-							if (Login_cmbxSilkroad.Text == "")
+							if (Login_cmbxSilkroad.Text == ""){
+								MessageBox.Show(this, "Select your Silkroad at first!", "xBot", MessageBoxButtons.OK);
 								return;
+							}
 							Info i = Info.Get;
 							// Check if database has been generated previously
 							if (!i.ConnectToDatabase(Login_cmbxSilkroad.Text))
 							{
-								MessageBox.Show(this, "The database \"" + Settings_tbxSilkroadName.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
+								MessageBox.Show(this, "The database \"" + Login_cmbxSilkroad.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
 								TabPageV_Option_Click(TabPageV_Control01_Option14, null);
 								TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 								return;
 							}
-
-							TreeNode silkroad = Settings_lstrSilkroads.Nodes[i.Silkroad];
+							
+							ListViewItem silkroad = Settings_lstvSilkroads.Items[Login_cmbxSilkroad.Text];
 
 							// SR_Client Path check
 							if (!Login_rbnClientless.Checked)
 							{
-								if (!silkroad.Nodes.ContainsKey("ClientPath"))
+								if ((string)silkroad.SubItems[7].Tag == "")
 								{
 									MessageBox.Show(this, "You need to select the SRO_Client path first.", "xBot", MessageBoxButtons.OK);
 									TabPageV_Option_Click(TabPageV_Control01_Option14, null);
 									TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 									return;
 								}
-								Info.Get.ClientPath = (string)silkroad.Nodes["ClientPath"].Tag;
-							}
+								i.ClientPath = (string)silkroad.SubItems[7].Tag;
+              }
 
 							// Add possibles Gateways/Ports
-							List<string> hosts = new List<string>();
-							foreach (TreeNode host in silkroad.Nodes["Hosts"].Nodes)
-								hosts.Add(host.Text);
-							List<ushort> ports = new List<ushort>();
-							ports.Add((ushort)silkroad.Nodes["Port"].Tag);
-							if (hosts.Count == 0 || ports.Count == 0)
+							List<string> hosts = new List<string>((List<string>)silkroad.SubItems[4].Tag);
+							if (hosts.Count == 0)
+							{
 								return; // Just in case
-
-							i.Locale = byte.Parse(silkroad.Nodes["Locale"].Tag.ToString());
+							}
+							List<ushort> ports = new List<ushort>();
+							ports.Add((ushort)silkroad.SubItems[3].Tag);
+							
+							i.Locale = (byte)silkroad.SubItems[1].Tag;
 							i.SR_Client = "SR_Client";
-							i.Version = uint.Parse(silkroad.Nodes["Version"].Tag.ToString());
+							i.Version = (uint)silkroad.SubItems[2].Tag;
 
 							// Lock Silkroad selection
 							EnableControl(Login_btnLauncher, false);
-							EnableControl(Settings_btnAddSilkroad, false);
 							Login_cmbxSilkroad.Enabled = false;
 
-							// HWID Setup
+							// Extended protocol Setup
 							Bot b = Bot.Get;
-							ushort clientOp = (ushort)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag;
-							ushort serverOp = (ushort)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag;
-							string saveFrom = (string)silkroad.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
-							string sendTo = (string)silkroad.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
-							bool sendOnlyOnce = (bool)silkroad.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
-							b.SetHWID(clientOp, saveFrom, serverOp, sendTo, sendOnlyOnce);
+							b.SetExtendedProtocol();
 
 							// Creating Proxy
 							b.Proxy = new Proxy(Login_rbnClientless.Checked, hosts, ports);
-							b.Proxy.RandomHost = (bool)silkroad.Nodes["RandomHost"].Tag;
+							b.Proxy.RandomHost = (bool)silkroad.SubItems[5].Tag;
 							b.Proxy.Start();
 							break;
 						case "STOP":
@@ -1073,21 +1165,21 @@ namespace xBot.App
 				case "Login_btnLauncher":
 					if (Login_cmbxSilkroad.Text != "")
 					{
-						TreeNode silkroad = Settings_lstrSilkroads.Nodes[Login_cmbxSilkroad.Text];
-						if (silkroad.Nodes.ContainsKey("LauncherPath"))
-						{
-							Process.Start((string)silkroad.Nodes["LauncherPath"].Tag);
-						}
-						else
+						ListViewItem sro = Settings_lstvSilkroads.Items[Login_cmbxSilkroad.Text];
+						if ((string)sro.SubItems[6].Tag == "")
 						{
 							MessageBox.Show(this, "You need to select the Launcher path first.", "xBot", MessageBoxButtons.OK);
 							TabPageV_Option_Click(TabPageV_Control01_Option14, null);
 							TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 						}
+						else
+						{
+							Process.Start((string)sro.SubItems[6].Tag);
+						}
 					}
 					break;
 				case "Login_pbxAds":
-					ShowAds();
+					ShowAdvertising();
 					break;
 				case "Character_pgbHP":
 				case "Character_pgbMP":
@@ -1130,10 +1222,10 @@ namespace xBot.App
 					if (Bot.Get.inGame)
 					{
 						// Check if already exists
-						if (Party_tbxPlayer.Text != "" && !Party_lstvPartyList.Items.ContainsKey(Party_tbxPlayer.Text.ToLower()))
+						if (Party_tbxPlayer.Text != "" && !Party_lstvPartyList.Items.ContainsKey(Party_tbxPlayer.Text.ToUpper()))
 						{
 							ListViewItem player = new ListViewItem(Party_tbxPlayer.Text);
-							player.Name = player.Text.ToLower();
+							player.Name = player.Text.ToUpper();
 							Party_lstvPartyList.Items.Add(player);
 
 							Party_tbxPlayer.Text = "";
@@ -1145,14 +1237,15 @@ namespace xBot.App
 				case "Party_btnAddLeader":
 					if (Bot.Get.inGame)
 					{
-						if (Party_tbxLeader.Text != "" && !Party_lstvLeaderList.Items.ContainsKey(Party_tbxLeader.Text.ToLower()))
+						if (Party_tbxLeader.Text != "" && !Party_lstvLeaderList.Items.ContainsKey(Party_tbxLeader.Text.ToUpper()))
 						{
 							ListViewItem leader = new ListViewItem(Party_tbxLeader.Text);
-							leader.Name = leader.Text.ToLower();
+							leader.Name = leader.Text.ToUpper();
 							Party_lstvLeaderList.Items.Add(leader);
 
 							Party_tbxLeader.Text = "";
 							Settings.SaveCharacterSettings();
+							Bot.Get.CheckAutoParty();
 						}
 					}
 					break;
@@ -1185,6 +1278,43 @@ namespace xBot.App
 						PacketBuilder.RequestPartyMatch(byte.Parse(Party_lblPageNumber.Text));
 					}
 					break;
+				case "Skills_btnAddAttack":
+					{
+						if (Skills_lstvSkills.SelectedItems.Count > 0) {
+							ListView lstvAttackMobType = (ListView)Skills_cmbxAttackMobType.Tag;
+							bool itemUpdated = false;
+							foreach (ListViewItem item in Skills_lstvSkills.SelectedItems)
+							{
+								if (!lstvAttackMobType.Items.ContainsKey(item.Name))
+								{
+									SRObject skill = (SRObject)item.Tag;
+									// Check if is an attacking skill
+									if (skill.isAttackingSkill())
+									{
+										ListViewItem copy = (ListViewItem)item.Clone();
+										copy.Name = item.Name;
+										lstvAttackMobType.Items.Add(copy);
+										itemUpdated = true;
+									}
+								}
+							}
+							if (itemUpdated)
+								Settings.SaveCharacterSettings();
+						}
+          }
+					break;
+				case "Skills_btnRemAttack":
+					{
+						ListView lstvAttackMobType = (ListView)Skills_cmbxAttackMobType.Tag;
+						if (lstvAttackMobType.SelectedItems.Count > 0)
+						{
+              foreach (ListViewItem item in lstvAttackMobType.SelectedItems)
+								item.Remove();
+							if(Bot.Get.inGame)
+								Settings.SaveCharacterSettings();
+						}
+					}
+					break;
 				case "Training_btnGetCoordinates":
 					if (Bot.Get.inGame && Training_lstvAreas.SelectedItems.Count == 1)
 					{
@@ -1210,7 +1340,6 @@ namespace xBot.App
 							fileDialog.Multiselect = false;
 							fileDialog.ValidateNames = true;
 							fileDialog.Title = "Select your Script file";
-							fileDialog.FileName = "Media.pk2";
 							fileDialog.Filter = "Script files (*.xcript)|*.xcript|All files (*.*)|*.*";
 							fileDialog.FilterIndex = 0;
 							if (fileDialog.ShowDialog() == DialogResult.OK)
@@ -1230,19 +1359,6 @@ namespace xBot.App
 					else
 					{
 						Bot.Get.StopTrace();
-					}
-					break;
-				case "Minimap_btnLoadMap":
-					// Try to load WebBrowser map
-					Minimap_Load();
-					if (Minimap_wbrChromeMap != null)
-					{
-						// Map loaded
-						Minimap_btnLoadMap.Parent.Controls.Remove(Minimap_btnLoadMap);
-						if (Bot.Get.inGame)
-						{
-							Minimap_CharacterPointer_Move(Info.Get.Character.GetPosition());
-						}
 					}
 					break;
 				case "GameInfo_btnRefresh":
@@ -1294,11 +1410,11 @@ namespace xBot.App
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
 					}
 					break;
-				case "Settings_btnPK2Path":
-
-					if (!Pk2Extractor.DirectoryExists(Settings_tbxSilkroadName.Text)
-						|| MessageBox.Show(this, "The Silkroad \"" + Settings_tbxSilkroadName.Text + "\" exist already, Do you want to update it?", "xBot", MessageBoxButtons.YesNo) == DialogResult.Yes)
+				case "Settings_btnGenerateDatabase":
+					if (Settings_lstvSilkroads.SelectedItems.Count == 1)
 					{
+						ListViewItem sro = Settings_lstvSilkroads.SelectedItems[0];
+						// Update database
 						using (OpenFileDialog fileDialog = new OpenFileDialog())
 						{
 							fileDialog.Multiselect = false;
@@ -1306,176 +1422,67 @@ namespace xBot.App
 							fileDialog.ValidateNames = true;
 							fileDialog.Title = "Select your Media.pk2 file";
 							fileDialog.FileName = "Media.pk2";
-							fileDialog.Filter = "pk2 files (*.pk2)|*.pk2|All files (*.*)|*.*";
+							fileDialog.Filter = "Media.pk2|media.pk2|pk2 files (*.pk2)|*.pk2|All files (*.*)|*.*";
 							fileDialog.FilterIndex = 0;
 							if (fileDialog.ShowDialog() == DialogResult.OK)
 							{
 								// Keep memory clean
-								using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, Settings_tbxSilkroadName.Text))
+								using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, sro.Name))
 								{
-									pk2.ShowDialog(this);
+									if (pk2.ShowDialog(this) == DialogResult.OK)
+									{
+										sro.SubItems[1].Tag = pk2.Locale;
+										sro.SubItems[2].Tag = pk2.Version;
+										sro.SubItems[3].Tag = pk2.Gateport;
+										sro.SubItems[4].Tag = pk2.Gateways;
+
+										// Force fill all data to GUI
+										sro.Selected = false;
+										sro.Selected = true;
+										Settings.SaveBotSettings();
+									}
 								}
 							}
 						}
 					}
 					break;
 				case "Settings_btnLauncherPath":
-					using (OpenFileDialog fileDialog = new OpenFileDialog())
-					{
-						fileDialog.Multiselect = false;
-						fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
-						fileDialog.ValidateNames = true;
-						fileDialog.Title = "Select your Silkroad Launcher";
-						fileDialog.FileName = "Silkroad.exe";
-						fileDialog.Filter = "Silkroad.exe (*.exe)|silkroad.exe|All executables (*.exe)|*.exe";
-						fileDialog.FilterIndex = 0;
-						if (fileDialog.ShowDialog() == DialogResult.OK)
+					if (Settings_lstvSilkroads.SelectedItems.Count == 1) {
+						using (OpenFileDialog fileDialog = new OpenFileDialog())
 						{
-							Settings_btnLauncherPath.Tag = fileDialog.FileName;
-						}
-						else
-						{
-							Settings_btnLauncherPath.Tag = null;
+							fileDialog.Multiselect = false;
+							fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+							fileDialog.ValidateNames = true;
+							fileDialog.Title = "Select your Silkroad Launcher";
+							fileDialog.FileName = "Silkroad.exe";
+							fileDialog.Filter = "Silkroad.exe (*.exe)|silkroad.exe|All executables (*.exe)|*.exe";
+							fileDialog.FilterIndex = 0;
+							if (fileDialog.ShowDialog() == DialogResult.OK)
+							{
+								Settings_lstvSilkroads.SelectedItems[0].SubItems[6].Tag = fileDialog.FileName;
+								Settings.SaveBotSettings();
+							}
 						}
 					}
 					break;
 				case "Settings_btnClientPath":
-					using (OpenFileDialog fileDialog = new OpenFileDialog())
+					if (Settings_lstvSilkroads.SelectedItems.Count == 1)
 					{
-						fileDialog.Multiselect = false;
-						fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
-						fileDialog.ValidateNames = true;
-						fileDialog.Title = "Select your SRO_Client.exe";
-						fileDialog.FileName = "SRO_Client.exe";
-						fileDialog.Filter = "SRO_Client.exe (sro_client.exe)|sro_client.exe|SRO_Client.exe (*.exe)|*.exe";
-						fileDialog.FilterIndex = 0;
-						if (fileDialog.ShowDialog() == DialogResult.OK)
+						using (OpenFileDialog fileDialog = new OpenFileDialog())
 						{
-							Settings_btnClientPath.Tag = fileDialog.FileName;
+							fileDialog.Multiselect = false;
+							fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+							fileDialog.ValidateNames = true;
+							fileDialog.Title = "Select your SRO_Client.exe";
+							fileDialog.FileName = "SRO_Client.exe";
+							fileDialog.Filter = "SRO_Client.exe (sro_client.exe)|sro_client.exe|SRO_Client.exe (*.exe)|*.exe";
+							fileDialog.FilterIndex = 0;
+							if (fileDialog.ShowDialog() == DialogResult.OK)
+							{
+								Settings_lstvSilkroads.SelectedItems[0].SubItems[7].Tag = fileDialog.FileName;
+								Settings.SaveBotSettings();
+							}
 						}
-						else
-						{
-							Settings_btnClientPath.Tag = null;
-						}
-					}
-					break;
-				case "Settings_btnAddSilkroad":
-					if (Settings_tbxSilkroadName.Text != "")
-					{
-						if (!isValidFilename(Settings_tbxSilkroadName.Text))
-							return;
-						if (!File.Exists(Pk2Extractor.GetDatabasePath(Settings_tbxSilkroadName.Text)))
-							return;
-						byte locale;
-						if (Settings_tbxLocale.Text == "" || !byte.TryParse(Settings_tbxLocale.Text, out locale))
-							return;
-						uint version;
-						if (Settings_tbxVersion.Text == "" || !uint.TryParse(Settings_tbxVersion.Text, out version))
-							return;
-						if (Settings_lstvHost.Items.Count == 0)
-							return;
-						ushort port;
-						if (Settings_tbxPort.Text == "" || !ushort.TryParse(Settings_tbxPort.Text, out port))
-							return;
-						ushort hwidClientOp = 0;
-						if (Settings_tbxHWIDClientOp.Text != "" && !ushort.TryParse(Settings_tbxHWIDClientOp.Text, System.Globalization.NumberStyles.HexNumber, null, out hwidClientOp))
-							return;
-						ushort hwidServerOp = 0;
-						if (Settings_tbxHWIDServerOp.Text != "" && !ushort.TryParse(Settings_tbxHWIDServerOp.Text, System.Globalization.NumberStyles.HexNumber, null, out hwidServerOp))
-							return;
-						// Genearting the whole server node
-						TreeNode server = new TreeNode(Settings_tbxSilkroadName.Text);
-						server.Name = server.Text;
-
-						TreeNode node = new TreeNode("Hosts");
-						node.Name = "Hosts";
-						foreach (ListViewItem host in Settings_lstvHost.Items)
-							node.Nodes.Add(host.Text);
-						server.Nodes.Add(node);
-						node = new TreeNode("Use random host : " + (Settings_cbxRandomHost.Checked ? "Yes" : "No"));
-						node.Name = "RandomHost";
-						node.Tag = Settings_cbxRandomHost.Checked;
-						server.Nodes.Add(node);
-						node = new TreeNode("Port : " + port);
-						node.Name = "Port";
-						node.Tag = port;
-						server.Nodes.Add(node);
-						if (Settings_btnLauncherPath.Tag != null)
-						{
-							node = new TreeNode("Launcher Path : " + (string)Settings_btnLauncherPath.Tag);
-							node.Name = "LauncherPath";
-							node.Tag = Settings_btnLauncherPath.Tag;
-							server.Nodes.Add(node);
-						}
-						if (Settings_btnClientPath.Tag != null)
-						{
-							node = new TreeNode("Client Path : " + (string)Settings_btnClientPath.Tag);
-							node.Name = "ClientPath";
-							node.Tag = Settings_btnClientPath.Tag;
-							server.Nodes.Add(node);
-						}
-						node = new TreeNode("Version : " + version);
-						node.Name = "Version";
-						node.Tag = version;
-						server.Nodes.Add(node);
-						node = new TreeNode("Locale : " + locale);
-						node.Name = "Locale";
-						node.Tag = locale;
-						server.Nodes.Add(node);
-
-						TreeNode hwid = new TreeNode("HWID Setup (" + (hwidClientOp == 0 && hwidServerOp == 0 ? "Off" : "On") + ")");
-						hwid.Name = "HWID";
-						server.Nodes.Add(hwid);
-
-						TreeNode clientNode = new TreeNode("Client");
-						clientNode.Name = "Client";
-						string hwidOpHex = (hwidClientOp == 0 ? "None" : "0x" + hwidClientOp.ToString("X4"));
-						node = new TreeNode("Opcode: " + hwidOpHex);
-						node.Name = "Opcode";
-						node.Tag = hwidClientOp;
-						clientNode.Nodes.Add(node);
-						node = new TreeNode("Save from : " + Settings_cmbxHWIDClientSaveFrom.Text);
-						node.Name = "SaveFrom";
-						node.Tag = Settings_cmbxHWIDClientSaveFrom.Text;
-						clientNode.Nodes.Add(node);
-						hwid.Nodes.Add(clientNode);
-
-						TreeNode serverNode = new TreeNode("Server");
-						serverNode.Name = "Server";
-						hwidOpHex = (hwidServerOp == 0 ? "None" : "0x" + hwidServerOp.ToString("X4"));
-						node = new TreeNode("Opcode: " + hwidOpHex);
-						node.Name = "Opcode";
-						node.Tag = hwidServerOp;
-						serverNode.Nodes.Add(node);
-						node = new TreeNode("Send to : " + Settings_cmbxHWIDServerSendTo.Text);
-						node.Name = "SendTo";
-						node.Tag = Settings_cmbxHWIDServerSendTo.Text;
-						serverNode.Nodes.Add(node);
-						hwid.Nodes.Add(serverNode);
-
-						string hwidData = "";
-						if (File.Exists("Data\\" + server.Name + ".hwid"))
-							hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + server.Name + ".hwid"));
-
-						node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
-						node.Name = "Data";
-						node.Tag = hwidData;
-						hwid.Nodes.Add(node);
-
-						node = new TreeNode("Send Data only once : " + (Settings_cbxHWIDSendOnlyOnce.Checked ? "Yes" : "No"));
-						node.Name = "SendOnlyOnce";
-						node.Tag = Settings_cbxHWIDSendOnlyOnce.Checked;
-						hwid.Nodes.Add(node);
-
-						// Check if the key exists
-						if (Settings_lstrSilkroads.Nodes.ContainsKey(server.Name))
-							Settings_lstrSilkroads.Nodes[server.Name].Remove();
-						else
-							Login_cmbxSilkroad.Items.Add(server.Name);
-
-						Settings_lstrSilkroads.Nodes.Add(server);
-						Settings_lstrSilkroads.SelectedNode = server;
-						Settings.SaveBotSettings();
 					}
 					break;
 				case "Settings_btnAddOpcode":
@@ -1483,7 +1490,7 @@ namespace xBot.App
 					{
 						ushort opcode;
 						string text = Settings_tbxFilterOpcode.Text.ToLower();
-            if (text.StartsWith("0x"))
+						if (text.StartsWith("0x"))
 						{
 							if (!ushort.TryParse(text.Substring(2, text.Length-2), System.Globalization.NumberStyles.HexNumber,null,out opcode))
 								return;
@@ -1495,7 +1502,7 @@ namespace xBot.App
 						}
 						// Check if exists
 						string key = opcode.ToString("X4");
-            if (!Settings_lstvOpcodes.Items.ContainsKey(key))
+						if (!Settings_lstvOpcodes.Items.ContainsKey(key))
 						{
 							ListViewItem item = new ListViewItem(key);
 							item.Name = key;
@@ -1532,8 +1539,8 @@ namespace xBot.App
 							{
 								try
 								{
-									data = WinAPI.ToByteArray(Settings_tbxInjectData.Text);
-								}
+									data = Settings_tbxInjectData.Text.ToByteArray();
+                }
 								catch
 								{
 									MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1553,43 +1560,6 @@ namespace xBot.App
 								b.Proxy.InjectToClient(p);
 							}
 						}
-					}
-					break;
-			}
-		}
-		private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
-		{
-			TreeView t = (TreeView)sender;
-			switch (t.Name)
-			{
-				case "Settings_lstrSilkroads":
-					if (Settings_lstrSilkroads.SelectedNode != null
-						&& Settings_lstrSilkroads.SelectedNode.Parent == null)
-					{
-						// Fill data if the root node is selected
-						TreeNode server = Settings_lstrSilkroads.SelectedNode;
-
-						Settings_tbxSilkroadName.Text = server.Text;
-						Settings_lstvHost.Items.Clear();
-						foreach (TreeNode host in server.Nodes["Hosts"].Nodes)
-							Settings_lstvHost.Items.Add(host.Text);
-						Settings_cbxRandomHost.Checked = (bool)server.Nodes["RandomHost"].Tag;
-						Settings_tbxPort.Text = server.Nodes["Port"].Tag.ToString();
-						Settings_btnLauncherPath.Tag = (server.Nodes.ContainsKey("LauncherPath") ? server.Nodes["LauncherPath"].Tag : null);
-						Settings_btnClientPath.Tag = (server.Nodes.ContainsKey("ClientPath") ? server.Nodes["ClientPath"].Tag : null);
-						Settings_tbxVersion.Text = server.Nodes["Version"].Tag.ToString();
-						Settings_tbxLocale.Text = server.Nodes["Locale"].Tag.ToString();
-						Settings_tbxHWIDClientOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag).ToString("X4");
-						Settings_cmbxHWIDClientSaveFrom.Text = (string)server.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
-						Settings_tbxHWIDServerOp.Text = ((ushort)server.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag).ToString("X4");
-						Settings_cmbxHWIDServerSendTo.Text = (string)server.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
-						Settings_rtbxHWIDdata.Text = (string)server.Nodes["HWID"].Nodes["Data"].Tag;
-						Settings_cbxHWIDSendOnlyOnce.Checked = (bool)server.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
-						// Can be edited if is not being used
-						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == server.Text)
-							this.EnableControl(Settings_btnAddSilkroad, false);
-						else
-							this.EnableControl(Settings_btnAddSilkroad, true);
 					}
 					break;
 			}
@@ -1618,6 +1588,20 @@ namespace xBot.App
 						Training_tbxZ.Text = area.SubItems[4].Tag.ToString();
 						Training_tbxRadius.Text = area.SubItems[5].Tag.ToString();
 						Training_tbxScriptPath.Text = area.SubItems[6].Text;
+					}
+					break;
+				case "Settings_lstvSilkroads":
+					if (l.SelectedItems.Count == 1)
+					{
+						ListViewItem sro = l.SelectedItems[0];
+
+						Settings_tbxLocale.Text = sro.SubItems[1].Tag.ToString();
+						Settings_tbxVersion.Text = sro.SubItems[2].Tag.ToString();
+						Settings_tbxPort.Text = sro.SubItems[3].Tag.ToString();
+						Settings_lstvHost.Items.Clear();
+						foreach (string gateway in (List<string>)sro.SubItems[4].Tag)
+							Settings_lstvHost.Items.Add(gateway);
+						Settings_cbxRandomHost.Checked = (bool)sro.SubItems[5].Tag;
 					}
 					break;
 			}
@@ -1762,6 +1746,13 @@ namespace xBot.App
 				case "Training_cbxTraceMaster":
 				case "Training_cbxTraceDistance":
 					Settings.SaveCharacterSettings();
+					break;
+				case "Settings_cbxRandomHost":
+					if (Settings_lstvSilkroads.SelectedItems.Count == 1)
+					{
+						Settings_lstvSilkroads.SelectedItems[0].SubItems[5].Tag = Settings_cbxRandomHost.Checked;
+						Settings.SaveBotSettings();
+					}
 					break;
 				case "Settings_cbxSelectFirstChar":
 				case "Settings_cbxCreateChar":
@@ -1924,26 +1915,6 @@ namespace xBot.App
 						}
 					}
 					break;
-					case "Settings_tbxSilkroadName":
-					{
-						if (c.Text == "" || !isValidFilename(c.Text))
-						{
-							// Disable controls
-							EnableControl(Settings_btnPK2Path, active: false);
-							Settings_btnPK2Path.Tag = null;
-							EnableControl(Settings_btnLauncherPath, active: false);
-							EnableControl(Settings_btnClientPath, active: false);
-						}
-						else
-						{
-							// Enable
-							EnableControl(Settings_btnPK2Path, active: true);
-							Settings_btnPK2Path.Tag = c.Text;
-							EnableControl(Settings_btnLauncherPath, active: true);
-							EnableControl(Settings_btnClientPath, active: true);
-						}
-					}
-					break;
 				case "Settings_tbxCustomSequence":
 					if (c.Text != "")
 					{
@@ -1997,9 +1968,13 @@ namespace xBot.App
 					break;
 				case "Menu_NotifyIcon_About":
 					using (About about = new About(this))
-					{
 						about.ShowDialog(this);
-					}
+          break;
+				case "Menu_NotifyIcon_Update":
+					if (isUpdateAvailable)
+						AutoUpdater.ShowUpdateForm();
+					else if(adsWindow.isLoaded())
+						MessageBox.Show(this,"You has the most recent version!", "xBot - Updates", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					break;
 				case "Menu_NotifyIcon_HideShow":
 					if (this.Visible)
@@ -2023,29 +1998,36 @@ namespace xBot.App
 						Process client = Bot.Get.Proxy.SRO_Client;
 						if (client != null)
 						{
-							Color ClientVisible = Color.FromArgb(0, 128, 255);
-
-							IntPtr[] clientWindows = WinAPI.GetProcessWindows(client.Id);
-							if (btnClientOptions.ForeColor == ClientVisible)
-							{
-								// visible > hide and reduce the memory usage
-								foreach (IntPtr p in clientWindows)
+							(new Thread(() => {
+								Color ClientVisible = Color.FromArgb(0, 128, 255);
+								IntPtr[] clientWindows = WinAPI.GetProcessWindows(client.Id);
+								if (btnClientOptions.ForeColor == ClientVisible)
 								{
-									WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
-									WinAPI.EmptyWorkingSet(p);
+									LogProcess("Hiding client...");
+									// visible > hide and reduce the memory usage
+									foreach (IntPtr p in clientWindows)
+									{
+										WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
+										WinAPI.EmptyWorkingSet(p);
+									}
+									WinAPI.InvokeIfRequired(btnClientOptions, () => {
+										btnClientOptions.ForeColor = Color.FromArgb(0, 64, 191);
+									});
 								}
-								btnClientOptions.ForeColor = Color.FromArgb(0, 64, 191);
-							}
-							else
-							{
-								// hiden > show and make it front
-								foreach (IntPtr p in clientWindows)
+								else
 								{
-									WinAPI.ShowWindow(p, WinAPI.SW_SHOW);
-									WinAPI.SetForegroundWindow(p);
+									LogProcess("Showing client...");
+									// hiden > show and make it front
+									foreach (IntPtr p in clientWindows)
+									{
+										WinAPI.ShowWindow(p, WinAPI.SW_SHOW);
+										WinAPI.SetForegroundWindow(p);
+									}
+									WinAPI.InvokeIfRequired(btnClientOptions,()=> {
+										btnClientOptions.ForeColor = ClientVisible;
+									});
 								}
-								btnClientOptions.ForeColor = ClientVisible;
-							}
+							})).Start();
 						}
 					}
 					break;
@@ -2073,7 +2055,7 @@ namespace xBot.App
 							SRObject item = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory])[index];
 							if (item != null)
 							{
-								if (MessageBox.Show(this, "Do you want to drop \"" + item.Name + "\"?", "xBot - Inventory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+								if (MessageBox.Show(this, "Are you sure you want to drop \"" + item.Name + "\"?", "xBot - Inventory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 								{
 									PacketBuilder.DropItem(index);
 								}
@@ -2087,7 +2069,7 @@ namespace xBot.App
 						if (!Bot.Get.EquipItem((byte)Inventory_lstvItems.SelectedIndices[0]))
 						{
 							Log("Item cannot be equiped/unequiped");
-            }
+						}
 					}
 					break;
 				case "Menu_lstvAvatarItems_UnEquip":
@@ -2225,7 +2207,7 @@ namespace xBot.App
 							if (Training_lstvAreas.Tag != null && area == (ListViewItem)Training_lstvAreas.Tag)
 								Training_lstvAreas.Tag = null;
 							area.Remove();
-              Settings.SaveCharacterSettings();
+							Settings.SaveCharacterSettings();
 						}
 					}
 					break;
@@ -2239,12 +2221,95 @@ namespace xBot.App
 							{
 								ListViewItem lastActivated = (ListViewItem)Training_lstvAreas.Tag;
 								lastActivated.ForeColor = Training_lstvAreas.ForeColor;
-              }
+							}
 							// Activate it
 							Training_lstvAreas.SelectedItems[0].ForeColor = Color.FromArgb(0, 180, 255);
 							Training_lstvAreas.Tag = Training_lstvAreas.SelectedItems[0];
-              Settings.SaveCharacterSettings();
+							Settings.SaveCharacterSettings();
 						}
+					}
+					break;
+				case "Menu_lstvSilkroads_Add":
+					{
+						// Create default name
+						int defaultKey = 1;
+						string defaultName;
+						while (Settings_lstvSilkroads.Items.ContainsKey(defaultName = "Silkroad #" + defaultKey))
+							defaultKey++;
+						ListViewItem newSro = new ListViewItem(defaultName);
+						newSro.Name = defaultName;
+						// Create FIRST TIME database
+						using (OpenFileDialog fileDialog = new OpenFileDialog())
+						{
+							fileDialog.Multiselect = false;
+							fileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer);
+							fileDialog.ValidateNames = true;
+							fileDialog.Title = "Select your Media.pk2 file";
+							fileDialog.FileName = "Media.pk2";
+							fileDialog.Filter = "Media.pk2|media.pk2|pk2 files (*.pk2)|*.pk2|All files (*.*)|*.*";
+							fileDialog.FilterIndex = 0;
+							if (fileDialog.ShowDialog() == DialogResult.OK)
+							{
+								// Keep memory clean
+								using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, newSro.Name))
+								{
+									if (pk2.ShowDialog(this) == DialogResult.OK)
+									{
+										ListViewItem.ListViewSubItem subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = pk2.Locale;
+										newSro.SubItems.Add(subitem); // 1
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = pk2.Version;
+										newSro.SubItems.Add(subitem); // 2
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = pk2.Gateport;
+										newSro.SubItems.Add(subitem); // 3
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = pk2.Gateways;
+										newSro.SubItems.Add(subitem); // 4
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = false; // Random gateway
+										newSro.SubItems.Add(subitem); // 5
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = ""; // Launcher path
+										newSro.SubItems.Add(subitem); // 6
+
+										subitem = new ListViewItem.ListViewSubItem();
+										subitem.Tag = ""; // Client path
+										newSro.SubItems.Add(subitem); // 7
+
+										Settings_lstvSilkroads.Items.Add(newSro);
+										Login_cmbxSilkroad.Items.Add(newSro.Name);
+										newSro.Selected = true; // Fill all data to GUI
+
+										// Load paths
+										Control_Click(Settings_btnLauncherPath, null);
+										Control_Click(Settings_btnClientPath, null);
+
+										Settings.SaveBotSettings();
+									}
+								}
+							}
+						}
+					}
+					break;
+				case "Menu_lstvSilkroads_Remove":
+					if (Settings_lstvSilkroads.SelectedItems.Count == 1)
+					{
+						ListViewItem sro = Settings_lstvSilkroads.SelectedItems[0];
+
+						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == sro.Name)
+							return; // Is actually being used
+						Login_cmbxSilkroad.Items.Remove(sro.Name);
+						Pk2Extractor.DirectoryDelete(sro.Name);
+						
+						sro.Remove();
+						Settings.SaveBotSettings();
 					}
 					break;
 				case "Menu_lstvOpcodes_Remove":
@@ -2266,18 +2331,6 @@ namespace xBot.App
 					break;
 				case "Menu_rtbxPackets_Clear":
 					Settings_rtbxPackets.Clear();
-					break;
-				case "Menu_lstrSilkroads_Remove":
-					if (Settings_lstrSilkroads.SelectedNode != null && Settings_lstrSilkroads.SelectedNode.Parent == null)
-					{
-						if (!Login_cmbxSilkroad.Enabled && Login_cmbxSilkroad.Text == Settings_lstrSilkroads.SelectedNode.Name)
-							return; // Is actually being used
-						Login_cmbxSilkroad.Items.Remove(Settings_lstrSilkroads.SelectedNode.Name);
-						Pk2Extractor.DirectoryDelete(Settings_lstrSilkroads.SelectedNode.Name);
-
-						Settings_lstrSilkroads.SelectedNode.Remove();
-						Settings.SaveBotSettings();
-					}
 					break;
 				case "Menu_lstvHost_remove":
 					if (Settings_lstvHost.SelectedItems.Count == 1)
@@ -2308,7 +2361,7 @@ namespace xBot.App
 									if(Chat_tbxMsg.Text == "PING")
 									{
 										Info i = Info.Get;
-                    i.Ping = new Stopwatch();
+										i.Ping = new Stopwatch();
 										i.Ping.Start();
 									}
 									PacketBuilder.SendChatAll(Chat_tbxMsg.Text);
@@ -2352,95 +2405,19 @@ namespace xBot.App
 				case "btnClientOptions":
 					c.ContextMenuStrip.Show(c, new Point(e.X, e.Y));
 					break;
-				case "Character_lstvBuffs":
-					if (Bot.Get.inGame && e.Button == MouseButtons.Right)
-					{
-						ListViewItem itemClicked = this.Character_lstvBuffs.GetItemAt(e.X, e.Y);
-						if (itemClicked != null)
-						{
-							PacketBuilder.RemoveBuff(uint.Parse(itemClicked.Name));
-						}
-					}
-					break;
 			}
 		}
-		/// <summary>
-		/// Package all items selected to be moved.
-		/// </summary>
-		private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
+		private void Label_pnlBuffs_MouseClick(object sender, MouseEventArgs e)
 		{
-			ListView l = (ListView)sender;
-			// Create list to all selected items to move
-			List<ListViewItem> items = new List<ListViewItem>();
-			foreach (ListViewItem item in l.SelectedItems)
-				items.Add(item);
-			// Add moving animation
-			l.DoDragDrop(l.SelectedItems, DragDropEffects.Move);
-		}
-		private void ListView_DragOver(object sender, DragEventArgs e)
-		{
-			// Check if the drag is a ListViewItem list
-			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
+			if (Bot.Get.inGame && e.Button == MouseButtons.Right)
 			{
-				ListView listView = (ListView)sender;
-				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-				// Disable drag movement in the same listview
-				if (items.Count == 0
-					|| items[0].ListView == listView)
+				Label l = (Label)sender;
+				SRObject Buff = (SRObject)l.Tag;
+				// Avoid disconnect while fixing it
+				if (!(bool)Buff[SRProperty.isTargetRequired])
 				{
-					return;
+					PacketBuilder.RemoveBuff(Buff.ID);
 				}
-				e.Effect = DragDropEffects.Move;
-			}
-		}
-		private void ListView_DragDrop_RemoveFromSource(object sender, DragEventArgs e)
-		{
-			// Check if the drag is a ListViewItem list
-			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
-			{
-				ListView l = (ListView)sender;
-				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-
-				foreach (ListViewItem item in items)
-				{
-					item.ListView.Items.Remove(item);
-					if (!l.Items.ContainsKey(item.Name))
-					{
-						l.Items.Add(item);
-					}
-				}
-				// Check if at least one item has been changed
-				if (items.Count > 0)
-					Settings.SaveCharacterSettings();
-			}
-		}
-		private void ListView_DragDrop_CopyFromSource_AttacksOnly(object sender, DragEventArgs e)
-		{
-			// Check if the drag is a ListViewItem list
-			if (e.Data.GetDataPresent(typeof(ListView.SelectedListViewItemCollection)))
-			{
-				ListView l = (ListView)sender;
-				ListView.SelectedListViewItemCollection items = (ListView.SelectedListViewItemCollection)e.Data.GetData(typeof(ListView.SelectedListViewItemCollection));
-
-				bool itemUpdated = false;
-				foreach (ListViewItem item in items)
-				{
-					if (!l.Items.ContainsKey(item.Name))
-					{
-						SRObject skill = (SRObject)item.Tag;
-						// Check if is an attacking skill
-            if (skill.isAttackingSkill())
-						{
-							ListViewItem copy = (ListViewItem)item.Clone();
-							copy.Name = item.Name;
-							l.Items.Add(copy);
-							itemUpdated = true;
-						}
-					}
-				}
-				// Check if at least one item has been changed
-				if (itemUpdated)
-					Settings.SaveCharacterSettings();
 			}
 		}
 		private void ListView_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -2472,6 +2449,97 @@ namespace xBot.App
 						}
 					}
 					break;
+				case "Settings_lstvSilkroads":
+					if (e.Label != null)
+					{
+						if (e.Label.Trim() == "")
+						{
+							e.CancelEdit = true;
+							MessageBox.Show(this, "Please, insert a valid name!", "xBot", MessageBoxButtons.OK);
+						}
+						else
+						{
+							ListViewItem item = Settings_lstvSilkroads.Items[e.Item];
+							if (item.Text != e.Label && Settings_lstvSilkroads.Items.ContainsKey(e.Label))
+							{
+								e.CancelEdit = true;
+								MessageBox.Show(this, "This name is being used!", "xBot", MessageBoxButtons.OK);
+							}
+							else
+							{
+								if (!isValidFilename(e.Label)) {
+									e.CancelEdit = true;
+									MessageBox.Show(this, "This name cannot be used as folder name", "xBot", MessageBoxButtons.OK);
+								}
+								else
+								{
+									try
+									{
+										// Change folder name
+										string dir = Path.GetDirectoryName(Pk2Extractor.GetDirectory(item.Name));
+										string parentDir = Path.GetDirectoryName(dir);
+										Directory.Move(dir, Path.Combine(parentDir, e.Label));
+									}
+									catch {
+										e.CancelEdit = true;
+										MessageBox.Show(this, "Error while changing name! Please, close all bots at first, and/or try with a different name", "xBot", MessageBoxButtons.OK);
+										return;
+									}
+									// Change combobox
+									Login_cmbxSilkroad.Items.Remove(item.Name);
+									Login_cmbxSilkroad.Items.Add(e.Label);
+
+									item.Name = e.Label;
+									Settings.SaveBotSettings();
+								}
+							}
+						}
+					}
+					break;
+			}
+		}
+		private void Menu_Teleport_Click(object sender, EventArgs e)
+		{
+			ToolStripMenuItem t = (ToolStripMenuItem)sender;
+			SRObject teleport = (SRObject)t.Tag;
+			// Select teleport
+			PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
+			// Wait 2.5segs and use it
+			PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],uint.Parse(t.Name),2500);
+		}
+		private void xListView_DragItemAdding_Cancel(object sender, xListView.DragItemEventArgs e)
+		{
+			e.Cancel = true;
+		}
+		private void xListView_DragItemAdding_AttackSkill(object sender, xListView.DragItemEventArgs e)
+		{
+			xListView l = (xListView)sender;
+			SRObject skill = (SRObject)e.Item.Tag;
+			// Check if is an attacking skill
+			if (!skill.isAttackingSkill() || l.Items.ContainsKey(e.Item.Name))
+			{
+				e.Cancel = true;
+			}
+		}
+		private void xListView_DragItemsChanged(object sender, EventArgs e)
+		{
+			if (Bot.Get.inGame){
+				Settings.SaveCharacterSettings();
+			}
+		}
+		private void TrackBar_ValueChanged(object sender, EventArgs e)
+		{
+			Minimap_pnlMap.Zoom = (byte)Minimap_tbrZoom.Value;
+		}
+		private void Minimap_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				Bot b = Bot.Get;
+				if (b.inGame)
+				{
+					b.MoveTo(Minimap_pnlMap.GetCoord(e.Location));
+				}
 			}
 		}
 		#endregion

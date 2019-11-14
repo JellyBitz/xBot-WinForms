@@ -10,7 +10,7 @@ namespace xBot.App
 		/// <summary>
 		/// Avoid loading overload
 		/// </summary>
-		private static bool LoadingBotSettings = true;
+		private static bool LoadingBotSettings;
 		private static readonly object BotSettingsLock = new object();
 		/// <summary>
 		/// Avoid saving settings while is loading
@@ -28,41 +28,26 @@ namespace xBot.App
 					Window w = Window.Get;
 
 					#region (Silkroad Tab)
-					JObject silkroadList = new JObject();
-					root["Silkroad"] = silkroadList;
+					JObject Silkroads = new JObject();
+					root["Silkroads"] = Silkroads;
 
-					foreach (TreeNode node in w.Settings_lstrSilkroads.Nodes)
+					foreach (ListViewItem item in w.Settings_lstvSilkroads.Items)
 					{
 						JObject server = new JObject();
-						silkroadList[node.Name] = server;
+						Silkroads[item.Name] = server;
 
-						JArray hosts = new JArray();
-						foreach (TreeNode host in node.Nodes["Hosts"].Nodes)
-							hosts.Add(host.Text);
-						server["Hosts"] = hosts;
-						server["RandomHost"] = (bool)node.Nodes["RandomHost"].Tag;
-						server["Port"] = (ushort)node.Nodes["Port"].Tag;
-						if (node.Nodes.ContainsKey("LauncherPath"))
-							server["LauncherPath"] = (string)node.Nodes["LauncherPath"].Tag;
-						if (node.Nodes.ContainsKey("ClientPath"))
-							server["ClientPath"] = (string)node.Nodes["ClientPath"].Tag;
-						server["Version"] = (uint)node.Nodes["Version"].Tag;
-						server["Locale"] = (byte)node.Nodes["Locale"].Tag;
+						server["Locale"] = (byte)item.SubItems[1].Tag;
+						server["Version"] = (uint)item.SubItems[2].Tag;
+						server["Port"] = (ushort)item.SubItems[3].Tag;
 
-						JObject hwid = new JObject();
-						server["HWID"] = hwid;
+						JArray gateways = new JArray();
+						foreach (string gw in (System.Collections.Generic.List<string>)item.SubItems[4].Tag)
+							gateways.Add(gw);
+						server["Gateways"] = gateways;
 
-						JObject hwidclient = new JObject();
-						hwid["Client"] = hwidclient;
-						hwidclient["Opcode"] = ((ushort)node.Nodes["HWID"].Nodes["Client"].Nodes["Opcode"].Tag).ToString("X4");
-						hwidclient["SaveFrom"] = (string)node.Nodes["HWID"].Nodes["Client"].Nodes["SaveFrom"].Tag;
-
-						JObject hwidserver = new JObject();
-						hwid["Server"] = hwidserver;
-						hwidserver["Opcode"] = ((ushort)node.Nodes["HWID"].Nodes["Server"].Nodes["Opcode"].Tag).ToString("X4");
-						hwidserver["SendTo"] = (string)node.Nodes["HWID"].Nodes["Server"].Nodes["SendTo"].Tag;
-
-						hwid["SendOnlyOnce"] = (bool)node.Nodes["HWID"].Nodes["SendOnlyOnce"].Tag;
+						server["RandomGateway"] = (bool)item.SubItems[5].Tag;
+						server["LauncherPath"] = (string)item.SubItems[6].Tag;
+						server["ClientPath"] = (string)item.SubItems[7].Tag;
 					}
 					#endregion
 
@@ -141,101 +126,58 @@ namespace xBot.App
 				JObject root = JObject.Parse(File.ReadAllText(path));
 
 				#region (Silkroad Tab)
-				JObject silkroadList = (JObject)root["Silkroad"];
-				foreach (JProperty key in silkroadList.Properties())
+				if (root.ContainsKey("Silkroads"))
 				{
-					JObject silkroad = (JObject)silkroadList[key.Name];
-
-					TreeNode s = new TreeNode(key.Name);
-					s.Name = s.Text;
-
-					TreeNode node = new TreeNode("Hosts");
-					node.Name = "Hosts";
-					foreach (JToken host in (JArray)silkroad["Hosts"])
+					JObject Silkroads = (JObject)root["Silkroads"];
+					foreach (JProperty key in Silkroads.Properties())
 					{
-						node.Nodes.Add((string)host);
+						JObject server = (JObject)Silkroads[key.Name];
+
+						ListViewItem item = new ListViewItem(key.Name);
+						item.Name = item.Text;
+
+						if (!server.ContainsKey("Locale"))
+							break;
+						ListViewItem.ListViewSubItem subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = (byte)server["Locale"];
+						item.SubItems.Add(subitem);
+
+						if (!server.ContainsKey("Version"))
+							break;
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = (uint)server["Version"];
+						item.SubItems.Add(subitem);
+
+						if (!server.ContainsKey("Port"))
+							break;
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = (ushort)server["Port"];
+						item.SubItems.Add(subitem);
+
+						if (!server.ContainsKey("Gateways"))
+							break;
+						subitem = new ListViewItem.ListViewSubItem();
+						System.Collections.Generic.List<string> gws = new System.Collections.Generic.List<string>();
+						foreach (JToken gw in (JArray)server["Gateways"])
+							gws.Add((string)gw);
+						subitem.Tag = gws;
+						item.SubItems.Add(subitem);
+
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = server.ContainsKey("RandomGateway") ? (bool)server["RandomGateway"] : false;
+						item.SubItems.Add(subitem);
+
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = server.ContainsKey("LauncherPath") ? (string)server["LauncherPath"]:"";
+						item.SubItems.Add(subitem);
+
+						subitem = new ListViewItem.ListViewSubItem();
+						subitem.Tag = server.ContainsKey("ClientPath") ? (string)server["ClientPath"] : "";
+						item.SubItems.Add(subitem);
+
+						w.Settings_lstvSilkroads.Items.Add(item);
+						w.Login_cmbxSilkroad.Items.Add(item.Name);
 					}
-					s.Nodes.Add(node);
-					node = new TreeNode("Use random host : " + ((bool)silkroad["Port"] ? "Yes" : "No"));
-					node.Name = "RandomHost";
-					node.Tag = (bool)silkroad["RandomHost"];
-					s.Nodes.Add(node);
-
-					node = new TreeNode("Port : " + silkroad["Port"]);
-					node.Name = "Port";
-					node.Tag = (ushort)silkroad["Port"];
-					s.Nodes.Add(node);
-
-					if (silkroad.ContainsKey("LauncherPath"))
-					{
-						node = new TreeNode("Launcher Path : " + silkroad["LauncherPath"]);
-						node.Name = "LauncherPath";
-						node.Tag = (string)silkroad["LauncherPath"];
-						s.Nodes.Add(node);
-					}
-					if (silkroad.ContainsKey("ClientPath"))
-					{
-						node = new TreeNode("Client Path : " + silkroad["ClientPath"]);
-						node.Name = "ClientPath";
-						node.Tag = (string)silkroad["ClientPath"];
-						s.Nodes.Add(node);
-					}
-
-					node = new TreeNode("Version : " + silkroad["Version"]);
-					node.Name = "Version";
-					node.Tag = (uint)silkroad["Version"];
-					s.Nodes.Add(node);
-
-					node = new TreeNode("Locale : " + silkroad["Locale"]);
-					node.Name = "Locale";
-					node.Tag = (byte)silkroad["Locale"];
-					s.Nodes.Add(node);
-
-					ushort hwidClientOp = ushort.Parse((string)silkroad["HWID"]["Client"]["Opcode"], System.Globalization.NumberStyles.HexNumber);
-					ushort hwidServerOp = ushort.Parse((string)silkroad["HWID"]["Server"]["Opcode"], System.Globalization.NumberStyles.HexNumber);
-					TreeNode hwid = new TreeNode("HWID Setup (" + (hwidClientOp == 0 && hwidServerOp == 0 ? "Off" : "On") + ")");
-					hwid.Name = "HWID";
-
-					TreeNode hwidclient = new TreeNode("Client");
-					hwidclient.Name = "Client";
-					hwid.Nodes.Add(hwidclient);
-					node = new TreeNode("Opcode : " + (hwidClientOp == 0 ? "None" : "0x" + hwidClientOp.ToString("X4")));
-					node.Name = "Opcode";
-					node.Tag = hwidClientOp;
-					hwidclient.Nodes.Add(node);
-					node = new TreeNode("Save from : " + silkroad["HWID"]["Client"]["SaveFrom"].ToString());
-					node.Name = "SaveFrom";
-					node.Tag = (string)silkroad["HWID"]["Client"]["SaveFrom"];
-					hwidclient.Nodes.Add(node);
-
-					TreeNode hwidserver = new TreeNode("Server");
-					hwidserver.Name = "Server";
-					hwid.Nodes.Add(hwidserver);
-					node = new TreeNode("Opcode : " + (hwidServerOp == 0 ? "None" : "0x" + hwidServerOp.ToString("X4")));
-					node.Name = "Opcode";
-					node.Tag = hwidServerOp;
-					hwidserver.Nodes.Add(node);
-					node = new TreeNode("Send to : " + silkroad["HWID"]["Server"]["SendTo"].ToString());
-					node.Name = "SendTo";
-					node.Tag = (string)silkroad["HWID"]["Server"]["SendTo"];
-					hwidserver.Nodes.Add(node);
-
-					string hwidData = "";
-					if (File.Exists("Data\\" + key.Name + ".hwid"))
-						hwidData = WinAPI.ToHexString(File.ReadAllBytes("Data\\" + key.Name + ".hwid"));
-					node = new TreeNode("Data : " + (hwidData == "" ? "None" : hwidData));
-					node.Name = "Data";
-					node.Tag = hwidData;
-					hwid.Nodes.Add(node);
-					node = new TreeNode("Send Data only once : " + (bool.Parse(silkroad["HWID"]["SendOnlyOnce"].ToString()) ? "Yes" : "No"));
-					node.Name = "SendOnlyOnce";
-					node.Tag = (bool)silkroad["HWID"]["SendOnlyOnce"];
-					hwid.Nodes.Add(node);
-
-					s.Nodes.Add(hwid);
-
-					Window.Get.Settings_lstrSilkroads.Nodes.Add(s);
-					Window.Get.Login_cmbxSilkroad.Items.Add(s.Name);
 				}
 				#endregion
 
@@ -258,7 +200,7 @@ namespace xBot.App
 
 				foreach (JToken opcode in (JArray)packetAnalyzer["Filter"])
 				{
-          ListViewItem item = new ListViewItem((string)opcode);
+					ListViewItem item = new ListViewItem((string)opcode);
 					item.Name = item.Text;
 					w.Settings_lstvOpcodes.Items.Add(item);
 				}

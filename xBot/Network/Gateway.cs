@@ -72,29 +72,7 @@ namespace xBot.Network
 		public bool PacketHandler(Context context, Packet packet)
 		{
 			if (context == Local) {
-				// HWID setup (saving/updating data from client)
-				if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
-				{
-					if (Bot.Get.HWIDSaveFrom == "Gateway" || Bot.Get.HWIDSaveFrom == "Both")
-					{
-						Bot.Get.SaveHWID(packet.GetBytes());
-					}
-				}
 				return Local_PacketHandler(packet);
-			}
-			// HWID setup (sending data to server)
-			if (packet.Opcode == Opcode.SERVER_HWID_REQUEST && ClientlessMode)
-			{
-				if (Bot.Get.HWIDSendTo == "Gateway" || Bot.Get.HWIDSendTo == "Both")
-				{
-					byte[] hwidData = Bot.Get.LoadHWID();
-					if (hwidData != null)
-					{
-						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
-						InjectToServer(p);
-						Window.Get.LogProcess("HWID Sent : " + WinAPI.ToHexString(hwidData));
-					}
-				}
 			}
 			return Remote_PacketHandler(packet);
 		}

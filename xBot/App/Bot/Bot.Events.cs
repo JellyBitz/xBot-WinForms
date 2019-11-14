@@ -149,7 +149,7 @@ namespace xBot.App
 			{
 				CheckLoginOptions(null,null);
 			}
-		}
+    }
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
 		/// </summary>
@@ -168,20 +168,29 @@ namespace xBot.App
 			w.LogMessageFilter(i.GetUIFormat("UIIT_MSG_STRGERR_LEVEL", level));
 			// Up skills, etc..
 		}
-		private void OnItemPickedUp(SRObject item)
+		private void OnItemPickedUp(SRObject item,ushort quantity)
 		{
 			Window w = Window.Get;
 			if (w.Character_cbxMessagePicks.Checked)
 			{
-				w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STATE_GET_ITEM_NONEXPENDABLE", item.Name));
+				// Expendable
+				if(item.ID2 == 3)
+					w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STATE_GET_ITEM_EXPENDABLE", item.Name,quantity));
+				else
+					w.LogMessageFilter(Info.Get.GetUIFormat("UIIT_MSG_STATE_GET_ITEM_NONEXPENDABLE", item.Name));
 			}
 		}
 		/// <summary>
 		/// Called when the Health, Mana, or BadStatus from the character has changed.
 		/// </summary>
-		private void OnStateUpdated(Types.EntityStateUpdate type)
+		private void OnStatusUpdated(Types.EntityStateUpdate type)
 		{
 			Info i = Info.Get;
+			if(i.Character == null){
+				// Avoid crash on disconnect
+				return;
+			}
+			// Check if character is alive
 			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
 			{
 				switch (type)
@@ -207,16 +216,20 @@ namespace xBot.App
 			}
 			else
 			{
-				// Character dead.
-				if((byte)i.Character[SRProperty.Level] <= 10){
-					PacketBuilder.ResurrectAtPresentPoint();
+				Window w = Window.Get;
+				if(w.Character_cbxAcceptRess.Checked){
+					// Character dead.
+					if((byte)i.Character[SRProperty.Level] <= 10){
+						PacketBuilder.ResurrectAtPresentPoint();
+					}
 				}
+				
 			}
 		}
 		/// <summary>
 		/// Called when the Health, or BadStatus from the pet has changed.
 		/// </summary>
-		private void OnPetStateUpdated(Types.EntityStateUpdate type)
+		private void OnPetStatusUpdated(Types.EntityStateUpdate type)
 		{
 			switch (type)
 			{
@@ -257,9 +270,10 @@ namespace xBot.App
 			if (w.Party_cbxActivateLeaderCommands.Checked && playerName != "")
 			{
 				bool isLeader = false;
-				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList,() => {
+				w.Party_lstvLeaderList.InvokeIfRequired(() => {
 					isLeader = w.Party_lstvLeaderList.Items.ContainsKey(playerName.ToUpper());
 				});
+				
 				if (isLeader)
 				{
 					if (message.StartsWith("INJECT ")){
@@ -314,7 +328,7 @@ namespace xBot.App
 						// IF there is at least 2 params
 						if (data.Length > 1){
 							Info i = Info.Get;
-							// Check if the teleport link is with teleport model IDs
+							// Check if the teleport link is from teleport model IDs
 							uint sourceTeleportID, destinationTeleportID;
 							if (uint.TryParse(data[0], out sourceTeleportID) && uint.TryParse(data[1], out destinationTeleportID))
 							{
@@ -340,7 +354,7 @@ namespace xBot.App
 								return;
 							}
 							// Check if the teleport link name exists
-							NameValueCollection teleportLinkData = i.GetTeleportLinkData(data[0], data[1]);
+							NameValueCollection teleportLinkData = i.GetTeleportLink(data[0], data[1]);
 							if(teleportLinkData != null)
 							{
 								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
@@ -370,7 +384,7 @@ namespace xBot.App
 						if(message != "")
 						{
 							Info i = Info.Get;
-							NameValueCollection teleportLinkData = i.GetTeleportLinkData(message);
+							NameValueCollection teleportLinkData = i.GetTeleportLink(message);
 							if(teleportLinkData != null)
 							{
 								uint modelID = uint.Parse(teleportLinkData["id"]);
@@ -605,7 +619,6 @@ namespace xBot.App
 		/// <summary>
 		/// Called right after a player makes a destination movement.
 		/// </summary>
-		/// <param name="player"></param>
 		private void OnPlayerMovement(ref SRObject player)
 		{
 			if (inTrace)

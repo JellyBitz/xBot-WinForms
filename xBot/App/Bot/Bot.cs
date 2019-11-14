@@ -99,62 +99,14 @@ namespace xBot.App
 		{
 			string msg = DateTime.Now.ToString("[dd/MM/yyyy|HH:mm:ss]") + error + Environment.NewLine;
 			if (packet != null)
-				msg += "[" + packet.Opcode.ToString("X4") + "][" + WinAPI.ToHexString(packet.GetBytes()) + "]" + Environment.NewLine;
+				msg += packet.ToString() + Environment.NewLine;
 			File.AppendAllText("erros.log", msg);
 		}
 
-		#region (HWID setup)
-		/// <summary>
-		/// Gets the context type to save the HWID (Can be Gateway, Agent, or Both)
-		/// </summary>
-		public string HWIDSaveFrom { get { return _HWIDSaveFrom; } }
-		private string _HWIDSaveFrom;
-		/// <summary>
-		/// Gets the context type to send the HWID (Can be Gateway, Agent, or Both)
-		/// </summary>
-		public string HWIDSendTo { get { return _HWIDSendTo; } }
-		private string _HWIDSendTo;
-		private bool _HWIDSent;
-		private bool _HWIDSendOnlyOnce;
-		/// <summary>
-		/// Set the HWID setup.
-		/// </summary>
-		/// <param name="cOp">Client opcode used to save the HWID packet</param>
-		/// <param name="SaveFrom">Save from Gateway/Server/Both</param>
-		/// <param name="sOp">Server opcode used to send the HWID packet</param>
-		/// <param name="SendTo">Send to from Gateway/Server/Both</param>
-		/// <param name="SendOnlyOnce">Send HWID packet only once</param>
-		/// <param name="Data">Packet string format</param>
-		public void SetHWID(ushort cOp, string SaveFrom, ushort sOp, string SendTo, bool SendOnlyOnce)
+		#region (Extended Protocol Setup)
+		public void SetExtendedProtocol()
 		{
-			Agent.Opcode.CLIENT_HWID_RESPONSE = Gateway.Opcode.CLIENT_HWID_RESPONSE = cOp;
-			Agent.Opcode.SERVER_HWID_REQUEST = Gateway.Opcode.SERVER_HWID_REQUEST = sOp;
-			_HWIDSaveFrom = SaveFrom;
-			_HWIDSendTo = SendTo;
-			_HWIDSendOnlyOnce = SendOnlyOnce;
-			_HWIDSent = false;
-		}
-		/// <summary>
-		/// Saves the hwid data to be used later.
-		/// </summary>
-		public void SaveHWID(byte[] data)
-		{
-			Window.Get.LogProcess("HWID Detected : " + WinAPI.ToHexString(data));
-			File.WriteAllBytes("Data\\" + Info.Get.Silkroad + ".hwid", data);
-		}
-		/// <summary>
-		/// Loads the HWID previously saved. Returns null if is not found.
-		/// </summary>
-		public byte[] LoadHWID()
-		{
-			if (_HWIDSendOnlyOnce && _HWIDSent)
-				return null;
-			if (File.Exists("Data\\" + Info.Get.Silkroad + ".hwid"))
-			{
-				_HWIDSent = true;
-				return File.ReadAllBytes("Data\\" + Info.Get.Silkroad + ".hwid");
-			}
-			return null;
+
 		}
 		#endregion
 
@@ -359,12 +311,22 @@ namespace xBot.App
 			return match;
 		}
 		/// <summary>
+		/// Returns the max. member count from the current party.
+		/// </summary>
+		public Types.Weapon GetWeaponUsed()
+		{
+			SRObject weapon = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory])[6];
+			if(weapon == null)
+				return Types.Weapon.None;
+			return (Types.Weapon)weapon.ID4;
+		}
+		/// <summary>
 		/// Search for specific type ID's item in the inventory. Return success.
 		/// </summary>
 		/// <param name="ID2">type id #2</param>
 		/// <param name="ID3">type id #3</param>
 		/// <param name="ID4">type id #4</param>
-		/// <param name="slot">Invenory slot found</param>
+		/// <param name="slot">Inventory slot found</param>
 		/// <param name="servername">Rule the search to contains string specified</param>
 		public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
 		{

@@ -35,6 +35,26 @@ namespace xBot.App
 				tBotting.Start();
 			}
 		}
+		/// <summary>
+		/// Stop botting.
+		/// </summary>
+		public void Stop()
+		{
+			if (isBotting)
+			{
+				Window w = Window.Get;
+				w.Log("Stopping bot");
+				// Update GUI
+				WinAPI.InvokeIfRequired(w.btnBotStart, () => {
+					w.btnBotStart.ForeColor = Color.Red;
+					w.ToolTips.SetToolTip(w.btnBotStart, "Start Bot");
+				});
+				// ...
+				tBotting.Abort();
+				tBotting = null;
+				w.LogProcess("Bot stopped");
+			}
+		}
 		private void ThreadBotting()
 		{
 			Window w = Window.Get;
@@ -81,7 +101,7 @@ namespace xBot.App
 									MoveTo(trainingPosition);
 
 									// TEST
-									int travelTime = myPosition.TimeTo(trainingPosition, i.Character.GetSpeed() * 0.1 / 1000);
+									long travelTime = myPosition.TimeTo(trainingPosition, i.Character.GetSpeed() * 0.1 / 1000);
 									w.Log("Walking to training area (" + travelTime + ")" + myPosition + "->" + trainingPosition + ")...");
 								}
 							}
@@ -98,7 +118,7 @@ namespace xBot.App
 								MoveTo(newPosition);
 								
 								// TEST
-								int travelTime = myPosition.TimeTo(newPosition, i.Character.GetSpeed() * 0.1 / 1000);
+								long travelTime = myPosition.TimeTo(newPosition, i.Character.GetSpeed() * 0.1 / 1000);
 								w.Log("Walking to training area (" + travelTime + ")" + myPosition + "->" + newPosition + ")...");
 							}
 							moveToTrainingArea = false;
@@ -135,36 +155,86 @@ namespace xBot.App
 								if (skillshots != null && skillshots.Length != 0)
 								{
 									uint mobUniqueID = (uint)mob[SRProperty.UniqueID];
-									byte skipMob = 4; // Check max. 4 times for skip mob (max. 2 seconds actually)
-									while (EntitySelected != mobUniqueID && skipMob > 0)
+									byte maxEntitySelectAttempts = 5; // Check max. 4 times to skip the mob (max. 1 seconds actually)
+									while (EntitySelected != mobUniqueID && maxEntitySelectAttempts > 0)
 									{
 										w.LogProcess("Selecting " + mob.Name + " (" + (Types.Mob)mob[SRProperty.MobType] + ")...");
 										PacketBuilder.SelectEntity(mobUniqueID);
-										skipMob--;
-										// Wait at least 500ms to try checking again
-										MonitorEntitySelected.WaitOne(500);
+										maxEntitySelectAttempts--;
+										// Wait at least 250ms to try checking again
+										MonitorEntitySelected.WaitOne(250);
 									}
-									if (skipMob != 0)
+									if (maxEntitySelectAttempts != 0)
 									{
-										w.LogProcess("Attacking " + mob.Name + "...");
+										// Entity successfully selected
 										for (int k = 0; k <= skillshots.Length; k++)
 										{
 											// loop skills again
 											if (k == skillshots.Length)
 												k = 0;
+											SRObject skillshot = skillshots[k];
 
 											// Check if skill is enabled
-											if (!skillshots[k].isCastingEnabled())
+											if (!skillshot.isCastingEnabled())
 												continue;
+											// Check and fix the weapon
+											Types.Weapon myWeapon = GetWeaponUsed();
+											if (skillshot.ID == 1)
+											{
+												// Common attack, fix the basic skill
+												if (myWeapon != Types.Weapon.None)
+												{
+													skillshot = new SRObject(i.GetCommonAttack(myWeapon), SRType.Skill);
+													skillshot.Name = "Common Attack";
+                        }
+											}
+											else
+											{
+												// Check the required weapon
+												Types.Weapon weaponRequired = (Types.Weapon)skillshot[SRProperty.WeaponRequired01];
+												w.LogProcess("Checking weapon required (" + weaponRequired + ")...");
+												if (myWeapon != weaponRequired)
+												{
+													SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
+													// Check the first 4 slots from inventory
+													int slotInventory = inventory.FindIndex(item => item.ID2 == 1 && item.ID3 == 6 && item.ID3 == (byte)weaponRequired, 13, 16);
+													if (slotInventory != -1)
+													{
+														w.LogProcess("Changing weapon (" + myWeapon + ")...");
+														// Try to change it
+														byte maxWeaponChangeAttempts = 5; // Check max. 4 times to skip the mob (max. 1 seconds actually)
+														while (myWeapon != weaponRequired && maxWeaponChangeAttempts > 0)
+														{
+															PacketBuilder.MoveItem((byte)slotInventory, 6, Types.InventoryItemMovement.InventoryToInventory);
+															maxWeaponChangeAttempts--;
+															MonitorWeaponChanged.WaitOne(250);
+															myWeapon = GetWeaponUsed();
+                            }
+														if(maxWeaponChangeAttempts == 0)
+														{
+															w.LogProcess("Weapon failed to change...");
+															continue;
+														}
+													}
+													else
+													{
+														w.LogProcess("Weapon required not found (" + myWeapon + ")...");
+														continue;
+													}
+												}
+												MonitorWeaponChanged.WaitOne(250);
+												myWeapon = GetWeaponUsed();
+											}
+
 											// Check if mob is alive
 											if (i.Mobs.ContainsKey(mobUniqueID))
 											{
-												w.LogProcess("Casting skill " + skillshots[k].Name + " (" + (int)skillshots[k][SRProperty.Casttime] + "ms)...");
-												PacketBuilder.AttackTarget(mobUniqueID, skillshots[k].ID);
+												w.LogProcess("Casting skill " + skillshot.Name + " (" + (int)skillshot[SRProperty.Casttime] + "ms)...");
+												PacketBuilder.AttackTarget(mobUniqueID, skillshot.ID);
 												if (MonitorSkillCast.WaitOne(500))
 												{
 													// Skill casted, create character cooldown
-													Thread.Sleep((int)skillshots[k][SRProperty.Casttime]);
+													Thread.Sleep((int)skillshot[SRProperty.Casttime]);
 												}
 												else
 												{
@@ -229,25 +299,9 @@ namespace xBot.App
 					goto case SRLocation.WorldMap;
 			}
 		}
-		/// <summary>
-		/// Stop botting.
-		/// </summary>
-		public void Stop()
+		private void WaitSelectEntity(uint uniqueID,byte maxAttempts)
 		{
-			if(isBotting)
-			{
-				Window w = Window.Get;
-				w.Log("Stopping bot");
-				// Update GUI
-				WinAPI.InvokeIfRequired(w.btnBotStart, () => {
-					w.btnBotStart.ForeColor = Color.Red;
-					w.ToolTips.SetToolTip(w.btnBotStart, "Start Bot");
-				});
-				// ...
-				tBotting.Abort();
-				tBotting = null;
-				w.LogProcess("Bot stopped");
-			}
+			
 		}
 		#endregion
 	}

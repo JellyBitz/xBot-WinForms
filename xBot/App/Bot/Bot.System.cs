@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
 
 namespace xBot.App
 {
@@ -13,7 +14,9 @@ namespace xBot.App
 		private AutoResetEvent MonitorEntitySelected = new AutoResetEvent(false);
 		private AutoResetEvent MonitorSkillCast = new AutoResetEvent(false);
 		private AutoResetEvent MonitorMobSpawnDespawnOrBuffChanged = new AutoResetEvent(false);
+		private AutoResetEvent MonitorWeaponChanged = new AutoResetEvent(false);
 
+		private System.Timers.Timer tJoinedLoop;
 		#region (Logical System Controller)
 		public void _OnConnected()
 		{
@@ -89,29 +92,28 @@ namespace xBot.App
 				tUsingUniversal.Enabled = tUsingPurification.Enabled =
 				tUsingRecoveryKit.Enabled = tUsingAbnormalPill.Enabled =
 				tUsingHGP.Enabled =
-				tCycleAutoParty.Enabled = false;
+				tCycleAutoParty.Enabled =
+			tJoinedLoop.Enabled = false;
 
 			Window w = Window.Get;
 			Info i = Info.Get;
 			// Reset data
-			i.Character = null;
-			EntitySelected = 0;
 			i.SpawnList.Clear();
 			i.MyPets.Clear();
 			i.Players.Clear();
 			i.Mobs.Clear();
 			i.PartyMembers.Clear();
 			i.BuffList.Clear();
+			EntitySelected = 0;
 
 			// Clear GUI
 			w.Party_Clear();
 			w.Skills_Clear();
 			w.Buffs_Clear();
-			w.Minimap_ObjectPointer_Clear();
+			w.Minimap_Objects_Clear();
 
 			// Hacks
 			LoggedFromBot = false;
-			_HWIDSent = false;
 
 			this.OnDisconnected();
 		}
@@ -153,7 +155,7 @@ namespace xBot.App
 			w.Party_Clear();
 			w.Skills_Clear();
 			w.TrainingAreas_Clear();
-			w.Minimap_ObjectPointer_Clear();
+			w.Minimap_Objects_Clear();
 			
 			this.OnTeleporting();
 		}
@@ -208,18 +210,15 @@ namespace xBot.App
 				w.Character_lblCoordY.Text = "Y : " + character.GetPosition().PosY;
 			});
 
-			SRObjectCollection Buffs = (SRObjectCollection)character[SRProperty.Buffs];
-
-			WinAPI.InvokeIfRequired(w.Character_lstvBuffs, () => {
-				w.Character_lstvBuffs.BeginUpdate();
-			});
-			for (int j = 0; j < Buffs.Capacity; j++)
+			SRObjectDictionary<uint> Buffs = (SRObjectDictionary<uint>)character[SRProperty.Buffs];
+			for (byte j = 0; j < Buffs.Count; j++)
 			{
-				w.AddBuff(Buffs[j]);
+				SRObject buff = Buffs.ElementAt(j);
+				// Global tracking
+				i.BuffList[(uint)buff[SRProperty.UniqueID]] = buff;
+				// Add to GUI
+				w.AddBuff(buff);
 			}
-			WinAPI.InvokeIfRequired(w.Character_lstvBuffs, () => {
-				w.Character_lstvBuffs.EndUpdate();
-			});
 
 			WinAPI.InvokeIfRequired(w.Character_gbxStatPoints, () => {
 				w.Character_lblStatPoints.Text = character[SRProperty.StatPoints].ToString();
@@ -235,7 +234,7 @@ namespace xBot.App
 			// Add basic attack
 			SRObject commonAttack = new SRObject(1u, SRType.Skill);
 			commonAttack.Name = "Common Attack";
-			commonAttack[SRProperty.MP] = 1u; // Trigger attack as skill
+			commonAttack[SRProperty.MP] = 1u; // Trigger skill as attack
 			commonAttack[SRProperty.Icon] = "action\\icon_cha_auto_attack.ddj";
 			Skills[commonAttack.ID] = commonAttack;
 			
@@ -257,7 +256,7 @@ namespace xBot.App
 				w.Minimap_tbxZ.Text = myPos.Z.ToString();
 				w.Minimap_tbxRegion.Text = myPos.Region.ToString();
 			});
-			w.Minimap_CharacterPointer_Move(myPos);
+			w.Minimap_Character_View(myPos, character.GetDegreeAngle());
 			#endregion
 
 			if (!inGame)
@@ -267,6 +266,41 @@ namespace xBot.App
 				});
 				// Set window title
 				w.SetTitle(i.Server, i.Charname, Proxy.SRO_Client);
+			}
+		}
+		public void _OnCharacterStatsUpdated()
+		{
+			Info i = Info.Get;
+			// Update GUI & game logic
+			Window w = Window.Get;
+			WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
+				w.Character_pgbHP.ValueMaximum = (uint)i.Character[SRProperty.HPMax];
+			});
+			WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
+				w.Character_pgbMP.ValueMaximum = (uint)i.Character[SRProperty.MPMax];
+			});
+			if ((uint)i.Character[SRProperty.HP] > (uint)i.Character[SRProperty.HPMax])
+			{
+				i.Character[SRProperty.HP] = (uint)i.Character[SRProperty.HPMax];
+				WinAPI.InvokeIfRequired(w.Character_pgbHP, () => {
+					w.Character_pgbHP.Value = (uint)i.Character[SRProperty.HP];
+				});
+			}
+			if ((uint)i.Character[SRProperty.MP] > (uint)i.Character[SRProperty.MPMax])
+			{
+				i.Character[SRProperty.MP] = (uint)i.Character[SRProperty.MPMax];
+				WinAPI.InvokeIfRequired(w.Character_pgbMP, () => {
+					w.Character_pgbMP.Value = (uint)i.Character[SRProperty.MP];
+				});
+			}
+			WinAPI.InvokeIfRequired(w.Character_lblSTR, () => {
+				w.Character_lblSTR.Text = i.Character[SRProperty.STR].ToString();
+			});
+			WinAPI.InvokeIfRequired(w.Character_lblINT, () => {
+				w.Character_lblINT.Text = i.Character[SRProperty.INT].ToString();
+			});
+			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.None) { 
+				i.Character[SRProperty.LifeState] = Types.LifeState.Alive;
 			}
 		}
 		public void _OnTeleported()
@@ -283,13 +317,35 @@ namespace xBot.App
 				w.EnableControl(w.Login_btnStart, true);
 
 				OnGameJoined();
-			}
+
+				tJoinedLoop = new System.Timers.Timer(200);
+				tJoinedLoop.Elapsed += new System.Timers.ElapsedEventHandler(this._OnLoop);
+				JoinedLoopCounter = 0;
+				tJoinedLoop.Start();
+      }
 			this.OnTeleported();
 		}
+		private uint JoinedLoopCounter = 0;
+		private void _OnLoop(object timer, System.Timers.ElapsedEventArgs e)
+		{
+			Window w = Window.Get;
+			Info i = Info.Get;
+			// Update character realtime position
+			SRCoord p = i.Character.GetPosition();
+			// Set values
+			w.Character_SetPosition(p);
+			// Set map view every second
+			if (JoinedLoopCounter % 5 == 0)
+				w.Minimap_Character_View(p, i.Character.GetDegreeAngle());
+			JoinedLoopCounter++;
+    }
 		public void _OnSpawn(ref SRObject entity)
 		{
 			Info i = Info.Get;
+
 			uint uniqueID = (uint)entity[SRProperty.UniqueID];
+			i.SpawnList[uniqueID] = entity;
+
 			if (entity.isPlayer())
 			{
 				i.Players[entity.Name.ToUpper()] = entity;
@@ -297,20 +353,32 @@ namespace xBot.App
 			else if (entity.isMob())
 			{
 				i.Mobs[uniqueID] = entity;
-				MonitorMobSpawnDespawnOrBuffChanged.Set();
 			}
 			else if (entity.isTeleport())
 			{
 				i.Teleports[uniqueID] = entity;
 			}
-			i.SpawnList[uniqueID] = entity;
-			Window.Get.Minimap_ObjectPointer_Add((uint)entity[SRProperty.UniqueID], entity.ServerName, entity.Name,(SRCoord)entity[SRProperty.Position]);
-			OnSpawn(ref entity);
+			// Check for buffs for a global tracking
+			object test = entity[SRProperty.Buffs];
+			if (test != null)
+			{
+				SRObjectDictionary<uint> Buffs = (SRObjectDictionary<uint>)test;
+				for (byte j = 0; j < Buffs.Count; j++)
+				{
+					SRObject buff = Buffs.ElementAt(j);
+					// Global tracking
+					i.BuffList[(uint)buff[SRProperty.UniqueID]] = buff;
+				}
+			}
+			this.OnSpawn(ref entity);
+
+			Window.Get.Minimap_Object_Add(uniqueID, entity);
 		}
 		public void _OnDespawn(uint uniqueID)
 		{
 			Info i = Info.Get;
 			SRObject entity = i.SpawnList[uniqueID];
+
 			if (entity.isPlayer())
 			{
 				i.Players.RemoveKey(entity.Name.ToUpper());
@@ -325,102 +393,76 @@ namespace xBot.App
 				i.Teleports.RemoveKey(uniqueID);
 			}
 			i.SpawnList.RemoveKey(uniqueID);
-			Window.Get.Minimap_ObjectPointer_Remove(uniqueID);
+
+			Window.Get.Minimap_Object_Remove(uniqueID);
 		}
 		public void _OnEntityDead(uint uniqueID){
 			Info i = Info.Get;
 			// Entity target has been killed
 			SRObject entity = i.GetEntity(uniqueID);
-			// Check if the entity it's despawn already
-			if(entity != null){
-				if(entity.isMob())
+			// Check if the entity has been removed before 
+			if(entity != null)
+			{
+				// Update dead state (faster detection)
+				entity[SRProperty.LifeState] = Types.LifeState.Dead;
+        if (entity.isMob())
 				{
 					i.Mobs.RemoveKey(uniqueID);
 					MonitorMobSpawnDespawnOrBuffChanged.Set();
+
+					Window.Get.Minimap_Object_Remove(uniqueID);
 				}
-			}
+      }
 		}
 		public void _OnEntityMovement(ref SRObject entity)
 		{
 			Info i = Info.Get;
-			if ((bool)entity[SRProperty.hasMovement])
+			if (i.Character == entity)
 			{
-				Window w = Window.Get;
-				if ((uint)entity[SRProperty.UniqueID] == (uint)i.Character[SRProperty.UniqueID])
+				_OnCharacterMovement(ref entity);
+				return;
+			}
+			if (entity.isPlayer())
+			{
+				OnPlayerMovement(ref entity);
+			}
+			else if (entity.isPet())
+			{
+				if (entity.ID4 == 1)
 				{
-					SRCoord p = (SRCoord)entity[SRProperty.MovementPosition];
-
-					WinAPI.InvokeIfRequired(w.Character_lblLocation, () => {
-						if(p.Region.ToString() != w.Character_lblLocation.Text)
-							w.Character_lblLocation.Text = i.GetRegion(p.Region);
-					});
-					WinAPI.InvokeIfRequired(w.Minimap_panelCoords, () => {
-						w.Minimap_tbxX.Text = p.X.ToString();
-						w.Minimap_tbxY.Text = p.Y.ToString();
-						w.Minimap_tbxZ.Text = p.Z.ToString();
-						w.Minimap_tbxRegion.Text = p.Region.ToString();
-					});
-					WinAPI.InvokeIfRequired(w.Character_lblCoordX, () => {
-						w.Character_lblCoordX.Text = "X : " + Math.Round(p.PosX);
-					});
-					WinAPI.InvokeIfRequired(w.Character_lblCoordY, () => {
-						w.Character_lblCoordY.Text = "Y : " + Math.Round(p.PosY);
-					});
-					w.Minimap_CharacterPointer_Move(p);
-					return;
-				}
-				
-				if (entity.isPlayer())
-				{
-					OnPlayerMovement(ref entity);
-				}
-				else if (entity.isPet())
-				{
-					if (entity.ID4 == 1)
+					// Vehicle
+					uint vehicleUniqueID = (uint)entity[SRProperty.UniqueID];
+					SRObject player = i.Players.Find(p => (bool)p[SRProperty.isRiding] && (uint)p[SRProperty.RidingUniqueID] == vehicleUniqueID);
+					if (player != null)
 					{
-						// Vehicle
-						uint vehicleUniqueID = (uint)entity[SRProperty.UniqueID];
-						SRObject player = i.Players.Find(p => (bool)p[SRProperty.isRiding] && (uint)p[SRProperty.RidingUniqueID] == vehicleUniqueID);
-						if (player != null)
-						{
-							player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
-							player[SRProperty.LastUpdateTimeUtc] = entity[SRProperty.LastUpdateTimeUtc];
-							_OnEntityMovement(ref player);
-						}
-					}
-					else if (entity.ID4 == 2)
-					{
-						SRObject player = i.GetEntity((uint)entity[SRProperty.OwnerUniqueID]);
-						if (player != null && (bool)player[SRProperty.isRiding])
-						{
-							player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
-							player[SRProperty.LastUpdateTimeUtc] = entity[SRProperty.LastUpdateTimeUtc];
-							OnPlayerMovement(ref player);
-						}
+						player.GetPosition();
+						player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
+						_OnEntityMovement(ref player);
 					}
 				}
-				w.Minimap_ObjectPointer_Move((uint)entity[SRProperty.UniqueID], (SRCoord)entity[SRProperty.MovementPosition]);
+				else if (entity.ID4 == 2)
+				{
+					SRObject player = i.GetEntity((uint)entity[SRProperty.OwnerUniqueID]);
+					if (player != null && (bool)player[SRProperty.isRiding])
+					{
+						player.GetPosition();
+						player[SRProperty.MovementPosition] = entity[SRProperty.MovementPosition];
+						OnPlayerMovement(ref player);
+					}
+				}
 			}
 		}
-		public void _OnEntityStateUpdated(ref SRObject entity, Types.EntityStateUpdate type)
+		public void _OnCharacterMovement(ref SRObject character)
 		{
-			// Update dead/alive state
-			switch (type)
-			{
-				case Types.EntityStateUpdate.HP:
-				case Types.EntityStateUpdate.HPMP:
-				case Types.EntityStateUpdate.EntityHPMP:
-					if ((uint)entity[SRProperty.HP] == 0)
-						entity[SRProperty.LifeState] = Types.LifeState.Dead;
-					else if ((Types.LifeState)entity[SRProperty.LifeState] != Types.LifeState.Alive)
-						entity[SRProperty.LifeState] = Types.LifeState.Alive;
-					break;
-			}
+			
+		}
+		public void _OnEntityStatusUpdated(ref SRObject entity, Types.EntityStateUpdate type)
+		{
 			Info i = Info.Get;
 			// Generating character event
-			if ((uint)entity[SRProperty.UniqueID] == (uint)i.Character[SRProperty.UniqueID])
+			if (i.Character == entity)
 			{
-				_OnStateUpdated(type);
+				_OnStatusUpdated(type);
 			}
 			else if (entity.ID1 == 1 && entity.ID2 == 2 && entity.ID3 == 3)
 			{
@@ -428,7 +470,7 @@ namespace xBot.App
 				{
 					// Check if it's my pet
 					if((uint)entity[SRProperty.OwnerUniqueID] == (uint)i.Character[SRProperty.UniqueID])
-						_OnPetStateUpdated(type);
+						_OnPetStatusUpdated(type);
 				}
 				else
 				{
@@ -436,12 +478,12 @@ namespace xBot.App
 					if ((bool)i.Character[SRProperty.isRiding] 
 						&& (uint)i.Character[SRProperty.RidingUniqueID] == (uint)entity[SRProperty.UniqueID])
 					{
-						_OnPetStateUpdated(type);
+						_OnPetStatusUpdated(type);
 					}
 				}
 			}
 		}
-		private void _OnStateUpdated(Types.EntityStateUpdate type)
+		private void _OnStatusUpdated(Types.EntityStateUpdate type)
 		{
 			// Update GUI bars
 			Window w = Window.Get;
@@ -467,7 +509,7 @@ namespace xBot.App
 					});
 					break;
 			}
-			this.OnStateUpdated(type);
+			this.OnStatusUpdated(type);
 		}
 		public void _OnExpReceived(long ExpReceived, long Exp, long ExpMax, byte Level)
 		{
@@ -523,11 +565,11 @@ namespace xBot.App
 				});
 			}
 		}
-		public void _OnItemPickedUp(SRObject item){
-			
+		public void _OnItemPickedUp(SRObject item,ushort quantity){
+
 			// generate statistics
 
-			OnItemPickedUp(item);
+			OnItemPickedUp(item,quantity);
 		}
 		public void _OnPetSummoned(uint uniqueID)
 		{
@@ -541,9 +583,9 @@ namespace xBot.App
 			OnPetUnsummoned(uniqueID);
 			Info.Get.MyPets.RemoveKey(uniqueID);
 		}
-		public void _OnPetStateUpdated(Types.EntityStateUpdate type)
+		public void _OnPetStatusUpdated(Types.EntityStateUpdate type)
 		{
-			OnPetStateUpdated(type);
+			OnPetStatusUpdated(type);
 		}
 		public void _OnPetExpReceived(ref SRObject pet, long ExpReceived, long Exp, long ExpMax, byte level)
 		{
@@ -641,6 +683,11 @@ namespace xBot.App
 		{
 			EntitySelected = uniqueID;
 			MonitorEntitySelected.Set();
+
+			if(Proxy.ClientlessMode)
+			{
+				// SRObject entity = Info.Get.GetEntity(uniqueID);
+			}
 		}
 		public void _OnPartyInvitation(uint uniqueID, Types.PartySetup PartySetup)
 		{
@@ -763,41 +810,53 @@ namespace xBot.App
 		{
 			inStall = hasStall = false;
 		}
-		public void _OnEntityBuffAdded(ref SRObject entity,ref SRObject buff){
-			// Keep on track the buff
+		public void _OnEntityBuffAdded(uint uniqueID,SRObject buff){
+			uint buffUniqueID = (uint)buff[SRProperty.UniqueID];
+			// Global tracking
 			Info i = Info.Get;
-			i.BuffList[(uint)buff[SRProperty.UniqueID]] = buff;
-
-			SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
-			Buffs.Add(buff);
-
+			i.BuffList[buffUniqueID] = buff;
+			// (Easy) Entity tracking
+			SRObject entity = i.GetEntity(uniqueID);
+			SRObjectDictionary<uint> Buffs = (SRObjectDictionary<uint>)entity[SRProperty.Buffs];
 			if (entity == i.Character)
 			{
 				MonitorMobSpawnDespawnOrBuffChanged.Set();
-        Window.Get.AddBuff(buff);
+
+				Window w = Window.Get;
+				// Check overlap to remove from GUI
+				SRObject oldBuff = Buffs[buff.ID];
+				if (oldBuff != null)
+					w.RemoveBuff((uint)oldBuff[SRProperty.UniqueID]);
+				w.AddBuff(buff);
 			}
+			Buffs[buff.ID] = buff;
 		}
 		public void _OnEntityBuffRemoved(uint buffUniqueID)
 		{
 			Info i = Info.Get;
+			// Global tracking
 			SRObject buff = i.BuffList[buffUniqueID];
 			if (buff != null)
 			{
 				i.BuffList.RemoveKey(buffUniqueID);
 
 				SRObject entity = i.GetEntity((uint)buff[SRProperty.OwnerUniqueID]);
-				SRObjectCollection Buffs = (SRObjectCollection)entity[SRProperty.Buffs];
-				Buffs.Remove(buff);
+				SRObjectDictionary<uint> Buffs = (SRObjectDictionary<uint>)entity[SRProperty.Buffs];
+
+				Buffs.RemoveKey(buff.ID);
 				if (i.Character == entity)
 				{
 					MonitorMobSpawnDespawnOrBuffChanged.Set();
-          Window.Get.RemoveBuff(buff.ID);
-        }
+					Window.Get.RemoveBuff(buffUniqueID);
+				}
 			}
 		}
 		public void _OnEntitySkillCast(byte skillType, uint skillID, uint sourceUniqueID, uint targetUniqueID)
 		{
 			Info i = Info.Get;
+			SRObject sourceEntity = i.GetEntity(sourceUniqueID);
+			sourceEntity.GetPosition(); // Force update the position
+
 			if (sourceUniqueID == (uint)i.Character[SRProperty.UniqueID])
 			{
 				// Put the skill at cooldown
@@ -805,11 +864,15 @@ namespace xBot.App
 				SRObject Skill = Skills[skillID];
 				// Avoid tracking basic attacks
 				if (Skill != null) {
-					Skill[SRProperty.LastUpdateTimeUtc] = DateTime.UtcNow;
+					Skill[SRProperty.LastUpdateTime] = Stopwatch.StartNew();
 					Skill[SRProperty.isEnabled] = false;
 				}
 				MonitorSkillCast.Set();
 			}
+		}
+		public void _OnWeaponChanged()
+		{
+			MonitorWeaponChanged.Set();
 		}
 		#endregion
 	}

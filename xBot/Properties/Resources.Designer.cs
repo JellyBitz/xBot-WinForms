@@ -123,6 +123,66 @@ namespace xBot.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_animal {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_animal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_character {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_character", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_monster {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_monster", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_npc {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_npc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_otherplayer {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_otherplayer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mm_sign_unique {
+            get {
+                object obj = ResourceManager.GetObject("mm_sign_unique", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ProjexNET_40x40 {
             get {
                 object obj = ResourceManager.GetObject("ProjexNET_40x40", resourceCulture);
@@ -137,6 +197,16 @@ namespace xBot.Properties {
             get {
                 object obj = ResourceManager.GetObject("source_sans_pro_regular", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap xy_gate {
+            get {
+                object obj = ResourceManager.GetObject("xy_gate", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

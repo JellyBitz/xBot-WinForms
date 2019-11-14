@@ -34,7 +34,8 @@ namespace xBot.App
 			{
 				db = new SQLiteConnection("Data Source=" + Path + ";Version=3;");
 				q = new SQLiteCommand(db);
-				db.Open();
+				q.CommandTimeout = 1000; // Wait for queue to execute query
+        db.Open();
 				return true;
 			}
 			catch
@@ -93,20 +94,38 @@ namespace xBot.App
 			List<NameValueCollection> result = new List<NameValueCollection>();
 			using (SQLiteDataReader reader = q.ExecuteReader())
 			{
-				while (reader.Read())
-				{
+				while (reader.Read()){
 					result.Add(reader.GetValues());
+				}
+			}
+			return result;
+		}
+		public List<NameValueCollection> GetResultFromQuery(string sql)
+		{
+			List<NameValueCollection> result = new List<NameValueCollection>();
+			if (db != null)
+			{
+				using (SQLiteCommand q = new SQLiteCommand(sql, db))
+				{
+					q.ExecuteNonQuery();
+					using (SQLiteDataReader reader = q.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							result.Add(reader.GetValues());
+						}
+					}
 				}
 			}
 			return result;
 		}
 		public void Begin()
 		{
-			ExecuteQuery("begin");
+			ExecuteQuery("BEGIN");
 		}
 		public void End()
 		{
-			ExecuteQuery("end");
+			ExecuteQuery("END");
 		}
 		public void Close()
 		{

@@ -191,9 +191,9 @@ namespace xBot.Game
 			}
 			else
 			{
-				p.WriteShort(x);
-				p.WriteShort(z);
-				p.WriteShort(y);
+				p.WriteUShort(x);
+				p.WriteUShort(z);
+				p.WriteUShort(y);
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -305,6 +305,29 @@ namespace xBot.Game
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void OpenNPC(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_ENTITY_TALK_REQUEST);
+			p.WriteUInt(uniqueID);
+			p.WriteByte(1);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void BuyNPC(uint uniqueID,byte tab,byte slot,ushort quantity)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_ENTITY_TALK_REQUEST);
+			p.WriteByte(8); // unknown
+			p.WriteByte(tab);
+			p.WriteByte(slot);
+			p.WriteUShort(quantity);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void CloseNPC(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_NPC_CLOSE_REQUEST);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void UseItem(SRObject item,byte slot,uint uniqueID = 0)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_USE,true);
@@ -363,7 +386,7 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_AUTORESURRECTION);
 			p.WriteByte(2);
-			Bot.Get.Proxy.Agent.InjectToServer(p);
+			Bot.Get.Proxy.Agent.InjectToServer(p,1000);
 		}
 		public static void CastSkill(uint skillID, uint targetUniqueID = 0)
 		{
@@ -406,15 +429,11 @@ namespace xBot.Game
 			p.WriteByte(1);
 			p.WriteByte(Types.CharacterAction.SkillRemove);
 			p.WriteUInt(skillID);
-			if (targetUniqueID == 0)
+			if (targetUniqueID != 0)
 			{
-				p.WriteByte(1);
 				p.WriteUInt(targetUniqueID);
 			}
-			else
-			{
-				p.WriteByte(0);
-			}
+			p.WriteByte(0);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void UseTeleport(uint sourceUniqueID,uint destinationID,int waitDelay)

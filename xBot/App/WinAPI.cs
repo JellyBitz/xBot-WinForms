@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -22,6 +21,7 @@ namespace xBot.App
 		public const int SB_PAGEBOTTOM = 7;
 		public const int WM_NCLBUTTONDOWN = 0xA1;
 		public const int HT_CAPTION = 2;
+
 		[DllImport("user32.dll")]
 		public static extern bool ReleaseCapture();
 		[DllImport("user32.dll")]
@@ -51,7 +51,7 @@ namespace xBot.App
 		/// <summary>
 		/// Invoque the control if is required, then do the action specified.
 		/// </summary>
-		public static void InvokeIfRequired(Control control, MethodInvoker action)
+		public static void InvokeIfRequired(this Control control, MethodInvoker action)
 		{
 			try
 			{
@@ -79,52 +79,39 @@ namespace xBot.App
 			Array.Resize(ref apRet, iCount);
 			return apRet;
 		}
-		/// <summary>
-		/// Converts the byte array to hexadecimal string.
-		/// </summary>
-		/// <para>Example: "00 00 00 00" </para>
-		public static string ToHexString(byte[] bytes)
-		{
-			if (bytes.Length == 0)
-				return "";
-			StringBuilder hexData = new StringBuilder();
-			foreach (byte b in bytes)
-				hexData.Append(b.ToString("X2") + " ");
-			// remove the last empty space
-			return hexData.Remove(hexData.Length - 1, 1).ToString();
-		}
+		
 		/// <summary>
 		/// Converts the hexadecimal string to byte array.
 		/// </summary>
-		public static byte[] ToByteArray(string hexString)
+		public static byte[] ToByteArray(this string HexadecimalString)
 		{
-			hexString = hexString.Replace(" ", "");
-			byte[] result = new byte[hexString.Length / 2];
+			HexadecimalString = HexadecimalString.Replace(" ", "");
+			byte[] result = new byte[HexadecimalString.Length / 2];
 			int j = 0;
-      for (int i = 0; i < hexString.Length; i+=2)
-				result[j++] = Convert.ToByte(hexString.Substring(i, 2), 16);
+      for (int i = 0; i < HexadecimalString.Length; i+=2)
+				result[j++] = Convert.ToByte(HexadecimalString.Substring(i, 2), 16);
 			return result;
     }
 		/// <summary>
-		/// StreamReader extension support for using differents limiters.
+		/// StreamReader support for using differents limiters.
 		/// </summary>
-		/// <param name="sr">StreamReader loaded</param>
+		/// <param name="StreamReader">StreamReader loaded</param>
 		/// <param name="SplitString">Delemiters</param>
-		public static string ReadToString(StreamReader sr, string split)
+		public static string ReadLine(this StreamReader StreamReader, string delimiter)
 		{
 			char nextChar;
 			StringBuilder line = new StringBuilder();
 			int matchIndex = 0;
 
-			while (sr.Peek() > 0)
+			while (StreamReader.Peek() > 0)
 			{
-				nextChar = (char)sr.Read();
+				nextChar = (char)StreamReader.Read();
 				line.Append(nextChar);
-				if (nextChar == split[matchIndex])
+				if (nextChar == delimiter[matchIndex])
 				{
-					if (matchIndex == split.Length - 1)
+					if (matchIndex == delimiter.Length - 1)
 					{
-						return line.ToString().Substring(0, line.Length - split.Length);
+						return line.ToString().Substring(0, line.Length - delimiter.Length);
 					}
 					matchIndex++;
 				}
@@ -138,48 +125,56 @@ namespace xBot.App
 		/// <summary>
 		/// Shuffle a list using Fisher-Yates algorithm.
 		/// </summary>
-		public static List<T> GetShuffle<T>(List<T> List,Random randomize)
+		public static void Shuffle<T>(this List<T> List)
 		{
+			Random rand = new Random();
+
 			int n = List.Count;
 			while (n > 1)
 			{
 				n--;
-				int k = randomize.Next(n + 1);
+				int k = rand.Next(n + 1);
 				T value = List[k];
 				List[k] = List[n];
 				List[n] = value;
 			}
-			return List;
 		}
-
 		/// <summary>
 		/// Restart timer with a new Interval.
 		/// </summary>
-		public static void ResetTimer(ref System.Timers.Timer Timer, double newInterval)
+		public static void ResetTimer(this System.Timers.Timer Timer, double newInterval)
 		{
 			Timer.Stop();
 			Timer.Interval = newInterval;
 			Timer.Start();
 		}
 		/// <summary>
-		/// Delete a directory and all his files recursively.
+		/// Try to delete a directory with all his files recursively.
 		/// </summary>
 		public static void DirectoryDelete(string Path)
 		{
-			string[] files = Directory.GetFiles(Path);
-			string[] dirs = Directory.GetDirectories(Path);
-
-			foreach (string file in files)
+			// Delete every file
+			string[] temp = Directory.GetFiles(Path);
+			foreach (string file in temp)
 			{
-				File.SetAttributes(file, FileAttributes.Normal);
-				File.Delete(file);
-			}
-			foreach (string dir in dirs)
-			{
-				DirectoryDelete(dir);
+				try
+				{
+					File.SetAttributes(file, FileAttributes.Normal);
+					File.Delete(file);
+				}
+				catch { }
 			}
 
-			Directory.Delete(Path, false);
+			// Check every folder inside Path recursively
+			temp = Directory.GetDirectories(Path);
+			foreach (string directory in temp)
+				DirectoryDelete(directory);
+
+			// Delete Path folder
+			try {
+				Directory.Delete(Path, false);
+			}
+			catch { }
 		}
 		#endregion
 	}

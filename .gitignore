@@ -4,30 +4,16 @@ xBot/bin/Debug/*.manifest
 xBot/bin/Debug/*.json
 xBot/bin/Debug/*.xml
 
-# Minimap feature
-xBot/bin/Debug/Minimap/images/
-xBot/bin/Debug/Minimap/js/leaflet/
-xBot/bin/Debug/Minimap/css/
-!xBot/bin/Debug/Minimap/index.html
-!xBot/bin/Debug/Minimap/js/map.js
-
-# Browser files
-xBot/bin/Debug/x86/
-xBot/bin/Debug/x64/
-xBot/bin/Debug/Firefox64/
-xBot/bin/Debug/GPUCache/
+xBot/obj/Debug/
 
 # Bot data generated
 xBot/bin/Debug/Data/
 xBot/bin/Debug/Config/
+xBot/bin/Debug/Minimap/
 
 # Packages can be restored via NuGet
 packages/
-xBot/obj/Debug/
 
 # Release version will be zipped apart with only required files
 xBot/bin/Release/
 xBot/obj/Release/
-
-# To keep temporaly and individually the main changes made in the code
-Changelog.txt

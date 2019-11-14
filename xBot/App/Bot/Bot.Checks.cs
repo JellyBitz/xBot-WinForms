@@ -69,7 +69,7 @@ namespace xBot.App
 				if (w.Character_cbxUseHP.Checked || w.Character_cbxUseHPGrain.Checked)
 				{
 					byte useHP = 0; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseHP, () => {
+					w.Character_tbxUseHP.InvokeIfRequired(() => {
 						useHP = byte.Parse(w.Character_tbxUseHP.Text);
 					});
 					if (i.Character.GetHPPercent() <= useHP)
@@ -309,7 +309,7 @@ namespace xBot.App
 					if(PlayersToInvite.Count > 0)
 					{
 						// Shuffle and check the party list with near players
-						PlayersToInvite = WinAPI.GetShuffle(PlayersToInvite, rand);
+						PlayersToInvite.Shuffle();
 						SRObject PlayerToInvite = null;
 						for (int j = 0; j < PlayersToInvite.Count; j++)
 						{
@@ -357,17 +357,18 @@ namespace xBot.App
 			if (w.Party_cbxLeavePartyNoneLeader.Checked)
 			{
 				Info i = Info.Get;
-
 				bool found = false;
-				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
-					for (byte j = 0; j < i.PartyMembers.Count; j++){
+				w.Party_lstvLeaderList.InvokeIfRequired(() => {
+					for (byte j = 0; j < i.PartyMembers.Count; j++)
+					{
 						if (w.Party_lstvLeaderList.Items.ContainsKey(i.PartyMembers.ElementAt(j).Name.ToUpper()))
 						{
 							found = true;
 							break;
-            }
+						}
 					}
 				});
+
 				if (!found)
 				{
 					PacketBuilder.LeaveParty();
@@ -396,10 +397,11 @@ namespace xBot.App
 			SRObject pet = null;
 
 			// Vehicle or Transport
-			if (w.Character_cbxUseTransportHP.Checked){
+			if (w.Character_cbxUseTransportHP.Checked)
+			{
 				pet = i.MyPets.Find(p => p.ID4 == 1 || p.ID4 == 2);
 				// Check % if there is at least one pet
-				if(pet != null)
+				if (pet != null)
 				{
 					byte useHP = 0; // dummy
 					WinAPI.InvokeIfRequired(w.Character_tbxUseTransportHP, () => {
@@ -509,11 +511,11 @@ namespace xBot.App
 						if (FindItem(3, 1, 9, ref slot))
 						{
 							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot, (uint)pet[SRProperty.UniqueID]);
-							WinAPI.ResetTimer(ref tUsingHGP, 1000);
+							tUsingHGP.ResetTimer(1000);
 							return;
 						}
 					}
-					WinAPI.ResetTimer(ref tUsingHGP, 300000); // 1% decrease : -100 HGP every 5min
+					tUsingHGP.ResetTimer(300000); // 1% decrease : -100 HGP every 5min
 				}
 			}
 		}

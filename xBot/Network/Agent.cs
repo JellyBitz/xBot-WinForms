@@ -22,6 +22,7 @@ namespace xBot.Network
 				CLIENT_CHARACTER_SELECTION_ACTION_REQUEST = 0x7007,
 				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
 				CLIENT_CHARACTER_MOVEMENT = 0x7021,
+				CLIENT_CHARACTER_MOVEMENT_ANGLE = 0x7024,
 				CLIENT_CHARACTER_TRANSPORT_MOVEMENT = 0x70C5,
 				CLIENT_CHARACTER_ADD_STR_REQUEST = 0x7050,
 				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
@@ -32,6 +33,8 @@ namespace xBot.Network
 				CLIENT_INVENTORY_ITEM_MOVEMENT = 0x7034,
 				CLIENT_STORAGE_DATA_REQUEST = 0x703C,
 				CLIENT_ENTITY_SELECTION = 0x7045,
+				CLIENT_ENTITY_TALK_REQUEST = 0x7046,
+				CLIENT_NPC_CLOSE_REQUEST = 0x704B,
 				CLIENT_CHAT_REQUEST = 0x7025,
 				CLIENT_MAIL_SEND_REQUEST = 0x7309,
 				CLIENT_PLAYER_INVITATION_RESPONSE = 0x3080,
@@ -45,7 +48,7 @@ namespace xBot.Network
 				CLIENT_PARTY_MATCH_LIST_REQUEST = 0x706C,
 				CLIENT_PARTY_MATCH_JOIN_REQUEST = 0x706D,
 				CLIENT_PARTY_MATCH_JOIN_RESPONSE = 0x306E,
-				CLIENT_ACADEMY_NOTICE_EDITED_REQUEST = 0x7477,
+				CLIENT_ACADEMY_NOTICE_EDIT_REQUEST = 0x7477,
 				CLIENT_PET_UNSUMMON_REQUEST = 0x7116,
 				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
 				CLIENT_PET_MOUNTED = 0x70CB,
@@ -57,7 +60,9 @@ namespace xBot.Network
 				CLIENT_STALL_LEAVE_REQUEST = 0x70B5,
 				CLIENT_STALL_UPDATE_REQUEST = 0x70BA,
 				CLIENT_MASTERY_SKILL_LEVELUP_REQUEST = 0x70A1,
+				CLIENT_MASTERY_SKILL_LEVELDOWN_REQUEST = 0x7202,
 				CLIENT_MASTERY_LEVELUP_REQUEST = 0x70A2,
+				CLIENT_MASTERY_LEVELDOWN_REQUEST = 0x7203,
 				CLIENT_TELEPORT_USE_REQUEST = 0x705A,
 				CLIENT_TELEPORT_RECALL_REQUEST = 0x7059,
 				CLIENT_TELEPORT_READY_RESPONSE = 0x34B6,
@@ -96,11 +101,12 @@ namespace xBot.Network
 				SERVER_ENTITY_GROUPSPAWN_DATA = 0x3019,
 				SERVER_ENTITY_MOVEMENT = 0xB021,
 				SERVER_ENTITY_MOVEMENT_STUCK = 0xB023,
+				SERVER_ENTITY_MOVEMENT_ANGLE = 0xB024,
 				SERVER_ENTITY_LEVEL_UP = 0x3054,
-				SERVER_ENTITY_STATE_UPDATE = 0x3057,
+				SERVER_ENTITY_STATUS_UPDATE = 0x3057,
 				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
 				SERVER_ENTITY_SPEED_UPDATE = 0x30D0,
-				SERVER_ENTITY_MOTION_UPDATE = 0x30BF,
+				SERVER_ENTITY_STATE_UPDATE = 0x30BF,
 				SERVER_ENTITY_STALL_CREATE = 0x30B8,
 				SERVER_ENTITY_STALL_DESTROY = 0x30B9,
 				SERVER_ENTITY_EMOTE_USE = 0x3091,
@@ -132,7 +138,9 @@ namespace xBot.Network
 				SERVER_STALL_UPDATE_RESPONSE = 0xB0BA,
 				SERVER_STALL_CLOSED = 0x30B9,
 				SERVER_MASTERY_SKILL_LEVELUP_RESPONSE = 0xB0A1,
+				SERVER_MASTERY_SKILL_LEVELDOWN_RESPONSE = 0xB202,
 				SERVER_MASTERY_LEVELUP_RESPONSE = 0xB0A2,
+				SERVER_MASTERY_LEVELDOWN_RESPONSE = 0xB203,
 				SERVER_TELEPORT_USE_RESPONSE = 0xB05A,
 				SERVER_TELEPORT_RECALL_RESPONSE = 0xB059,
 				SERVER_TELEPORT_READY_REQUEST = 0x34B5,
@@ -203,13 +211,6 @@ namespace xBot.Network
 		/// <returns>True if the packet won't be sent to the server</returns>
 		private bool Local_PacketHandler(Packet packet)
 		{
-			// HWID setup (saving/updating data from client)
-			if (packet.Opcode == Opcode.CLIENT_HWID_RESPONSE)
-			{
-				if (Bot.Get.HWIDSaveFrom == "Agent" || Bot.Get.HWIDSaveFrom == "Both"){
-					Bot.Get.SaveHWID(packet.GetBytes());
-				}
-			}
 			// Opcode filter
 			switch (packet.Opcode)
 			{
@@ -260,20 +261,6 @@ namespace xBot.Network
 		/// <returns>True if the packet will be ignored by the client</returns>
 		private bool Remote_PacketHandler(Packet packet)
 		{
-			// HWID setup (sending data to server)
-			if (packet.Opcode == Opcode.SERVER_HWID_REQUEST && ClientlessMode)
-			{
-				if (Bot.Get.HWIDSendTo == "Agent" || Bot.Get.HWIDSendTo == "Both")
-				{
-					byte[] hwidData = Bot.Get.LoadHWID();
-					if (hwidData != null)
-					{
-						Packet p = new Packet(Opcode.CLIENT_HWID_RESPONSE, false, false, hwidData);
-						InjectToServer(p);
-						Window.Get.LogProcess("HWID Sent : " + WinAPI.ToHexString(hwidData));
-					}
-				}
-			}
 			// Opcode filter
 			switch (packet.Opcode)
 			{
@@ -382,8 +369,8 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_LEVEL_UP:
 					PacketParser.EntityLevelUp(packet);
 					break;
-				case Opcode.SERVER_ENTITY_STATE_UPDATE:
-					PacketParser.EntityStateUpdate(packet);
+				case Opcode.SERVER_ENTITY_STATUS_UPDATE:
+					PacketParser.EntityStatusUpdate(packet);
 					break;
 				case Opcode.SERVER_ENTITY_MOVEMENT:
 					PacketParser.EntityMovement(packet);
@@ -391,11 +378,14 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_MOVEMENT_STUCK:
 					PacketParser.EntityMovementStuck(packet);
 					break;
+				case Opcode.SERVER_ENTITY_MOVEMENT_ANGLE:
+					PacketParser.EntityMovementAngle(packet);
+					break;
 				case Opcode.SERVER_ENTITY_SPEED_UPDATE:
 					PacketParser.EntitySpeedUpdate(packet);
 					break;
-				case Opcode.SERVER_ENTITY_MOTION_UPDATE:
-					PacketParser.EntityMotionUpdate(packet);
+				case Opcode.SERVER_ENTITY_STATE_UPDATE:
+					PacketParser.EntityStateUpdate(packet);
 					break;
 				case Opcode.SERVER_ENTITY_STALL_CREATE:
 					PacketParser.EntityStallCreate(packet);
@@ -513,8 +503,14 @@ namespace xBot.Network
 				case Opcode.SERVER_MASTERY_SKILL_LEVELUP_RESPONSE:
 					PacketParser.MasterySkillLevelUpResponse(packet);
 					break;
+				case Opcode.SERVER_MASTERY_SKILL_LEVELDOWN_RESPONSE:
+					PacketParser.MasterySkillLevelDownResponse(packet);
+					break;
 				case Opcode.SERVER_MASTERY_LEVELUP_RESPONSE:
 					PacketParser.MasteryLevelUpResponse(packet);
+					break;
+				case Opcode.SERVER_MASTERY_LEVELDOWN_RESPONSE:
+					PacketParser.MasteryLevelDownResponse(packet);
 					break;
 				case Opcode.SERVER_TELEPORT_READY_REQUEST:
 					if (ClientlessMode)

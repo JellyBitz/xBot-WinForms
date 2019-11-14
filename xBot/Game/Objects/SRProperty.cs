@@ -251,6 +251,10 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="float"/></para>
 		/// </summary>
 		SpeedBerserk,
+		/// <summary>
+		/// Contains all buffs casted on character.
+		/// <para>Type : <see cref="SRObjectDictionary{T}"/> Where <see cref="{T}"/> : <see cref="uint"/></para>
+		/// </summary>
 		Buffs,
 		/// <summary>
 		/// NPC models ID.
@@ -305,13 +309,25 @@ namespace xBot.Game.Objects
 		JobExpMax,
 		JobContribution,
 		JobReward,
-		PVPState,
+		/// <summary>
+		/// <para>Type : <see cref="Types.PVPState"/></para>
+		/// </summary>
+		PVPStateType,
+		/// <summary>
+		/// <para>Type : <see cref="bool"/></para>
+		/// </summary>
 		isRiding,
-		isFighting,
+		/// <summary>
+		/// <para>Type : <see cref="bool"/></para>
+		/// </summary>
+		inCombat,
 		RidingUniqueID,
 		CaptureTheFlagType,
 		GuideFlag,
 		JoinID,
+		/// <summary>
+		/// <para>Type : <see cref="bool"/></para>
+		/// </summary>
 		isGameMaster,
 		/// <summary>
 		/// <para>Type : <see cref="List{T}"/> where T : <see cref="string"/></para>
@@ -341,12 +357,19 @@ namespace xBot.Game.Objects
 		StallDecorationType,
 		EquipmentCooldown,
 		SkillID,
-
+		/// <summary>
+		/// <para>Type : <see cref="Types.Weapon"/></para>
+		/// </summary>
+		WeaponRequired01,
+		/// <summary>
+		/// <para>Type : <see cref="Types.Weapon"/></para>
+		/// </summary>
+		WeaponRequired02,
 		/// <summary>
 		/// Last update at utc time.
-		/// <para>Type : <see cref="DateTime"/></para>
+		/// <para>Type : <see cref="System.Diagnostics.Stopwatch"/></para>
 		/// </summary>
-		LastUpdateTimeUtc,
+		LastUpdateTime,
 		HPMP,
 		Icon,
 		hasTalk,
@@ -357,11 +380,14 @@ namespace xBot.Game.Objects
 		PickSettingFlags,
 		AttackSettingsFlags,
 		hasOwner,
+		/// <summary>
+		/// <para>Type : <see cref="uint"/></para>
+		/// </summary>
 		OwnerUniqueID,
 		/// <summary>
 		/// <para>Type : <see cref="bool"/></para>
 		/// </summary>
-		TargetRequired,
+		isTargetRequired,
 		/// <summary>
 		/// <para>Type : <see cref="string"/></para>
 		/// </summary>
@@ -388,6 +414,11 @@ namespace xBot.Game.Objects
 		ParryRatio,
 		OwnerJoinID,
 
+		TeleportName,
+		/// <summary>
+		/// <para>Type : <see cref="SRObjectCollection"/></para>
+		/// </summary>
+		TeleportOptions,
 
 		Slot,
 	

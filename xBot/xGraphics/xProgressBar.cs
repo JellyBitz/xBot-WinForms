@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -13,53 +14,39 @@ namespace xGraphics
 	}
 	public class xProgressBar : Control
 	{
-		private ulong _Value;
-		private ulong _ValueMaximum;
+		[Category("Appearance")]
+		public xProgressBarDisplay Display { get; set; }
+		[Category("Appearance")]
+		public Color DisplayShadow { get; set; }
+		[Category("Appearance")]
+		public int BackColorDegradationLevel { get; set; }
 
+		[Category("Behavior")]
 		public ulong Value
 		{
-			get
-			{
-				return _Value;
-			}
-			set
-			{
-				_Value = value;
-				Invalidate();
-			}
+			get	{	return _Value; }
+			set	{	_Value = value;	Invalidate();	}
 		}
-
+		private ulong _Value;
+		[Category("Behavior")]
 		public ulong ValueMaximum
 		{
-			get
-			{
-				return _ValueMaximum;
-			}
-			set
-			{
-				_ValueMaximum = value;
-				Invalidate();
-			}
+			get {	return _ValueMaximum; }
+			set	{	_ValueMaximum = value; Invalidate(); }
 		}
-		public int ColorDegradation {	get; set; }
-		public xProgressBarDisplay Display { get; set; }
-		public string DisplayText { get; set; }
-		public Color DisplayShadow { get; set; }
-		public Font DisplayFont { get; set; }
+		private ulong _ValueMaximum;
 		private SolidBrush TextColorBrush { get; }
 		private Pen FillColor { get; }
 		private SolidBrush TextShadowBrush { get; }
-		public double ValuePercentage { get { return (double)Value * 100.0 / (double)ValueMaximum; } } 
-		public xProgressBar()
+		public double ValuePercentage { get { return Value * 100.0 / ValueMaximum; } } 
+		public xProgressBar() : base()
 		{
 			SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, value: true);
 			TextColorBrush = new SolidBrush(Color.White);
 			TextShadowBrush = new SolidBrush(Color.White);
 			FillColor = new Pen(Color.MidnightBlue);
-			DisplayShadow = ForeColor;
-			DisplayFont = new Font(FontFamily.GenericSerif, 12f);
+			DisplayShadow = Color.Black;
 		}
-
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			if (TextColorBrush.Color != ForeColor)
@@ -83,7 +70,7 @@ namespace xGraphics
 			if (Value != 0)
 			{
 				int x0 = rect.X;
-				int xf = (int)((double)rect.Width * ValuePercentage / 100.0);
+				int xf = (int)(rect.Width * ValuePercentage / 100.0);
 				int _r = FillColor.Color.R;
 				int _g = FillColor.Color.G;
 				int _b = FillColor.Color.B;
@@ -92,25 +79,25 @@ namespace xGraphics
 				{
 					Pen p = new Pen(Color.FromArgb(_r, _g, _b));
 					g.DrawLine(p, x0, y, xf, y);
-					if (_r + ColorDegradation < 256)
+					if (_r + BackColorDegradationLevel < 256)
 					{
-						_r += ColorDegradation;
+						_r += BackColorDegradationLevel;
 					}
-					if (_g + ColorDegradation < 256)
+					if (_g + BackColorDegradationLevel < 256)
 					{
-						_g += ColorDegradation;
+						_g += BackColorDegradationLevel;
 					}
-					if (_b + ColorDegradation < 256)
+					if (_b + BackColorDegradationLevel < 256)
 					{
-						_b += ColorDegradation;
+						_b += BackColorDegradationLevel;
 					}
 					num = y;
 				}
 			}
 			string text = GetDisplayText();
-			SizeF len = g.MeasureString(text, DisplayFont);
-			int px = Convert.ToInt32((float)(base.Width / 2) - len.Width / 2f);
-			int py = Convert.ToInt32((float)(base.Height / 2) - len.Height / 2f);
+			SizeF len = g.MeasureString(text, Font);
+			int px = Convert.ToInt32((base.Width / 2) - len.Width / 2f);
+			int py = Convert.ToInt32((base.Height / 2) - len.Height / 2f);
 			if (TextShadowBrush.Color != TextColorBrush.Color)
 			{
 				sbyte b;
@@ -118,40 +105,39 @@ namespace xGraphics
 				{
 					for (sbyte i = -1; i < 2; i = (sbyte)(b + 1))
 					{
-						g.DrawString(text, DisplayFont, TextShadowBrush, px + j, py + i);
+						g.DrawString(text, Font, TextShadowBrush, px + j, py + i);
 						b = i;
 					}
 					b = j;
 				}
 			}
-			g.DrawString(text, DisplayFont, TextColorBrush, px, py);
+			g.DrawString(text, Font, TextColorBrush, px, py);
 		}
-
 		private string GetDisplayText()
 		{
-			StringBuilder text = new StringBuilder();
 			switch (Display)
 			{
 				case xProgressBarDisplay.Percentage:
-					if (ValueMaximum != 0)
 					{
-						text.Append(Math.Round(ValuePercentage, 2));
+						StringBuilder text = new StringBuilder();
+						if (ValueMaximum == 0)
+							text.Append("0");
+						else
+							text.Append(Math.Round(ValuePercentage, 2));
+						text.Append("%");
+						return text.ToString();
 					}
-					else
-					{
-						text.Append("0");
-					}
-					text.Append("%");
-					break;
 				case xProgressBarDisplay.Values:
-					text.Append(Value);
-					text.Append(" / ");
-					text.Append(ValueMaximum);
-					break;
+					{
+						StringBuilder text = new StringBuilder();
+						text.Append(Value);
+						text.Append(" / ");
+						text.Append(ValueMaximum);
+						return text.ToString();
+					}
 				default:
-					return DisplayText;
+					return Text;
 			}
-			return text.ToString();
 		}
 	}
 

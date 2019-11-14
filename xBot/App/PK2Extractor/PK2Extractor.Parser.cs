@@ -151,6 +151,7 @@ namespace xBot.App.PK2Extractor
 		// Variables frequently used.
 		const byte CPU_BREAK = 0;
 		readonly char[] pk2_split = new char[] { '\t' };
+		const string pk2_lineSplitN = "\n";
 		const string pk2_lineSplit = "\r\n";
 		const string pk2_lineEnabled = "1\t";
 
@@ -200,9 +201,7 @@ namespace xBot.App.PK2Extractor
 
 							if (data.Length > LanguageIndex && data[LanguageIndex] != "0")
 								NameReferences[data[1]] = data[LanguageIndex];
-
-							// CPU break
-							Thread.Sleep(CPU_BREAK);
+							
 						}
 					}
 				}
@@ -226,7 +225,7 @@ namespace xBot.App.PK2Extractor
 			// Keep memory safe
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextUISystem.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -252,9 +251,6 @@ namespace xBot.App.PK2Extractor
 							}
 							TextReferences[data[1]] = text;
 						}
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -288,9 +284,6 @@ namespace xBot.App.PK2Extractor
 				db.Bind("servername", key);
 				db.Bind("text", TextReferences[key]);
 				db.ExecuteQuery();
-
-				// CPU break
-				Thread.Sleep(CPU_BREAK);
 			}
 			db.End();
 		}
@@ -362,9 +355,7 @@ namespace xBot.App.PK2Extractor
 							// Normal data has 160 positions approx. 
 							db.Bind("icon", (data.Length > 150 ? data[54] : data[50]).ToLower() );
 							db.ExecuteQuery();
-
-							// CPU break
-							Thread.Sleep(CPU_BREAK);
+							
 						}
 					}
 					db.End();
@@ -439,9 +430,6 @@ namespace xBot.App.PK2Extractor
 							db.Bind("hp", data[59]);
 							db.Bind("level", data[57]);
 							db.ExecuteQuery();
-
-							// CPU break
-							Thread.Sleep(CPU_BREAK);
 						}
 					}
 					db.End();
@@ -468,7 +456,7 @@ namespace xBot.App.PK2Extractor
 			{
 				// using faster sqlite performance
 				db.Begin();
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					if (!line.StartsWith("//"))
 					{
@@ -507,9 +495,6 @@ namespace xBot.App.PK2Extractor
 							db.Bind("weapons", data[8] + "," + data[9] + "," + data[10]);
 							db.Bind("icon", data[11]);
 							db.ExecuteQuery();
-
-							// CPU long break
-							Thread.Sleep(CPU_BREAK);
 						}
 					}
 				}
@@ -531,7 +516,7 @@ namespace xBot.App.PK2Extractor
 			sql += "mastery_id INTEGER,";
 			sql += "sp INTEGER,";
 			sql += "group_id INTEGER,";
-      sql += "group_name VARCHAR(64),";
+			sql += "group_name VARCHAR(64),";
 			sql += "skill_chain_id INTEGER,";
 			sql += "weapon_first INTEGER,";
 			sql += "weapon_second INTEGER,";
@@ -601,7 +586,7 @@ namespace xBot.App.PK2Extractor
 									{
 										// requires negative value fix
 										duration = ((uint)int.Parse(duration)).ToString();
-                  }
+									}
 									break;
 								default:
 									duration = "0";
@@ -645,9 +630,6 @@ namespace xBot.App.PK2Extractor
 							db.Bind("params", string.Join("|", skillparams));
 							db.Bind("icon", data[DSKILL.UI_IconFile].ToLower());
 							db.ExecuteQuery();
-
-							// CPU break
-							Thread.Sleep(CPU_BREAK);
 						}
 					}
 					db.End();
@@ -756,7 +738,7 @@ namespace xBot.App.PK2Extractor
 				// using faster sqlite performance
 				db.Begin();
 
-				while ((line = WinAPI.ReadToString(reader, pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					if (!line.StartsWith("//"))
 					{
@@ -773,9 +755,6 @@ namespace xBot.App.PK2Extractor
 						db.Bind("thief", data[7] == "-1" ? "0" : data[7]);
 						db.Bind("hunter", data[8] == "-1" ? "0" : data[8]);
 						db.ExecuteQuery();
-
-						// CPU Break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 				db.End();
@@ -788,10 +767,10 @@ namespace xBot.App.PK2Extractor
 			LogState("Loading refShopGroup.txt");
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGroup.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
-					if (line.StartsWith("1\t"))
+					if (line.StartsWith(pk2_lineEnabled))
 					{
 						data = line.Split(pk2_split, StringSplitOptions.None);
 
@@ -802,16 +781,13 @@ namespace xBot.App.PK2Extractor
 							shop.StoreGroupName = data[3];
 						shop.NPCName = data[4];
 						shops.Add(shop);
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
 			LogState("Loading refMappingShopGroup.txt");
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopGroup.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -833,16 +809,13 @@ namespace xBot.App.PK2Extractor
 								shop.StoreName = data[3];
 							}
 						}
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
 			LogState("Loading refMappingShopWithTab.txt");
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopWithTab.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -858,9 +831,6 @@ namespace xBot.App.PK2Extractor
 								shop.Groups.Add(group);
 							}
 						}
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -868,7 +838,7 @@ namespace xBot.App.PK2Extractor
 			List<string[]> refShopTab = new List<string[]>();
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopTab.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader, pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -877,9 +847,6 @@ namespace xBot.App.PK2Extractor
 
 						// 0 = name, 1 = group, 2 = title
 						refShopTab.Add(new string[] { data[3], data[4], data[5] });
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -903,7 +870,7 @@ namespace xBot.App.PK2Extractor
 			List<string[]> refShopGoods = new List<string[]>();
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGoods.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -912,9 +879,6 @@ namespace xBot.App.PK2Extractor
 
 						// 0 = tab, 1 = itemPackageName, 2 = tabSlot
 						refShopGoods.Add(new string[] { data[2], data[3], data[4] });
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -922,13 +886,12 @@ namespace xBot.App.PK2Extractor
 			Dictionary<string, string[]> refScrapOfPackageItem = new Dictionary<string, string[]>();
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refScrapOfPackageItem.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine()) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
 					{
 						data = line.Split(pk2_split, StringSplitOptions.None);
-
 						// Extract blue stats
 						string magicParams = "";
 						byte magicParamCount = byte.Parse(data[7]);
@@ -943,9 +906,6 @@ namespace xBot.App.PK2Extractor
 
 						// 0 = itemServerName, 1 = plus, 2 = durability or buyStack (ID's behaviour), 3 = MagicParams
 						refScrapOfPackageItem[data[2]] = new string[] { data[3], data[4], data[6], magicParams };
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -961,21 +921,17 @@ namespace xBot.App.PK2Extractor
 						{
 							if (tab.Name == refShopGoods[j][0])
 							{
-								string itemPackageName = refShopGoods[j][1];
-								if (refScrapOfPackageItem.ContainsKey(itemPackageName))
+								string[] _refScrapOfPackageItem;
+								if (refScrapOfPackageItem.TryGetValue(refShopGoods[j][1], out _refScrapOfPackageItem))
 								{
-
 									// Create item image
 									Shop.Group.Tab.Item item = new Shop.Group.Tab.Item();
-									item.Name = refScrapOfPackageItem[itemPackageName][0];
+									item.Name = _refScrapOfPackageItem[0];
 									item.Slot = refShopGoods[j][2];
-									item.Plus = refScrapOfPackageItem[itemPackageName][1];
-									item.Durability = refScrapOfPackageItem[itemPackageName][2];
-									item.MagicParams = refScrapOfPackageItem[itemPackageName][3];
+									item.Plus = _refScrapOfPackageItem[1];
+									item.Durability = _refScrapOfPackageItem[2];
+									item.MagicParams = _refScrapOfPackageItem[3];
 									tab.Items.Add(item);
-
-									// CPU break
-									Thread.Sleep(CPU_BREAK);
 								}
 							}
 						}
@@ -1010,24 +966,30 @@ namespace xBot.App.PK2Extractor
 							Shop.Group.Tab.Item item = shop.Groups[g].Tabs[t].Items[i];
 
 							// INSERT OR UPDATE
-							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab=" + t + " AND slot=" + i);
+							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab=" + tabCount + " AND slot=" + i);
 							if (db.GetResult().Count == 0)
 							{
-								// 100% display
-								LogState("Adding " + item.Name);
-
+								// New
 								db.Prepare("INSERT INTO shops (model_servername,tab,slot,item_servername,plus,durability,magic_params) VALUES (?,?,?,?,?,?,?)");
 								db.Bind("model_servername", shop.NPCName);
 								db.Bind("tab", tabCount);
 								db.Bind("slot", i);
-								db.Bind("item_servername", item.Name);
-								db.Bind("plus", item.Plus);
-								db.Bind("durability", item.Durability);
-								db.Bind("magic_params", item.MagicParams);
-								db.ExecuteQuery();
 							}
-							// CPU break
-							Thread.Sleep(CPU_BREAK);
+							else
+							{
+								// Override
+								db.Prepare("UPDATE shops SET item_servername=?,plus=?,durability=?,magic_params=? WHERE model_servername='" + shop.NPCName + "' AND tab=" + tabCount + " AND slot=" + i);
+							}
+							db.Bind("item_servername", item.Name);
+							db.Bind("plus", item.Plus);
+							db.Bind("durability", item.Durability);
+							db.Bind("magic_params", item.MagicParams);
+							db.ExecuteQuery();
+							
+							// 50% display
+							if (rand.Next(1, 1000) <= 500)
+								LogState("Adding " + item.Name);
+							
 						}
 						tabCount++;
 					}
@@ -1074,7 +1036,7 @@ namespace xBot.App.PK2Extractor
 
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportData.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1085,16 +1047,13 @@ namespace xBot.App.PK2Extractor
 						if (rand.Next(1, 1000) <= 800)
 							LogState("Loading " + data[2]);
 						TeleportData[data[1]] = data;
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
 			TeleportBuildings = new Dictionary<string, string[]>();
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportBuilding.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader, pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1105,9 +1064,6 @@ namespace xBot.App.PK2Extractor
 						if (rand.Next(1, 1000) <= 500)
 							LogState("Loading " + data[2]);
 						TeleportBuildings[data[1]] = data;
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -1133,7 +1089,7 @@ namespace xBot.App.PK2Extractor
 			{
 				// using faster sqlite performance
 				db.Begin();
-				while ((line = WinAPI.ReadToString(reader, pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1159,9 +1115,6 @@ namespace xBot.App.PK2Extractor
 						db.Bind("tid3", data[11]);
 						db.Bind("tid4", data[12]);
 						db.ExecuteQuery();
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 				db.End();
@@ -1203,7 +1156,7 @@ namespace xBot.App.PK2Extractor
 				// using faster sqlite performance
 				db.Begin();
 
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data is enabled on the game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1249,12 +1202,25 @@ namespace xBot.App.PK2Extractor
 						// 30% display
 						if (rand.Next(1, 1000) <= 300)
 							LogState("Adding " + TeleportData[data[1]][2]);
+						
 						// INSERT
 						db.Prepare("INSERT INTO teleportlinks (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,spawn_region,spawn_x,spawn_y,spawn_z,pos_region,pos_x,pos_y,pos_z) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 						try
 						{
-							db.Bind("sourceid", data[1]);
-							db.Bind("destinationid", data[2]);
+							// INSERT OR UPDATE
+							db.ExecuteQuery("SELECT * FROM teleportlinks WHERE sourceid=" + data[1] + " AND destinationid=" + data[2]);
+							if (db.GetResult().Count == 0)
+							{
+								// New
+								db.Prepare("INSERT INTO teleportlinks (sourceid,destinationid,id,servername,name,destination,tid1,tid2,tid3,tid4,gold,level,spawn_region,spawn_x,spawn_y,spawn_z,pos_region,pos_x,pos_y,pos_z) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+								db.Bind("sourceid", data[1]);
+								db.Bind("destinationid", data[2]);
+							}
+							else
+							{
+								// Override
+								db.Prepare("UPDATE teleportlinks SET id=?,servername=?,name=?,destination=?,tid1=?,tid2=?,tid3=?,tid4=?,gold=?,level=?,spawn_region=?,spawn_x=?,spawn_y=?,spawn_z=?,pos_region=?,pos_x=?,pos_y=?,pos_z=? WHERE sourceid=" + data[1] + " AND destinationid=" + data[2]);
+							}
 							db.Bind("id", TeleportData[data[1]][3]);
 							db.Bind("servername", TeleportData[data[1]][2]);
 							db.Bind("name", name);
@@ -1277,11 +1243,8 @@ namespace xBot.App.PK2Extractor
 						}
 						catch
 						{
-							// TeleportData error
+							 // Wrong data index or something else
 						}
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 				db.End();
@@ -1293,7 +1256,7 @@ namespace xBot.App.PK2Extractor
 			Dictionary<string, string> RegionReferences = new Dictionary<string, string>();
 			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextZoneName.txt")))
 			{
-				while ((line = WinAPI.ReadToString(reader,pk2_lineSplit)) != null)
+				while ((line = reader.ReadLine(pk2_lineSplit)) != null)
 				{
 					// Data is enabled on the game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1306,9 +1269,6 @@ namespace xBot.App.PK2Extractor
 
 						if (data[LanguageIndex] != "0")
 							RegionReferences[data[1]] = data[LanguageIndex];
-
-						// CPU break
-						Thread.Sleep(CPU_BREAK);
 					}
 				}
 			}
@@ -1346,9 +1306,6 @@ namespace xBot.App.PK2Extractor
 					}
 					db.Bind("name", RegionReferences[key]);
 					db.ExecuteQuery();
-
-					// CPU break
-					Thread.Sleep(CPU_BREAK);
 				}
 			}
 			db.End();

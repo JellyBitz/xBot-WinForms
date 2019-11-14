@@ -1,9 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props')" />
-  <Import Project="..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.props')" />
-  <Import Project="..\packages\cef.redist.x86.73.1.13\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.73.1.13\build\cef.redist.x86.props')" />
-  <Import Project="..\packages\cef.redist.x64.73.1.13\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.73.1.13\build\cef.redist.x64.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -40,6 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -67,6 +64,10 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoUpdater.NET, Version=1.5.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>bin\Debug\AutoUpdater.NET.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="DevIL.NET2, Version=1.1.2619.31671, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\DevIL.NET2.dll</HintPath>
@@ -174,6 +175,15 @@
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="xGraphics\xListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="xGraphics\xMap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="xGraphics\xMapControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="xGraphics\xProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -228,6 +238,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\xy_gate.png" />
+    <None Include="Resources\mm_sign_unique.png" />
+    <None Include="Resources\mm_sign_animal.png" />
+    <None Include="Resources\mm_sign_monster.png" />
+    <None Include="Resources\mm_sign_npc.png" />
+    <None Include="Resources\mm_sign_otherplayer.png" />
+    <None Include="Resources\mm_sign_character.png" />
     <None Include="Resources\banner_example.jpg" />
     <None Include="Resources\About.png" />
     <None Include="Resources\ProjexNET_40x40.png" />
@@ -237,16 +254,8 @@
     <PropertyGroup>
       <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\cef.redist.x64.73.1.13\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.73.1.13\build\cef.redist.x64.props'))" />
-    <Error Condition="!Exists('..\packages\cef.redist.x86.73.1.13\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.73.1.13\build\cef.redist.x86.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets'))" />
     <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
-  <Import Project="..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.73.1.130\build\CefSharp.Common.targets')" />
-  <Import Project="..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.73.1.130\build\CefSharp.WinForms.targets')" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

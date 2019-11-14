@@ -41,8 +41,8 @@ namespace xBot.Game
 		}
 		public enum MovementSpeed : byte
 		{
-			Walking,
-			Running
+			Walking = 0,
+			Running = 1
 		}
 		public enum MovementAction : byte
 		{
@@ -54,7 +54,7 @@ namespace xBot.Game
 			/// <summary>
 			/// The character is not connected to the game.
 			/// </summary>
-			Unborn = 0,
+			None = 0,
 			Alive = 1,
 			Dead = 2
 		}
@@ -84,18 +84,9 @@ namespace xBot.Game
 		}
 		public enum PVPState : byte
 		{
-			/// <summary>
-			/// Also known as Neutral.
-			/// </summary>
-			White = 0,
-			/// <summary>
-			/// Also known as Assaulter.
-			/// </summary>
-			Purple = 1,
-			/// <summary>
-			/// PK or temporaly PK.
-			/// </summary>
-			Red = 2
+			Neutral = 0,
+			Assaulter = 1,
+			PlayerKiller = 2
 		}
 		public enum CaptureTheFlag : byte
 		{
@@ -347,7 +338,9 @@ namespace xBot.Game
 		{
 			None = byte.MaxValue,
 			Sword = 2,
+			Blade = 3,
 			Spear = 4,
+			Glaive = 5,
 			Bow = 6,
 			OneHandSword = 7,
 			TwoHandSword = 8,

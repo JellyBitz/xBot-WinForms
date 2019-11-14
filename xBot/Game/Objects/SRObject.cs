@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace xBot.Game.Objects
@@ -129,7 +130,7 @@ namespace xBot.Game.Objects
 					{
 						this.Type = SRType.Item;
 					}
-					else if ((data = i.GetTeleport(ID)) != null || (data = i.GetTeleportLink(ID)) != null)
+					else if ((data = i.GetTeleport(ID)) != null || (data = i.GetTeleportLinkByID(ID)) != null)
 					{
 						this.Type = SRType.Teleport;
 					}
@@ -142,7 +143,7 @@ namespace xBot.Game.Objects
 					break;
 				case SRType.Teleport:
 					if ((data = i.GetTeleport(ID)) == null)
-						data = i.GetTeleportLink(ID);
+						data = i.GetTeleportLinkByID(ID);
 					break;
 				case SRType.Skill:
 					data = i.GetSkill(ID);
@@ -182,7 +183,7 @@ namespace xBot.Game.Objects
 					{
 						Type = SRType.Item;
 					}
-					else if ((data = i.GetTeleport(ServerName)) != null || (data = i.GetTeleportLink(ServerName)) != null)
+					else if ((data = i.GetTeleport(ServerName)) != null || (data = i.GetTeleportLinkByServerName(ServerName)) != null)
 					{
 						Type = SRType.Teleport;
 					}
@@ -195,7 +196,7 @@ namespace xBot.Game.Objects
 					break;
 				case SRType.Teleport:
 					if ((data = i.GetTeleport(ServerName)) == null)
-						data = i.GetTeleportLink(ServerName);
+						data = i.GetTeleportLinkByServerName(ServerName);
 					break;
 				case SRType.Skill:
 					data = i.GetSkill(ServerName);
@@ -241,7 +242,29 @@ namespace xBot.Game.Objects
 					ID2 = byte.Parse(data["tid2"]);
 					ID3 = byte.Parse(data["tid3"]);
 					ID4 = byte.Parse(data["tid4"]);
-					break;
+
+					Info i = Info.Get;
+					List<NameValueCollection> linkData = i.GetTeleportLinks(this.ID);
+					SRObjectCollection TeleportOptions = new SRObjectCollection();
+					if (linkData.Count > 0)
+					{
+						this[SRProperty.TeleportName] = linkData[0]["name"];
+            foreach (NameValueCollection link in linkData)
+						{
+							SRObject Teleport = new SRObject();
+							Teleport.ID = uint.Parse(link["destinationid"]);
+							Teleport.Name = link["destination"];
+							Teleport.ServerName = link["servername"];
+
+							TeleportOptions.Add(Teleport);
+						}
+					}
+					else
+					{
+						this[SRProperty.TeleportName] = this.Name;
+					}
+					this[SRProperty.TeleportOptions] = TeleportOptions;
+          break;
 				case SRType.Skill:
 					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
@@ -253,10 +276,12 @@ namespace xBot.Game.Objects
 					this[SRProperty.Casttime] = int.Parse(data["casttime"]);
 					this[SRProperty.MP] = uint.Parse(data["mana"]);
 					this[SRProperty.isEnabled] = true;
-          this[SRProperty.TargetRequired] = data["target_required"] == "1";
+					this[SRProperty.isTargetRequired] = data["target_required"] == "1";
 					this[SRProperty.Level] = byte.Parse(data["level"]);
 					this[SRProperty.SkillParams] = data["params"].Split('|');
 					this[SRProperty.Icon] = data["icon"];
+					this[SRProperty.WeaponRequired01] = (Types.Weapon)byte.Parse(data["weapon_first"]);
+					this[SRProperty.WeaponRequired02] = (Types.Weapon)byte.Parse(data["weapon_second"]);
 					break;
 				case SRType.Mastery:
 					this.ServerName = "";
@@ -276,9 +301,7 @@ namespace xBot.Game.Objects
 			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + Type + ")"));
 			// Node name to show
 			string text;
-			if (Type == SRType.Model
-				&& ID1 == 1 && ID2 == 2 && ID3 == 3 && (ID4 == 3 || ID4 == 4))
-			{
+			if (isPet() && (ID4 == 3 || ID4 == 4)){
 				// Pet identification
 				text = (string)this[SRProperty.PetName];
 				if (text == "")
@@ -297,85 +320,78 @@ namespace xBot.Game.Objects
 				case SRType.Item:
 				case SRType.Teleport:
 					root.Nodes.Add(new TreeNode("Type ID's [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]"));
+					root.Nodes.Add(new TreeNode("ServerName : " + this.ServerName));
 					break;
 			}
 			// Print all the nodes inside object
 			foreach (KeyValuePair<SRProperty, object> Property in Properties)
 			{
-				switch (Property.Value.GetType().Name)
+				Type t = Property.Value.GetType();
+				if (t == typeof(SRObject))
 				{
-					case "SRObject":
-						{
-							root.Nodes.Add(((SRObject)Property.Value).ToNode());
-							break;
-						}
-					case "SRObjectCollection":
-						{
-							TreeNode obj = new TreeNode(Property.Key.ToString());
-							obj.Nodes.AddRange(((SRObjectCollection)Property.Value).ToNodes());
-							root.Nodes.Add(obj);
-							break;
-						}
-					case "SRObjectDictionary`1":
-						{
-							string GenericType = Property.Value.ToString().Split('[', ']')[1];
-							TreeNode obj = new TreeNode(Property.Key.ToString());
-							switch (GenericType)
-							{
-								case "System.UInt32":
-									obj.Nodes.AddRange(((SRObjectDictionary<uint>)Property.Value).ToNodes());
-									break;
-							}
-							root.Nodes.Add(obj);
-							break;
-						}
-					case "String[]":
-						{
-							TreeNode node = new TreeNode(Property.Key.ToString());
-							string[] array = (string[])Property.Value;
-							foreach (string _string in array)
-							{
-								node.Nodes.Add(_string.ToString());
-							}
-							root.Nodes.Add(node);
-							break;
-						}
-					case "Byte[]":
-						{
-							TreeNode node = new TreeNode(Property.Key.ToString());
-							byte[] array2 = (byte[])Property.Value;
-							foreach (byte _byte in array2)
-							{
-								node.Nodes.Add(_byte.ToString());
-							}
-							root.Nodes.Add(node);
-							break;
-						}
-					case "Int32[]":
-						{
-							TreeNode ints = new TreeNode(Property.Key.ToString());
-							int[] array3 = (int[])Property.Value;
-							foreach (int _int in array3)
-							{
-								ints.Nodes.Add(_int.ToString());
-							}
-							root.Nodes.Add(ints);
-							break;
-						}
-					case "UInt32[]":
-						{
-							TreeNode uints = new TreeNode(Property.Key.ToString());
-							uint[] array = (uint[])Property.Value;
-							foreach (uint _uint in array)
-							{
-								uints.Nodes.Add(_uint.ToString());
-							}
-							root.Nodes.Add(uints);
-							break;
-						}
-					default:
-						root.Nodes.Add(new TreeNode("\"" + Property.Key + "\" : " + Property.Value));
-						break;
+					root.Nodes.Add(((SRObject)Property.Value).ToNode());
+				}
+				else if (t == typeof(SRObjectCollection))
+				{
+					TreeNode obj = new TreeNode(Property.Key.ToString());
+					obj.Nodes.AddRange(((SRObjectCollection)Property.Value).ToNodes());
+					root.Nodes.Add(obj);
+				}
+				else if (t == typeof(SRObjectDictionary<uint>))
+				{
+					string GenericType = Property.Value.ToString().Split('[', ']')[1];
+					TreeNode obj = new TreeNode(Property.Key.ToString());
+					obj.Nodes.AddRange(((SRObjectDictionary<uint>)Property.Value).ToNodes());
+					root.Nodes.Add(obj);
+				}
+				else if (t == typeof(string[]))
+				{
+					TreeNode node = new TreeNode(Property.Key.ToString());
+					string[] array = (string[])Property.Value;
+					foreach (string _string in array)
+					{
+						node.Nodes.Add(_string.ToString());
+					}
+					root.Nodes.Add(node);
+
+				}
+				else if (t == typeof(byte[]))
+				{
+					TreeNode node = new TreeNode(Property.Key.ToString());
+					byte[] array2 = (byte[])Property.Value;
+					foreach (byte _byte in array2)
+					{
+						node.Nodes.Add(_byte.ToString());
+					}
+					root.Nodes.Add(node);
+				}
+				else if (t == typeof(int[]))
+				{
+					TreeNode ints = new TreeNode(Property.Key.ToString());
+					int[] array3 = (int[])Property.Value;
+					foreach (int _int in array3)
+					{
+						ints.Nodes.Add(_int.ToString());
+					}
+					root.Nodes.Add(ints);
+				}
+				else if (t == typeof(uint[]))
+				{
+					TreeNode uints = new TreeNode(Property.Key.ToString());
+					uint[] array = (uint[])Property.Value;
+					foreach (uint _uint in array)
+					{
+						uints.Nodes.Add(_uint.ToString());
+					}
+					root.Nodes.Add(uints);
+				}
+				else if (t == typeof(Stopwatch))
+				{
+					root.Nodes.Add(new TreeNode("\"" + Property.Key + "\" : " + ((Stopwatch)Property.Value).Elapsed+" ago.."));
+				}
+				else
+				{
+					root.Nodes.Add(new TreeNode("\"" + Property.Key + "\" : " + Property.Value));
 				}
 			}
 			return root;
@@ -401,7 +417,7 @@ namespace xBot.Game.Objects
 		public bool hasJobMode()
 		{
 			SRObjectCollection inventory = (SRObjectCollection)this[SRProperty.Inventory];
-			return inventory.Exists((SRObject item) => item != null && item.ID1 == 3 && item.ID2 == 1 && item.ID3 == 7);
+			return inventory.FindIndexLimited(item => item != null && item.ID1 == 3 && item.ID2 == 1 && item.ID3 == 7,0,12) != -1;
 		}
 		public bool hasAutoTransferEffect()
 		{
@@ -416,59 +432,52 @@ namespace xBot.Game.Objects
 			if (this.isPlayer() && (bool)this[SRProperty.isRiding])
 			{
 				SRObject Ride = Info.Get.SpawnList[(uint)this[SRProperty.RidingUniqueID]];
-				this[SRProperty.Position] = Ride.GetPosition();
+				if (Ride != null)
+				{
+          this[SRProperty.Position] = Ride.GetPosition();
+					Stopwatch LastUpdateTime = (Stopwatch)this[SRProperty.LastUpdateTime];
+					LastUpdateTime.Restart();
+				}
 				return;
 			}
-			if ((bool)this[SRProperty.hasMovement])
-			{
-				SRCoord P = (SRCoord)this[SRProperty.Position];
-				SRCoord Q = (SRCoord)this[SRProperty.MovementPosition];
 
-				if (P.Equals(Q))
-				{
-					// Do nothing, it's updated
-					return;
-				}
+			SRCoord Q = (SRCoord)this[SRProperty.MovementPosition];
+			// Check if it's not a movable object
+			if (Q == null)
+				return;
+			// Check if it's updated..
+			SRCoord P = (SRCoord)this[SRProperty.Position];
+			if (P.Equals(Q))
+			{
+				Stopwatch LastUpdateTime = (Stopwatch)this[SRProperty.LastUpdateTime];
+				LastUpdateTime.Restart();
+				return;
+			}
+
+			// Scale 1920units:192px = 10:1 => To Ms
+			double MilisecondsPerUnit = GetSpeed() * 0.1 / 1000;
+			// Checking update times!
+			Stopwatch timer = (Stopwatch)this[SRProperty.LastUpdateTime];
+			long milisecondsTranscurred = timer.ElapsedMilliseconds;
+			long milisecondsMaximum = P.TimeTo(Q, MilisecondsPerUnit);
+			if (milisecondsTranscurred >= milisecondsMaximum)
+			{
+				// The entity has reached the position long ago
+				this[SRProperty.Position] = Q;
+			}
+			else
+			{
+				// Create vector unit
 				double PQMod = P.DistanceTo(Q);
 				SRCoord PQUnit = new SRCoord((Q.PosX - P.PosX) / PQMod, (Q.PosY - P.PosY) / PQMod);
-				// Scale 10:1 to ms
-				double SpeedPerMs = GetSpeed() * 0.1 / 1000;
-				double DistanceMsTillNow = DateTime.UtcNow.Subtract((DateTime)this[SRProperty.LastUpdateTimeUtc]).TotalMilliseconds;
-				double DistanceMsMaximum = PQMod /  SpeedPerMs;
-				if (DistanceMsTillNow >= DistanceMsMaximum)
-				{
-					// The entity has reached the position long ago.
-					this[SRProperty.Position] = Q;
-					this[SRProperty.hasMovement] = false;
-					this[SRProperty.MotionStateType] = Types.MotionState.StandUp;
-				}
+
+				double DistanceTillNow = milisecondsTranscurred * MilisecondsPerUnit;
+				if (P.inDungeon())
+					this[SRProperty.Position] = new SRCoord(PQUnit.PosX * DistanceTillNow + P.PosX, PQUnit.PosY * DistanceTillNow + P.PosY, P.Region, P.Z);
 				else
-				{
-					double DistancePositionTillNow = DistanceMsTillNow * SpeedPerMs;
-
-					if (P.inDungeon())
-						this[SRProperty.Position] = new SRCoord(PQUnit.PosX * DistancePositionTillNow + P.PosX, PQUnit.PosY * DistancePositionTillNow + P.PosY, P.Region, P.Z);
-					else
-						this[SRProperty.Position] = new SRCoord(PQUnit.PosX * DistancePositionTillNow + P.PosX, PQUnit.PosY * DistancePositionTillNow + P.PosY);
-
-				}
+					this[SRProperty.Position] = new SRCoord(PQUnit.PosX * DistanceTillNow + P.PosX, PQUnit.PosY * DistanceTillNow + P.PosY);
 			}
-		}
-		public Types.MotionState GetSpeedMotionState()
-		{
-			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
-			{
-				return Types.MotionState.Running;
-			}
-			return Types.MotionState.Walking;
-		}
-		public float GetSpeed()
-		{
-			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
-			{
-				return (float)this[SRProperty.SpeedRunning];
-			}
-			return (float)this[SRProperty.SpeedWalking];
+			timer.Restart();
 		}
 		/// <summary>
 		/// Gets the current game position updated.
@@ -478,13 +487,29 @@ namespace xBot.Game.Objects
 			UpdateTimePosition();
 			return (SRCoord)this[SRProperty.Position];
 		}
+		public float GetSpeed()
+		{
+			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
+				return (float)this[SRProperty.SpeedRunning];
+			return (float)this[SRProperty.SpeedWalking];
+		}
 		public bool inDungeon()
 		{
 			return ((SRCoord)this[SRProperty.Position]).inDungeon();
 		}
-		public int GetDegreeAngle()
+		public double GetRadianAngle()
 		{
-			return (ushort)this[SRProperty.Angle] * 360 / 0xFFFF;
+			ushort angle = (ushort)this[SRProperty.Angle];
+			if (angle > 0)
+				return angle * Math.PI * 2.0 / ushort.MaxValue;
+			return 0d;
+		}
+		public double GetDegreeAngle()
+		{
+			ushort angle = (ushort)this[SRProperty.Angle];
+			if (angle > 0)
+				return angle * 360.0 / ushort.MaxValue;
+      return 0d;
 		}
 		public bool isPet()
 		{
@@ -516,7 +541,7 @@ namespace xBot.Game.Objects
 		{
 			if (!(bool)this[SRProperty.isEnabled])
 			{
-				int intervalMiliseconds = (int)DateTime.UtcNow.Subtract((DateTime)this[SRProperty.LastUpdateTimeUtc]).TotalMilliseconds;
+				long intervalMiliseconds = ((Stopwatch)this[SRProperty.LastUpdateTime]).ElapsedMilliseconds;
 				this[SRProperty.isEnabled] = intervalMiliseconds >= (uint)this[SRProperty.Cooldown];
 				return (bool)this[SRProperty.isEnabled];
 			}

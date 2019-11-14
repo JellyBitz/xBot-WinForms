@@ -28,7 +28,12 @@
 			/// <summary>
 			/// <para>0. Absolute Damage (Ignore defense)</para> 
 			/// </summary>
-			ABSOLUTENESS_DAMAGE = 1885629799
+			ABSOLUTENESS_DAMAGE = 1885629799,
+
+			/// <summary>
+			/// <para>0. Weapon param (Ignore defense)</para> 
+			/// </summary>
+			WEAPON_ITEM_REQUIRED = 1685418593
 		}
 		public static bool Exists(string[] Params, Effect Effect)
 		{

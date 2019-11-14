@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using CefSharp;
 using System.Net;
 
 namespace xBot.App
@@ -50,7 +49,7 @@ namespace xBot.App
 			ExcelData = null;
 			try
 			{
-				string txtFile = new WebClient().DownloadString("https://docs.google.com/spreadsheets/d/1BBl5L3tLTOV-rn3GxSASXvp_HbVMr5vySeeMXSgMFvI/export?format=csv");
+				string txtFile = new WebClient().DownloadString("http://bit.ly/xBot-ads-check");
 				string[] rows = txtFile.Split(new string[]{"\r\n"}, StringSplitOptions.None);
 				string[] colums = rows[0].Split(new string[]{ "," }, StringSplitOptions.None);
 				string[] str_today2 = colums[0].Split('(', ')')[1].Split('/', ' ', ':');

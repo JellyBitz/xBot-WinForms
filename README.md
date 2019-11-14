@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.1.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.2.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -16,7 +16,6 @@
 - Game info viewer, also known as "Spy" but better!
 - Packet analyzer (Filter & injector included)
 - Auto character creation
-- Statics HWID support (Used for clientless mode)
 
 ---
 #### Command Line Options :
@@ -59,9 +58,10 @@ This commands will work only if you had **checked** the option from **Party > Se
 
 #### Tips:
 - Right click at buff list will remove the buff
-- Click at Health/Mana bar to show the exact values
-- Double click to notify icon to show/hide bots!
-- You can write "PING" at All chat to see your current ping!
+- Click at Health/Mana bar to show the exact values!
+- Double click to notify icon to show/hide window bot
+- Write "PING" at All chat to see your current ping
+- Rename character config to "Default.json" and all your new configs will be loaded with that one!
 
 ---
 > ### **Do you like this Project ?**
@@ -73,10 +73,8 @@ This commands will work only if you had **checked** the option from **Party > Se
 > ##### Credits and special thanks!
 > - Drew "pushedx" Benton for his past work and sources!
 > - DaxterSoul for his time and help about packet structures
-> - [ConfuserEx2](https://github.com/mkaring/ConfuserEx) to let me create a free software!
+> - [ConfuserEx2](https://github.com/mkaring/ConfuserEx) to let me share this software!
 >
 > ##### Created on VisualStudio2015 with NET4.6
-> - CefSharp web browser
 > - FontAwesome Icons
-> - Leaflet maps
 > - Silkroad Images and others..

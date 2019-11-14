@@ -93,19 +93,21 @@ namespace xBot.Game.Objects
 		}
 		public SRObject[] ToArray()
 		{
-			SRObject[] array = new SRObject[Objects.Count];
-			int i = 0;
-			foreach (SRObject obj in Objects.Values)
-				array[i++] = obj;
-			return array;
+			List<SRObject> array = new List<SRObject>();
+			SRObject temp = null;
+			for(int i=0;i<Enumerator.Count;i++)
+				if(Objects.TryGetValue(Enumerator[i],out temp))
+					array.Add(temp);
+			return array.ToArray();
 		}
 		public TreeNode[] ToNodes()
 		{
-			TreeNode[] nodes = new TreeNode[Objects.Count];
-			int i = 0;
-			foreach (SRObject value in Objects.Values)
-				nodes[i++] = value.ToNode();
-			return nodes;
+			List<TreeNode> nodes = new List<TreeNode>();
+			SRObject temp = null;
+			for(int i=0;i<Enumerator.Count;i++)
+				if(Objects.TryGetValue(Enumerator[i],out temp))
+					nodes.Add(temp.ToNode());
+			return nodes.ToArray();
 		}
 		#endregion
 	}

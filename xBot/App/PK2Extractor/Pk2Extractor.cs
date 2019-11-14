@@ -32,6 +32,12 @@ namespace xBot.App.PK2Extractor
 		private Thread tGenerateData;
 		private Pk2Reader pk2;
 		private SQLDatabase db;
+		// Media pk2 data
+		public byte Locale { get; private set; }
+		public uint Version { get; private set; }
+		public System.Collections.Generic.List<string> Gateways { get; private set; }
+		public ushort Gateport { get; private set; }
+
 		/// <summary>
 		/// Window dialog to generate a database sqlite file.
 		/// </summary>
@@ -105,7 +111,9 @@ namespace xBot.App.PK2Extractor
 		}
 		public static void DirectoryDelete(string SilkroadName)
 		{
-			WinAPI.DirectoryDelete(GetDirectory(SilkroadName));
+			string dir = GetDirectory(SilkroadName);
+      if (Directory.Exists(dir))
+				WinAPI.DirectoryDelete(dir);
 		}
 		/// <summary>
 		/// Try to generate the database.
@@ -143,11 +151,7 @@ namespace xBot.App.PK2Extractor
 				Blowfish bf = new Blowfish();
 				bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, versionLength);
 				byte[] versionDecoded = bf.Decode(versionBuffer);
-				uint version = uint.Parse(Encoding.ASCII.GetString(versionDecoded, 0, 4));
-				WinAPI.InvokeIfRequired(w.Settings_tbxVersion, () => {
-					w.Settings_tbxVersion.Tag = version;
-					w.Settings_tbxVersion.Text = version.ToString();
-				});
+				this.Version = uint.Parse(Encoding.ASCII.GetString(versionDecoded, 0, 4));
 				LogState();
 			}
 			catch (Exception ex)
@@ -165,25 +169,19 @@ namespace xBot.App.PK2Extractor
 				Log("Extracting Locale & Gateway");
 				LogState("Extracting...");
 				pReader = new PacketReader(pk2.GetFileBytes("DivisionInfo.txt"));
-				WinAPI.InvokeIfRequired(w.Settings_tbxLocale, () => {
-					w.Settings_tbxLocale.Tag = pReader.ReadByte();
-					w.Settings_tbxLocale.Text = w.Settings_tbxLocale.Tag.ToString();
-				});
+				this.Locale = pReader.ReadByte();
 				byte dvs = pReader.ReadByte();
 				for (int i = 0; i < dvs; i++)
 				{
 					pReader.ReadChars(pReader.ReadInt32()); // DivisionName
 					pReader.ReadByte(); // 0
-
 					byte gws = pReader.ReadByte();
-					WinAPI.InvokeIfRequired(w.Settings_lstvHost, () => {
-						w.Settings_lstvHost.Items.Clear();
-						for (int j = 0; j < gws; j++)
-						{
-							w.Settings_lstvHost.Items.Add(Encoding.ASCII.GetString(pReader.ReadBytes(pReader.ReadInt32())));
-							pReader.ReadByte(); // 0
-						}
-					});
+					Gateways = new System.Collections.Generic.List<string>(gws);
+					for (int j = 0; j < gws; j++)
+					{
+						Gateways.Add(Encoding.ASCII.GetString(pReader.ReadBytes(pReader.ReadInt32())));
+						pReader.ReadByte(); // 0
+					}
 				}
 				LogState();
 			}
@@ -200,10 +198,7 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Extracting Gateport");
 				LogState("Extracting...");
-				WinAPI.InvokeIfRequired(w.Settings_tbxPort, () => {
-					w.Settings_tbxPort.Text = pk2.GetFileText("Gateport.txt").Trim();
-					w.Settings_tbxPort.Tag = ushort.Parse(w.Settings_tbxPort.Text);
-				});
+				this.Gateport = ushort.Parse(pk2.GetFileText("Gateport.txt").Trim());
 				LogState();
 			}
 			catch (Exception ex)
@@ -281,35 +276,29 @@ namespace xBot.App.PK2Extractor
 			AddTeleportLinks();
 			Log("Adding Regions...");
 			AddRegions();
-			Log("Database generated correctly!");
-			Log("Generating icons. We are almost finishing!");
+			Log("Database has been generated correctly!");
+
 			Log("Creating Item icons...");
 			AddItemIcons();
 			Log("Creating Skill icons...");
 			AddSkillIcons();
-			
+			if(this.cbxMinimap.Checked)
+			{
+				Log("Creating minimap images to the bot folder...");
+				AddMinimap();
+			}
+
 			Log("All has been generated succesfully, Enjoy! :)");
-      db.Close();
+			db.Close();
 			pk2.Close();
 			pk2.Dispose();
 			LogState("Closing Pk2 file...");
+			Thread.Sleep(1000);
 
 			WinAPI.InvokeIfRequired(this, () => {
+				this.DialogResult = DialogResult.OK;
 				this.Activate();
-			});
-			w.EnableControl(w.Settings_btnAddSilkroad, true);
-			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.Settings_btnLauncherPath, null);
-			});
-			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.Settings_btnClientPath, null);
-			});
-			WinAPI.InvokeIfRequired(w, () => {
-				w.Control_Click(w.Settings_btnAddSilkroad, null);
-				w.Activate();
-			});
-			WinAPI.InvokeIfRequired(this, () => {
-				Close();
+				this.Close();
 			});
 		}
 		private void Control_Click(object sender, EventArgs e)
@@ -326,14 +315,13 @@ namespace xBot.App.PK2Extractor
 					if (tGenerateData != null)
 					{
 						if(tGenerateData.ThreadState == ThreadState.WaitSleepJoin || tGenerateData.ThreadState == ThreadState.Running){
-							if(MessageBox.Show(this, "The process still running. Are you sure?", "xBot - PK2 Extractor", MessageBoxButtons.YesNo) != DialogResult.Yes)
+							if(MessageBox.Show(this, "The process still running. Are you sure?", "xBot - Pk2 Extractor", MessageBoxButtons.YesNo) != DialogResult.Yes)
 								return;
 						}
 						tGenerateData.Abort();
 						if (db != null)
 						{
 							db.Close();
-							DirectoryDelete(this.SilkroadName);
 						}
 						if(pk2 != null){
 							pk2.Close();

@@ -194,10 +194,8 @@ namespace xBot.Game
 		/// </summary>
 		public ulong GetExpMax(byte level)
 		{
-			string sql = "SELECT player FROM leveldata WHERE level=" + level;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT player FROM leveldata WHERE level=" + level);
+      if (result.Count > 0)
 				return ulong.Parse(result[0]["player"]);
 			return 0;
 		}
@@ -206,10 +204,8 @@ namespace xBot.Game
 		/// </summary>
 		public ulong GetPetExpMax(byte level)
 		{
-			string sql = "SELECT pet FROM leveldata WHERE level=" + level;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT pet FROM leveldata WHERE level=" + level);
+      if (result.Count > 0)
 				return ulong.Parse(result[0]["pet"]);
 			return 0;
 		}
@@ -222,10 +218,8 @@ namespace xBot.Game
 		{
 			if (type == Types.Job.None)
 				return 0;
-			string sql = "SELECT * FROM leveldata WHERE level=" + level;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM leveldata WHERE level=" + level);
+      if (result.Count > 0)
 				return uint.Parse(result[0][type.ToString().ToLower()]);
 			return 0;
 		}
@@ -234,10 +228,8 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetModel(uint id)
 		{
-			string sql = "SELECT * FROM models WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM models WHERE id=" + id);
+      if (result.Count > 0)
 				return result[0];
 			return null;
 		}
@@ -246,10 +238,8 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetModel(string servername)
 		{
-			string sql = "SELECT * FROM models WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM models WHERE servername='" + servername + "'");
+      if (result.Count > 0)
 				return result[0];
 			return null;
 		}
@@ -258,10 +248,8 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetTeleport(uint id)
 		{
-			string sql = "SELECT * FROM teleportbuildings WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportbuildings WHERE id=" + id);
+      if (result.Count > 0)
 				return result[0];
 			return null;
 		}
@@ -270,33 +258,27 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetTeleport(string servername)
 		{
-			string sql = "SELECT * FROM teleportbuildings WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportbuildings WHERE servername='" + servername + "'");
+      if (result.Count > 0)
 				return result[0];
 			return null;
 		}
 		/// <summary>
 		/// Get teleportlink by id, using the current database loaded.
 		/// </summary>
-		public NameValueCollection GetTeleportLink(uint id)
+		public NameValueCollection GetTeleportLinkByID(uint id)
 		{
-			string sql = "SELECT * FROM teleportlinks WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
-			if (result.Count > 0)
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportlinks WHERE id=" + id);
+      if (result.Count > 0)
 				return result[0];
 			return null;
 		}
 		/// <summary>
 		/// Get teleportlink by servername, using the current database loaded.
 		/// </summary>
-		public NameValueCollection GetTeleportLink(string servername)
+		public NameValueCollection GetTeleportLinkByServerName(string servername)
 		{
-			string sql = "SELECT * FROM teleportlinks WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportlinks WHERE servername='" + servername + "'");
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -306,9 +288,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetItem(uint id)
 		{
-			string sql = "SELECT * FROM items WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM items WHERE id=" + id);
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -318,9 +298,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetItem(string servername)
 		{
-			string sql = "SELECT * FROM items WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM items WHERE servername='" + servername + "'");
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -330,9 +308,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetSkill(uint id)
 		{
-			string sql = "SELECT * FROM skills WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM skills WHERE id=" + id);
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -342,9 +318,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetSkill(string servername)
 		{
-			string sql = "SELECT * FROM skills WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM skills WHERE servername='" + servername + "'");
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -354,9 +328,7 @@ namespace xBot.Game
 		/// </summary>
 		public NameValueCollection GetMastery(uint id)
 		{
-			string sql = "SELECT * FROM masteries WHERE id=" + id;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM masteries WHERE id=" + id);
 			if (result.Count > 0)
 				return result[0];
 			return null;
@@ -366,9 +338,7 @@ namespace xBot.Game
 		/// </summary>
 		public string GetRegion(ushort id)
 		{
-			string sql = "SELECT name FROM regions WHERE id=" + id + " LIMIT 1";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT name FROM regions WHERE id=" + id + " LIMIT 1");
 			if (result.Count > 0)
 				return result[0]["name"];
 			return "";
@@ -378,9 +348,7 @@ namespace xBot.Game
 		/// </summary>
 		public string GetUIFormat(string servername, params object[] args)
 		{
-			string sql = "SELECT text FROM textuisystem WHERE servername='" + servername + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT text FROM textuisystem WHERE servername='" + servername + "'");
 			if (result.Count > 0)
 				return string.Format(result[0]["text"], args);
 			return "";
@@ -390,9 +358,7 @@ namespace xBot.Game
 		/// </summary>
 		public SRObject GetItemFromShop(string npc_servername, byte tabNumber, byte tabSlot)
 		{
-			string sql = "SELECT * FROM shops WHERE model_servername='" + npc_servername + "' AND tab=" + tabNumber + " AND slot=" + tabSlot;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM shops WHERE model_servername='" + npc_servername + "' AND tab=" + tabNumber + " AND slot=" + tabSlot);
 			if (result.Count > 0)
 			{
 				SRObject item = new SRObject(result[0]["item_servername"], SRType.Item);
@@ -422,9 +388,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetLastSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level<" + skill[SRProperty.Level] + " ORDER BY level DESC LIMIT 1";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT id FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level<" + skill[SRProperty.Level] + " ORDER BY level DESC LIMIT 1");
 			if (result.Count > 0)
 			{
 				return uint.Parse(result[0]["id"]);
@@ -436,9 +400,7 @@ namespace xBot.Game
 		/// </summary>
 		public uint GetNextSkillID(SRObject skill)
 		{
-			string sql = "SELECT * FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level>" + skill[SRProperty.Level] + " ORDER BY level LIMIT 1";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT id FROM skills WHERE group_id='" + skill[SRProperty.GroupID] + "' AND level>" + skill[SRProperty.Level] + " ORDER BY level LIMIT 1");
 			if (result.Count > 0)
 			{
 				return uint.Parse(result[0]["id"]);
@@ -448,28 +410,51 @@ namespace xBot.Game
 		/// <summary>
 		/// Gets the teleport link data. Return null if link is not found.
 		/// </summary>
-		public NameValueCollection GetTeleportLinkData(string sourceTeleportName, string destinationTeleportName = "%")
+		public NameValueCollection GetTeleportLink(string teleportName)
 		{
-			string sql = "SELECT * FROM teleportlinks WHERE name LIKE '" + sourceTeleportName + "' AND destination LIKE '" + destinationTeleportName + "'";
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportlinks WHERE name LIKE '" + teleportName + "' LIMIT 1");
 			if (result.Count > 0)
-			{
 				return result[0];
-			}
 			return null;
 		}
+		/// <summary>
+		/// Gets the teleport link data. Return null if link is not found.
+		/// </summary>
+		public NameValueCollection GetTeleportLink(string sourceTeleportName, string destinationTeleportName)
+		{
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM teleportlinks WHERE name LIKE '" + sourceTeleportName + "' AND destination LIKE '" + destinationTeleportName + "' LIMIT 1");
+			if (result.Count > 0)
+				return result[0];
+			return null;
+		}
+		/// <summary>
+		/// Gets all links from the teleport specified.
+		/// </summary>
+		public List<NameValueCollection> GetTeleportLinks(uint sourceTeleportID)
+		{
+			return Database.GetResultFromQuery("SELECT * FROM teleportlinks WHERE id="+ sourceTeleportID);
+    }
 		/// <summary>
 		/// Gets the teleport destination ID. Return 0 if none is found.
 		/// </summary>
 		public uint GetTeleportLinkDestinationID(uint sourceTeleportID, uint destinationTeleportID)
 		{
-			string sql = "SELECT t1.destinationid FROM teleportlinks AS t1 JOIN teleportlinks AS t2 WHERE t1.destination=t2.name AND t2.destination=t1.name AND t1.id=" + sourceTeleportID + " AND t2.id=" + destinationTeleportID;
-			Database.ExecuteQuery(sql);
-			List<NameValueCollection> result = Database.GetResult();
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT t1.destinationid FROM teleportlinks AS t1 JOIN teleportlinks AS t2 WHERE t1.destination=t2.name AND t2.destination=t1.name AND t1.id=" + sourceTeleportID + " AND t2.id=" + destinationTeleportID+" LIMIT 1");
 			if (result.Count > 0)
 			{
 				return uint.Parse(result[0]["destinationid"]);
+			}
+			return 0;
+		}
+		/// <summary>
+		/// Gets the next skill ID from the skill to update, returns 0 if none is found.
+		/// </summary>
+		public uint GetCommonAttack(Types.Weapon type)
+		{
+			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT id FROM skills WHERE (weapon_first = " + ((byte)type) + " or weapon_second = " + ((byte)type) + ") and group_name LIKE '%_BASE'");
+			if (result.Count > 0)
+			{
+				return uint.Parse(result[0]["id"]);
 			}
 			return 0;
 		}

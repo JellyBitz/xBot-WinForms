@@ -15,7 +15,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 		public long Size { get; private set; }
 		public byte[] Key { get; private set; }
 		public string ASCIIKey { get; private set; }
-		public string Path { get; }
+		public string FullPath { get; }
 
 		public sPk2Header Header { get; private set; }
 		private Dictionary<string, Pk2File> m_Files = new Dictionary<string, Pk2File>();
@@ -29,13 +29,13 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 		#endregion
 
 		#region Constructor
-		public Pk2Reader(string Path, string BlowfishKey)
+		public Pk2Reader(string FilePath, string BlowfishKey)
 		{
-			if (!File.Exists(Path))
+			if (!File.Exists(FilePath))
 				throw new Exception("File not found");
 			else
 			{
-				this.Path = Path;
+				this.FullPath = Path.GetFullPath(FilePath);
 				// Set default key for most clients
 				if (BlowfishKey == "")
 					ASCIIKey = "169841";
@@ -43,7 +43,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 					ASCIIKey = BlowfishKey;
 				Key = GenerateFinalBlowfishKey(ASCIIKey);
 
-				m_FileStream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+				m_FileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				Size = m_FileStream.Length;
 
 				m_Blowfish.Initialize(Key);
@@ -51,7 +51,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 				Header = (sPk2Header)BufferToStruct(reader.ReadBytes(256), typeof(sPk2Header));
 
 				m_CurrentFolder = new Pk2Folder();
-				m_CurrentFolder.Name = Path;
+				m_CurrentFolder.Name = FilePath;
 				m_CurrentFolder.Files = new List<Pk2File>();
 				m_CurrentFolder.SubFolders = new List<Pk2Folder>();
 
@@ -65,7 +65,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 		/// <summary>
 		/// Read the Pk2 structure recursively.
 		/// </summary>
-		private void Read(long Position, string Path)
+		private void Read(long Position, string RootPath)
 		{
 			BinaryReader reader = new BinaryReader(m_FileStream);
 			reader.BaseStream.Position = Position;
@@ -87,7 +87,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 							folder.Name = entry.Name;
 							folder.Position = BitConverter.ToInt64(entry.g_Position, 0);
 							folders.Add(folder);
-							m_Folders[(Path + entry.Name + "\\").ToUpper()] = folder;
+							m_Folders[(RootPath + entry.Name).ToUpper()] = folder;
 							m_CurrentFolder.SubFolders.Add(folder);
 						}
 						break;
@@ -97,7 +97,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 						file.Name = entry.Name;
 						file.Size = entry.Size;
 						file.ParentFolder = m_CurrentFolder;
-						m_Files[(Path + entry.Name).ToUpper()] = file;
+						m_Files[(RootPath + entry.Name).ToUpper()] = file;
 						m_CurrentFolder.Files.Add(file);
 						break;
 				}
@@ -105,7 +105,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 			}
 			if (entryBlock.Entries[19].NextChain != 0)
 			{
-				Read(entryBlock.Entries[19].NextChain, Path);
+				Read(entryBlock.Entries[19].NextChain, RootPath);
 			}
 
 			foreach (Pk2Folder folder in folders)
@@ -119,7 +119,7 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 				{
 					folder.SubFolders = new List<Pk2Folder>();
 				}
-				Read(folder.Position, Path + folder.Name + "\\");
+				Read(folder.Position, RootPath + folder.Name + "\\");
 			}
 		}
 		/// <summary>
@@ -142,6 +142,21 @@ namespace xBot.App.PK2Extractor.PK2ReaderAPI
 		public List<Pk2Folder> GetRootFolders()
 		{
 			return m_MainFolder.SubFolders;
+		}
+		public Pk2Folder GetFolder(string FolderPath)
+		{
+			if (FolderPath == "")
+				return null;
+
+			// Normalize to the same dictionary key path format
+			FolderPath = FolderPath.ToUpper();
+			FolderPath = FolderPath.Replace("/", "\\");
+			if (FolderPath.EndsWith("\\"))
+				FolderPath = FolderPath.Substring(0, FolderPath.Length - 1);
+
+			Pk2Folder folder = null;
+			m_Folders.TryGetValue(FolderPath, out folder);
+			return folder;
 		}
 		/// <summary>
 		/// Get a file from Pk2 path specified.

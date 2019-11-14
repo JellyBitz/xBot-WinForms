@@ -528,7 +528,6 @@ namespace xBot.Network
 			}
 			catch (Exception ex)
 			{
-				w.Log("Disconnected");
 				w.LogPacket("[A] Error: " + ex.Message + Environment.NewLine);
 				Bot.Get.LogError(ex.ToString());
 				Stop();
@@ -666,13 +665,11 @@ namespace xBot.Network
 		{
 			ProxyReconnectionStop();
 			Reset();
-			Info.Get.Database.Close();
 			Window w = Window.Get;
 			// Reset locket controls
 			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
 				w.Login_cmbxSilkroad.Enabled = true;
 			});
-			w.EnableControl(w.Settings_btnAddSilkroad, true);
 			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
 				w.Login_btnStart.Text = "START";
 				w.EnableControl(w.Login_btnStart, true);
@@ -690,6 +687,8 @@ namespace xBot.Network
 			{
 				Bot.Get._OnDisconnected();
 			}
+			Info.Get.Database.Close();
+			w.Log("Disconnected");
 			w.LogProcess("Disconnected");
 			// Relogin
 			if (w.Login_cbxRelogin.Checked)
@@ -725,7 +724,12 @@ namespace xBot.Network
 								});
 							}
 						}
-					 }
+						else
+						{
+							w.LogProcess("Relogin canceled...");
+							Relogin.Stop();
+						}
+					}
 					 catch { Relogin.Stop(); }
 				 };
 				Relogin.Start();

@@ -1264,5 +1264,19 @@ namespace SecurityAPI
 				}
 			}
 		}
+		public static string ToStringHexadecimal(byte[] bytes)
+		{
+			if (bytes.Length == 0)
+				return "";
+			StringBuilder hexData = new StringBuilder();
+			foreach (byte b in bytes)
+				hexData.Append(b.ToString("X2") + " ");
+			// remove the last empty space
+			return hexData.Remove(hexData.Length - 1, 1).ToString();
+		}
+		public override string ToString()
+		{
+			return "[" + Opcode.ToString("X4") + "][" + ToStringHexadecimal(GetBytes()) + "]";
+    }
 	}
 }

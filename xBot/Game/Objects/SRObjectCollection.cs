@@ -133,12 +133,21 @@ namespace xBot.Game.Objects
 		{
 			return Objects.Find(match);
 		}
-		public int FindIndex(Predicate<SRObject> match,int startIndex = 0){
-			return FindIndex(match,startIndex,this.Capacity-1);
+		public int FindIndex(Predicate<SRObject> match, int startIndex = 0)
+		{
+			return FindIndex(match, startIndex, this.Capacity - 1);
 		}
-		public int FindIndex(Predicate<SRObject> match,int startIndex,int endIndex){
+		public int FindIndex(Predicate<SRObject> match, int startIndex, int endIndex)
+		{
 			for (int i = startIndex; i <= endIndex; i++)
-				if(match(Objects[i]))
+				if (match(Objects[i]))
+					return i;
+			return -1;
+		}
+		public int FindIndexLimited(Predicate<SRObject> match, int startIndex, int maxIndex)
+		{
+			for (int i = startIndex; i <= maxIndex && i < Objects.Count; i++)
+				if (match(Objects[i]))
 					return i;
 			return -1;
 		}
