@@ -450,6 +450,12 @@ namespace xBot.Game
 			p.WriteUInt(teleportUniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void InviteToGuild(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_GUILD_INVITATION_REQUEST);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		internal class Client
 		{
 			public static void CreatePickUpPacket(SRObject item, byte inventorySlot)

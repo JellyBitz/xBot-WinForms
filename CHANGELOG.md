@@ -1,5 +1,10 @@
 # Changelog
 
+### v0.2.1
+- Fixed map icons
+- Tiles from minimap now loading at asynchronous mode
+- Added party invitation from minimap
+
 ### v0.2.0
 - Added updates checker
 - Fixed issue creating party match while having job item at inventory

@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.2.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.2.1") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -45,7 +45,7 @@
 
 All commands are **UPPERCASED**. However, the command won't work if you don't follow the indications as `*Required` `?Optional`
 
-A few using examples from any chat:
+A few examples sent from any chat:
 - `TRACE JellyBitz`
 - `INJECT 3091 false 01`
 - `INJECT 3091 01`
@@ -62,6 +62,7 @@ This commands will work only if you had **checked** the option from **Party > Se
 - Double click to notify icon to show/hide window bot
 - Write "PING" at All chat to see your current ping
 - Rename character config to "Default.json" and all your new configs will be loaded with that one!
+- Character movement through minimap!
 
 ---
 > ### **Do you like this Project ?**

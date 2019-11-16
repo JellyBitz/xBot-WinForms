@@ -144,6 +144,7 @@ namespace xBot.App
 			this.Settings_btnAddOpcode = new System.Windows.Forms.Button();
 			this.Settings_tbxFilterOpcode = new System.Windows.Forms.TextBox();
 			this.Settings_lblFilterOpcode = new System.Windows.Forms.Label();
+			this.Settings_rtbxPackets = new xGraphics.xRichTextBox();
 			this.Menu_rtbxPackets = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.Menu_rtbxPackets_AutoScroll = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_rtbxPackets_AddTimestamp = new System.Windows.Forms.ToolStripMenuItem();
@@ -299,7 +300,9 @@ namespace xBot.App
 			this.Minimap_lblRegion = new System.Windows.Forms.Label();
 			this.Minimap_lblZ = new System.Windows.Forms.Label();
 			this.Minimap_tbxZ = new System.Windows.Forms.TextBox();
+			this.Minimap_xmcCharacterMark = new xGraphics.xMapControl();
 			this.Minimap_tbrZoom = new System.Windows.Forms.TrackBar();
+			this.Minimap_pnlMap = new xGraphics.xMap();
 			this.TabPageV_Control01_Option02_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Character = new System.Windows.Forms.Panel();
 			this.TabPageH_Character_Option04 = new System.Windows.Forms.Button();
@@ -318,6 +321,7 @@ namespace xBot.App
 			this.Character_lblGold = new System.Windows.Forms.Label();
 			this.Character_lblGoldText = new System.Windows.Forms.Label();
 			this.Character_lblJobLevel = new System.Windows.Forms.Label();
+			this.Character_pgbJobExp = new xGraphics.xProgressBar();
 			this.Character_gbxStatPoints = new System.Windows.Forms.GroupBox();
 			this.Character_lblStatPoints = new System.Windows.Forms.Label();
 			this.Character_lblINT = new System.Windows.Forms.Label();
@@ -332,6 +336,10 @@ namespace xBot.App
 			this.Character_cbxMessagePicks = new System.Windows.Forms.CheckBox();
 			this.Character_cbxMessageUniques = new System.Windows.Forms.CheckBox();
 			this.Character_cbxMessageExp = new System.Windows.Forms.CheckBox();
+			this.Character_rtbxMessageFilter = new xGraphics.xRichTextBox();
+			this.Character_pgbExp = new xGraphics.xProgressBar();
+			this.Character_pgbMP = new xGraphics.xProgressBar();
+			this.Character_pgbHP = new xGraphics.xProgressBar();
 			this.TabPageH_Character_Option02_Panel = new System.Windows.Forms.Panel();
 			this.Character_gbxPotionPet = new System.Windows.Forms.GroupBox();
 			this.Character_tbxUsePetHGP = new System.Windows.Forms.TextBox();
@@ -369,27 +377,55 @@ namespace xBot.App
 			this.TabPageH_Chat_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_Chat_Option01 = new System.Windows.Forms.Button();
 			this.TabPageH_Chat_Option01_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxAll = new xGraphics.xRichTextBox();
 			this.Chat_panel = new System.Windows.Forms.Panel();
 			this.Chat_tbxMsgPlayer = new System.Windows.Forms.TextBox();
 			this.Chat_cmbxMsgType = new System.Windows.Forms.ComboBox();
 			this.Chat_tbxMsg = new System.Windows.Forms.TextBox();
 			this.TabPageH_Chat_Option08_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxGlobal = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option07_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxStall = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option06_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxAcademy = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option05_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxUnion = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option04_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxGuild = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option03_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxParty = new xGraphics.xRichTextBox();
 			this.TabPageH_Chat_Option02_Panel = new System.Windows.Forms.Panel();
+			this.Chat_rtbxPrivate = new xGraphics.xRichTextBox();
 			this.TabPageV_Control01_Option07_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Skills = new System.Windows.Forms.Panel();
 			this.TabPageH_Skills_Option03 = new System.Windows.Forms.Button();
 			this.TabPageH_Skills_Option02 = new System.Windows.Forms.Button();
 			this.TabPageH_Skills_Option01 = new System.Windows.Forms.Button();
+			this.Skills_lstvSkills = new xGraphics.xListView();
+			this.columnHeader34 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.TabPageH_Skills_Option01_Panel = new System.Windows.Forms.Panel();
 			this.Skills_btnAddAttack = new System.Windows.Forms.Button();
 			this.Skills_btnRemAttack = new System.Windows.Forms.Button();
 			this.Training_cbxWalkToCenter = new System.Windows.Forms.CheckBox();
 			this.Skills_cmbxAttackMobType = new System.Windows.Forms.ComboBox();
+			this.Skills_lstvAttackMobType_General = new xGraphics.xListView();
+			this.columnHeader35 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_Unique = new xGraphics.xListView();
+			this.columnHeader42 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_Elite = new xGraphics.xListView();
+			this.columnHeader40 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_PartyGiant = new xGraphics.xListView();
+			this.columnHeader39 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_PartyChampion = new xGraphics.xListView();
+			this.columnHeader38 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_PartyGeneral = new xGraphics.xListView();
+			this.columnHeader37 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_Giant = new xGraphics.xListView();
+			this.columnHeader36 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_Champion = new xGraphics.xListView();
+			this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Skills_lstvAttackMobType_Event = new xGraphics.xListView();
+			this.columnHeader41 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.TabPageH_Skills_Option02_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Skills_Option03_Panel = new System.Windows.Forms.Panel();
 			this.TabPageV_Control01_Option06_Panel = new System.Windows.Forms.Panel();
@@ -483,6 +519,7 @@ namespace xBot.App
 			this.Menu_btnClientOptions_ShowHide = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_btnClientOptions_GoClientless = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnBotStart = new System.Windows.Forms.Button();
+			this.rtbxLogs = new xGraphics.xRichTextBox();
 			this.btnAnalyzer = new System.Windows.Forms.Button();
 			this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
 			this.lblBotState = new System.Windows.Forms.Label();
@@ -494,43 +531,6 @@ namespace xBot.App
 			this.Menu_NotifyIcon_HideShow = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_NotifyIcon_Exit = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_lstvAttackMobType = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Minimap_pnlMap = new xGraphics.xMap();
-			this.Minimap_xmcCharacterMark = new xGraphics.xMapControl();
-			this.Character_pgbJobExp = new xGraphics.xProgressBar();
-			this.Character_rtbxMessageFilter = new xGraphics.xRichTextBox();
-			this.Character_pgbExp = new xGraphics.xProgressBar();
-			this.Character_pgbMP = new xGraphics.xProgressBar();
-			this.Character_pgbHP = new xGraphics.xProgressBar();
-			this.Chat_rtbxAll = new xGraphics.xRichTextBox();
-			this.Chat_rtbxGlobal = new xGraphics.xRichTextBox();
-			this.Chat_rtbxStall = new xGraphics.xRichTextBox();
-			this.Chat_rtbxAcademy = new xGraphics.xRichTextBox();
-			this.Chat_rtbxUnion = new xGraphics.xRichTextBox();
-			this.Chat_rtbxGuild = new xGraphics.xRichTextBox();
-			this.Chat_rtbxParty = new xGraphics.xRichTextBox();
-			this.Chat_rtbxPrivate = new xGraphics.xRichTextBox();
-			this.Skills_lstvSkills = new xGraphics.xListView();
-			this.columnHeader34 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_General = new xGraphics.xListView();
-			this.columnHeader35 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_Unique = new xGraphics.xListView();
-			this.columnHeader42 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_Elite = new xGraphics.xListView();
-			this.columnHeader40 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_PartyGiant = new xGraphics.xListView();
-			this.columnHeader39 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_PartyChampion = new xGraphics.xListView();
-			this.columnHeader38 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_PartyGeneral = new xGraphics.xListView();
-			this.columnHeader37 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_Giant = new xGraphics.xListView();
-			this.columnHeader36 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_Champion = new xGraphics.xListView();
-			this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Skills_lstvAttackMobType_Event = new xGraphics.xListView();
-			this.columnHeader41 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Settings_rtbxPackets = new xGraphics.xRichTextBox();
-			this.rtbxLogs = new xGraphics.xRichTextBox();
 			this.TabPageV_Control01.SuspendLayout();
 			this.pnlHeader.SuspendLayout();
 			this.TabPageV_Control01_Option14_Panel.SuspendLayout();
@@ -575,6 +575,7 @@ namespace xBot.App
 			this.TabPageV_Control01_Option12_Panel.SuspendLayout();
 			this.Minimap_panelCoords.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Minimap_tbrZoom)).BeginInit();
+			this.Minimap_pnlMap.SuspendLayout();
 			this.TabPageV_Control01_Option02_Panel.SuspendLayout();
 			this.TabPageH_Character.SuspendLayout();
 			this.TabPageH_Character_Option01_Panel.SuspendLayout();
@@ -614,7 +615,6 @@ namespace xBot.App
 			this.TabPageV_Control01_Option13_Panel.SuspendLayout();
 			this.Menu_btnClientOptions.SuspendLayout();
 			this.Menu_NotifyIcon.SuspendLayout();
-			this.Minimap_pnlMap.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TabPageV_Control01
@@ -2266,6 +2266,26 @@ namespace xBot.App
 			this.Settings_lblFilterOpcode.Tag = "Source Sans Pro";
 			this.Settings_lblFilterOpcode.Text = "Opcode";
 			this.Settings_lblFilterOpcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Settings_rtbxPackets
+			// 
+			this.Settings_rtbxPackets.AutoScroll = false;
+			this.Settings_rtbxPackets.BackColor = System.Drawing.Color.Black;
+			this.Settings_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.Settings_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
+			this.Settings_rtbxPackets.DetectUrls = false;
+			this.Settings_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Settings_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Settings_rtbxPackets.Location = new System.Drawing.Point(178, 5);
+			this.Settings_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
+			this.Settings_rtbxPackets.MaxLines = 2048;
+			this.Settings_rtbxPackets.Name = "Settings_rtbxPackets";
+			this.Settings_rtbxPackets.ReadOnly = true;
+			this.Settings_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Settings_rtbxPackets.Size = new System.Drawing.Size(472, 247);
+			this.Settings_rtbxPackets.TabIndex = 15;
+			this.Settings_rtbxPackets.Tag = "Source Sans Pro";
+			this.Settings_rtbxPackets.Text = "";
 			// 
 			// Menu_rtbxPackets
 			// 
@@ -4381,12 +4401,21 @@ namespace xBot.App
 			this.Minimap_tbxZ.Enter += new System.EventHandler(this.Control_Focus_Enter);
 			this.Minimap_tbxZ.Leave += new System.EventHandler(this.Control_Focus_Leave);
 			// 
+			// Minimap_xmcCharacterMark
+			// 
+			this.Minimap_xmcCharacterMark.BackColor = System.Drawing.Color.Transparent;
+			this.Minimap_xmcCharacterMark.Image = global::xBot.Properties.Resources.mm_sign_character;
+			this.Minimap_xmcCharacterMark.Location = new System.Drawing.Point(376, 376);
+			this.Minimap_xmcCharacterMark.Name = "Minimap_xmcCharacterMark";
+			this.Minimap_xmcCharacterMark.Size = new System.Drawing.Size(16, 16);
+			this.Minimap_xmcCharacterMark.TabIndex = 0;
+			this.Minimap_xmcCharacterMark.TabStop = false;
+			// 
 			// Minimap_tbrZoom
 			// 
 			this.Minimap_tbrZoom.AutoSize = false;
 			this.Minimap_tbrZoom.LargeChange = 1;
 			this.Minimap_tbrZoom.Location = new System.Drawing.Point(625, 35);
-			this.Minimap_tbrZoom.Maximum = 8;
 			this.Minimap_tbrZoom.Minimum = 1;
 			this.Minimap_tbrZoom.Name = "Minimap_tbrZoom";
 			this.Minimap_tbrZoom.Orientation = System.Windows.Forms.Orientation.Vertical;
@@ -4396,6 +4425,18 @@ namespace xBot.App
 			this.ToolTips.SetToolTip(this.Minimap_tbrZoom, "Zoom level");
 			this.Minimap_tbrZoom.Value = 1;
 			this.Minimap_tbrZoom.ValueChanged += new System.EventHandler(this.TrackBar_ValueChanged);
+			// 
+			// Minimap_pnlMap
+			// 
+			this.Minimap_pnlMap.BackColor = System.Drawing.Color.Transparent;
+			this.Minimap_pnlMap.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Minimap_pnlMap.BackgroundImage")));
+			this.Minimap_pnlMap.Controls.Add(this.Minimap_xmcCharacterMark);
+			this.Minimap_pnlMap.Location = new System.Drawing.Point(-55, -213);
+			this.Minimap_pnlMap.Name = "Minimap_pnlMap";
+			this.Minimap_pnlMap.Size = new System.Drawing.Size(768, 768);
+			this.Minimap_pnlMap.TabIndex = 1;
+			this.Minimap_pnlMap.Tag = "Source Sans Pro";
+			this.Minimap_pnlMap.Zoom = ((byte)(1));
 			// 
 			// TabPageV_Control01_Option02_Panel
 			// 
@@ -4662,6 +4703,23 @@ namespace xBot.App
 			this.Character_lblJobLevel.Text = "Job Lv. - - -";
 			this.ToolTips.SetToolTip(this.Character_lblJobLevel, "Job Level");
 			// 
+			// Character_pgbJobExp
+			// 
+			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
+			this.Character_pgbJobExp.BackColorDegradationLevel = 4;
+			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbJobExp.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
+			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
+			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
+			this.Character_pgbJobExp.TabIndex = 23;
+			this.Character_pgbJobExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
+			this.Character_pgbJobExp.Value = ((ulong)(0ul));
+			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
+			// 
 			// Character_gbxStatPoints
 			// 
 			this.Character_gbxStatPoints.Controls.Add(this.Character_lblStatPoints);
@@ -4894,6 +4952,78 @@ namespace xBot.App
 			this.ToolTips.SetToolTip(this.Character_cbxMessageExp, "Experience & SP Experience");
 			this.Character_cbxMessageExp.UseVisualStyleBackColor = false;
 			this.Character_cbxMessageExp.CheckedChanged += new System.EventHandler(this.Control_CheckedChanged);
+			// 
+			// Character_rtbxMessageFilter
+			// 
+			this.Character_rtbxMessageFilter.AutoScroll = true;
+			this.Character_rtbxMessageFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Character_rtbxMessageFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Character_rtbxMessageFilter.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Character_rtbxMessageFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_rtbxMessageFilter.Location = new System.Drawing.Point(1, 40);
+			this.Character_rtbxMessageFilter.Margin = new System.Windows.Forms.Padding(1);
+			this.Character_rtbxMessageFilter.MaxLines = 2048;
+			this.Character_rtbxMessageFilter.Name = "Character_rtbxMessageFilter";
+			this.Character_rtbxMessageFilter.ReadOnly = true;
+			this.Character_rtbxMessageFilter.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Character_rtbxMessageFilter.Size = new System.Drawing.Size(298, 267);
+			this.Character_rtbxMessageFilter.TabIndex = 6;
+			this.Character_rtbxMessageFilter.TabStop = false;
+			this.Character_rtbxMessageFilter.Tag = "Source Sans Pro";
+			this.Character_rtbxMessageFilter.Text = "";
+			// 
+			// Character_pgbExp
+			// 
+			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
+			this.Character_pgbExp.BackColorDegradationLevel = 5;
+			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbExp.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
+			this.Character_pgbExp.Name = "Character_pgbExp";
+			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
+			this.Character_pgbExp.TabIndex = 5;
+			this.Character_pgbExp.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
+			this.Character_pgbExp.Value = ((ulong)(0ul));
+			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
+			// 
+			// Character_pgbMP
+			// 
+			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
+			this.Character_pgbMP.BackColorDegradationLevel = 6;
+			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbMP.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
+			this.Character_pgbMP.Name = "Character_pgbMP";
+			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbMP.TabIndex = 4;
+			this.Character_pgbMP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
+			this.Character_pgbMP.Value = ((ulong)(0ul));
+			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
+			this.Character_pgbMP.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Character_pgbHP
+			// 
+			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
+			this.Character_pgbHP.BackColorDegradationLevel = 6;
+			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Percentage;
+			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
+			this.Character_pgbHP.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
+			this.Character_pgbHP.Name = "Character_pgbHP";
+			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
+			this.Character_pgbHP.TabIndex = 3;
+			this.Character_pgbHP.Tag = "Source Sans Pro";
+			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
+			this.Character_pgbHP.Value = ((ulong)(0ul));
+			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
+			this.Character_pgbHP.Click += new System.EventHandler(this.Control_Click);
 			// 
 			// TabPageH_Character_Option02_Panel
 			// 
@@ -5541,6 +5671,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option01_Panel.TabIndex = 8;
 			this.TabPageH_Chat_Option01_Panel.Visible = false;
 			// 
+			// Chat_rtbxAll
+			// 
+			this.Chat_rtbxAll.AutoScroll = true;
+			this.Chat_rtbxAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxAll.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxAll.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxAll.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxAll.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxAll.MaxLines = 1024;
+			this.Chat_rtbxAll.Name = "Chat_rtbxAll";
+			this.Chat_rtbxAll.ReadOnly = true;
+			this.Chat_rtbxAll.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxAll.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxAll.TabIndex = 0;
+			this.Chat_rtbxAll.Text = "";
+			// 
 			// Chat_panel
 			// 
 			this.Chat_panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -5614,6 +5761,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option08_Panel.TabIndex = 12;
 			this.TabPageH_Chat_Option08_Panel.Visible = false;
 			// 
+			// Chat_rtbxGlobal
+			// 
+			this.Chat_rtbxGlobal.AutoScroll = true;
+			this.Chat_rtbxGlobal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxGlobal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxGlobal.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxGlobal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxGlobal.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxGlobal.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxGlobal.MaxLines = 1024;
+			this.Chat_rtbxGlobal.Name = "Chat_rtbxGlobal";
+			this.Chat_rtbxGlobal.ReadOnly = true;
+			this.Chat_rtbxGlobal.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxGlobal.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxGlobal.TabIndex = 7;
+			this.Chat_rtbxGlobal.Text = "";
+			// 
 			// TabPageH_Chat_Option07_Panel
 			// 
 			this.TabPageH_Chat_Option07_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -5623,6 +5787,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option07_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option07_Panel.TabIndex = 15;
 			this.TabPageH_Chat_Option07_Panel.Visible = false;
+			// 
+			// Chat_rtbxStall
+			// 
+			this.Chat_rtbxStall.AutoScroll = true;
+			this.Chat_rtbxStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxStall.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxStall.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxStall.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxStall.MaxLines = 1024;
+			this.Chat_rtbxStall.Name = "Chat_rtbxStall";
+			this.Chat_rtbxStall.ReadOnly = true;
+			this.Chat_rtbxStall.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxStall.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxStall.TabIndex = 6;
+			this.Chat_rtbxStall.Text = "";
 			// 
 			// TabPageH_Chat_Option06_Panel
 			// 
@@ -5634,6 +5815,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option06_Panel.TabIndex = 13;
 			this.TabPageH_Chat_Option06_Panel.Visible = false;
 			// 
+			// Chat_rtbxAcademy
+			// 
+			this.Chat_rtbxAcademy.AutoScroll = true;
+			this.Chat_rtbxAcademy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxAcademy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxAcademy.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxAcademy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxAcademy.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxAcademy.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxAcademy.MaxLines = 1024;
+			this.Chat_rtbxAcademy.Name = "Chat_rtbxAcademy";
+			this.Chat_rtbxAcademy.ReadOnly = true;
+			this.Chat_rtbxAcademy.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxAcademy.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxAcademy.TabIndex = 5;
+			this.Chat_rtbxAcademy.Text = "";
+			// 
 			// TabPageH_Chat_Option05_Panel
 			// 
 			this.TabPageH_Chat_Option05_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -5643,6 +5841,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option05_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option05_Panel.TabIndex = 14;
 			this.TabPageH_Chat_Option05_Panel.Visible = false;
+			// 
+			// Chat_rtbxUnion
+			// 
+			this.Chat_rtbxUnion.AutoScroll = true;
+			this.Chat_rtbxUnion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxUnion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxUnion.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxUnion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxUnion.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxUnion.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxUnion.MaxLines = 1024;
+			this.Chat_rtbxUnion.Name = "Chat_rtbxUnion";
+			this.Chat_rtbxUnion.ReadOnly = true;
+			this.Chat_rtbxUnion.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxUnion.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxUnion.TabIndex = 4;
+			this.Chat_rtbxUnion.Text = "";
 			// 
 			// TabPageH_Chat_Option04_Panel
 			// 
@@ -5654,6 +5869,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option04_Panel.TabIndex = 10;
 			this.TabPageH_Chat_Option04_Panel.Visible = false;
 			// 
+			// Chat_rtbxGuild
+			// 
+			this.Chat_rtbxGuild.AutoScroll = true;
+			this.Chat_rtbxGuild.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxGuild.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxGuild.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxGuild.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxGuild.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxGuild.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxGuild.MaxLines = 1024;
+			this.Chat_rtbxGuild.Name = "Chat_rtbxGuild";
+			this.Chat_rtbxGuild.ReadOnly = true;
+			this.Chat_rtbxGuild.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxGuild.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxGuild.TabIndex = 3;
+			this.Chat_rtbxGuild.Text = "";
+			// 
 			// TabPageH_Chat_Option03_Panel
 			// 
 			this.TabPageH_Chat_Option03_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -5664,6 +5896,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option03_Panel.TabIndex = 9;
 			this.TabPageH_Chat_Option03_Panel.Visible = false;
 			// 
+			// Chat_rtbxParty
+			// 
+			this.Chat_rtbxParty.AutoScroll = true;
+			this.Chat_rtbxParty.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxParty.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxParty.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxParty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxParty.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxParty.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxParty.MaxLines = 1024;
+			this.Chat_rtbxParty.Name = "Chat_rtbxParty";
+			this.Chat_rtbxParty.ReadOnly = true;
+			this.Chat_rtbxParty.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxParty.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxParty.TabIndex = 2;
+			this.Chat_rtbxParty.Text = "";
+			// 
 			// TabPageH_Chat_Option02_Panel
 			// 
 			this.TabPageH_Chat_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -5673,6 +5922,23 @@ namespace xBot.App
 			this.TabPageH_Chat_Option02_Panel.Size = new System.Drawing.Size(657, 282);
 			this.TabPageH_Chat_Option02_Panel.TabIndex = 11;
 			this.TabPageH_Chat_Option02_Panel.Visible = false;
+			// 
+			// Chat_rtbxPrivate
+			// 
+			this.Chat_rtbxPrivate.AutoScroll = true;
+			this.Chat_rtbxPrivate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
+			this.Chat_rtbxPrivate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Chat_rtbxPrivate.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
+			this.Chat_rtbxPrivate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Chat_rtbxPrivate.Location = new System.Drawing.Point(8, 8);
+			this.Chat_rtbxPrivate.Margin = new System.Windows.Forms.Padding(8);
+			this.Chat_rtbxPrivate.MaxLines = 1024;
+			this.Chat_rtbxPrivate.Name = "Chat_rtbxPrivate";
+			this.Chat_rtbxPrivate.ReadOnly = true;
+			this.Chat_rtbxPrivate.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.Chat_rtbxPrivate.Size = new System.Drawing.Size(639, 265);
+			this.Chat_rtbxPrivate.TabIndex = 1;
+			this.Chat_rtbxPrivate.Text = "";
 			// 
 			// TabPageV_Control01_Option07_Panel
 			// 
@@ -5758,6 +6024,39 @@ namespace xBot.App
 			this.TabPageH_Skills_Option01.Text = "Attack";
 			this.TabPageH_Skills_Option01.UseVisualStyleBackColor = false;
 			this.TabPageH_Skills_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// Skills_lstvSkills
+			// 
+			this.Skills_lstvSkills.AllowDrop = true;
+			this.Skills_lstvSkills.AllowReorder = false;
+			this.Skills_lstvSkills.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvSkills.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvSkills.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader34});
+			this.Skills_lstvSkills.DragDropRemoveFromSource = true;
+			this.Skills_lstvSkills.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Skills_lstvSkills.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvSkills.FullRowSelect = true;
+			this.Skills_lstvSkills.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvSkills.HideSelection = false;
+			this.Skills_lstvSkills.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvSkills.Location = new System.Drawing.Point(0, 0);
+			this.Skills_lstvSkills.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvSkills.Name = "Skills_lstvSkills";
+			this.Skills_lstvSkills.ShowItemToolTips = true;
+			this.Skills_lstvSkills.Size = new System.Drawing.Size(185, 342);
+			this.Skills_lstvSkills.SmallImageList = this.lstimgIcons;
+			this.Skills_lstvSkills.TabIndex = 26;
+			this.Skills_lstvSkills.Tag = "Source Sans Pro";
+			this.Skills_lstvSkills.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvSkills.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvSkills.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvSkills.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_Cancel);
+			// 
+			// columnHeader34
+			// 
+			this.columnHeader34.Text = "Skill name";
+			this.columnHeader34.Width = 168;
 			// 
 			// TabPageH_Skills_Option01_Panel
 			// 
@@ -5867,6 +6166,301 @@ namespace xBot.App
 			this.Skills_cmbxAttackMobType.TabIndex = 31;
 			this.Skills_cmbxAttackMobType.Tag = "Source Sans Pro";
 			this.Skills_cmbxAttackMobType.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
+			// 
+			// Skills_lstvAttackMobType_General
+			// 
+			this.Skills_lstvAttackMobType_General.AllowDrop = true;
+			this.Skills_lstvAttackMobType_General.AllowReorder = true;
+			this.Skills_lstvAttackMobType_General.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_General.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_General.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader35});
+			this.Skills_lstvAttackMobType_General.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_General.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_General.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_General.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_General.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_General.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_General.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_General.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_General.Name = "Skills_lstvAttackMobType_General";
+			this.Skills_lstvAttackMobType_General.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_General.TabIndex = 11;
+			this.Skills_lstvAttackMobType_General.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_General.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_General.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_General.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_General.Visible = false;
+			this.Skills_lstvAttackMobType_General.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_General.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader35
+			// 
+			this.columnHeader35.Text = "Skill name";
+			this.columnHeader35.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_Unique
+			// 
+			this.Skills_lstvAttackMobType_Unique.AllowDrop = true;
+			this.Skills_lstvAttackMobType_Unique.AllowReorder = true;
+			this.Skills_lstvAttackMobType_Unique.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_Unique.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_Unique.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader42});
+			this.Skills_lstvAttackMobType_Unique.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_Unique.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_Unique.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_Unique.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_Unique.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_Unique.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_Unique.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_Unique.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_Unique.Name = "Skills_lstvAttackMobType_Unique";
+			this.Skills_lstvAttackMobType_Unique.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_Unique.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_Unique.TabIndex = 39;
+			this.Skills_lstvAttackMobType_Unique.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_Unique.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_Unique.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_Unique.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_Unique.Visible = false;
+			this.Skills_lstvAttackMobType_Unique.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_Unique.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader42
+			// 
+			this.columnHeader42.Text = "Skill name";
+			this.columnHeader42.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_Elite
+			// 
+			this.Skills_lstvAttackMobType_Elite.AllowDrop = true;
+			this.Skills_lstvAttackMobType_Elite.AllowReorder = true;
+			this.Skills_lstvAttackMobType_Elite.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_Elite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_Elite.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader40});
+			this.Skills_lstvAttackMobType_Elite.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_Elite.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_Elite.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_Elite.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_Elite.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_Elite.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_Elite.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_Elite.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_Elite.Name = "Skills_lstvAttackMobType_Elite";
+			this.Skills_lstvAttackMobType_Elite.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_Elite.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_Elite.TabIndex = 37;
+			this.Skills_lstvAttackMobType_Elite.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_Elite.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_Elite.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_Elite.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_Elite.Visible = false;
+			this.Skills_lstvAttackMobType_Elite.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_Elite.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader40
+			// 
+			this.columnHeader40.Text = "Skill name";
+			this.columnHeader40.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_PartyGiant
+			// 
+			this.Skills_lstvAttackMobType_PartyGiant.AllowDrop = true;
+			this.Skills_lstvAttackMobType_PartyGiant.AllowReorder = true;
+			this.Skills_lstvAttackMobType_PartyGiant.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_PartyGiant.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_PartyGiant.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader39});
+			this.Skills_lstvAttackMobType_PartyGiant.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_PartyGiant.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_PartyGiant.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_PartyGiant.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_PartyGiant.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_PartyGiant.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_PartyGiant.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_PartyGiant.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_PartyGiant.Name = "Skills_lstvAttackMobType_PartyGiant";
+			this.Skills_lstvAttackMobType_PartyGiant.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_PartyGiant.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_PartyGiant.TabIndex = 36;
+			this.Skills_lstvAttackMobType_PartyGiant.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_PartyGiant.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_PartyGiant.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_PartyGiant.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_PartyGiant.Visible = false;
+			this.Skills_lstvAttackMobType_PartyGiant.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_PartyGiant.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader39
+			// 
+			this.columnHeader39.Text = "Skill name";
+			this.columnHeader39.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_PartyChampion
+			// 
+			this.Skills_lstvAttackMobType_PartyChampion.AllowDrop = true;
+			this.Skills_lstvAttackMobType_PartyChampion.AllowReorder = true;
+			this.Skills_lstvAttackMobType_PartyChampion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_PartyChampion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_PartyChampion.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader38});
+			this.Skills_lstvAttackMobType_PartyChampion.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_PartyChampion.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_PartyChampion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_PartyChampion.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_PartyChampion.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_PartyChampion.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_PartyChampion.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_PartyChampion.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_PartyChampion.Name = "Skills_lstvAttackMobType_PartyChampion";
+			this.Skills_lstvAttackMobType_PartyChampion.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_PartyChampion.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_PartyChampion.TabIndex = 35;
+			this.Skills_lstvAttackMobType_PartyChampion.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_PartyChampion.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_PartyChampion.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_PartyChampion.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_PartyChampion.Visible = false;
+			this.Skills_lstvAttackMobType_PartyChampion.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_PartyChampion.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader38
+			// 
+			this.columnHeader38.Text = "Skill name";
+			this.columnHeader38.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_PartyGeneral
+			// 
+			this.Skills_lstvAttackMobType_PartyGeneral.AllowDrop = true;
+			this.Skills_lstvAttackMobType_PartyGeneral.AllowReorder = true;
+			this.Skills_lstvAttackMobType_PartyGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_PartyGeneral.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_PartyGeneral.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader37});
+			this.Skills_lstvAttackMobType_PartyGeneral.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_PartyGeneral.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_PartyGeneral.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_PartyGeneral.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_PartyGeneral.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_PartyGeneral.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_PartyGeneral.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_PartyGeneral.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_PartyGeneral.Name = "Skills_lstvAttackMobType_PartyGeneral";
+			this.Skills_lstvAttackMobType_PartyGeneral.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_PartyGeneral.TabIndex = 34;
+			this.Skills_lstvAttackMobType_PartyGeneral.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_PartyGeneral.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_PartyGeneral.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_PartyGeneral.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_PartyGeneral.Visible = false;
+			this.Skills_lstvAttackMobType_PartyGeneral.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_PartyGeneral.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader37
+			// 
+			this.columnHeader37.Text = "Skill name";
+			this.columnHeader37.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_Giant
+			// 
+			this.Skills_lstvAttackMobType_Giant.AllowDrop = true;
+			this.Skills_lstvAttackMobType_Giant.AllowReorder = true;
+			this.Skills_lstvAttackMobType_Giant.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_Giant.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_Giant.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader36});
+			this.Skills_lstvAttackMobType_Giant.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_Giant.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_Giant.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_Giant.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_Giant.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_Giant.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_Giant.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_Giant.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_Giant.Name = "Skills_lstvAttackMobType_Giant";
+			this.Skills_lstvAttackMobType_Giant.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_Giant.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_Giant.TabIndex = 33;
+			this.Skills_lstvAttackMobType_Giant.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_Giant.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_Giant.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_Giant.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_Giant.Visible = false;
+			this.Skills_lstvAttackMobType_Giant.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_Giant.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader36
+			// 
+			this.columnHeader36.Text = "Skill name";
+			this.columnHeader36.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_Champion
+			// 
+			this.Skills_lstvAttackMobType_Champion.AllowDrop = true;
+			this.Skills_lstvAttackMobType_Champion.AllowReorder = true;
+			this.Skills_lstvAttackMobType_Champion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_Champion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_Champion.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader24});
+			this.Skills_lstvAttackMobType_Champion.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_Champion.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Skills_lstvAttackMobType_Champion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_Champion.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_Champion.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_Champion.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_Champion.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_Champion.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_Champion.Name = "Skills_lstvAttackMobType_Champion";
+			this.Skills_lstvAttackMobType_Champion.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_Champion.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_Champion.TabIndex = 32;
+			this.Skills_lstvAttackMobType_Champion.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_Champion.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_Champion.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_Champion.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_Champion.Visible = false;
+			this.Skills_lstvAttackMobType_Champion.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_Champion.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader24
+			// 
+			this.columnHeader24.Text = "Skill name";
+			this.columnHeader24.Width = 168;
+			// 
+			// Skills_lstvAttackMobType_Event
+			// 
+			this.Skills_lstvAttackMobType_Event.AllowDrop = true;
+			this.Skills_lstvAttackMobType_Event.AllowReorder = true;
+			this.Skills_lstvAttackMobType_Event.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Skills_lstvAttackMobType_Event.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Skills_lstvAttackMobType_Event.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader41});
+			this.Skills_lstvAttackMobType_Event.DragDropRemoveFromSource = false;
+			this.Skills_lstvAttackMobType_Event.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Skills_lstvAttackMobType_Event.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Skills_lstvAttackMobType_Event.FullRowSelect = true;
+			this.Skills_lstvAttackMobType_Event.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Skills_lstvAttackMobType_Event.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Skills_lstvAttackMobType_Event.Location = new System.Drawing.Point(6, 32);
+			this.Skills_lstvAttackMobType_Event.Margin = new System.Windows.Forms.Padding(0);
+			this.Skills_lstvAttackMobType_Event.Name = "Skills_lstvAttackMobType_Event";
+			this.Skills_lstvAttackMobType_Event.ShowItemToolTips = true;
+			this.Skills_lstvAttackMobType_Event.Size = new System.Drawing.Size(185, 140);
+			this.Skills_lstvAttackMobType_Event.TabIndex = 40;
+			this.Skills_lstvAttackMobType_Event.Tag = "Source Sans Pro";
+			this.Skills_lstvAttackMobType_Event.TileSize = new System.Drawing.Size(201, 30);
+			this.Skills_lstvAttackMobType_Event.UseCompatibleStateImageBehavior = false;
+			this.Skills_lstvAttackMobType_Event.View = System.Windows.Forms.View.Details;
+			this.Skills_lstvAttackMobType_Event.Visible = false;
+			this.Skills_lstvAttackMobType_Event.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
+			this.Skills_lstvAttackMobType_Event.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
+			// 
+			// columnHeader41
+			// 
+			this.columnHeader41.Text = "Skill name";
+			this.columnHeader41.Width = 168;
 			// 
 			// TabPageH_Skills_Option02_Panel
 			// 
@@ -7232,6 +7826,25 @@ namespace xBot.App
 			this.btnBotStart.UseVisualStyleBackColor = true;
 			this.btnBotStart.Click += new System.EventHandler(this.Control_Click);
 			// 
+			// rtbxLogs
+			// 
+			this.rtbxLogs.AutoScroll = true;
+			this.rtbxLogs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.rtbxLogs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.rtbxLogs.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rtbxLogs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.rtbxLogs.Location = new System.Drawing.Point(162, 391);
+			this.rtbxLogs.Margin = new System.Windows.Forms.Padding(1);
+			this.rtbxLogs.MaxLines = 512;
+			this.rtbxLogs.Name = "rtbxLogs";
+			this.rtbxLogs.ReadOnly = true;
+			this.rtbxLogs.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.rtbxLogs.Size = new System.Drawing.Size(630, 76);
+			this.rtbxLogs.TabIndex = 0;
+			this.rtbxLogs.TabStop = false;
+			this.rtbxLogs.Tag = "Source Sans Pro";
+			this.rtbxLogs.Text = "";
+			// 
 			// btnAnalyzer
 			// 
 			this.btnAnalyzer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -7323,621 +7936,6 @@ namespace xBot.App
 			this.Menu_lstvAttackMobType.Name = "Menu_lstvAttackMobType";
 			this.Menu_lstvAttackMobType.Size = new System.Drawing.Size(61, 4);
 			// 
-			// Minimap_pnlMap
-			// 
-			this.Minimap_pnlMap.BackColor = System.Drawing.Color.Transparent;
-			this.Minimap_pnlMap.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Minimap_pnlMap.BackgroundImage")));
-			this.Minimap_pnlMap.Controls.Add(this.Minimap_xmcCharacterMark);
-			this.Minimap_pnlMap.Location = new System.Drawing.Point(-170, -327);
-			this.Minimap_pnlMap.Name = "Minimap_pnlMap";
-			this.Minimap_pnlMap.Size = new System.Drawing.Size(996, 996);
-			this.Minimap_pnlMap.TabIndex = 1;
-			this.Minimap_pnlMap.Tag = "Source Sans Pro";
-			this.Minimap_pnlMap.Zoom = ((byte)(1));
-			this.Minimap_pnlMap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Minimap_MouseClick);
-			// 
-			// Minimap_xmcCharacterMark
-			// 
-			this.Minimap_xmcCharacterMark.BackColor = System.Drawing.Color.Transparent;
-			this.Minimap_xmcCharacterMark.Image = global::xBot.Properties.Resources.mm_sign_character;
-			this.Minimap_xmcCharacterMark.Location = new System.Drawing.Point(492, 492);
-			this.Minimap_xmcCharacterMark.Name = "Minimap_xmcCharacterMark";
-			this.Minimap_xmcCharacterMark.Size = new System.Drawing.Size(16, 16);
-			this.Minimap_xmcCharacterMark.TabIndex = 0;
-			this.Minimap_xmcCharacterMark.TabStop = false;
-			// 
-			// Character_pgbJobExp
-			// 
-			this.Character_pgbJobExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(73)))), ((int)(((byte)(33)))));
-			this.Character_pgbJobExp.BackColorDegradationLevel = 4;
-			this.Character_pgbJobExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbJobExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbJobExp.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbJobExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbJobExp.Location = new System.Drawing.Point(95, 90);
-			this.Character_pgbJobExp.Name = "Character_pgbJobExp";
-			this.Character_pgbJobExp.Size = new System.Drawing.Size(250, 22);
-			this.Character_pgbJobExp.TabIndex = 23;
-			this.Character_pgbJobExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbJobExp, "Job Experience");
-			this.Character_pgbJobExp.Value = ((ulong)(0ul));
-			this.Character_pgbJobExp.ValueMaximum = ((ulong)(0ul));
-			// 
-			// Character_rtbxMessageFilter
-			// 
-			this.Character_rtbxMessageFilter.AutoScroll = true;
-			this.Character_rtbxMessageFilter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Character_rtbxMessageFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Character_rtbxMessageFilter.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Character_rtbxMessageFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_rtbxMessageFilter.Location = new System.Drawing.Point(1, 40);
-			this.Character_rtbxMessageFilter.Margin = new System.Windows.Forms.Padding(1);
-			this.Character_rtbxMessageFilter.MaxLines = 2048;
-			this.Character_rtbxMessageFilter.Name = "Character_rtbxMessageFilter";
-			this.Character_rtbxMessageFilter.ReadOnly = true;
-			this.Character_rtbxMessageFilter.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Character_rtbxMessageFilter.Size = new System.Drawing.Size(298, 267);
-			this.Character_rtbxMessageFilter.TabIndex = 6;
-			this.Character_rtbxMessageFilter.TabStop = false;
-			this.Character_rtbxMessageFilter.Tag = "Source Sans Pro";
-			this.Character_rtbxMessageFilter.Text = "";
-			// 
-			// Character_pgbExp
-			// 
-			this.Character_pgbExp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(128)))), ((int)(((byte)(10)))));
-			this.Character_pgbExp.BackColorDegradationLevel = 5;
-			this.Character_pgbExp.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbExp.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbExp.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbExp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbExp.Location = new System.Drawing.Point(60, 62);
-			this.Character_pgbExp.Name = "Character_pgbExp";
-			this.Character_pgbExp.Size = new System.Drawing.Size(285, 22);
-			this.Character_pgbExp.TabIndex = 5;
-			this.Character_pgbExp.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbExp, "Experience");
-			this.Character_pgbExp.Value = ((ulong)(0ul));
-			this.Character_pgbExp.ValueMaximum = ((ulong)(0ul));
-			// 
-			// Character_pgbMP
-			// 
-			this.Character_pgbMP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(255)))));
-			this.Character_pgbMP.BackColorDegradationLevel = 6;
-			this.Character_pgbMP.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbMP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbMP.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbMP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbMP.Location = new System.Drawing.Point(5, 34);
-			this.Character_pgbMP.Name = "Character_pgbMP";
-			this.Character_pgbMP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbMP.TabIndex = 4;
-			this.Character_pgbMP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbMP, "Mana Points");
-			this.Character_pgbMP.Value = ((ulong)(0ul));
-			this.Character_pgbMP.ValueMaximum = ((ulong)(0ul));
-			this.Character_pgbMP.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Character_pgbHP
-			// 
-			this.Character_pgbHP.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
-			this.Character_pgbHP.BackColorDegradationLevel = 6;
-			this.Character_pgbHP.Display = xGraphics.xProgressBarDisplay.Percentage;
-			this.Character_pgbHP.DisplayShadow = System.Drawing.Color.Black;
-			this.Character_pgbHP.Font = new System.Drawing.Font("Source Sans Pro", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Character_pgbHP.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Character_pgbHP.Location = new System.Drawing.Point(5, 6);
-			this.Character_pgbHP.Name = "Character_pgbHP";
-			this.Character_pgbHP.Size = new System.Drawing.Size(340, 22);
-			this.Character_pgbHP.TabIndex = 3;
-			this.Character_pgbHP.Tag = "Source Sans Pro";
-			this.ToolTips.SetToolTip(this.Character_pgbHP, "Health Points");
-			this.Character_pgbHP.Value = ((ulong)(0ul));
-			this.Character_pgbHP.ValueMaximum = ((ulong)(0ul));
-			this.Character_pgbHP.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Chat_rtbxAll
-			// 
-			this.Chat_rtbxAll.AutoScroll = true;
-			this.Chat_rtbxAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxAll.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxAll.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxAll.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxAll.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxAll.MaxLines = 1024;
-			this.Chat_rtbxAll.Name = "Chat_rtbxAll";
-			this.Chat_rtbxAll.ReadOnly = true;
-			this.Chat_rtbxAll.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxAll.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxAll.TabIndex = 0;
-			this.Chat_rtbxAll.Text = "";
-			// 
-			// Chat_rtbxGlobal
-			// 
-			this.Chat_rtbxGlobal.AutoScroll = true;
-			this.Chat_rtbxGlobal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxGlobal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxGlobal.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxGlobal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxGlobal.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxGlobal.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxGlobal.MaxLines = 1024;
-			this.Chat_rtbxGlobal.Name = "Chat_rtbxGlobal";
-			this.Chat_rtbxGlobal.ReadOnly = true;
-			this.Chat_rtbxGlobal.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxGlobal.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxGlobal.TabIndex = 7;
-			this.Chat_rtbxGlobal.Text = "";
-			// 
-			// Chat_rtbxStall
-			// 
-			this.Chat_rtbxStall.AutoScroll = true;
-			this.Chat_rtbxStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxStall.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxStall.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxStall.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxStall.MaxLines = 1024;
-			this.Chat_rtbxStall.Name = "Chat_rtbxStall";
-			this.Chat_rtbxStall.ReadOnly = true;
-			this.Chat_rtbxStall.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxStall.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxStall.TabIndex = 6;
-			this.Chat_rtbxStall.Text = "";
-			// 
-			// Chat_rtbxAcademy
-			// 
-			this.Chat_rtbxAcademy.AutoScroll = true;
-			this.Chat_rtbxAcademy.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxAcademy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxAcademy.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxAcademy.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxAcademy.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxAcademy.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxAcademy.MaxLines = 1024;
-			this.Chat_rtbxAcademy.Name = "Chat_rtbxAcademy";
-			this.Chat_rtbxAcademy.ReadOnly = true;
-			this.Chat_rtbxAcademy.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxAcademy.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxAcademy.TabIndex = 5;
-			this.Chat_rtbxAcademy.Text = "";
-			// 
-			// Chat_rtbxUnion
-			// 
-			this.Chat_rtbxUnion.AutoScroll = true;
-			this.Chat_rtbxUnion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxUnion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxUnion.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxUnion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxUnion.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxUnion.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxUnion.MaxLines = 1024;
-			this.Chat_rtbxUnion.Name = "Chat_rtbxUnion";
-			this.Chat_rtbxUnion.ReadOnly = true;
-			this.Chat_rtbxUnion.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxUnion.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxUnion.TabIndex = 4;
-			this.Chat_rtbxUnion.Text = "";
-			// 
-			// Chat_rtbxGuild
-			// 
-			this.Chat_rtbxGuild.AutoScroll = true;
-			this.Chat_rtbxGuild.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxGuild.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxGuild.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxGuild.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxGuild.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxGuild.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxGuild.MaxLines = 1024;
-			this.Chat_rtbxGuild.Name = "Chat_rtbxGuild";
-			this.Chat_rtbxGuild.ReadOnly = true;
-			this.Chat_rtbxGuild.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxGuild.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxGuild.TabIndex = 3;
-			this.Chat_rtbxGuild.Text = "";
-			// 
-			// Chat_rtbxParty
-			// 
-			this.Chat_rtbxParty.AutoScroll = true;
-			this.Chat_rtbxParty.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxParty.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxParty.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxParty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxParty.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxParty.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxParty.MaxLines = 1024;
-			this.Chat_rtbxParty.Name = "Chat_rtbxParty";
-			this.Chat_rtbxParty.ReadOnly = true;
-			this.Chat_rtbxParty.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxParty.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxParty.TabIndex = 2;
-			this.Chat_rtbxParty.Text = "";
-			// 
-			// Chat_rtbxPrivate
-			// 
-			this.Chat_rtbxPrivate.AutoScroll = true;
-			this.Chat_rtbxPrivate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(38)))));
-			this.Chat_rtbxPrivate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Chat_rtbxPrivate.Font = new System.Drawing.Font("Source Sans Pro", 9.7F);
-			this.Chat_rtbxPrivate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Chat_rtbxPrivate.Location = new System.Drawing.Point(8, 8);
-			this.Chat_rtbxPrivate.Margin = new System.Windows.Forms.Padding(8);
-			this.Chat_rtbxPrivate.MaxLines = 1024;
-			this.Chat_rtbxPrivate.Name = "Chat_rtbxPrivate";
-			this.Chat_rtbxPrivate.ReadOnly = true;
-			this.Chat_rtbxPrivate.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Chat_rtbxPrivate.Size = new System.Drawing.Size(639, 265);
-			this.Chat_rtbxPrivate.TabIndex = 1;
-			this.Chat_rtbxPrivate.Text = "";
-			// 
-			// Skills_lstvSkills
-			// 
-			this.Skills_lstvSkills.AllowDrop = true;
-			this.Skills_lstvSkills.AllowReorder = false;
-			this.Skills_lstvSkills.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvSkills.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvSkills.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader34});
-			this.Skills_lstvSkills.DragDropRemoveFromSource = true;
-			this.Skills_lstvSkills.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Skills_lstvSkills.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvSkills.FullRowSelect = true;
-			this.Skills_lstvSkills.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvSkills.HideSelection = false;
-			this.Skills_lstvSkills.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvSkills.Location = new System.Drawing.Point(0, 0);
-			this.Skills_lstvSkills.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvSkills.Name = "Skills_lstvSkills";
-			this.Skills_lstvSkills.ShowItemToolTips = true;
-			this.Skills_lstvSkills.Size = new System.Drawing.Size(185, 342);
-			this.Skills_lstvSkills.SmallImageList = this.lstimgIcons;
-			this.Skills_lstvSkills.TabIndex = 26;
-			this.Skills_lstvSkills.Tag = "Source Sans Pro";
-			this.Skills_lstvSkills.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvSkills.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvSkills.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvSkills.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_Cancel);
-			// 
-			// columnHeader34
-			// 
-			this.columnHeader34.Text = "Skill name";
-			this.columnHeader34.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_General
-			// 
-			this.Skills_lstvAttackMobType_General.AllowDrop = true;
-			this.Skills_lstvAttackMobType_General.AllowReorder = true;
-			this.Skills_lstvAttackMobType_General.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_General.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_General.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader35});
-			this.Skills_lstvAttackMobType_General.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_General.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_General.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_General.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_General.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_General.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_General.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_General.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_General.Name = "Skills_lstvAttackMobType_General";
-			this.Skills_lstvAttackMobType_General.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_General.TabIndex = 11;
-			this.Skills_lstvAttackMobType_General.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_General.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_General.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_General.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_General.Visible = false;
-			this.Skills_lstvAttackMobType_General.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_General.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader35
-			// 
-			this.columnHeader35.Text = "Skill name";
-			this.columnHeader35.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_Unique
-			// 
-			this.Skills_lstvAttackMobType_Unique.AllowDrop = true;
-			this.Skills_lstvAttackMobType_Unique.AllowReorder = true;
-			this.Skills_lstvAttackMobType_Unique.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_Unique.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_Unique.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader42});
-			this.Skills_lstvAttackMobType_Unique.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_Unique.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_Unique.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_Unique.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_Unique.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_Unique.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_Unique.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_Unique.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_Unique.Name = "Skills_lstvAttackMobType_Unique";
-			this.Skills_lstvAttackMobType_Unique.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_Unique.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_Unique.TabIndex = 39;
-			this.Skills_lstvAttackMobType_Unique.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_Unique.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_Unique.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_Unique.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_Unique.Visible = false;
-			this.Skills_lstvAttackMobType_Unique.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_Unique.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader42
-			// 
-			this.columnHeader42.Text = "Skill name";
-			this.columnHeader42.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_Elite
-			// 
-			this.Skills_lstvAttackMobType_Elite.AllowDrop = true;
-			this.Skills_lstvAttackMobType_Elite.AllowReorder = true;
-			this.Skills_lstvAttackMobType_Elite.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_Elite.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_Elite.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader40});
-			this.Skills_lstvAttackMobType_Elite.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_Elite.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_Elite.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_Elite.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_Elite.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_Elite.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_Elite.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_Elite.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_Elite.Name = "Skills_lstvAttackMobType_Elite";
-			this.Skills_lstvAttackMobType_Elite.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_Elite.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_Elite.TabIndex = 37;
-			this.Skills_lstvAttackMobType_Elite.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_Elite.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_Elite.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_Elite.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_Elite.Visible = false;
-			this.Skills_lstvAttackMobType_Elite.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_Elite.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader40
-			// 
-			this.columnHeader40.Text = "Skill name";
-			this.columnHeader40.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_PartyGiant
-			// 
-			this.Skills_lstvAttackMobType_PartyGiant.AllowDrop = true;
-			this.Skills_lstvAttackMobType_PartyGiant.AllowReorder = true;
-			this.Skills_lstvAttackMobType_PartyGiant.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_PartyGiant.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_PartyGiant.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader39});
-			this.Skills_lstvAttackMobType_PartyGiant.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_PartyGiant.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_PartyGiant.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_PartyGiant.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_PartyGiant.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_PartyGiant.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_PartyGiant.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_PartyGiant.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_PartyGiant.Name = "Skills_lstvAttackMobType_PartyGiant";
-			this.Skills_lstvAttackMobType_PartyGiant.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_PartyGiant.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_PartyGiant.TabIndex = 36;
-			this.Skills_lstvAttackMobType_PartyGiant.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_PartyGiant.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_PartyGiant.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_PartyGiant.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_PartyGiant.Visible = false;
-			this.Skills_lstvAttackMobType_PartyGiant.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_PartyGiant.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader39
-			// 
-			this.columnHeader39.Text = "Skill name";
-			this.columnHeader39.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_PartyChampion
-			// 
-			this.Skills_lstvAttackMobType_PartyChampion.AllowDrop = true;
-			this.Skills_lstvAttackMobType_PartyChampion.AllowReorder = true;
-			this.Skills_lstvAttackMobType_PartyChampion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_PartyChampion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_PartyChampion.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader38});
-			this.Skills_lstvAttackMobType_PartyChampion.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_PartyChampion.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_PartyChampion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_PartyChampion.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_PartyChampion.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_PartyChampion.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_PartyChampion.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_PartyChampion.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_PartyChampion.Name = "Skills_lstvAttackMobType_PartyChampion";
-			this.Skills_lstvAttackMobType_PartyChampion.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_PartyChampion.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_PartyChampion.TabIndex = 35;
-			this.Skills_lstvAttackMobType_PartyChampion.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_PartyChampion.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_PartyChampion.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_PartyChampion.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_PartyChampion.Visible = false;
-			this.Skills_lstvAttackMobType_PartyChampion.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_PartyChampion.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader38
-			// 
-			this.columnHeader38.Text = "Skill name";
-			this.columnHeader38.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_PartyGeneral
-			// 
-			this.Skills_lstvAttackMobType_PartyGeneral.AllowDrop = true;
-			this.Skills_lstvAttackMobType_PartyGeneral.AllowReorder = true;
-			this.Skills_lstvAttackMobType_PartyGeneral.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_PartyGeneral.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_PartyGeneral.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader37});
-			this.Skills_lstvAttackMobType_PartyGeneral.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_PartyGeneral.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_PartyGeneral.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_PartyGeneral.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_PartyGeneral.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_PartyGeneral.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_PartyGeneral.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_PartyGeneral.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_PartyGeneral.Name = "Skills_lstvAttackMobType_PartyGeneral";
-			this.Skills_lstvAttackMobType_PartyGeneral.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_PartyGeneral.TabIndex = 34;
-			this.Skills_lstvAttackMobType_PartyGeneral.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_PartyGeneral.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_PartyGeneral.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_PartyGeneral.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_PartyGeneral.Visible = false;
-			this.Skills_lstvAttackMobType_PartyGeneral.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_PartyGeneral.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader37
-			// 
-			this.columnHeader37.Text = "Skill name";
-			this.columnHeader37.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_Giant
-			// 
-			this.Skills_lstvAttackMobType_Giant.AllowDrop = true;
-			this.Skills_lstvAttackMobType_Giant.AllowReorder = true;
-			this.Skills_lstvAttackMobType_Giant.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_Giant.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_Giant.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader36});
-			this.Skills_lstvAttackMobType_Giant.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_Giant.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_Giant.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_Giant.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_Giant.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_Giant.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_Giant.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_Giant.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_Giant.Name = "Skills_lstvAttackMobType_Giant";
-			this.Skills_lstvAttackMobType_Giant.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_Giant.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_Giant.TabIndex = 33;
-			this.Skills_lstvAttackMobType_Giant.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_Giant.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_Giant.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_Giant.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_Giant.Visible = false;
-			this.Skills_lstvAttackMobType_Giant.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_Giant.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader36
-			// 
-			this.columnHeader36.Text = "Skill name";
-			this.columnHeader36.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_Champion
-			// 
-			this.Skills_lstvAttackMobType_Champion.AllowDrop = true;
-			this.Skills_lstvAttackMobType_Champion.AllowReorder = true;
-			this.Skills_lstvAttackMobType_Champion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_Champion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_Champion.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader24});
-			this.Skills_lstvAttackMobType_Champion.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_Champion.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Skills_lstvAttackMobType_Champion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_Champion.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_Champion.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_Champion.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_Champion.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_Champion.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_Champion.Name = "Skills_lstvAttackMobType_Champion";
-			this.Skills_lstvAttackMobType_Champion.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_Champion.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_Champion.TabIndex = 32;
-			this.Skills_lstvAttackMobType_Champion.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_Champion.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_Champion.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_Champion.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_Champion.Visible = false;
-			this.Skills_lstvAttackMobType_Champion.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_Champion.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader24
-			// 
-			this.columnHeader24.Text = "Skill name";
-			this.columnHeader24.Width = 168;
-			// 
-			// Skills_lstvAttackMobType_Event
-			// 
-			this.Skills_lstvAttackMobType_Event.AllowDrop = true;
-			this.Skills_lstvAttackMobType_Event.AllowReorder = true;
-			this.Skills_lstvAttackMobType_Event.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Skills_lstvAttackMobType_Event.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Skills_lstvAttackMobType_Event.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader41});
-			this.Skills_lstvAttackMobType_Event.DragDropRemoveFromSource = false;
-			this.Skills_lstvAttackMobType_Event.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Skills_lstvAttackMobType_Event.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Skills_lstvAttackMobType_Event.FullRowSelect = true;
-			this.Skills_lstvAttackMobType_Event.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Skills_lstvAttackMobType_Event.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Skills_lstvAttackMobType_Event.Location = new System.Drawing.Point(6, 32);
-			this.Skills_lstvAttackMobType_Event.Margin = new System.Windows.Forms.Padding(0);
-			this.Skills_lstvAttackMobType_Event.Name = "Skills_lstvAttackMobType_Event";
-			this.Skills_lstvAttackMobType_Event.ShowItemToolTips = true;
-			this.Skills_lstvAttackMobType_Event.Size = new System.Drawing.Size(185, 140);
-			this.Skills_lstvAttackMobType_Event.TabIndex = 40;
-			this.Skills_lstvAttackMobType_Event.Tag = "Source Sans Pro";
-			this.Skills_lstvAttackMobType_Event.TileSize = new System.Drawing.Size(201, 30);
-			this.Skills_lstvAttackMobType_Event.UseCompatibleStateImageBehavior = false;
-			this.Skills_lstvAttackMobType_Event.View = System.Windows.Forms.View.Details;
-			this.Skills_lstvAttackMobType_Event.Visible = false;
-			this.Skills_lstvAttackMobType_Event.DragItemAdding += new System.EventHandler<xGraphics.xListView.DragItemEventArgs>(this.xListView_DragItemAdding_AttackSkill);
-			this.Skills_lstvAttackMobType_Event.DragItemsChanged += new System.EventHandler(this.xListView_DragItemsChanged);
-			// 
-			// columnHeader41
-			// 
-			this.columnHeader41.Text = "Skill name";
-			this.columnHeader41.Width = 168;
-			// 
-			// Settings_rtbxPackets
-			// 
-			this.Settings_rtbxPackets.AutoScroll = false;
-			this.Settings_rtbxPackets.BackColor = System.Drawing.Color.Black;
-			this.Settings_rtbxPackets.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.Settings_rtbxPackets.ContextMenuStrip = this.Menu_rtbxPackets;
-			this.Settings_rtbxPackets.DetectUrls = false;
-			this.Settings_rtbxPackets.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Settings_rtbxPackets.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Settings_rtbxPackets.Location = new System.Drawing.Point(178, 5);
-			this.Settings_rtbxPackets.Margin = new System.Windows.Forms.Padding(1);
-			this.Settings_rtbxPackets.MaxLines = 2048;
-			this.Settings_rtbxPackets.Name = "Settings_rtbxPackets";
-			this.Settings_rtbxPackets.ReadOnly = true;
-			this.Settings_rtbxPackets.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.Settings_rtbxPackets.Size = new System.Drawing.Size(472, 247);
-			this.Settings_rtbxPackets.TabIndex = 15;
-			this.Settings_rtbxPackets.Tag = "Source Sans Pro";
-			this.Settings_rtbxPackets.Text = "";
-			// 
-			// rtbxLogs
-			// 
-			this.rtbxLogs.AutoScroll = true;
-			this.rtbxLogs.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.rtbxLogs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.rtbxLogs.Font = new System.Drawing.Font("Source Sans Pro", 9.7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rtbxLogs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.rtbxLogs.Location = new System.Drawing.Point(162, 391);
-			this.rtbxLogs.Margin = new System.Windows.Forms.Padding(1);
-			this.rtbxLogs.MaxLines = 512;
-			this.rtbxLogs.Name = "rtbxLogs";
-			this.rtbxLogs.ReadOnly = true;
-			this.rtbxLogs.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.rtbxLogs.Size = new System.Drawing.Size(630, 76);
-			this.rtbxLogs.TabIndex = 0;
-			this.rtbxLogs.TabStop = false;
-			this.rtbxLogs.Tag = "Source Sans Pro";
-			this.rtbxLogs.Text = "";
-			// 
 			// Window
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -8012,6 +8010,7 @@ namespace xBot.App
 			this.Minimap_panelCoords.ResumeLayout(false);
 			this.Minimap_panelCoords.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Minimap_tbrZoom)).EndInit();
+			this.Minimap_pnlMap.ResumeLayout(false);
 			this.TabPageV_Control01_Option02_Panel.ResumeLayout(false);
 			this.TabPageH_Character.ResumeLayout(false);
 			this.TabPageH_Character_Option01_Panel.ResumeLayout(false);
@@ -8059,7 +8058,6 @@ namespace xBot.App
 			this.TabPageV_Control01_Option13_Panel.PerformLayout();
 			this.Menu_btnClientOptions.ResumeLayout(false);
 			this.Menu_NotifyIcon.ResumeLayout(false);
-			this.Minimap_pnlMap.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}

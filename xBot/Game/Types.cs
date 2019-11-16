@@ -234,7 +234,7 @@ namespace xBot.Game
 			PartyCreation = 2,
 			PartyInvitation = 3,
 			Resurrection = 4,
-			GuildInvitation = 5, // Not confirmed
+			GuildInvitation = 5,
 			UnionInvitation = 6, // Not confirmed
 			AcademyInvitation = 9, // Not confirmed
 		}

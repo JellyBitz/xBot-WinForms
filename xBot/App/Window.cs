@@ -733,12 +733,14 @@ namespace xBot.App
 		{
 			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
 				Minimap_pnlMap.ViewPoint = position;
-				// Bring to front
-				if(Minimap_pnlMap.Controls.GetChildIndex(Minimap_xmcCharacterMark) != 0)
-					Minimap_pnlMap.Controls.SetChildIndex(Minimap_xmcCharacterMark, -1);
 			});
-			Minimap_Character_Angle(degreeAngle);
+			if (lastDegreeAngle != degreeAngle)
+			{
+				lastDegreeAngle = degreeAngle;
+				Minimap_Character_Angle(degreeAngle);
+			}
 		}
+		double lastDegreeAngle = 0;
 		public void Minimap_Character_Angle(double degreeAngle)
 		{
 			Bitmap mm_sign_character = Properties.Resources.mm_sign_character;
@@ -753,7 +755,7 @@ namespace xBot.App
 			// Update pointer Image angle
 			WinAPI.InvokeIfRequired(Minimap_xmcCharacterMark, () => {
 				Minimap_xmcCharacterMark.Image = mm_sign_character_rotated;
-      });
+			});
 		}
     public void Minimap_Object_Add(uint UniqueID, SRObject Object)
 		{
@@ -770,7 +772,19 @@ namespace xBot.App
 			else if(Object.isNPC())
 				marker.Image = Properties.Resources.mm_sign_npc;
 			else if (Object.isPlayer())
+			{
+				ContextMenuStrip menuPlayer = new ContextMenuStrip();
+				// Add options
+				ToolStripMenuItem item = new ToolStripMenuItem();
+				item.Text = "Invite to party";
+				item.Name = "InviteToParty";
+				item.Tag = Object;
+				item.Click += Menu_Minimap_Player_Click;
+				menuPlayer.Items.Add(item);
+				
 				marker.Image = Properties.Resources.mm_sign_otherplayer;
+				marker.ContextMenuStrip = menuPlayer;
+			}
 			else if (Object.isPet())
 				marker.Image = Properties.Resources.mm_sign_animal;
 			else if (Object.isTeleport())
@@ -783,7 +797,7 @@ namespace xBot.App
 					item.Text = teleportOptions[t].Name;
 					item.Name = teleportOptions[t].ID.ToString();
 					item.Tag = Object;
-					item.Click += Menu_Teleport_Click;
+					item.Click += Menu_Minimap_Teleport_Click;
 
 					menuTeleport.Items.Add(item);
         }
@@ -811,7 +825,7 @@ namespace xBot.App
 				});
 				WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
 					Minimap_pnlMap.AddMarker(UniqueID, marker);
-        });
+				});
 			}
 		}
 		public void Minimap_Object_Remove(uint UniqueID)
@@ -1974,7 +1988,7 @@ namespace xBot.App
 					if (isUpdateAvailable)
 						AutoUpdater.ShowUpdateForm();
 					else if(adsWindow.isLoaded())
-						MessageBox.Show(this,"You has the most recent version!", "xBot - Updates", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						MessageBox.Show(this,"Hey, You have the most recent version!", "xBot - Updates", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					break;
 				case "Menu_NotifyIcon_HideShow":
 					if (this.Visible)
@@ -2498,14 +2512,30 @@ namespace xBot.App
 					break;
 			}
 		}
-		private void Menu_Teleport_Click(object sender, EventArgs e)
+		private void Menu_Minimap_Teleport_Click(object sender, EventArgs e)
 		{
 			ToolStripMenuItem t = (ToolStripMenuItem)sender;
 			SRObject teleport = (SRObject)t.Tag;
 			// Select teleport
 			PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
-			// Wait 2.5segs and use it
-			PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],uint.Parse(t.Name),2500);
+			// Wait 1.5segs and use it
+			PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],uint.Parse(t.Name),1500);
+		}
+		private void Menu_Minimap_Player_Click(object sender, EventArgs e)
+		{
+			ToolStripMenuItem t = (ToolStripMenuItem)sender;
+			SRObject player = (SRObject)t.Tag;
+
+			Bot b = Bot.Get;
+      switch (t.Name)
+			{
+				case "InviteToParty":
+					if(b.inParty)
+						PacketBuilder.InviteToParty((uint)player[SRProperty.UniqueID]);
+					else
+						PacketBuilder.CreateParty((uint)player[SRProperty.UniqueID],b.GetPartySetup());
+					break;
+			}
 		}
 		private void xListView_DragItemAdding_Cancel(object sender, xListView.DragItemEventArgs e)
 		{
@@ -2530,17 +2560,6 @@ namespace xBot.App
 		private void TrackBar_ValueChanged(object sender, EventArgs e)
 		{
 			Minimap_pnlMap.Zoom = (byte)Minimap_tbrZoom.Value;
-		}
-		private void Minimap_MouseClick(object sender, MouseEventArgs e)
-		{
-			if (e.Button == MouseButtons.Left)
-			{
-				Bot b = Bot.Get;
-				if (b.inGame)
-				{
-					b.MoveTo(Minimap_pnlMap.GetCoord(e.Location));
-				}
-			}
 		}
 		#endregion
 

@@ -616,7 +616,7 @@ namespace xBot.Game
 			i.Character[SRProperty.INT] = packet.ReadUShort();
 			// End of Packet
 			Bot.Get._OnCharacterStatsUpdated();
-    }
+		}
 		public static void CharacterExperienceUpdate(Packet packet)
 		{
 			Info i = Info.Get;
@@ -1273,7 +1273,7 @@ namespace xBot.Game
 					Bot.Get.OnResurrection(uniqueID);
 					break;
 				case Types.PlayerPetition.GuildInvitation:
-
+					//Bot.Get.OnGuildInvitation(uniqueID);
 					break;
 				case Types.PlayerPetition.UnionInvitation:
 

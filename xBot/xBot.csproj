@@ -184,6 +184,9 @@
     <Compile Include="xGraphics\xMapControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="xGraphics\xMapTile.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="xGraphics\xProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
