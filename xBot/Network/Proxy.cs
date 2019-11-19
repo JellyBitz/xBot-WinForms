@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 using xBot.App;
@@ -538,15 +539,29 @@ namespace xBot.Network
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			for (int i = port; i < ushort.MaxValue; i += 2)
 			{
-				try
-				{
-					s.Bind(new IPEndPoint(IPAddress.Parse(ip), i));
-					s.Listen(1);
-					return s;
+				// Check if agent port is available
+				if(availableSocket(port+1)){
+					try
+					{
+						s.Bind(new IPEndPoint(IPAddress.Parse(ip), i));
+						s.Listen(1);
+						return s;
+					}
+					catch (SocketException) { /* ignore and continue */ }
 				}
-				catch (SocketException) { /* ignore and continue */ }
 			}
 			return null;
+		}
+		private bool availableSocket(int port){
+			TcpConnectionInformation[] tcpConnInfoArray = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections();
+			foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
+			{
+				if (tcpi.LocalEndPoint.Port == port)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 		/// <summary>
 		/// Wait the time specified and try to reconnect the proxy if is necessary.

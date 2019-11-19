@@ -1810,13 +1810,16 @@ namespace xBot.Game
 				i.Character[SRProperty.ShopBuyBack] = new SRObjectCollection();
 			SRObjectCollection buyBack = (SRObjectCollection)i.Character[SRProperty.ShopBuyBack];
 
+
 			// Sync max. quantity to buy back
 			if (slotBuyBack == 5 && slotBuyBack == buyBack.Count)
 				buyBack.RemoveAt(0);
 
 			if ((ushort)inventory[slotInventory][SRProperty.Quantity] == quantitySold)
 			{
-				buyBack[slotBuyBack - 1] = inventory[slotInventory];
+				// Check if can be revert action as buy back
+				if(slotBuyBack != 255)
+					buyBack[slotBuyBack - 1] = inventory[slotInventory];
 				inventory[slotInventory] = null;
 			}
 			else

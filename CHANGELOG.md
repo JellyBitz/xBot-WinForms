@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.2.2
+- Fixed switch to clientless mode not getting updated
+- Fixed disconnects while login using multiple clients
+
 ### v0.2.1
 - Fixed map icons
 - Tiles from minimap now loading at asynchronous mode

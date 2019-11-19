@@ -56,7 +56,7 @@ namespace xBot.Network
 			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE);
 			IgnoreOpcodeServer.Add(Opcode.GLOBAL_HANDSHAKE_OK);
 		}
-		public bool ClientlessMode { get { return Local.Socket == null; } }
+		public bool ClientlessMode { get { return Bot.Get.Proxy.ClientlessMode; } }
 		public bool IgnoreOpcode(ushort opcode, Context c)
 		{
 			if (c == Local)
