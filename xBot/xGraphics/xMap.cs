@@ -24,7 +24,7 @@ namespace xGraphics
 		{
 			// Initialize
 			base.DoubleBuffered = true;
-			this.m_ViewPoint = new SRCoord(0,0);
+			this.m_ViewPoint = new SRCoord(0, 0);
 			this.m_Zoom = 0;
 			base.Size = new Size(600, 600);
 			this.m_TileSize = new Size((int)Math.Round(base.Width / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero), (int)Math.Round(base.Height / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero));
@@ -36,26 +36,11 @@ namespace xGraphics
 
 		#region Properties
 		/// <summary>
-		/// Get or set the camera center, all markers will be updated after that.
+		/// Get the camera center.
 		/// </summary>
 		public SRCoord ViewPoint
 		{
 			get { return m_ViewPoint; }
-			set
-			{
-				if (!m_ViewPoint.Equals(value))
-				{
-					if (m_ViewPoint.Region != value.Region && value.inDungeon())
-					{
-						SelectMapLayer(value.Region);
-						ClearCache();
-					}
-					m_ViewPoint = value;
-					ClearTiles();
-					UpdateTiles();
-				}
-				UpdateMarkerLocations();
-			}
 		}
 		/// <summary>
 		/// Resize map.
@@ -66,8 +51,8 @@ namespace xGraphics
 			set
 			{
 				base.Size = value;
-				this.m_TileSize = new Size((int)Math.Round(base.Width / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero),(int)Math.Round(base.Height / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero));
-				ClearTiles();
+				this.m_TileSize = new Size((int)Math.Round(base.Width / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero), (int)Math.Round(base.Height / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero));
+				RemoveTiles();
 				UpdateTiles();
 				UpdateMarkerLocations();
 			}
@@ -85,7 +70,7 @@ namespace xGraphics
 					m_Zoom = value;
 					m_TileSize = new Size((int)Math.Round(base.Width / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero), (int)Math.Round(base.Height / (2.0 * m_Zoom + 1), MidpointRounding.AwayFromZero));
 					m_TileCount = 2 * m_Zoom + 3;
-					ClearTiles();
+					RemoveTiles();
 					UpdateTiles();
 					UpdateMarkerLocations();
 				}
@@ -193,48 +178,49 @@ namespace xGraphics
 			int relativePosY = (int)Math.Round((m_ViewPoint.PosY % 192) * m_TileSize.Height / 192.0 + (m_ViewPoint.PosY < 0 ? m_TileSize.Height : 0));
 			int marginX = (int)Math.Round(m_TileSize.Width / 2.0 - m_TileSize.Width - relativePosX);
 			int marginY = (int)Math.Round(m_TileSize.Height / 2.0 - m_TileSize.Height * 2 + relativePosY);
-			// Locate/Resize all sectors involved
-			int i = 0;
-			for (int sectorY = tileAvg + m_ViewPoint.ySector; sectorY >= -tileAvg + m_ViewPoint.ySector; sectorY--)
-			{
-				int j = 0;
-				for (int sectorX = -tileAvg + m_ViewPoint.xSector; sectorX <= tileAvg + m_ViewPoint.xSector; sectorX++)
+
+			this.InvokeIfRequired(()=> {
+				// Locate/Resize all sectors involved
+				int i = 0;
+				for (int sectorY = tileAvg + m_ViewPoint.ySector; sectorY >= -tileAvg + m_ViewPoint.ySector; sectorY--)
 				{
-					xMapTile sector = null;
-					string path = string.Format(m_FilePath, sectorX, sectorY);
-					Point sectorLocation = new Point(j * m_TileSize.Width + marginX, i * m_TileSize.Height + marginY);
-
-					// Check if has been loaded
-					if (m_Sectors.TryGetValue(path, out sector))
+					int j = 0;
+					for (int sectorX = -tileAvg + m_ViewPoint.xSector; sectorX <= tileAvg + m_ViewPoint.xSector; sectorX++)
 					{
-						// Just update it if changes
-						if (sector.Location.X != sectorLocation.X || sector.Location.Y != sectorLocation.Y)
-							sector.Location = sectorLocation;
-						if (m_TileSize.Width != sector.Size.Width || m_TileSize.Height != sector.Size.Height)
+						xMapTile sector = null;
+						string path = string.Format(m_FilePath, sectorX, sectorY);
+						Point sectorLocation = new Point(j * m_TileSize.Width + marginX, i * m_TileSize.Height + marginY);
+
+						// Check if has been loaded
+						if (m_Sectors.TryGetValue(path, out sector))
+						{
+							// Just update it if changes
+							if (sector.Location.X != sectorLocation.X || sector.Location.Y != sectorLocation.Y)
+								sector.Location = sectorLocation;
+							if (m_TileSize.Width != sector.Size.Width || m_TileSize.Height != sector.Size.Height)
+								sector.Size = m_TileSize;
+							sector.Visible = true;
+						}
+						else
+						{
+							// Create tile
+							sector = new xMapTile(sectorX, sectorY);
+							sector.Name = path;
 							sector.Size = m_TileSize;
-
-						sector.Visible = true;
+							sector.Location = sectorLocation;
+							sector.MouseClick += new MouseEventHandler(this.xMapTile_MouseClick);
+							// Try to Load
+							sector.LoadAsyncTile(path, m_TileSize);
+							// Add
+							m_Sectors[path] = sector;
+							this.Controls.Add(sector);
+							sector.SendToBack();
+						}
+						j++;
 					}
-					else
-					{
-						// Create tile
-						sector = new xMapTile(sectorX, sectorY);
-						sector.Name = path;
-						sector.SizeMode = PictureBoxSizeMode.StretchImage;
-						sector.Size = m_TileSize;
-						sector.Location = sectorLocation;
-						sector.MouseClick += new MouseEventHandler(this.xMapTile_MouseClick);
-						// Try to Load
-						if (File.Exists(path)) sector.ImageLocation = path;
-						// Add
-						m_Sectors[path] = sector;
-						this.Controls.Add(sector);
-						sector.SendToBack();
-					}
-					j++;
+					i++;
 				}
-				i++;
-			}
+			});
 		}
 		/// <summary>
 		/// Clear the tiles not visibles from memory.
@@ -242,7 +228,6 @@ namespace xGraphics
 		public void ClearCache()
 		{
 			int minAvg = m_TileCount / 2;
-
 			int ySectorMin = -minAvg + ViewPoint.ySector;
 			int ySectorMax = -minAvg + ViewPoint.ySector;
 			int xSectorMin = -minAvg + ViewPoint.xSector;
@@ -257,10 +242,15 @@ namespace xGraphics
 					deleteCache.Add(tile.Name);
 				}
 			}
-			for (int i = 0; i < deleteCache.Count; i++)
+			if (deleteCache.Count>0)
 			{
-				m_Sectors.Remove(deleteCache[i]);
-				this.Controls.RemoveByKey(deleteCache[i]);
+				this.InvokeIfRequired(() => {
+					for (int i = 0; i < deleteCache.Count; i++)
+					{
+						this.Controls.RemoveByKey(deleteCache[i]);
+						m_Sectors.Remove(deleteCache[i]);
+					}
+				});
 			}
 		}
 		/// <summary>
@@ -281,9 +271,47 @@ namespace xGraphics
 				if (tile.SectorX < xSectorMin || tile.SectorX > xSectorMax
 					|| tile.SectorY < ySectorMin || tile.SectorY > ySectorMax)
 				{
-					tile.Visible = false;
+					tile.InvokeIfRequired(() => {
+						tile.Visible = false;
+					});
 				}
 			}
+		}
+		private void RemoveTiles()
+		{
+			this.InvokeIfRequired(() => {
+				foreach (xMapTile tile in m_Sectors.Values){
+					this.Controls.RemoveByKey(tile.Name);
+				}
+			});
+			m_Sectors.Clear();
+		}
+		#endregion
+
+		#region Methods
+		/// <summary>
+		/// Set the camera center, all map is updated after that.
+		/// Invoke not required.
+		/// </summary>
+		public void SetView(SRCoord ViewPoint)
+		{
+			if (!m_ViewPoint.Equals(ViewPoint))
+			{
+				// Update layer
+				if (m_ViewPoint.Region != ViewPoint.Region && ViewPoint.inDungeon())
+				{
+					SelectMapLayer(ViewPoint.Region);
+					RemoveTiles();
+					m_ViewPoint = ViewPoint;
+				}
+				else
+				{
+					m_ViewPoint = ViewPoint;
+					ClearTiles();
+				}
+				UpdateTiles();
+			}
+			UpdateMarkerLocations();
 		}
 		#endregion
 
@@ -310,28 +338,34 @@ namespace xGraphics
 			return new SRCoord(coordX, coordY);
 		}
 		#endregion
-		
+
 		#region Markers Behavior
 		public void AddMarker(uint UniqueID, xMapControl Marker)
 		{
-			m_Markers[UniqueID] = Marker;
 			Marker.Name = this.Name + "_" + UniqueID;
-      Controls.Add(Marker);
-			Controls.SetChildIndex(Marker, 1);
-    }
+			this.InvokeIfRequired(()=> {
+				Controls.Add(Marker);
+				Controls.SetChildIndex(Marker, 1);
+				m_Markers[UniqueID] = Marker;
+			});
+		}
 		public void RemoveMarker(uint UniqueID)
 		{
 			xMapControl Marker;
 			if (this.m_Markers.TryGetValue(UniqueID, out Marker))
 			{
+				this.InvokeIfRequired(() => {
+					this.Controls.RemoveByKey(Marker.Name);
+				});
 				this.m_Markers.Remove(UniqueID);
-				this.Controls.RemoveByKey(Marker.Name);
 			}
 		}
 		public void ClearMarkers()
 		{
-			foreach (xMapControl Marker in this.m_Markers.Values)
-				this.Controls.RemoveByKey(Marker.Name);
+			this.InvokeIfRequired(() => {
+				foreach (xMapControl Marker in this.m_Markers.Values)
+					this.Controls.RemoveByKey(Marker.Name);
+			});
 			this.m_Markers.Clear();
 		}
 		public void UpdateMarkerLocations()
@@ -342,20 +376,21 @@ namespace xGraphics
 			double b_x = (192.0 / m_TileSize.Width);
 			double b_y = (192.0 / m_TileSize.Height);
 			// Update all markers
-			foreach (xMapControl Marker in m_Markers.Values)
-			{
-				// Convertion SRCoord -> Point
-				SRCoord coords = ((SRObject)Marker.Tag).GetPosition();
-				Point location = new Point((int)Math.Round((coords.PosX - ViewPoint.PosX) / b_x + a_x), (int)Math.Round((coords.PosY - ViewPoint.PosY) / b_y * (-1) + a_y));
-				// Fix center
-				location.X -= Marker.Image.Size.Width / 2;
-				location.Y -= Marker.Image.Size.Height / 2;
-				// Update only if is required to avoid trigger repaint on control
-				if(Marker.Location.X != location.X && Marker.Location.Y != location.Y)
+			this.InvokeIfRequired(()=> {
+				foreach (xMapControl Marker in m_Markers.Values)
 				{
-					Marker.Location = location;
+					// Convertion SRCoord -> Point
+					SRCoord coords = ((SRObject)Marker.Tag).GetPosition();
+					Point location = new Point((int)Math.Round((coords.PosX - ViewPoint.PosX) / b_x + a_x), (int)Math.Round((coords.PosY - ViewPoint.PosY) / b_y * (-1) + a_y));
+					// Fix center
+					location.X -= Marker.Image.Size.Width / 2;
+					location.Y -= Marker.Image.Size.Height / 2;
+					// Update only if is required to avoid trigger repaint on control
+					if (Marker.Location.X != location.X && Marker.Location.Y != location.Y){
+						Marker.Location = location;
+					}
 				}
-			}
+			});
 		}
 		#endregion
 

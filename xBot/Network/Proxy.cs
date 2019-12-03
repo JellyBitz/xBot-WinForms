@@ -16,13 +16,11 @@ namespace xBot.Network
 		/// <summary>
 		/// Gateway connection.
 		/// </summary>
-		public Gateway Gateway { get { return _gateway; } }
-		private Gateway _gateway;
+		public Gateway Gateway { get; private set; }
 		/// <summary>
 		/// Agent connection.
 		/// </summary>
-		public Agent Agent { get { return _agent; } }
-		private Agent _agent;
+		public Agent Agent { get; private set; }
 		/// <summary>
 		/// Gets the current Silkroad process connected to the proxy.
 		/// </summary>
@@ -87,9 +85,9 @@ namespace xBot.Network
 		{
 			isRunning = true;
 			Window w = Window.Get;
-			WinAPI.InvokeIfRequired(w.Login_btnStart, ()=> {
+			w.Login_btnStart.InvokeIfRequired(()=> {
 				w.Login_btnStart.Text = "STOP";
-				w.EnableControl(w.Login_btnStart, true);
+				w.Login_btnStart.Enabled = true;
 			});
 
 			Thread gwThread = (new Thread(ThreadGateway));
@@ -115,10 +113,10 @@ namespace xBot.Network
 		}
 		private void ThreadGateway()
 		{
-			_gateway = new Gateway(this.SelectHost(), this.SelectPort());
+			Gateway = new Gateway(this.SelectHost(), this.SelectPort());
 
 			Window w = Window.Get;
-			Socket SocketBinded = BindSocket("127.0.0.1", 20190);
+			Socket SocketBinded = BindGatewaySocket("127.0.0.1", 20190);
 			if (!LoginClientlessMode)
 			{
 				Gateway.Local.Socket = SocketBinded;
@@ -206,7 +204,7 @@ namespace xBot.Network
 								{
 									bool opcodeFound = false;
 									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
-										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -220,26 +218,23 @@ namespace xBot.Network
 									byte result = packet.ReadByte();
 									if (result == 1)
 									{
-										_agent = new Agent(packet.ReadUInt(), packet.ReadAscii(), packet.ReadUShort());
-
 										// Stop ping while switch
 										PingHandler.Abort();
 
-										string[] ip_port = SocketBinded.LocalEndPoint.ToString().Split(':');
-										Thread agThread = new Thread((ThreadStart)delegate
-										{
-											ThreadAgent(ip_port[0], int.Parse(ip_port[1]) + 1);
+										Agent = new Agent(packet.ReadUInt(), packet.ReadAscii(), packet.ReadUShort());
+
+										// Bind socket available
+										string agentHost = ((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString();
+										int agentPort = ((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1;
+										
+										Thread agThread = new Thread(() => {
+											ThreadAgent(agentHost, agentPort);
 										});
 										agThread.Priority = ThreadPriority.AboveNormal;
 										agThread.Start();
 										
-										// Send packet about client listeninig
-										Packet agPacket = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
-										agPacket.WriteByte(result);
-										agPacket.WriteUInt(Agent.id);
-										agPacket.WriteAscii(((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString());
-										agPacket.WriteUShort(((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1);
-										context.RelaySecurity.Send(agPacket);
+										// Proxy packet (bot listeninig)
+										PacketBuilder.Client.CreateAgentLogin(result, Agent.id, agentHost,(ushort)agentPort);
 									}
 									else if (result == 2)
 									{
@@ -278,7 +273,9 @@ namespace xBot.Network
 										}
 										// Client bugfix reset
 										Bot.Get.LoggedFromBot = false;
-										w.EnableControl(w.Login_btnStart, true);
+										w.Login_btnStart.InvokeIfRequired(() => {
+											w.Login_btnStart.Enabled = true;
+										});
 
 										context.RelaySecurity.Send(packet);
 									}
@@ -310,9 +307,8 @@ namespace xBot.Network
 									if (context == Gateway.Remote && w.Settings_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
-										{
-											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
+										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>{
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -328,7 +324,6 @@ namespace xBot.Network
 										{
 											break;
 										}
-										Thread.Sleep(1);
 									}
 								}
 							}
@@ -341,12 +336,9 @@ namespace xBot.Network
 			{
 				CloseGateway();
 				w.LogPacket("[G] Error: " + ex.Message);
-				if (_agent == null)
-				{
-					// Reset proxy
-					Bot.Get.LogError(ex.ToString());
+				// Check if agent it's not running
+				if (Agent == null)
 					Stop();
-				}
 			}
 		}
 		public void CloseClient()
@@ -452,9 +444,8 @@ namespace xBot.Network
 								if (context == Agent.Remote && w.Settings_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
-									{
-										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
+									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
+										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 										|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -490,7 +481,7 @@ namespace xBot.Network
 										bool opcodeFound = false;
 										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
 										{
-											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString("X4"));
+											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
 											|| !opcodeFound && !w.Settings_rbnPacketOnlyShow.Checked)
@@ -518,7 +509,6 @@ namespace xBot.Network
 										buffer.Offset += count;
 										if (buffer.Offset == buffer.Size)
 											break;
-										Thread.Sleep(1);
 									}
 								}
 							}
@@ -530,17 +520,16 @@ namespace xBot.Network
 			catch (Exception ex)
 			{
 				w.LogPacket("[A] Error: " + ex.Message + Environment.NewLine);
-				Bot.Get.LogError(ex.ToString());
 				Stop();
 			}
 		}
-		private Socket BindSocket(string ip, int port)
+		private Socket BindGatewaySocket(string ip, int port)
 		{
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			for (int i = port; i < ushort.MaxValue; i += 2)
 			{
-				// Check if agent port is available
-				if(availableSocket(port+1)){
+				if (availableSocket(i+1))
+				{
 					try
 					{
 						s.Bind(new IPEndPoint(IPAddress.Parse(ip), i));
@@ -552,7 +541,8 @@ namespace xBot.Network
 			}
 			return null;
 		}
-		private bool availableSocket(int port){
+		private bool availableSocket(int port)
+		{
 			TcpConnectionInformation[] tcpConnInfoArray = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections();
 			foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
 			{
@@ -562,6 +552,13 @@ namespace xBot.Network
 				}
 			}
 			return true;
+		}
+		private Socket BindSocket(string ip, int port)
+		{
+			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			s.Bind(new IPEndPoint(IPAddress.Parse(ip), port));
+			s.Listen(1);
+			return s;
 		}
 		/// <summary>
 		/// Wait the time specified and try to reconnect the proxy if is necessary.
@@ -682,19 +679,20 @@ namespace xBot.Network
 			Reset();
 			Window w = Window.Get;
 			// Reset locket controls
-			WinAPI.InvokeIfRequired(w.Login_cmbxSilkroad, () => {
+			w.Login_cmbxSilkroad.InvokeIfRequired(() => {
 				w.Login_cmbxSilkroad.Enabled = true;
 			});
-			WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
+			w.Login_btnStart.InvokeIfRequired(() => {
 				w.Login_btnStart.Text = "START";
-				w.EnableControl(w.Login_btnStart, true);
+				w.Login_btnStart.Enabled = true;
 			});
-			w.EnableControl(w.Login_btnLauncher, true);
-			
-			WinAPI.InvokeIfRequired(w.Login_gbxCharacters, () => {
+			w.Login_btnLauncher.InvokeIfRequired(() => {
+				w.Login_btnLauncher.Enabled = true;
+			});
+			w.Login_gbxCharacters.InvokeIfRequired(() => {
 				w.Login_gbxCharacters.Visible = false;
 			});
-			WinAPI.InvokeIfRequired(w.Login_gbxServers, () => {
+			w.Login_gbxServers.InvokeIfRequired(() => {
 				w.Login_gbxServers.Visible = true;
 			});
 
@@ -708,47 +706,47 @@ namespace xBot.Network
 			// Relogin
 			if (w.Login_cbxRelogin.Checked)
 			{
+				w.Login_cbxRelogin.InvokeIfRequired(() => {
+					w.Login_cbxRelogin.Tag = (byte)10; // Countdown
+				});
+
 				System.Timers.Timer Relogin = new System.Timers.Timer(1000);
-				Relogin.AutoReset = true;
-				byte countdown = 10;
-				Relogin.Elapsed += delegate {
-					 try
-					{
-						if (w.Login_cbxRelogin.Checked)
-						{
-							if (countdown > 0)
-							{
-								w.LogProcess("Relogin at " + countdown + " seconds...");
-								countdown = (byte)(countdown - 1);
-							}
-							else
-							{
-								WinAPI.InvokeIfRequired(w.Login_btnStart, ()=> {
-									if(w.Login_btnStart.Text == "START")
-									{
-										w.LogProcess("Relogin...");
-										WinAPI.InvokeIfRequired(w.Login_btnStart, () => {
-											w.Control_Click(w.Login_btnStart, null);
-										});
-									}
-									else
-									{
-										w.LogProcess("Relogin canceled...");
-									}
-									Relogin.Stop();
-								});
-							}
-						}
-						else
-						{
-							w.LogProcess("Relogin canceled...");
-							Relogin.Stop();
-						}
-					}
-					 catch { Relogin.Stop(); }
-				 };
+				Relogin.AutoReset = false;
+				Relogin.Elapsed += ReloginOnDisconnect;
 				Relogin.Start();
 			}
+		}
+		private void ReloginOnDisconnect(object sender, System.Timers.ElapsedEventArgs e){
+			try
+			{
+				Window w = Window.Get;
+				if (w.Login_cbxRelogin.Checked && !Bot.Get.Proxy.isRunning)
+				{
+					byte countdown = 0;
+					w.Login_cbxRelogin.InvokeIfRequired(() => {
+						countdown = (byte)w.Login_cbxRelogin.Tag;
+					});
+					// Check Countdown
+					if (countdown > 0)
+					{
+						w.LogProcess("Relogin at " + countdown + " seconds...");
+						w.Login_cbxRelogin.InvokeIfRequired(() => {
+							w.Login_cbxRelogin.Tag = (byte)(countdown - 1);
+						});
+						((System.Timers.Timer)sender).Start();
+					}
+					else
+					{
+						w.LogProcess("Relogin...");
+						Bot.Get.Proxy.Start();
+					}
+				}
+				else
+				{
+					w.LogProcess("Automatic relogin canceled!");
+				}
+			}
+			catch { }
 		}
 		/// <summary>
 		/// Send packet to the server if exists connection (Gateway/Agent).

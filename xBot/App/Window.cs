@@ -88,22 +88,18 @@ namespace xBot.App
 
 			// Vertical tabs
 			// Login
-			TabPageV_Option_Click(this.TabPageV_Control01_Option01, null);
+			TabPageV_Option_Click(this.TabPageV_Control01_Login, null);
 			// Horizontal tabs
 			TabPageH_Option_Click(this.TabPageH_Character_Option01, null);
-
 			TabPageH_Option_Click(this.TabPageH_Inventory_Option01, null);
-
 			TabPageH_Option_Click(this.TabPageH_Party_Option01, null);
-
+			TabPageH_Option_Click(this.TabPageH_Players_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Skills_Option01, null);
 			Skills_cmbxAttackMobType.SelectedIndex = 0;
-
 			TabPageH_Option_Click(this.TabPageH_Training_Option01, null);
-
+			TabPageH_Option_Click(this.TabPageH_Stall_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Chat_Option01, null);
 			Chat_cmbxMsgType.SelectedIndex = 0;
-
 			TabPageH_Option_Click(this.TabPageH_Settings_Option01, null);
 			Settings_cmbxCreateCharRace.SelectedIndex =
 			Settings_cmbxCreateCharGenre.SelectedIndex =
@@ -261,7 +257,7 @@ namespace xBot.App
 		{
 			try
 			{
-				WinAPI.InvokeIfRequired(Character_rtbxMessageFilter, () => {
+				Character_rtbxMessageFilter.InvokeIfRequired(() => {
 					Character_rtbxMessageFilter.AppendText(WinAPI.GetDate() + " " + message + Environment.NewLine);
 				});
 			}
@@ -276,13 +272,11 @@ namespace xBot.App
 					sb.Append(WinAPI.GetDate());
 				sb.AppendLine(text);
 
-				WinAPI.InvokeIfRequired(Settings_rtbxPackets, ()=>{
+				Settings_rtbxPackets.InvokeIfRequired(()=>{
 					Settings_rtbxPackets.AppendText(sb.ToString());
 				});
 			}
-			catch
-			{
-			}
+			catch { }
 		}
 		public void LogChatMessage(RichTextBox chat, string player, string message)
 		{
@@ -292,9 +286,7 @@ namespace xBot.App
 					chat.AppendText(WinAPI.GetDate() + " " + player + ": " + message + Environment.NewLine);
 				});
 			}
-			catch
-			{
-			}
+			catch { }
 		}
 		private bool isValidFilename(string FileName)
 		{
@@ -308,11 +300,17 @@ namespace xBot.App
 			}
 			return true;
 		}
+		public void SetIngameButtons(bool enable)
+		{
+			Stall_btnIGCreateModify.InvokeIfRequired(() => {
+				Stall_btnIGCreateModify.Enabled = enable;
+			});
+		}
 		public void AddBuff(SRObject Buff)
 		{
 			Label item = new Label();
 			item.Size = lstimgIcons.ImageSize;
-      item.Name = "pnlBuffs_"+Buff[SRProperty.UniqueID];
+			item.Name = "pnlBuffs_"+Buff[SRProperty.UniqueID];
 			item.ImageList = this.lstimgIcons;
 			item.ImageKey = GetImageKeyIcon((string)Buff[SRProperty.Icon]);
 			item.MouseClick += new MouseEventHandler(this.Label_pnlBuffs_MouseClick);
@@ -325,13 +323,13 @@ namespace xBot.App
 		}
 		public void RemoveBuff(uint buffUniqueID)
 		{
-			WinAPI.InvokeIfRequired(Character_pnlBuffs, () => {
+			Character_pnlBuffs.InvokeIfRequired(() => {
 				Character_pnlBuffs.Controls.RemoveByKey("pnlBuffs_"+buffUniqueID);
 			});
 		}
-		public void Buffs_Clear()
+		public void Character_Buffs_Clear()
 		{
-			WinAPI.InvokeIfRequired(Character_pnlBuffs, () => {
+			Character_pnlBuffs.InvokeIfRequired(() => {
 				Character_pnlBuffs.Controls.Clear();
 			});
 		}
@@ -460,42 +458,49 @@ namespace xBot.App
 		public void Character_SetGold(ulong gold)
 		{
 			// 1000000 to 1.000.000
-			string Text = gold.ToString("#,0");
-			int GoldDigits = gold.ToString().Length;
+			string gText = gold.ToString("#,0");
 			// Visual color
-			Color ForeColor = Color.White; // Default
-			if(GoldDigits <= 4){
-				ForeColor = Color.White;
-			}
-			else if (GoldDigits <= 5){
-				ForeColor = Color.FromArgb(255, 250, 133); // Light Yellow
-			}
-			else if (GoldDigits <= 6)
-			{
-				ForeColor = Color.FromArgb(255, 211, 72); // Yellow
-			}
-			else if (GoldDigits <= 7)
-			{
-				ForeColor = Color.FromArgb(255, 173, 92); // Dark Orange
-			}
-			else if (GoldDigits <= 8)
-			{
-				ForeColor = Color.FromArgb(255, 154, 161); // Pink
-			}
-			else if (GoldDigits <= 9)
-			{
-				ForeColor = Color.FromArgb(235, 161, 255); // Purple
-			}
-			WinAPI.InvokeIfRequired(Character_lblGold, () => {
-				Character_lblGold.ForeColor = ForeColor;
-				Character_lblGold.Text = Text;
+			Color gForeColor = GetGoldColor(gold);
+			Character_lblGold.InvokeIfRequired(() => {
+				Character_lblGold.ForeColor = gForeColor;
+				Character_lblGold.Text = gText;
 			});
+		}
+		public Color GetGoldColor(ulong gold)
+		{
+			int GoldDigits = gold.ToString().Length;
+
+			if (GoldDigits <= 4)
+				return Color.White;
+			switch (GoldDigits)
+			{
+				case 5:
+					return Color.FromArgb(255, 250, 133); // Light Yellow
+				case 6:
+					return Color.FromArgb(255, 211, 72); // Yellow
+				case 7:
+					return Color.FromArgb(255, 173, 92); // Dark Orange
+				case 8:
+					return Color.FromArgb(255, 154, 161); // Pink
+				case 9:
+					return Color.FromArgb(235, 161, 255); // Purple
+				case 10:
+					return Color.FromArgb(184, 187, 255); // Blue
+				case 11:
+					return Color.FromArgb(149, 222, 255); // Light Blue 
+				case 12:
+					return Color.FromArgb(139, 255, 229); // White Blue
+				default:
+					return Color.White;
+			}
 		}
 		public void Character_SetPosition(SRCoord p)
 		{
 			WinAPI.InvokeIfRequired(Character_lblLocation, () => {
-				if (p.Region.ToString() != Character_lblLocation.Text)
+				if (Character_lblLocation.Tag == null || p.Region != (ushort)Character_lblLocation.Tag){
+					Character_lblLocation.Tag = p.Region;
 					Character_lblLocation.Text = Info.Get.GetRegion(p.Region);
+				}
 			});
 			WinAPI.InvokeIfRequired(Minimap_panelCoords, () => {
 				Minimap_tbxX.Text = p.X.ToString();
@@ -512,9 +517,12 @@ namespace xBot.App
 		}
 		public void Inventory_ItemsRefresh()
 		{
-			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+			Inventory_lstvItems.InvokeIfRequired(() => {
 				Inventory_lstvItems.Items.Clear();
 				Inventory_lstvItems.BeginUpdate();
+			});
+			Inventory_lblCapacity.InvokeIfRequired(() => {
+				Inventory_lblCapacity.Text = "Loading (0%) ...";
 			});
 
 			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
@@ -525,7 +533,7 @@ namespace xBot.App
 				item.Name = item.Text = j.ToString();
 				if (inventory[j] != null)
 				{
-					item.SubItems.Add(inventory[j].Name + (inventory[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventory[j][SRProperty.Plus] + ")" : ""));
+					item.SubItems.Add(inventory[j].GetItemText());
 					item.SubItems.Add((ushort)inventory[j][SRProperty.QuantityMax] == 1 ? "1" : inventory[j][SRProperty.Quantity] + "/" + inventory[j][SRProperty.QuantityMax]);
 					item.SubItems.Add(inventory[j].ServerName);
 					item.ImageKey = GetImageKeyIcon((string)inventory[j][SRProperty.Icon]);
@@ -538,20 +546,24 @@ namespace xBot.App
 				}
 
 				// Add
-				WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+				Inventory_lstvItems.InvokeIfRequired(() => {
 					Inventory_lstvItems.Items.Add(item);
 				});
+				Inventory_lblCapacity.InvokeIfRequired(() => {
+					Inventory_lblCapacity.Text = "Loading  (" + Math.Round(j * 100.0 / inventory.Capacity) + "%) ...";
+				});
 			}
-			WinAPI.InvokeIfRequired(Inventory_lblCapacity, () => {
+			Inventory_lblCapacity.InvokeIfRequired(() => {
 				Inventory_lblCapacity.Text = "Capacity : " + inventory.Count + "/" + inventory.Capacity;
 			});
-			WinAPI.InvokeIfRequired(Inventory_lstvItems, () => {
+			Inventory_lstvItems.InvokeIfRequired(() => {
 				Inventory_lstvItems.EndUpdate();
+				Inventory_lstvItems.Tag = null; // Designated to run with no locks
 			});
 		}
 		public void Inventory_AvatarItemsRefresh()
 		{
-			WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+			Inventory_lstvAvatarItems.InvokeIfRequired( () => {
 				Inventory_lstvAvatarItems.Items.Clear();
 				Inventory_lstvAvatarItems.BeginUpdate();
 			});
@@ -564,8 +576,7 @@ namespace xBot.App
 				item.Name = item.Text = j.ToString();
 				if (inventoryAvatar[j] != null)
 				{
-					item.SubItems.Add(inventoryAvatar[j].Name + (inventoryAvatar[j].Contains(SRProperty.Plus) ? " (+" + (byte)inventoryAvatar[j][SRProperty.Plus] + ")" : ""));
-					item.SubItems.Add((ushort)inventoryAvatar[j][SRProperty.QuantityMax] == 1 ? "1" : inventoryAvatar[j][SRProperty.Quantity] + "/" + inventoryAvatar[j][SRProperty.QuantityMax]);
+					item.SubItems.Add(inventoryAvatar[j].GetItemText());
 					item.SubItems.Add(inventoryAvatar[j].ServerName);
 					item.ImageKey = GetImageKeyIcon((string)inventoryAvatar[j][SRProperty.Icon]);
 				}
@@ -574,12 +585,138 @@ namespace xBot.App
 					item.SubItems.Add("Empty");
 				}
 				// Add
-				WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+				Inventory_lstvAvatarItems.InvokeIfRequired(() => {
 					Inventory_lstvAvatarItems.Items.Add(item);
 				});
 			}
-			WinAPI.InvokeIfRequired(Inventory_lstvAvatarItems, () => {
+			Inventory_lstvAvatarItems.InvokeIfRequired(() => {
 				Inventory_lstvAvatarItems.EndUpdate();
+				Inventory_lstvAvatarItems.Tag = null; // Designated to run with no locks
+			});
+		}
+		public void Players_Refresh()
+		{
+			Players_tvwPlayers.InvokeIfRequired(() => {
+				Players_tvwPlayers.Nodes.Clear();
+				Players_tvwPlayers.BeginUpdate();
+			});
+			Players_lblPlayerCount.InvokeIfRequired(() => {
+				Players_lblPlayerCount.Text = "Loading (0%) ...";
+			});
+
+			Info i = Info.Get;
+			for (int j = 0; j < i.Players.Count; j++)
+			{
+				SRObject player = i.Players.ElementAt(j);
+				// Create root node
+				TreeNode root = new TreeNode();
+				root.ImageKey = "None";
+				root.Tag = player;
+				root.Name = player.Name;
+				// Create full nick info
+				string guildName = (string)player[SRProperty.GuildName];
+				string guildMemberName = (string)player[SRProperty.GuildMemberName];
+				root.Text = player.Name + (guildMemberName == null ? " (" + player[SRProperty.JobType] + ")" : "") + (guildName == "" ? "" : " [" + guildName + (string.IsNullOrEmpty(guildMemberName) ? "" : " * " + guildMemberName) + "]");
+				if((Types.InteractMode)player[SRProperty.InteractMode] == Types.InteractMode.OnStall)
+				{
+					root.Text += " - ["+player[SRProperty.StallTitle]+" ]";
+					root.ForeColor = ColorItemHighlight;
+        }
+				// Add equipment view
+				SRObjectCollection Inventory = (SRObjectCollection)player[SRProperty.Inventory];
+				TreeNode equipment = new TreeNode("Equipment");
+				for (byte k = 0; k < Inventory.Capacity; k++)
+				{
+					SRObject item = Inventory[k];
+					TreeNode itemNode = new TreeNode(item.GetItemText());
+					itemNode.ImageKey = GetImageKeyIcon((string)item[SRProperty.Icon]);
+					itemNode.SelectedImageKey = itemNode.ImageKey;
+					equipment.Nodes.Add(itemNode);
+				}
+				equipment.ImageKey = root.ImageKey;
+				root.Nodes.Add(equipment);
+				// Add avatar equipment view if it's normal mode
+				if (guildMemberName != null)
+				{
+					SRObjectCollection InventoryAvatar = (SRObjectCollection)player[SRProperty.InventoryAvatar];
+					if (InventoryAvatar.Count > 0)
+					{
+						TreeNode avatarEquipment = new TreeNode("Avatar Equipment");
+						for (byte k = 0; k < InventoryAvatar.Capacity; k++)
+						{
+							SRObject item = InventoryAvatar[k];
+							if (item != null)
+							{
+								TreeNode itemNode = new TreeNode();
+								itemNode.Text = item.Name;
+								itemNode.ImageKey = GetImageKeyIcon((string)item[SRProperty.Icon]);
+								itemNode.SelectedImageKey = itemNode.ImageKey;
+								avatarEquipment.Nodes.Add(itemNode);
+							}
+						}
+						avatarEquipment.ImageKey = root.ImageKey;
+						root.Nodes.Add(avatarEquipment);
+					}
+				}
+				Players_tvwPlayers.InvokeIfRequired(() => {
+					Players_tvwPlayers.Nodes.Add(root);
+				});
+				Players_lblPlayerCount.InvokeIfRequired(() => {
+					Players_lblPlayerCount.Text = "Loading ("+ Math.Round(j*100.0/i.Players.Count) + "%) ...";
+				});
+			}
+			Players_tvwPlayers.InvokeIfRequired(() => {
+				Players_tvwPlayers.EndUpdate();
+				Players_tvwPlayers.Tag = null; // Designated to run with no locks
+				Players_lblPlayerCount.InvokeIfRequired(() => {
+					Players_lblPlayerCount.Text = "Players around: " + Players_tvwPlayers.Nodes.Count;
+				});
+			});
+		}
+		public void Players_ClearExchange()
+		{
+			string resetText = "- - -";
+			// Exchanger
+			Players_lblExchangerName.InvokeIfRequired(() => {
+				Players_lblExchangerName.Text = resetText;
+			});
+			Players_tbxExchangerGold.InvokeIfRequired(() => {
+				Players_tbxExchangerGold.Text = resetText;
+				Players_tbxExchangerGold.ForeColor = Color.White;
+			});
+			// Me
+			Players_lblExchangerMyName.InvokeIfRequired(() => {
+				Players_lblExchangerMyName.Text = resetText;
+			});
+			Players_tbxExchangingGold.InvokeIfRequired(() => {
+				Players_tbxExchangingGold.Text = resetText;
+				Players_tbxExchangingGold.ForeColor = Color.White;
+				Players_tbxExchangingGold.ReadOnly = true;
+			});
+			Players_tbxGoldRemain.InvokeIfRequired(() => {
+				Players_tbxGoldRemain.Text = resetText;
+				Players_tbxGoldRemain.ForeColor = Color.White;
+			});
+			// Inventories
+			Players_lstvInventoryExchange.InvokeIfRequired(() => {
+				Players_lstvInventoryExchange.Items.Clear();
+			});
+			Players_lstvExchangerItems.InvokeIfRequired(() => {
+				Players_lstvExchangerItems.Items.Clear();
+			});
+			Players_lstvExchangingItems.InvokeIfRequired(() => {
+				Players_lstvExchangingItems.Items.Clear();
+			});
+			// turn off
+			Players_btnExchange.InvokeIfRequired(() => {
+				Players_btnExchange.Text = "Confirm";
+				Players_btnExchange.Enabled = false;
+			});
+			Players_btnCancelExchange.InvokeIfRequired(() => {
+				Players_btnCancelExchange.Enabled = false;
+			});
+			Players_btnExchangingGoldEdit.InvokeIfRequired(() => {
+				Players_btnExchangingGoldEdit.Enabled = false;
 			});
 		}
 		public void Party_Clear()
@@ -595,13 +732,15 @@ namespace xBot.App
 				ToolTips.SetToolTip(Party_lblCurrentSetup, "");
 			});
 		}
+		/// <summary>
+		/// Get the active training coordinate or null if none is found.
+		/// </summary>
 		public SRCoord TrainingArea_GetPosition()
 		{
 			SRCoord result = null;
-			WinAPI.InvokeIfRequired(this.Training_lstvAreas, () =>
+			Training_lstvAreas.InvokeIfRequired(() =>
 			{
-				if (this.Training_lstvAreas.Tag != null)
-				{
+				if (this.Training_lstvAreas.Tag != null){
 					ListViewItem item = (ListViewItem)this.Training_lstvAreas.Tag;
 					result = new SRCoord((ushort)item.SubItems[1].Tag, (int)item.SubItems[2].Tag, (int)item.SubItems[4].Tag, (int)item.SubItems[3].Tag);
 				}
@@ -611,7 +750,7 @@ namespace xBot.App
 		public int TrainingArea_GetRadius()
 		{
 			int result = 0;
-			WinAPI.InvokeIfRequired(this.Training_lstvAreas, () =>
+			Training_lstvAreas.InvokeIfRequired(() =>
 			{
 				if (this.Training_lstvAreas.Tag != null)
 					result = (int)((ListViewItem)this.Training_lstvAreas.Tag).SubItems[5].Tag;
@@ -726,38 +865,131 @@ namespace xBot.App
 						goto case Types.Mob.Elite;
 					else
 						break;
+				default:
+					goto case Types.Mob.Event;
 			}
 			return SkillShots;
 		}
+		public void Stall_Create(SRObjectCollection inventoryStall)
+		{
+			Stall_lstvStall.InvokeIfRequired(() => {
+				Stall_lstvStall.BeginUpdate();
+				Stall_lstvStall.Items.Clear();
+			});
+			for (byte j = 0; j < 10 || j < inventoryStall.Capacity; j++)
+			{
+				ListViewItem listViewItem;
+
+				SRObject item = inventoryStall[j];
+				if (item != null)
+				{
+					// Name
+					listViewItem = new ListViewItem(item.GetItemText());
+					listViewItem.Tag = item;
+					listViewItem.ImageKey = GetImageKeyIcon((string)item[SRProperty.Icon]);
+					// quantity
+					listViewItem.SubItems.Add(item[SRProperty.Quantity].ToString());
+					// price
+					ulong price = (ulong)item[SRProperty.Gold];
+					ListViewItem.ListViewSubItem ListViewSubItem = new ListViewItem.ListViewSubItem();
+					ListViewSubItem.Text = price.ToString("#,0");
+					listViewItem.SubItems.Add(ListViewSubItem);
+					listViewItem.UseItemStyleForSubItems = false;
+					ListViewSubItem.ForeColor = GetGoldColor(price);
+				}
+				else
+				{
+					listViewItem = new ListViewItem("Empty");
+				}
+				// Add to stall
+				Stall_lstvStall.InvokeIfRequired(() => {
+					Stall_lstvStall.Items.Add(listViewItem);
+				});
+			}
+			Stall_lstvStall.InvokeIfRequired(() => {
+				Stall_lstvStall.EndUpdate();
+			});
+		}
+		public void Stall_Clear()
+		{
+			string textReset = "- - -";
+			Stall_btnIGCreateModify.InvokeIfRequired(() => {
+				Stall_btnIGCreateModify.Text = "Create";
+			});
+			Stall_lblState.InvokeIfRequired(() => {
+				Stall_lblState.Text = textReset;
+			});
+			this.InvokeIfRequired(() => {
+				ToolTips.SetToolTip(Stall_lblState,"");
+			});
+			Stall_tbxTitle.InvokeIfRequired(() => {
+				Stall_tbxTitle.Text = textReset;
+				Stall_tbxTitle.ReadOnly = true;
+			});
+			Stall_btnTitleEdit.InvokeIfRequired(() => {
+				Stall_btnTitleEdit.Enabled = false;
+			});
+			Stall_btnClose.InvokeIfRequired(()=> {
+				Stall_btnClose.Enabled = false;
+      });
+			Stall_tbxNote.InvokeIfRequired(() => {
+				Stall_tbxNote.Text = textReset;
+				Stall_tbxNote.ReadOnly = true;
+			});
+			Stall_btnNoteEdit.InvokeIfRequired(() => {
+				Stall_btnNoteEdit.Enabled = false;
+			});
+			Stall_lstvInventoryStall.InvokeIfRequired(() => {
+				Stall_lstvInventoryStall.Items.Clear();
+      });
+			Stall_tbxPrice.InvokeIfRequired(() => {
+				Stall_tbxPrice.Text = textReset;
+				Stall_tbxPrice.ReadOnly = true;
+			});
+			Stall_tbxQuantity.InvokeIfRequired(() => {
+				Stall_tbxQuantity.Text = textReset;
+			});
+			Stall_btnAddItem.InvokeIfRequired(() => {
+				Stall_btnAddItem.Enabled = false;
+			});
+			Stall_lstvStall.InvokeIfRequired(() => {
+				Stall_lstvStall.Items.Clear();
+				Stall_lstvStall.ContextMenuStrip = null;
+			});
+		}
 		public void Minimap_Character_View(SRCoord position,double degreeAngle)
 		{
-			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
-				Minimap_pnlMap.ViewPoint = position;
-			});
-			if (lastDegreeAngle != degreeAngle)
+			// Update the view if it's minimap selected
+			if(TabPageV_Control01_Minimap_Panel.Visible)
 			{
-				lastDegreeAngle = degreeAngle;
+				Minimap_pnlMap.SetView(position);
+				// Update arrow direction
 				Minimap_Character_Angle(degreeAngle);
 			}
 		}
 		double lastDegreeAngle = 0;
 		public void Minimap_Character_Angle(double degreeAngle)
 		{
-			Bitmap mm_sign_character = Properties.Resources.mm_sign_character;
-			// Generate an image rotation
-			Bitmap mm_sign_character_rotated = new Bitmap(mm_sign_character.Width, mm_sign_character.Height);
-			mm_sign_character_rotated.SetResolution(mm_sign_character.HorizontalResolution, mm_sign_character.VerticalResolution);
-			Graphics g = Graphics.FromImage(mm_sign_character_rotated);
-			g.TranslateTransform(mm_sign_character.Width / 2, mm_sign_character.Height / 2);
-			g.RotateTransform(-(float)degreeAngle);
-			g.TranslateTransform(-mm_sign_character.Width / 2, -mm_sign_character.Height / 2);
-			g.DrawImage(mm_sign_character, new Point(0, 0));
-			// Update pointer Image angle
-			WinAPI.InvokeIfRequired(Minimap_xmcCharacterMark, () => {
-				Minimap_xmcCharacterMark.Image = mm_sign_character_rotated;
-			});
+			// Update if it's necessary only
+			if (lastDegreeAngle != degreeAngle)
+			{
+				lastDegreeAngle = degreeAngle;
+				Bitmap mm_sign_character = Properties.Resources.mm_sign_character;
+				// Generate an image rotation
+				Bitmap mm_sign_character_rotated = new Bitmap(mm_sign_character.Width, mm_sign_character.Height);
+				mm_sign_character_rotated.SetResolution(mm_sign_character.HorizontalResolution, mm_sign_character.VerticalResolution);
+				Graphics g = Graphics.FromImage(mm_sign_character_rotated);
+				g.TranslateTransform(mm_sign_character.Width / 2, mm_sign_character.Height / 2);
+				g.RotateTransform(-(float)degreeAngle);
+				g.TranslateTransform(-mm_sign_character.Width / 2, -mm_sign_character.Height / 2);
+				g.DrawImage(mm_sign_character, new Point(0, 0));
+				// Update pointer Image angle
+				Minimap_xmcCharacterMark.InvokeIfRequired(() => {
+					Minimap_xmcCharacterMark.Image = mm_sign_character_rotated;
+				});
+			}
 		}
-    public void Minimap_Object_Add(uint UniqueID, SRObject Object)
+		public void Minimap_Object_Add(uint UniqueID, SRObject Object)
 		{
 			xMapControl marker = new xMapControl();
 			// Add image
@@ -768,30 +1000,37 @@ namespace xBot.App
 					marker.Image = Properties.Resources.mm_sign_unique;
 				else
 				marker.Image = Properties.Resources.mm_sign_monster;
+
+				this.InvokeIfRequired(() => {
+					ToolTips.SetToolTip(marker, Object.Name);
+				});
 			}
-			else if(Object.isNPC())
+			else if (Object.isNPC())
+			{
 				marker.Image = Properties.Resources.mm_sign_npc;
+				this.InvokeIfRequired(() => {
+					ToolTips.SetToolTip(marker, Object.Name);
+				});
+			}
 			else if (Object.isPlayer())
 			{
-				ContextMenuStrip menuPlayer = new ContextMenuStrip();
-				// Add options
-				ToolStripMenuItem item = new ToolStripMenuItem();
-				item.Text = "Invite to party";
-				item.Name = "InviteToParty";
-				item.Tag = Object;
-				item.Click += Menu_Minimap_Player_Click;
-				menuPlayer.Items.Add(item);
-				
 				marker.Image = Properties.Resources.mm_sign_otherplayer;
-				marker.ContextMenuStrip = menuPlayer;
+				this.InvokeIfRequired(() => {
+					ToolTips.SetToolTip(marker, Object.Name);
+				});
 			}
 			else if (Object.isPet())
+			{
 				marker.Image = Properties.Resources.mm_sign_animal;
+				this.InvokeIfRequired(() => {
+					ToolTips.SetToolTip(marker,(string)Object[SRProperty.PetName]);
+				});
+			}
 			else if (Object.isTeleport())
 			{
 				ContextMenuStrip menuTeleport = new ContextMenuStrip();
 				SRObjectCollection teleportOptions = (SRObjectCollection)Object[SRProperty.TeleportOptions];
-        for(int t = 0; t < teleportOptions.Capacity; t++)
+				for(int t = 0; t < teleportOptions.Capacity; t++)
 				{
 					ToolStripMenuItem item = new ToolStripMenuItem();
 					item.Text = teleportOptions[t].Name;
@@ -800,15 +1039,16 @@ namespace xBot.App
 					item.Click += Menu_Minimap_Teleport_Click;
 
 					menuTeleport.Items.Add(item);
-        }
+				}
+				// Add if it's a teleport only
 				if (menuTeleport.Items.Count > 0)
 				{
 					marker.ContextMenuStrip = menuTeleport;
 					marker.Image = Properties.Resources.xy_gate;
 				}
-      }
+			}
 
-			// Add only if has image
+			// Add only if has icon ready
 			if (marker.Image != null)
 			{
 				// Expand PictureBox size
@@ -820,25 +1060,16 @@ namespace xBot.App
 				marker.Location = location;
 				// Save full reference
 				marker.Tag = Object;
-				WinAPI.InvokeIfRequired(this, () => {
-					ToolTips.SetToolTip(marker, Object.Name);
-				});
-				WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
-					Minimap_pnlMap.AddMarker(UniqueID, marker);
-				});
+				Minimap_pnlMap.AddMarker(UniqueID, marker);
 			}
 		}
 		public void Minimap_Object_Remove(uint UniqueID)
 		{
-			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
-				Minimap_pnlMap.RemoveMarker(UniqueID);
-			});
+			Minimap_pnlMap.RemoveMarker(UniqueID);
 		}
 		public void Minimap_Objects_Clear()
 		{
-			WinAPI.InvokeIfRequired(Minimap_pnlMap, () => {
-				Minimap_pnlMap.ClearMarkers();
-			});
+			Minimap_pnlMap.ClearMarkers();
 		}
 
 		#region (GUI theme design behavior)
@@ -1008,12 +1239,7 @@ namespace xBot.App
 			e.Cancel = true;
 			e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
 		}
-		public void EnableControl(Control c, bool active)
-		{
-			WinAPI.InvokeIfRequired(c, () => {
-				c.Font = new Font(c.Font, (active ? FontStyle.Regular : FontStyle.Strikeout));
-			});
-		}
+		public Color ColorItemHighlight = Color.FromArgb(120, 120, 120);
 		#endregion
 
 		#region (GUI events generated)
@@ -1089,11 +1315,11 @@ namespace xBot.App
 					}
 					break;
 				case "btnAnalyzer":
-					TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+					TabPageV_Option_Click(TabPageV_Control01_Settings, null);
 					TabPageH_Option_Click(TabPageH_Settings_Option04, null);
 					break;
 				case "Login_btnAddSilkroad":
-					TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+					TabPageV_Option_Click(TabPageV_Control01_Settings, null);
 					TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 					break;
 				case "Login_btnStart":
@@ -1109,7 +1335,7 @@ namespace xBot.App
 							if (!i.ConnectToDatabase(Login_cmbxSilkroad.Text))
 							{
 								MessageBox.Show(this, "The database \"" + Login_cmbxSilkroad.Text + "\" needs to be created.", "xBot", MessageBoxButtons.OK);
-								TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+								TabPageV_Option_Click(TabPageV_Control01_Settings, null);
 								TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 								return;
 							}
@@ -1122,12 +1348,12 @@ namespace xBot.App
 								if ((string)silkroad.SubItems[7].Tag == "")
 								{
 									MessageBox.Show(this, "You need to select the SRO_Client path first.", "xBot", MessageBoxButtons.OK);
-									TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+									TabPageV_Option_Click(TabPageV_Control01_Settings, null);
 									TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 									return;
 								}
 								i.ClientPath = (string)silkroad.SubItems[7].Tag;
-              }
+							}
 
 							// Add possibles Gateways/Ports
 							List<string> hosts = new List<string>((List<string>)silkroad.SubItems[4].Tag);
@@ -1143,7 +1369,7 @@ namespace xBot.App
 							i.Version = (uint)silkroad.SubItems[2].Tag;
 
 							// Lock Silkroad selection
-							EnableControl(Login_btnLauncher, false);
+							Login_btnLauncher.Enabled = false;
 							Login_cmbxSilkroad.Enabled = false;
 
 							// Extended protocol Setup
@@ -1162,7 +1388,7 @@ namespace xBot.App
 							if (Login_tbxUsername.Text == "" || Login_tbxPassword.Text == "" || Login_cmbxServer.Text == "")
 								return;
 							Info.Get.Server = Login_cmbxServer.Text;
-							EnableControl(c, false);
+							c.Enabled = false;
 							LogProcess("Login...");
 							Bot.Get.LoggedFromBot = true;
 							PacketBuilder.Login(Login_tbxUsername.Text, Login_tbxPassword.Text, Convert.ToUInt16(Info.Get.ServerID));
@@ -1171,7 +1397,7 @@ namespace xBot.App
 							if (Login_cmbxCharacter.Text == "")
 								return;
 							Info.Get.Charname = Login_cmbxCharacter.Text;
-							EnableControl(c, false);
+							c.Enabled = false;
 							PacketBuilder.SelectCharacter(Login_cmbxCharacter.Text);
 							break;
 					}
@@ -1183,7 +1409,7 @@ namespace xBot.App
 						if ((string)sro.SubItems[6].Tag == "")
 						{
 							MessageBox.Show(this, "You need to select the Launcher path first.", "xBot", MessageBoxButtons.OK);
-							TabPageV_Option_Click(TabPageV_Control01_Option14, null);
+							TabPageV_Option_Click(TabPageV_Control01_Settings, null);
 							TabPageH_Option_Click(TabPageH_Settings_Option01, null);
 						}
 						else
@@ -1222,15 +1448,35 @@ namespace xBot.App
 					break;
 				case "Inventory_btnItemsRefresh":
 					if (Bot.Get.inGame)
-						this.Inventory_ItemsRefresh();
+					{
+						if (Inventory_lstvItems.Tag == null)
+						{
+							Thread t = new Thread(Inventory_ItemsRefresh);
+							Inventory_lstvItems.Tag = t;
+							t.Priority = ThreadPriority.BelowNormal;
+							t.Start();
+						}
+					}
 					else
+					{
 						this.Inventory_lstvItems.Items.Clear();
+					}
 					break;
 				case "Inventory_btnAvatarItemsRefresh":
 					if (Bot.Get.inGame)
-						this.Inventory_AvatarItemsRefresh();
+					{
+						if (Inventory_lstvAvatarItems.Tag == null)
+						{
+							Thread t = new Thread(Inventory_AvatarItemsRefresh);
+							Inventory_lstvAvatarItems.Tag = t;
+							t.Priority = ThreadPriority.BelowNormal;
+							t.Start();
+						}
+					}
 					else
+					{
 						this.Inventory_lstvAvatarItems.Items.Clear();
+					}
 					break;
 				case "Party_btnAddPlayer":
 					if (Bot.Get.inGame)
@@ -1292,6 +1538,57 @@ namespace xBot.App
 						PacketBuilder.RequestPartyMatch(byte.Parse(Party_lblPageNumber.Text));
 					}
 					break;
+				case "Players_btnRefreshPlayers":
+					if(Players_tvwPlayers.Tag == null)
+					{
+						Thread t = new Thread(Players_Refresh);
+						Players_tvwPlayers.Tag = t; // Run max 1 thread
+						t.Priority = ThreadPriority.BelowNormal;
+						t.Start();
+					}
+					break;
+				case "Players_btnCancelExchange":
+					{
+						Bot.Get.Proxy.InjectToServer(new Packet(Agent.Opcode.CLIENT_EXCHANGE_EXIT_REQUEST));
+					}
+					break;
+				case "Players_btnExchange":
+					{
+						switch (c.Text)
+						{
+							case "Confirm":
+								PacketBuilder.ConfirmExchange();
+								break;
+							case "Approve":
+								PacketBuilder.ApproveExchange();
+								break;
+						}
+					}
+					break;
+				case "Players_btnGoldExchangeEdit":
+					{
+						if (Players_btnExchange.Text == "Confirm")
+						{
+							string text = Players_tbxExchangingGold.Text.Replace(".", "");
+							ulong gold;
+							if (ulong.TryParse(text, out gold))
+							{
+								if (gold <= (ulong)Info.Get.Character[SRProperty.Gold])
+								{
+									PacketBuilder.EditGoldExchange(gold);
+								}
+								else
+								{
+									MessageBox.Show(this, "Your gold it's lower than value selected.", "xBot - Exchange", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+								}
+							}
+							else
+							{
+								MessageBox.Show(this, "Please, check the value correctly.", "xBot - Exchange", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							}
+						}
+					}
+					break;
 				case "Skills_btnAddAttack":
 					{
 						if (Skills_lstvSkills.SelectedItems.Count > 0) {
@@ -1315,14 +1612,14 @@ namespace xBot.App
 							if (itemUpdated)
 								Settings.SaveCharacterSettings();
 						}
-          }
+					}
 					break;
 				case "Skills_btnRemAttack":
 					{
 						ListView lstvAttackMobType = (ListView)Skills_cmbxAttackMobType.Tag;
 						if (lstvAttackMobType.SelectedItems.Count > 0)
 						{
-              foreach (ListViewItem item in lstvAttackMobType.SelectedItems)
+							foreach (ListViewItem item in lstvAttackMobType.SelectedItems)
 								item.Remove();
 							if(Bot.Get.inGame)
 								Settings.SaveCharacterSettings();
@@ -1367,60 +1664,124 @@ namespace xBot.App
 					break;
 				case "Training_btnTraceStart":
 					if (c.Text == "START")
-					{
 						Bot.Get.StartTrace(Training_cmbxTracePlayer.Text);
-					}
 					else
-					{
 						Bot.Get.StopTrace();
+					break;
+				case "Stall_btnIGCreateModify":
+          switch (c.Text)
+					{
+            case "Create":
+							PacketBuilder.CreateStall(Stall_tbxStallTitle.Text, Stall_tbxStallNote.Text);
+							break;
+						case "Open":
+							PacketBuilder.EditStallState(true);
+							break;
+						case "Modify":
+							PacketBuilder.EditStallState(false);
+							break;
+					}
+					break;
+				case "Stall_btnTitleEdit":
+					PacketBuilder.EditStallTitle(Stall_tbxTitle.Text);
+					break;
+				case "Stall_btnClose":
+					{
+						if (Bot.Get.StallerEntitiy == null)
+							PacketBuilder.CloseStall();
+						else
+							PacketBuilder.ExitStall();
+					}
+					break;
+				case "Stall_btnNoteEdit":
+					PacketBuilder.EditStallNote(Stall_tbxNote.Text);
+					break;
+				case "Stall_btnAddItem":
+					{
+						if(Stall_lstvInventoryStall.SelectedItems.Count == 1){
+							ulong price;
+							if (ulong.TryParse(Stall_tbxPrice.Text.Replace(".", ""), out price))
+							{
+								byte slotInventory = byte.Parse(Stall_lstvInventoryStall.SelectedItems[0].Name);
+								if(Stall_lstvInventoryStall.SelectedItems[0].BackColor == ColorItemHighlight)
+								{
+									MessageBox.Show(this, "This item is at stall, you have to remove it at first.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									return;
+								}
+								// Search empty stall slot
+								byte slotStall = byte.MaxValue;
+								for (byte j = 0; j < Stall_lstvStall.Items.Count; j++)
+								{
+									if (Stall_lstvStall.Items[j].Tag == null)
+									{
+										slotStall = j;
+										break;
+									}
+								}
+								// check if stall is full
+								if (slotStall == byte.MaxValue)
+									MessageBox.Show(this, "The stall is full.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Error);
+								else
+									PacketBuilder.AddItemStall(slotStall, slotInventory, ushort.Parse(Stall_tbxQuantity.Text), price);
+							}
+							else
+							{
+								MessageBox.Show(this, "Price incorrect. Please, check again.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Error);
+								Stall_tbxPrice.Focus();
+							}
+						}
+						else
+						{
+							MessageBox.Show(this, "Select the item to sell at first.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						}
 					}
 					break;
 				case "GameInfo_btnRefresh":
-					GameInfo_lstrObjects.Nodes.Clear();
+					GameInfo_tvwObjects.Nodes.Clear();
 					if (Bot.Get.inGame)
 					{
 						Info i = Info.Get;
 						// Making a copy because the list could be edited while iterating
 						List<SRObject> objects = new List<SRObject>(i.SpawnList.ToArray());
 						// Pause drawing, possibly long data
-						GameInfo_lstrObjects.BeginUpdate();
+						GameInfo_tvwObjects.BeginUpdate();
 						// Add character always
-						GameInfo_lstrObjects.Nodes.Add(i.Character.Clone().ToNode());
+						GameInfo_tvwObjects.Nodes.Add(i.Character.Clone().ToNode());
 						// Filter and add entities
 						foreach (SRObject obj in objects)
 						{
 							if (obj.isPlayer())
 							{
 								if (this.GameInfo_cbxPlayer.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 							else if (obj.isPet())
 							{
 								if (this.GameInfo_cbxPet.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 							else if (obj.isMob())
 							{
 								if (this.GameInfo_cbxMob.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 							else if (obj.isNPC())
 							{
 								if (this.GameInfo_cbxNPC.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 							else if (obj.isItem())
 							{
 								if (this.GameInfo_cbxDrop.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 							else
 							{
 								if (this.GameInfo_cbxOthers.Checked)
-									GameInfo_lstrObjects.Nodes.Add(obj.ToNode());
+									GameInfo_tvwObjects.Nodes.Add(obj.ToNode());
 							}
 						}
-						GameInfo_lstrObjects.EndUpdate();
+						GameInfo_tvwObjects.EndUpdate();
 						GameInfo_tbxServerTime.Text = i.GetServerTime();
 					}
 					break;
@@ -1514,13 +1875,14 @@ namespace xBot.App
 							if (!ushort.TryParse(text, out opcode))
 								return;
 						}
+
 						// Check if exists
-						string key = opcode.ToString("X4");
+						string key = opcode.ToString();
 						if (!Settings_lstvOpcodes.Items.ContainsKey(key))
 						{
-							ListViewItem item = new ListViewItem(key);
+							ListViewItem item = new ListViewItem(opcode.ToString("X4"));
 							item.Name = key;
-							Settings_lstvOpcodes.Items.Add(item);
+              Settings_lstvOpcodes.Items.Add(item);
 							Settings_tbxFilterOpcode.Text = "";
 							Settings.SaveBotSettings();
 						}
@@ -1554,7 +1916,7 @@ namespace xBot.App
 								try
 								{
 									data = Settings_tbxInjectData.Text.ToByteArray();
-                }
+								}
 								catch
 								{
 									MessageBox.Show(this, "Error: The data is not a byte array.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1603,6 +1965,14 @@ namespace xBot.App
 						Training_tbxRadius.Text = area.SubItems[5].Tag.ToString();
 						Training_tbxScriptPath.Text = area.SubItems[6].Text;
 					}
+					break;
+				case "Stall_lstvInventoryStall":
+					if (l.SelectedItems.Count == 1)
+					{
+						SRObject item = ((SRObject)l.SelectedItems[0].Tag);
+						if(item != null)
+							Stall_tbxQuantity.Text = item[SRProperty.Quantity].ToString();
+          }
 					break;
 				case "Settings_lstvSilkroads":
 					if (l.SelectedItems.Count == 1)
@@ -1745,6 +2115,11 @@ namespace xBot.App
 				case "Character_cbxMessagePicks":
 				case "Character_cbxAcceptRess":
 				case "Character_cbxAcceptRessPartyOnly":
+				case "Character_cbxRefuseExchange":
+				case "Character_cbxAcceptExchange":
+				case "Character_cbxAcceptExchangeLeaderOnly":
+				case "Character_cbxConfirmExchange":
+				case "Character_cbxApproveExchange":
 				case "Party_cbxAcceptOnlyPartySetup":
 				case "Party_cbxInviteOnlyPartySetup":
 				case "Party_cbxAcceptAll":
@@ -1848,6 +2223,17 @@ namespace xBot.App
 							}
 						}
 						Settings.SaveCharacterSettings();
+					}
+					break;
+				case "Players_tbxExchangingGold":
+				case "Stall_tbxPrice":
+					{
+						// Gold color
+						ulong gold;
+						if (ulong.TryParse(c.Text.Replace(".", ""),out gold))
+							c.ForeColor = GetGoldColor(gold);
+						else
+							c.ForeColor = Color.White;
 					}
 					break;
 				case "Party_tbxJoinToNumber":
@@ -1983,7 +2369,7 @@ namespace xBot.App
 				case "Menu_NotifyIcon_About":
 					using (About about = new About(this))
 						about.ShowDialog(this);
-          break;
+					break;
 				case "Menu_NotifyIcon_Update":
 					if (isUpdateAvailable)
 						AutoUpdater.ShowUpdateForm();
@@ -2024,7 +2410,7 @@ namespace xBot.App
 										WinAPI.ShowWindow(p, WinAPI.SW_HIDE);
 										WinAPI.EmptyWorkingSet(p);
 									}
-									WinAPI.InvokeIfRequired(btnClientOptions, () => {
+									btnClientOptions.InvokeIfRequired(() => {
 										btnClientOptions.ForeColor = Color.FromArgb(0, 64, 191);
 									});
 								}
@@ -2037,7 +2423,7 @@ namespace xBot.App
 										WinAPI.ShowWindow(p, WinAPI.SW_SHOW);
 										WinAPI.SetForegroundWindow(p);
 									}
-									WinAPI.InvokeIfRequired(btnClientOptions,()=> {
+									btnClientOptions.InvokeIfRequired(()=> {
 										btnClientOptions.ForeColor = ClientVisible;
 									});
 								}
@@ -2167,9 +2553,25 @@ namespace xBot.App
 					{
 						Chat_cmbxMsgType.Text = "Private";
 						Chat_tbxMsgPlayer.Text = Party_lstvPartyMatch.SelectedItems[0].SubItems[1].Text;
-						TabPageV_Option_Click(TabPageV_Control01_Option11, e); // Go to chat
+						TabPageV_Option_Click(TabPageV_Control01_Chat, e); // Go to chat
 						TabPageH_Option_Click(TabPageH_Chat_Option02, e); // Go to private
 						Chat_tbxMsg.Focus();
+					}
+					break;
+				case "Menu_lstvInventoryExchange_Add":
+					if (Players_lstvInventoryExchange.SelectedItems.Count == 1)
+					{
+						ListViewItem item = Players_lstvInventoryExchange.SelectedItems[0];
+						// Check if it's not added yet
+						if (item.Tag == null)
+							PacketBuilder.AddItemExchange(byte.Parse(item.Name));
+					}
+					break;
+				case "Menu_lstvExchangingItems_Remove":
+					if (Players_lstvExchangingItems.SelectedItems.Count == 1)
+					{
+						ListViewItem item = Players_lstvExchangingItems.SelectedItems[0];
+						PacketBuilder.RemoveItemExchange(byte.Parse(item.Name));
 					}
 					break;
 				case "Menu_lstvArea_Add":
@@ -2340,17 +2742,180 @@ namespace xBot.App
 						Settings.SaveBotSettings();
 					}
 					break;
+				case "Menu_lstvOpcodes_Sort":
+					if(this.Settings_lstvOpcodes.Sorting == SortOrder.None || this.Settings_lstvOpcodes.Sorting == SortOrder.Descending)
+						this.Settings_lstvOpcodes.Sorting = SortOrder.Ascending;
+					else
+						this.Settings_lstvOpcodes.Sorting = SortOrder.Descending;
+					Settings_lstvOpcodes.Sort();
+					Settings.SaveBotSettings();
+					break;
 				case "Menu_rtbxPackets_AutoScroll":
 					Settings_rtbxPackets.AutoScroll = t.Checked;
 					break;
 				case "Menu_rtbxPackets_Clear":
 					Settings_rtbxPackets.Clear();
 					break;
-				case "Menu_lstvHost_remove":
+				case "Menu_lstvHost_Remove":
 					if (Settings_lstvHost.SelectedItems.Count == 1)
 					{
 						Settings_lstvHost.SelectedItems[0].Remove();
 						Settings.SaveBotSettings();
+					}
+					break;
+				case "Menu_tvwPlayers_Trace":
+					if (Bot.Get.inGame)
+					{
+						SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+						Bot.Get.StartTrace(player.Name);
+					}
+					break;
+				case "Menu_tvwPlayers_Whisper":
+					{
+						SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+						Chat_cmbxMsgType.Text = "Private";
+						Chat_tbxMsgPlayer.Text = player.Name;
+						TabPageV_Option_Click(TabPageV_Control01_Chat, e); // Go to chat
+						TabPageH_Option_Click(TabPageH_Chat_Option02, e); // Go to private
+						Chat_tbxMsg.Focus();
+					}
+					break;
+				case "Menu_tvwPlayers_Exchange":
+					{
+						SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+						Bot b = Bot.Get;
+						if (b.inGame && !b.inExchange)
+						{
+							PacketBuilder.InviteToExchange((uint)player[SRProperty.UniqueID]);
+						}
+					}
+					break;
+				case "Menu_tvwPlayers_InviteToParty":
+					{
+						Bot b = Bot.Get;
+						if (b.inGame)
+						{
+							SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+							uint UniqueID = (uint)player[SRProperty.UniqueID];
+							if (Info.Get.isNear(UniqueID))
+							{
+								if (b.inParty)
+									PacketBuilder.InviteToParty(UniqueID);
+								else
+									PacketBuilder.CreateParty(UniqueID, b.GetPartySetup());
+							}
+						}
+					}
+					break;
+				case "Menu_tvwPlayers_InviteToGuild":
+					{
+					//	Bot b = Bot.Get;
+					//	if (b.inGuild)
+					//	{
+					//		SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+					//		if (Info.Get.isNear((uint)player[SRProperty.UniqueID]))
+					//		{
+					//			PacketBuilder.InviteToGuild((uint)player[SRProperty.UniqueID]);
+					//		}
+					//	}
+					}
+					break;
+				case "Menu_tvwPlayers_InviteToAcademy":
+					{
+						//Bot b = Bot.Get;
+						//if (b.inAcademy)
+						//{
+						//SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+						//if (Info.Get.isNear((uint)player[SRProperty.UniqueID]))
+						//{
+						//	PacketBuilder.InviteToAcademy((uint)player[SRProperty.UniqueID]);
+						//}
+						//}
+					}
+					break;
+				case "Menu_tvwPlayers_Stall":
+					{
+						SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+						uint UniqueID = (uint)player[SRProperty.UniqueID];
+						if (Info.Get.isNear(UniqueID))
+						{
+							if ((Types.InteractMode)player[SRProperty.InteractMode] == Types.InteractMode.OnStall)
+							{
+								SRCoord playerPosition = player.GetPosition();
+                if (Info.Get.Character.GetPosition().DistanceTo(playerPosition) > 9.0)
+								{
+									if (MessageBox.Show(this, "The player is too far away. Do you want to get closer?", "xBot - Players", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes)
+										Bot.Get.MoveTo(playerPosition);
+									return;
+								}
+								else
+								{
+									PacketBuilder.SelectEntity(UniqueID);
+									PacketBuilder.OpenStall(UniqueID);
+									// Change tab ux
+									TabPageV_Option_Click(TabPageV_Control01_Stall, null);
+									TabPageH_Option_Click(TabPageH_Stall_Option01, null);
+								}
+							}
+							else
+							{
+								MessageBox.Show(this, "The player has no stall activated.", "xBot - Players", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							}
+						}
+						else
+						{
+							MessageBox.Show(this, "The player is not near!", "xBot - Players", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						}
+					}
+					break;
+				case "Menu_lstvStall_Buying_Buy":
+					if (Bot.Get.inGame)
+					{
+						if (Stall_lstvStall.SelectedItems.Count == 1)
+						{
+							if (Stall_lstvStall.SelectedItems[0].Tag != null)
+							{
+								SRObject item = (SRObject)Stall_lstvStall.SelectedItems[0].Tag;
+								if ((ulong)item[SRProperty.Gold] > (ulong)Info.Get.Character[SRProperty.Gold])
+									MessageBox.Show(this, "Your gold is not enough to buy this item.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+								else
+									PacketBuilder.BuyStallItem((byte)Stall_lstvStall.SelectedIndices[0]);
+							}
+						}
+					}
+					break;
+				case "Menu_lstvStall_Selling_Edit":
+					if (Stall_btnTitleEdit.Enabled)
+					{
+						if (Stall_lstvStall.SelectedItems.Count == 1)
+						{
+							if (Stall_lstvStall.SelectedItems[0].Tag != null)
+							{
+								ulong newPrice;
+								if (ulong.TryParse(Stall_tbxPrice.Text.Replace(".",""), out newPrice))
+								{
+									SRObject item = (SRObject)Stall_lstvStall.SelectedItems[0].Tag;
+									PacketBuilder.EditItemStall((byte)Stall_lstvStall.SelectedIndices[0], (ushort)item[SRProperty.Quantity], newPrice);
+								}
+								else
+								{
+									MessageBox.Show(this, "Price incorrect. Please, check again.", "xBot - Stall", MessageBoxButtons.OK, MessageBoxIcon.Error);
+									Stall_tbxPrice.Focus();
+								}
+							}
+						}
+					}
+					break;
+				case "Menu_lstvStall_Selling_Remove":
+					if (Stall_btnTitleEdit.Enabled)
+					{
+						if (Stall_lstvStall.SelectedItems.Count == 1)
+						{
+							if (Stall_lstvStall.SelectedItems[0].Tag != null)
+							{
+								PacketBuilder.RemoveItemStall((byte)Stall_lstvStall.SelectedIndices[0]);
+							}
+						}
 					}
 					break;
 			}
@@ -2487,24 +3052,26 @@ namespace xBot.App
 								}
 								else
 								{
-									try
-									{
-										// Change folder name
-										string dir = Path.GetDirectoryName(Pk2Extractor.GetDirectory(item.Name));
-										string parentDir = Path.GetDirectoryName(dir);
-										Directory.Move(dir, Path.Combine(parentDir, e.Label));
-									}
-									catch {
-										e.CancelEdit = true;
-										MessageBox.Show(this, "Error while changing name! Please, close all bots at first, and/or try with a different name", "xBot", MessageBoxButtons.OK);
-										return;
-									}
-									// Change combobox
-									Login_cmbxSilkroad.Items.Remove(item.Name);
-									Login_cmbxSilkroad.Items.Add(e.Label);
+									if(e.Label != item.Text){
+										try
+										{
+											// Change folder name
+											string dir = Path.GetDirectoryName(Pk2Extractor.GetDirectory(item.Name));
+											string parentDir = Path.GetDirectoryName(dir);
+											Directory.Move(dir, Path.Combine(parentDir, e.Label));
+										}
+										catch {
+											e.CancelEdit = true;
+											MessageBox.Show(this, "Error while changing name! Please, close all bots at first, and/or try with a different name", "xBot", MessageBoxButtons.OK);
+											return;
+										}
+										// Change combobox
+										Login_cmbxSilkroad.Items.Remove(item.Name);
+										Login_cmbxSilkroad.Items.Add(e.Label);
 
-									item.Name = e.Label;
-									Settings.SaveBotSettings();
+										item.Name = e.Label;
+										Settings.SaveBotSettings();
+									}
 								}
 							}
 						}
@@ -2517,25 +3084,7 @@ namespace xBot.App
 			ToolStripMenuItem t = (ToolStripMenuItem)sender;
 			SRObject teleport = (SRObject)t.Tag;
 			// Select teleport
-			PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
-			// Wait 1.5segs and use it
-			PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],uint.Parse(t.Name),1500);
-		}
-		private void Menu_Minimap_Player_Click(object sender, EventArgs e)
-		{
-			ToolStripMenuItem t = (ToolStripMenuItem)sender;
-			SRObject player = (SRObject)t.Tag;
-
-			Bot b = Bot.Get;
-      switch (t.Name)
-			{
-				case "InviteToParty":
-					if(b.inParty)
-						PacketBuilder.InviteToParty((uint)player[SRProperty.UniqueID]);
-					else
-						PacketBuilder.CreateParty((uint)player[SRProperty.UniqueID],b.GetPartySetup());
-					break;
-			}
+			Bot.Get.UseTeleportAsync(teleport, uint.Parse(t.Name));
 		}
 		private void xListView_DragItemAdding_Cancel(object sender, xListView.DragItemEventArgs e)
 		{
@@ -2561,6 +3110,36 @@ namespace xBot.App
 		{
 			Minimap_pnlMap.Zoom = (byte)Minimap_tbrZoom.Value;
 		}
+		private void TreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			TreeView t = (TreeView)sender;
+			if (e.Button == MouseButtons.Right)
+				t.SelectedNode = e.Node;
+
+			switch (t.Name)
+			{
+				case "Players_tvwPlayers":
+					if (e.Node.Level == 0)
+					{
+						if (e.Button == MouseButtons.Right)
+						{
+							e.Node.ContextMenuStrip = Menu_tvwPlayers;
+						}
+					}
+					break;
+			}
+		}
+		private void Control_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			Control c = (Control)sender;
+			switch (c.Name)
+			{
+				case "Stall_tbxStallTitle":
+				case "Stall_tbxStallNote":
+					Settings.SaveCharacterSettings();
+					break;
+			}
+    }
 		#endregion
 
 		public enum ProcessState

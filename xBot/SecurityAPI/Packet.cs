@@ -169,6 +169,17 @@ namespace SecurityAPI
 				return (int)(m_reader.BaseStream.Length - m_reader.BaseStream.Position);
 			}
 		}
+		public bool ReadBool()
+		{
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+				return m_reader.ReadByte() == 1;
+			}
+		}
 
 		public byte ReadByte()
 		{
@@ -280,11 +291,20 @@ namespace SecurityAPI
 				return m_reader.ReadDouble();
 			}
 		}
-		public string ReadAscii()
+		public string ReadString(int length, int codepage = 1252)
 		{
-			return ReadAscii(1252);
+			lock (m_lock)
+			{
+				if (!m_locked)
+				{
+					throw new Exception("Cannot Read from an unlocked Packet.");
+				}
+
+				byte[] bytes = m_reader.ReadBytes(length);
+				return Encoding.GetEncoding(codepage).GetString(bytes);
+			}
 		}
-		public string ReadAscii(int codepage)
+		public string ReadAscii(int codepage = 1252)
 		{
 			lock (m_lock)
 			{
@@ -525,6 +545,17 @@ namespace SecurityAPI
 				return m_writer.BaseStream.Seek(offset, orgin);
 			}
 		}
+		public void WriteBool(bool value)
+		{
+			lock (m_lock)
+			{
+				if (m_locked)
+				{
+					throw new Exception("Cannot Write to a locked Packet.");
+				}
+				m_writer.Write(value ? 1 : 0);
+			}
+		}
 		public void WriteByte(byte value)
 		{
 			lock (m_lock)
@@ -646,11 +677,7 @@ namespace SecurityAPI
 				m_writer.Write(value);
 			}
 		}
-		public void WriteAscii(string value)
-		{
-			WriteAscii(value, 1252);
-		}
-		public void WriteAscii(string value, int code_page)
+		public void WriteAscii(string value, int codepage = 1252)
 		{
 			lock (m_lock)
 			{
@@ -659,7 +686,7 @@ namespace SecurityAPI
 					throw new Exception("Cannot Write to a locked Packet.");
 				}
 
-				byte[] codepage_bytes = Encoding.GetEncoding(code_page).GetBytes(value);
+				byte[] codepage_bytes = Encoding.GetEncoding(codepage).GetBytes(value);
 				string utf7_value = Encoding.UTF7.GetString(codepage_bytes);
 				byte[] bytes = Encoding.Default.GetBytes(utf7_value);
 
@@ -941,11 +968,11 @@ namespace SecurityAPI
 				}
 			}
 		}
-		public void WriteInt64Array(Int64[] values)
+		public void WriteInt64Array(long[] values)
 		{
 			WriteInt64Array(values, 0, values.Length);
 		}
-		public void WriteInt64Array(Int64[] values, int index, int count)
+		public void WriteInt64Array(long[] values, int index, int count)
 		{
 			lock (m_lock)
 			{

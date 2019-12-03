@@ -12,7 +12,11 @@ namespace xGraphics
 			get { return _image; }
 			set {
 				_image = value;
-				RecreateHandle();
+				try
+				{
+					RecreateHandle();
+				}
+				catch { }
 			}
 		}
 		public xMapControl()
@@ -31,7 +35,11 @@ namespace xGraphics
 		}
 		protected override void OnMove(EventArgs e)
 		{
-			RecreateHandle();
+			try
+			{
+				RecreateHandle();
+			}
+			catch { }
 		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -43,7 +51,11 @@ namespace xGraphics
 		}
 		public void RePaint()
 		{
-			RecreateHandle();
+			try
+			{
+				RecreateHandle();
+			}
+			catch { }
 		}
 	}
 }

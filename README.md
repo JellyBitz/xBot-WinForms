@@ -1,16 +1,19 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.2.2") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.4.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
 - Clientless support
 - Auto Login from [command line](#Command-Line-Options)
 - Auto Potions (Pets & transport included)
+- Player viewer
+- Exchange support
 - Auto Party (Party matching included)
 - Leader [commands](#Chat-Leader-Commands) control from chat
 - Inventory & Avatar inventory viewer (Equip, Unequip, Drop and Use item included)
 - Auto Training (Only attacking at training area has been implemented)
 - Trace
+- Stall support
 - Chatting
 - Minimap
 - Game info viewer, also known as "Spy" but better!

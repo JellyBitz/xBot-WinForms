@@ -210,7 +210,11 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="SRObjectCollection"/></para>
 		/// </summary>
 		Objectives,
-		TaskID,
+		/// <summary>
+		/// Tasks ID.
+		/// <para>Type : <see cref="uint"/>[]</para>
+		/// </summary>
+		TasksID,
 		NPCIDs,
 		CollectionBooks,
 		Number,
@@ -260,7 +264,7 @@ namespace xBot.Game.Objects
 		/// NPC models ID.
 		/// <para>Type : <see cref="uint"/>[]</para>
 		/// </summary>
-		NPCModelID,
+		NPCsID,
 		/// <summary>
 		/// Duration at miliseconds.
 		/// <para>Type : <see cref="uint"/></para>
@@ -352,7 +356,7 @@ namespace xBot.Game.Objects
 		UnionID,
 		UnionLastCrestRev,
 		GuildisFriendly,
-		GuildMemberAuthorityType,
+    GuildMemberAuthorityType,
 		StallTitle,
 		StallDecorationType,
 		EquipmentCooldown,
@@ -371,6 +375,10 @@ namespace xBot.Game.Objects
 		/// </summary>
 		LastUpdateTime,
 		HPMP,
+		/// <summary>
+		/// icon path from Pk2.
+		/// <para>Type : <see cref="string"/></para>
+		/// </summary>
 		Icon,
 		hasTalk,
 		TalkOptions,
@@ -419,11 +427,16 @@ namespace xBot.Game.Objects
 		/// <para>Type : <see cref="SRObjectCollection"/></para>
 		/// </summary>
 		TeleportOptions,
-
+		/// <summary>
+		/// <para>Type : <see cref="byte"/></para>
+		/// </summary>
 		Slot,
-	
-
-		DropSource,
+		/// <summary>
+		/// <para>Type : <see cref="SRObjectCollection"/></para>
+		/// </summary>
+		InventoryExchange,
+		
+    DropSource,
 		Rarity,
 		Appearance,
 		OwnerRefObjID,
@@ -441,6 +454,12 @@ namespace xBot.Game.Objects
 		unkUInt01,
 		unkUInt02,
 		unkUInt03,
-		unkUInt04
+		unkUInt04,
+		InventoryStall,
+		/// <summary>
+		/// Stall unique ID from viewers 
+		/// <para>Type : <see cref="uint"/>[]</para>
+		/// </summary>
+		StallViewersID
 	}
 }

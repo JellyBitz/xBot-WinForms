@@ -84,17 +84,17 @@ namespace xBot.Game.Objects
 				return this.DistanceTo(Coord) <= 1;
 			return false;
 		}
-		public double DistanceTo(double PosX, double PosY)
+		public double DistanceTo(double PosX, double PosY,ushort Region)
 		{
 			return Math.Sqrt(Math.Pow(PosX - this.PosX, 2.0) + Math.Pow(PosY - this.PosY, 2.0));
 		}
 		public double DistanceTo(SRCoord Coord)
 		{
-			return DistanceTo(Coord.PosX, Coord.PosY);
+			return DistanceTo(Coord.PosX, Coord.PosY,Coord.Region);
 		}
-		public long TimeTo(SRCoord Coord, double SpeedPerMs)
+		public int TimeTo(SRCoord Coord, double SpeedPerMs)
 		{
-			return (long)Math.Round(DistanceTo(Coord) / SpeedPerMs);
+			return (int)Math.Round(DistanceTo(Coord) / SpeedPerMs);
 		}
 		public override string ToString()
 		{
@@ -108,21 +108,5 @@ namespace xBot.Game.Objects
 		{
 			return Region > short.MaxValue;
 		}
-		public SRLocation GetLocation()
-		{
-			switch (Region)
-			{
-				default:
-					return SRLocation.WorldMap;
-			}
-		}
-		private static double GetModule(double value, double module)
-		{
-			return value - (module * (int)(value / module));
-		}
-	}
-	public enum SRLocation
-	{
-		WorldMap
 	}
 }

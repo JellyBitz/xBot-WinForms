@@ -122,7 +122,7 @@ namespace xBot.App.PK2Extractor
 		{
 			Log("Opening Pk2 file using " + (tbxBlowfishKey.Text != "" ? "blowfish key: " + tbxBlowfishKey.Text : "default blowfish key"));
 			LogState("Opening Pk2 file...");
-      try
+			try
 			{
 				pk2 = new Pk2Reader(MediaPk2Path, tbxBlowfishKey.Text);
 			}
@@ -140,19 +140,20 @@ namespace xBot.App.PK2Extractor
 
 			// Fill info to Main GUI
 			Window w = Window.Get;
-			PacketReader pReader = null;
 			try
 			{
 				Log("Extracting Silkroad Version");
 				LogState("Extracting...");
-				pReader = new PacketReader(pk2.GetFileBytes("SV.T"));
-				int versionLength = pReader.ReadInt32();
-				byte[] versionBuffer = pReader.ReadBytes(versionLength);
+				// Reading
+				Packet p = new Packet(0,false,false,pk2.GetFileBytes("SV.T"));
+				p.Lock();
+				int dataLength = p.ReadInt();
+				byte[] dataBuffer = p.ReadByteArray(dataLength);
+				// Decoding
 				Blowfish bf = new Blowfish();
-				bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, versionLength);
-				byte[] versionDecoded = bf.Decode(versionBuffer);
-				this.Version = uint.Parse(Encoding.ASCII.GetString(versionDecoded, 0, 4));
-				LogState();
+				bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, dataLength);
+				byte[] dataDecoded = bf.Decode(dataBuffer);
+				this.Version = uint.Parse(Encoding.ASCII.GetString(dataDecoded, 0, 4));
 			}
 			catch (Exception ex)
 			{
@@ -168,22 +169,26 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Extracting Locale & Gateway");
 				LogState("Extracting...");
-				pReader = new PacketReader(pk2.GetFileBytes("DivisionInfo.txt"));
-				this.Locale = pReader.ReadByte();
-				byte dvs = pReader.ReadByte();
-				for (int i = 0; i < dvs; i++)
+				// Reading
+				Packet p = new Packet(0, false, false, pk2.GetFileBytes("DivisionInfo.txt"));
+				p.Lock();
+				this.Locale = p.ReadByte();
+				byte divisionCount = p.ReadByte();
+				for (int i = 0; i < divisionCount; i++)
 				{
-					pReader.ReadChars(pReader.ReadInt32()); // DivisionName
-					pReader.ReadByte(); // 0
-					byte gws = pReader.ReadByte();
-					Gateways = new System.Collections.Generic.List<string>(gws);
-					for (int j = 0; j < gws; j++)
+					string DivisionName = p.ReadString(p.ReadInt());
+					p.ReadByte(); // 0
+
+					byte gatewayCount = p.ReadByte();
+					Gateways = new System.Collections.Generic.List<string>(gatewayCount);
+					for (int j = 0; j < gatewayCount; j++)
 					{
-						Gateways.Add(Encoding.ASCII.GetString(pReader.ReadBytes(pReader.ReadInt32())));
-						pReader.ReadByte(); // 0
+						string gatewayHost = p.ReadString(p.ReadInt());
+						p.ReadByte(); // 0
+
+						Gateways.Add(gatewayHost);
 					}
 				}
-				LogState();
 			}
 			catch (Exception ex)
 			{
@@ -192,14 +197,19 @@ namespace xBot.App.PK2Extractor
 				WinAPI.InvokeIfRequired(btnStart, () => {
 					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
 				});
+				return;
 			}
 
 			try
 			{
 				Log("Extracting Gateport");
 				LogState("Extracting...");
-				this.Gateport = ushort.Parse(pk2.GetFileText("Gateport.txt").Trim());
-				LogState();
+				// Reading
+				Packet p = new Packet(0, false, false, pk2.GetFileBytes("Gateport.txt"));
+				p.Lock();
+
+				string test = p.ReadString(p.RemainingRead());
+        this.Gateport = ushort.Parse(test); //ushort.Parse(pk2.GetFileText("Gateport.txt").Trim());
 			}
 			catch (Exception ex)
 			{
@@ -208,12 +218,13 @@ namespace xBot.App.PK2Extractor
 				WinAPI.InvokeIfRequired(btnStart, () => {
 					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
 				});
+				return;
 			}
 
 			// Updating database
 			Log("Creating Database...");
 			string dbPath = GetDatabasePath(SilkroadName);
-      if (SQLDatabase.Exists(dbPath))
+			if (SQLDatabase.Exists(dbPath))
 			{
 				LogState("Deleting old database");
 				if (!SQLDatabase.TryDelete(dbPath))
@@ -253,6 +264,7 @@ namespace xBot.App.PK2Extractor
 
 			// Generating database
 			Log("Generating database (this may take a while)");
+			SetLanguageIndex();
 			Log("Loading name references...");
 			LoadNameReferences();
 			Log("Loading & Adding text references...");

@@ -27,8 +27,9 @@ namespace xBot.Game.Objects
 			}
 			set
 			{
+				if (!Objects.ContainsKey(UniqueID))
+					Enumerator.Add(UniqueID);
 				Objects[UniqueID] = value;
-				Enumerator.Add(UniqueID);
 			}
 		}
 		#endregion

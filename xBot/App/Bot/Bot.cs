@@ -45,6 +45,14 @@ namespace xBot.App
 		/// </summary>
 		public bool inTeleport { get;  private set; }
 		/// <summary>
+		/// Check if the character is in guild.
+		/// </summary>
+		public bool inGuild { get; private set; }
+		/// <summary>
+		/// Check if the character is in academy.
+		/// </summary>
+		public bool inAcademy { get; private set; }
+		/// <summary>
 		/// Check if the character is in party.
 		/// </summary>
 		public bool inParty { get; private set; }
@@ -57,22 +65,34 @@ namespace xBot.App
 		/// </summary>
 		private Types.PartyPurpose PartyPurposeType;
 		/// <summary>
-		/// Keep the last entity selected by the character
+		/// Get the last entity selected by the character.
 		/// </summary>
-		public uint EntitySelected { get; private set; }
+		public uint SelectedEntityUID { get; private set; }
 		/// <summary>
-		/// Check if the character has his own stall opened.
+		/// Check if the character is in trace mode.
 		/// </summary>
-		public bool hasStall { get; private set; }
+		public bool inTrace { get; private set; }
+		private string TracePlayerName;
 		/// <summary>
 		/// Check if the character is inside of stall, including his own.
 		/// </summary>
 		public bool inStall { get; private set; }
 		/// <summary>
-		/// Check if the character is inside of stall, including his own.
+		/// Get the owner from stall or null.
 		/// </summary>
-		public bool inTrace { get; private set; }
-		private string TracePlayerName;
+		public SRObject StallerEntitiy { get; private set; }
+		/// <summary>
+		/// Check if the character is exchanging with another player.
+		/// </summary>
+		public bool inExchange { get { return ExchangerEntity != null; } }
+		/// <summary>
+		/// Get the entity from exchange or null.
+		/// </summary>
+		public SRObject ExchangerEntity { get; private set; }
+		/// <summary>
+		/// Check if the exchanger has confirmed.
+		/// </summary>
+		public bool isExchangerConfirmed { get; private set; }
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -95,9 +115,9 @@ namespace xBot.App
 		/// <summary>
 		/// Log to a file the errors with the packet if is needed.
 		/// </summary>
-		public void LogError(string error, Packet packet = null)
+		public void LogError(string message,Exception ex,Packet packet = null)
 		{
-			string msg = DateTime.Now.ToString("[dd/MM/yyyy|HH:mm:ss]") + error + Environment.NewLine;
+			string msg = DateTime.Now.ToString("[dd/MM/yyyy|HH:mm:ss]") +"[" + message + "][" + ex.Message + "][" + ex.StackTrace + "]" + Environment.NewLine;
 			if (packet != null)
 				msg += packet.ToString() + Environment.NewLine;
 			File.AppendAllText("erros.log", msg);
@@ -254,7 +274,7 @@ namespace xBot.App
 		/// Get's the last uniqueID selected.
 		/// </summary>
 		public uint GetEntitySelected() {
-			return EntitySelected;
+			return SelectedEntityUID;
 		}
 		/// <summary>
 		/// Returns the current party setup used by the GUI.
@@ -451,13 +471,9 @@ namespace xBot.App
 		{
 			Info i = Info.Get;
 			if ((bool)i.Character[SRProperty.isRiding])
-			{
 				PacketBuilder.MoveTo(position, (uint)i.Character[SRProperty.RidingUniqueID]);
-			}
 			else
-			{
 				PacketBuilder.MoveTo(position);
-			}
 		}
 		/// <summary>
 		/// Try to use and item at the slot specified. Return success.
@@ -628,6 +644,24 @@ namespace xBot.App
 				}
 			}
 			return false;
+		}
+		public async void UseTeleportAsync(SRObject teleport, uint destinationID)
+		{
+			if (Proxy.ClientlessMode)
+			{
+				bool isSelected = await System.Threading.Tasks.Task.Run(() => WaitSelectEntity((uint)teleport[SRProperty.UniqueID], 8, 250, "Selecting teleport " + teleport[SRProperty.TeleportName] + "..."));
+				if (isSelected)
+					PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], destinationID);
+				else
+					Window.Get.LogProcess(teleport[SRProperty.TeleportName] + " cannot be selected!");
+			}
+			else
+			{
+				if (Info.Get.SpawnList.ContainsKey((uint)teleport[SRProperty.UniqueID]))
+					PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], destinationID);
+				else
+					Window.Get.LogProcess(teleport[SRProperty.TeleportName] + " cannot be selected!");
+			}
 		}
 		#endregion
 	}

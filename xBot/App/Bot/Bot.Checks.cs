@@ -177,12 +177,12 @@ namespace xBot.App
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillUniversal.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
-					if (status.HasFlag(Types.BadStatus.Freezing
+					if (Types.HasFlags((uint)((Types.BadStatus)i.Character[SRProperty.BadStatusFlags]),
+						(uint)(Types.BadStatus.Freezing
 						| Types.BadStatus.ElectricShock 
 						| Types.BadStatus.Burn 
 						| Types.BadStatus.Poisoning 
-						| Types.BadStatus.Zombie))
+						| Types.BadStatus.Zombie)))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 6, ref slot))
@@ -207,8 +207,8 @@ namespace xBot.App
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillPurification.Checked)
 				{
-					Types.BadStatus status = (Types.BadStatus)i.Character[SRProperty.BadStatusFlags];
-					if (status.HasFlag( Types.BadStatus.Dull 
+					if (Types.HasFlags((uint)((Types.BadStatus)i.Character[SRProperty.BadStatusFlags]),
+						(uint)(Types.BadStatus.Dull 
 						| Types.BadStatus.Fear 
 						| Types.BadStatus.ShortSight
 						| Types.BadStatus.Bleed
@@ -221,7 +221,7 @@ namespace xBot.App
 						| Types.BadStatus.Division
 						| Types.BadStatus.Panic
 						| Types.BadStatus.Combustion 
-						| Types.BadStatus.Hidden))
+						| Types.BadStatus.Hidden)))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 1, ref slot))
@@ -461,14 +461,14 @@ namespace xBot.App
 				pet = i.MyPets.Find(p =>
 					(p.ID4 == 1 || p.ID4 == 2)
 					&& p.Contains(SRProperty.BadStatusFlags)
-					&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+					&& (Types.BadStatus)p[SRProperty.BadStatusFlags] != Types.BadStatus.None
 				);
 				if (pet == null)
 				{
 					pet = i.MyPets.Find(p =>
 						p.ID4 == 3
 						&& p.Contains(SRProperty.BadStatusFlags)
-						&& !((Types.BadStatus)p[SRProperty.BadStatusFlags]).HasFlag(Types.BadStatus.None)
+						&& (Types.BadStatus)p[SRProperty.BadStatusFlags] != Types.BadStatus.None
 					);
 				}
 				// At least one pet has bad status

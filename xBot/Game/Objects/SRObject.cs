@@ -36,7 +36,7 @@ namespace xBot.Game.Objects
 		/// </summary>
 		public SRObject()
 		{
-			
+
 		}
 		/// <summary>
 		/// Only used for a safe clonation/copy.
@@ -64,7 +64,7 @@ namespace xBot.Game.Objects
 		/// </summary>
 		public SRObject(string ServerName, SRType Type)
 		{
-			LoadDefaultProperties(ServerName,Type);
+			LoadDefaultProperties(ServerName, Type);
 		}
 
 		#region (Generic setup)
@@ -86,6 +86,10 @@ namespace xBot.Game.Objects
 		{
 			return Properties.ContainsKey(name);
 		}
+		public bool RemoveKey(SRProperty name)
+		{
+			return Properties.Remove(name);
+		}
 		public void CopyFrom(SRObject value)
 		{
 			// A safe copy
@@ -97,7 +101,7 @@ namespace xBot.Game.Objects
 			this.ID4 = value.ID4;
 			this.Name = value.Name;
 			this.ServerName = value.ServerName;
-			this.Properties = new Dictionary<SRProperty,object>(value.Properties);
+			this.Properties = new Dictionary<SRProperty, object>(value.Properties);
 		}
 		public bool isType(byte ID1, byte ID2, byte ID3, byte ID4)
 		{
@@ -107,7 +111,7 @@ namespace xBot.Game.Objects
 		{
 			return new SRObject(this);
 		}
-		public void LoadDefaultProperties(uint ID,SRType Type)
+		public void LoadDefaultProperties(uint ID, SRType Type)
 		{
 			this.ID = ID;
 			this.Type = Type;
@@ -152,15 +156,11 @@ namespace xBot.Game.Objects
 					data = i.GetMastery(ID);
 					break;
 				case SRType.Quest:
-
-					break;
-				case SRType.None:
-				default:
 					break;
 			}
 			LoadDefaultProperties(data);
 		}
-		public void LoadDefaultProperties(string ServerName,SRType Type)
+		public void LoadDefaultProperties(string ServerName, SRType Type)
 		{
 			this.ServerName = ServerName;
 			this.Type = Type;
@@ -200,9 +200,6 @@ namespace xBot.Game.Objects
 					break;
 				case SRType.Skill:
 					data = i.GetSkill(ServerName);
-					break;
-				case SRType.None:
-				default:
 					break;
 			}
 			LoadDefaultProperties(data);
@@ -249,7 +246,7 @@ namespace xBot.Game.Objects
 					if (linkData.Count > 0)
 					{
 						this[SRProperty.TeleportName] = linkData[0]["name"];
-            foreach (NameValueCollection link in linkData)
+						foreach (NameValueCollection link in linkData)
 						{
 							SRObject Teleport = new SRObject();
 							Teleport.ID = uint.Parse(link["destinationid"]);
@@ -264,12 +261,12 @@ namespace xBot.Game.Objects
 						this[SRProperty.TeleportName] = this.Name;
 					}
 					this[SRProperty.TeleportOptions] = TeleportOptions;
-          break;
+					break;
 				case SRType.Skill:
 					this.ID = uint.Parse(data["id"]);
 					this.ServerName = data["servername"];
 					this.Name = data["name"];
-					this[SRProperty.GroupID] = data["group_id"];
+					this[SRProperty.GroupID] = uint.Parse(data["group_id"]);
 					this[SRProperty.GroupName] = data["group_name"];
 					this[SRProperty.Cooldown] = uint.Parse(data["cooldown"]);
 					this[SRProperty.DurationMax] = uint.Parse(data["duration"]);
@@ -301,7 +298,7 @@ namespace xBot.Game.Objects
 			root.Nodes.Add(new TreeNode("ID : " + ID + " (" + Type + ")"));
 			// Node name to show
 			string text;
-			if (isPet() && (ID4 == 3 || ID4 == 4)){
+			if (isPet() && (ID4 == 3 || ID4 == 4)) {
 				// Pet identification
 				text = (string)this[SRProperty.PetName];
 				if (text == "")
@@ -339,9 +336,14 @@ namespace xBot.Game.Objects
 				}
 				else if (t == typeof(SRObjectDictionary<uint>))
 				{
-					string GenericType = Property.Value.ToString().Split('[', ']')[1];
 					TreeNode obj = new TreeNode(Property.Key.ToString());
 					obj.Nodes.AddRange(((SRObjectDictionary<uint>)Property.Value).ToNodes());
+					root.Nodes.Add(obj);
+				}
+				else if (t == typeof(SRObjectDictionary<string>))
+				{
+					TreeNode obj = new TreeNode(Property.Key.ToString());
+					obj.Nodes.AddRange(((SRObjectDictionary<string>)Property.Value).ToNodes());
 					root.Nodes.Add(obj);
 				}
 				else if (t == typeof(string[]))
@@ -387,7 +389,7 @@ namespace xBot.Game.Objects
 				}
 				else if (t == typeof(Stopwatch))
 				{
-					root.Nodes.Add(new TreeNode("\"" + Property.Key + "\" : " + ((Stopwatch)Property.Value).Elapsed+" ago.."));
+					root.Nodes.Add(new TreeNode("\"" + Property.Key + "\" : " + ((Stopwatch)Property.Value).ElapsedMilliseconds + "ms ago.."));
 				}
 				else
 				{
@@ -404,7 +406,7 @@ namespace xBot.Game.Objects
 		}
 		public double GetExpPercent()
 		{
-			return Math.Round((ulong)this[SRProperty.Exp] * 100f / (ulong)this[SRProperty.ExpMax],2);
+			return Math.Round((ulong)this[SRProperty.Exp] * 100f / (ulong)this[SRProperty.ExpMax], 2);
 		}
 		public int GetHPPercent()
 		{
@@ -417,7 +419,7 @@ namespace xBot.Game.Objects
 		public bool hasJobMode()
 		{
 			SRObjectCollection inventory = (SRObjectCollection)this[SRProperty.Inventory];
-			return inventory.FindIndexLimited(item => item != null && item.ID1 == 3 && item.ID2 == 1 && item.ID3 == 7,0,12) != -1;
+			return inventory.FindIndexLimited(item => item != null && item.ID1 == 3 && item.ID2 == 1 && item.ID3 == 7, 0, 12) != -1;
 		}
 		public bool hasAutoTransferEffect()
 		{
@@ -434,7 +436,7 @@ namespace xBot.Game.Objects
 				SRObject Ride = Info.Get.SpawnList[(uint)this[SRProperty.RidingUniqueID]];
 				if (Ride != null)
 				{
-          this[SRProperty.Position] = Ride.GetPosition();
+					this[SRProperty.Position] = Ride.GetPosition();
 					Stopwatch LastUpdateTime = (Stopwatch)this[SRProperty.LastUpdateTime];
 					LastUpdateTime.Restart();
 				}
@@ -455,7 +457,7 @@ namespace xBot.Game.Objects
 			}
 
 			// Scale 1920units:192px = 10:1 => To Ms
-			double MilisecondsPerUnit = GetSpeed() * 0.1 / 1000;
+			double MilisecondsPerUnit = GetMovementSpeed();
 			// Checking update times!
 			Stopwatch timer = (Stopwatch)this[SRProperty.LastUpdateTime];
 			long milisecondsTranscurred = timer.ElapsedMilliseconds;
@@ -487,29 +489,27 @@ namespace xBot.Game.Objects
 			UpdateTimePosition();
 			return (SRCoord)this[SRProperty.Position];
 		}
+		public bool inDungeon()
+		{
+			return ((SRCoord)this[SRProperty.Position]).inDungeon();
+		}
 		public float GetSpeed()
 		{
 			if ((Types.MovementSpeed)this[SRProperty.MovementSpeedType] == Types.MovementSpeed.Running)
 				return (float)this[SRProperty.SpeedRunning];
 			return (float)this[SRProperty.SpeedWalking];
 		}
-		public bool inDungeon()
+		public float GetMovementSpeed()
 		{
-			return ((SRCoord)this[SRProperty.Position]).inDungeon();
+			return GetSpeed() * 0.1f / 1000;
 		}
 		public double GetRadianAngle()
 		{
-			ushort angle = (ushort)this[SRProperty.Angle];
-			if (angle > 0)
-				return angle * Math.PI * 2.0 / ushort.MaxValue;
-			return 0d;
+			return (ushort)this[SRProperty.Angle] * Math.PI * 2.0 / ushort.MaxValue;
 		}
 		public double GetDegreeAngle()
 		{
-			ushort angle = (ushort)this[SRProperty.Angle];
-			if (angle > 0)
-				return angle * 360.0 / ushort.MaxValue;
-      return 0d;
+			return (ushort)this[SRProperty.Angle] * 360.0 / ushort.MaxValue;
 		}
 		public bool isPet()
 		{
@@ -531,6 +531,36 @@ namespace xBot.Game.Objects
 		{
 			return ID1 == 4;
 		}
+		public bool hasPlus()
+		{
+			return ID1 == 3 && ID2 == 1;
+		}
+		public bool hasStack()
+		{
+			return ID2 == 3;
+		}
+		public string RareToString()
+		{
+			if (this.ServerName.Contains("_RARE"))
+			{
+				if (this.ServerName.Contains("_HONOR"))
+					return " [HONOR]";
+				if (this.ServerName.Contains("_A_"))
+					return " [SOS]";
+				if (this.ServerName.Contains("_B_"))
+					return " [SOM]";
+				if (this.ServerName.Contains("_C_"))
+					return " [SUN]";
+			}
+			return "";
+		}
+		public string GetItemText(){
+			return Name + (hasPlus()? " (+" + this[SRProperty.Plus] + ")"+RareToString(): "");
+		}
+		public string GetItemQuantity()
+		{
+			return hasStack() ? " (" + this[SRProperty.Quantity] + "/" + this[SRProperty.QuantityMax] + ")":"";
+    }
 		public bool isAttackingSkill()
 		{
 			if ((uint)this[SRProperty.MP] > 0 && (uint)this[SRProperty.DurationMax] == 0)

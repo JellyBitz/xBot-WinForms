@@ -191,9 +191,9 @@ namespace xBot.Game
 			}
 			else
 			{
-				p.WriteUShort(x);
-				p.WriteUShort(z);
-				p.WriteUShort(y);
+				p.WriteShort(x);
+				p.WriteShort(z);
+				p.WriteShort(y);
 			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -229,12 +229,18 @@ namespace xBot.Game
 						p.WriteByte(0xC);
 						p.WriteByte(0x2C);
 						break;
-					case Types.PlayerPetition.Resurrection:
+					default:
 						p.WriteByte(1);
 						p.WriteByte(0);
 						break;
 				}
 			}
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void InviteToExchange(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_EXCHANGE_INVITATION_REQUEST);
+			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void CreateParty(uint uniqueID, Types.PartySetup setup)
@@ -355,19 +361,89 @@ namespace xBot.Game
 			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void OpenStall(string title,string annotation)
+		public static void CreateStall(string title,string note)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_CREATE_REQUEST);
-			p.WriteAscii(title);
+			p.WriteAscii(title); // title.LengthMax = 63
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 			p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteAscii(annotation);
+			p.WriteByte(Types.StallUpdate.Note);
+			p.WriteAscii(note);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditStallTitle(string title)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.Title);
+			p.WriteAscii(title);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditStallNote(string note)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.Note);
+			p.WriteAscii(note);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditStallState(bool open)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.State);
+			p.WriteByte(open ? 1 : 0);
+			p.WriteShort(0); // unknown
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void AddItemStall(byte slotStall,byte slotInventory,ushort quantity,ulong price)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.ItemAdded);
+			p.WriteByte(slotStall);
+			p.WriteByte(slotInventory);
+			p.WriteUShort(quantity);
+			p.WriteULong(price);
+			p.WriteUInt(1);// FleaMarketNetworkTidGroup. Using the same stall network category
+			p.WriteUShort(0); // unknown
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void RemoveItemStall(byte slotStall)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.ItemRemoved);
+			p.WriteByte(slotStall);
+			p.WriteUShort(0); // unknown
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditItemStall(byte slotStall,ushort quantity,ulong price)
+		{
+      Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			p.WriteByte(Types.StallUpdate.ItemUpdate);
+			p.WriteByte(slotStall);
+			p.WriteUShort(quantity);
+			p.WriteULong(price);
+			p.WriteUShort(0); // unknown
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void CloseStall()
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_DESTROY_REQUEST);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void OpenStall(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_TALK_REQUEST);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void ExitStall()
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_LEAVE_REQUEST);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void BuyStallItem(byte slotStall)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_BUY_REQUEST);
+			p.WriteByte(slotStall);
+			Bot.Get.Proxy.Agent.InjectToServer(p);				
 		}
 		public static void RequestStorageData(uint uniqueID)
 		{
@@ -436,13 +512,13 @@ namespace xBot.Game
 			p.WriteByte(0);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void UseTeleport(uint sourceUniqueID,uint destinationID,int waitDelay)
+		public static void UseTeleport(uint sourceUniqueID,uint destinationID)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_TELEPORT_USE_REQUEST);
 			p.WriteUInt(sourceUniqueID);
 			p.WriteByte(2); // unknown
 			p.WriteUInt(destinationID);
-			Bot.Get.Proxy.Agent.InjectToServer(p, waitDelay);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void DesignateRecall(uint teleportUniqueID)
 		{
@@ -453,6 +529,41 @@ namespace xBot.Game
 		public static void InviteToGuild(uint uniqueID)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_GUILD_INVITATION_REQUEST);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void AddItemExchange(byte slot)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(Types.InventoryItemMovement.InventoryToExchange);
+			p.WriteByte(slot);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void RemoveItemExchange(byte slot)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(Types.InventoryItemMovement.ExchangeToInventory);
+			p.WriteByte(slot);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditGoldExchange(ulong newGold)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(Types.InventoryItemMovement.InventoryGoldToExchange);
+			p.WriteULong(newGold);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void ConfirmExchange()
+		{
+			Bot.Get.Proxy.InjectToServer(new Packet(Agent.Opcode.CLIENT_EXCHANGE_CONFIRM_REQUEST));
+		}
+		public static void ApproveExchange()
+		{
+			Bot.Get.Proxy.InjectToServer(new Packet(Agent.Opcode.CLIENT_EXCHANGE_APPROVE_REQUEST));
+		}
+		public static void InviteToAcademy(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_ACADEMY_INVITATION_REQUEST);
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -639,6 +750,15 @@ namespace xBot.Game
 				p.WriteByte((byte)Types.Chat.Notice);
 				p.WriteAscii(message);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
+			}
+			public static void CreateAgentLogin(byte flag,uint loginID, string host,ushort port)
+			{
+				Packet p = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
+				p.WriteByte(flag);
+				p.WriteUInt(loginID);
+				p.WriteAscii(host);
+				p.WriteUShort(port);
+				Bot.Get.Proxy.Gateway.InjectToClient(p);
 			}
 		}
 		public static void SendGMCommand(Types.GMCommandAction action, string message)

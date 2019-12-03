@@ -157,11 +157,37 @@ namespace xBot.App.PK2Extractor
 
 		string[] data;
 		string line;
+		private void SetLanguageIndex()
+		{
+			string[] lines = pk2.GetFileText("type.txt").Split(new string[] { pk2_lineSplitN },StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < lines.Length; i++)
+			{
+				if (lines[i].Contains("Language"))
+				{
+					string type = lines[i].Split('=')[1].Replace("\"", "").Trim();
+					switch (type)
+					{
+						case "English":
+							LanguageIndex = 8;
+							break;
+						case "Vietnam":
+							LanguageIndex = 9;
+							break;
+						case "Russia":
+							LanguageIndex = 10;
+							break;
+						default:
+							LanguageIndex = 8;
+							break;
+					}
+					Log("Selecting " + type + " (" + LanguageIndex + ") as packet language");
+					return;
+				}
+			}
+		}
 		private void LoadNameReferences()
 		{
 			NameReferences = new Dictionary<string, string>();
-
-			bool languageSelected = false;
 			// short file, load all lines to memory
 			string[] files = pk2.GetFileText("server_dep\\silkroad\\textdata\\TextDataName.txt").Split(new string[] { pk2_lineSplit }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string file in files)
@@ -176,32 +202,12 @@ namespace xBot.App.PK2Extractor
 						{
 							data = line.Split(pk2_split, StringSplitOptions.None);
 
-							if (!languageSelected)
-							{
-								if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
-								{
-									Log("English language empty. Switching to Vietnam");
-									LanguageIndex = 9; // Set Vietnam language
-									if (data[LanguageIndex] == "0" || data[LanguageIndex] == "")
-									{
-										Log("Vietnam language empty. Switching to Korean");
-										LanguageIndex = 2; // Set Korean language
-									}
-								}
-								else
-								{
-									Log("Using English as language");
-								}
-								languageSelected = true;
-							}
-
 							// 10% display
 							if (rand.Next(1, 1000) <= 100)
 								LogState("Loading " + data[1]);
 
 							if (data.Length > LanguageIndex && data[LanguageIndex] != "0")
 								NameReferences[data[1]] = data[LanguageIndex];
-							
 						}
 					}
 				}

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Drawing.Imaging;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.IO;
 
 namespace xBot.App.PK2Extractor

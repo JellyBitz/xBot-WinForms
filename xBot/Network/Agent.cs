@@ -48,6 +48,9 @@ namespace xBot.Network
 				CLIENT_PARTY_MATCH_LIST_REQUEST = 0x706C,
 				CLIENT_PARTY_MATCH_JOIN_REQUEST = 0x706D,
 				CLIENT_PARTY_MATCH_JOIN_RESPONSE = 0x306E,
+				CLIENT_GUILD_INVITATION_REQUEST = 0x70F3,
+				CLIENT_ACADEMY_INVITATION_REQUEST = 0x7472,
+				CLIENT_ACADEMY_MATCH_LIST_REQUEST = 0x747D,
 				CLIENT_ACADEMY_NOTICE_EDIT_REQUEST = 0x7477,
 				CLIENT_PET_UNSUMMON_REQUEST = 0x7116,
 				CLIENT_PET_SETTINGS_CHANGE_REQUEST = 0x7420,
@@ -69,7 +72,10 @@ namespace xBot.Network
 				CLIENT_CONSIGNMENT_LIST_REQUEST = 0x750E,
 				CLIENT_CONSIGNMENT_REGISTER_REQUEST = 0x7508,
 				CLIENT_CONSIGNMENT_UNREGISTER_REQUEST = 0x7509,
-				CLIENT_GUILD_INVITATION_REQUEST = 0x70F3,
+				CLIENT_EXCHANGE_INVITATION_REQUEST = 0x7081,
+				CLIENT_EXCHANGE_CONFIRM_REQUEST = 0x7082,
+				CLIENT_EXCHANGE_APPROVE_REQUEST = 0x7083,
+				CLIENT_EXCHANGE_EXIT_REQUEST = 0x7084,
 
 				SERVER_AUTH_RESPONSE = 0xA103,
 				SERVER_CHARACTER_SELECTION_JOIN_RESPONSE = 0xB001,
@@ -86,13 +92,13 @@ namespace xBot.Network
 				SERVER_INVENTORY_ITEM_USE = 0xB04C,
 				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
 				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
-				SERVER_INVENTORY_ITEM_STATE_UPDATE = 0x3040,
+				SERVER_INVENTORY_ITEM_UPDATE = 0x3040,
 				SERVER_STORAGE_DATA_BEGIN = 0x3047,
 				SERVER_STORAGE_DATA = 0x3049,
 				SERVER_STORAGE_DATA_END = 0x3048,
 				SERVER_ENTITY_SELECTION = 0xB045,
-				SERVER_ENTITY_SKILL_USE = 0xB070,
-				SERVER_ENTITY_SKILL_DATA = 0xB071,
+				SERVER_ENTITY_SKILL_START = 0xB070,
+				SERVER_ENTITY_SKILL_END = 0xB071,
 				SERVER_ENTITY_SKILL_BUFF_ADDED = 0xB0BD,
 				SERVER_ENTITY_SKILL_BUFF_REMOVED = 0xB072,
 				SERVER_ENTITY_SPAWN = 0x3015,
@@ -110,6 +116,7 @@ namespace xBot.Network
 				SERVER_ENTITY_STATE_UPDATE = 0x30BF,
 				SERVER_ENTITY_STALL_CREATE = 0x30B8,
 				SERVER_ENTITY_STALL_DESTROY = 0x30B9,
+				SERVER_ENTITY_STALL_TITLE_UPDATE = 0x30BB,
 				SERVER_ENTITY_EMOTE_USE = 0x3091,
 				SERVER_CHAT_RESPONSE = 0xB025,
 				SERVER_CHAT_UPDATE = 0x3026,
@@ -137,6 +144,7 @@ namespace xBot.Network
 				SERVER_STALL_BUY_RESPONSE = 0xB0B4,
 				SERVER_STALL_LEAVE_RESPONSE = 0xB0B5,
 				SERVER_STALL_UPDATE_RESPONSE = 0xB0BA,
+				SERVER_STALL_ENTITY_ACTION = 0x30B7,
 				SERVER_STALL_CLOSED = 0x30B9,
 				SERVER_MASTERY_SKILL_LEVELUP_RESPONSE = 0xB0A1,
 				SERVER_MASTERY_SKILL_LEVELDOWN_RESPONSE = 0xB202,
@@ -147,6 +155,19 @@ namespace xBot.Network
 				SERVER_TELEPORT_READY_REQUEST = 0x34B5,
 				SERVER_CONSIGNMENT_REGISTER_RESPONSE = 0xB508,
 				SERVER_CONSIGNMENT_UNREGISTER_RESPONSE = 0xB509,
+				SERVER_GUILD_DATA = 0xB0F0,
+				SERVER_ACADEMY_DATA = 0x3C81,
+				SERVER_ACADEMY_MATCH_LIST_RESPONSE = 0xB47D,
+				SERVER_EXCHANGE_STARTED = 0x3085,
+				SERVER_EXCHANGE_PLAYER_CONFIRMED = 0x3086,
+				SERVER_EXCHANGE_COMPLETED = 0x3087,
+				SERVER_EXCHANGE_CANCELED = 0x3088,
+				SERVER_EXCHANGE_GOLD_UPDATE = 0x3089,
+				SERVER_EXCHANGE_ITEMS_UPDATE = 0x308C,
+				SERVER_EXCHANGE_INVITATION_RESPONSE = 0xB081,
+				SERVER_EXCHANGE_CONFIRM_RESPONSE = 0xB082,
+				SERVER_EXCHANGE_APPROVE_RESPONSE = 0xB083,
+				SERVER_EXCHANGE_EXIT_RESPONSE = 0xB084,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -199,11 +220,17 @@ namespace xBot.Network
 		/// <returns>True if the packet is handled by the bot</returns>
 		public bool PacketHandler(Context context, Packet packet)
 		{
-			if (context == Local)
+			try
 			{
-				return Local_PacketHandler(packet);
+				if (context == Local)
+					return Local_PacketHandler(packet);
+				return Remote_PacketHandler(packet);
 			}
-			return Remote_PacketHandler(packet);
+			catch(Exception ex)
+			{
+				Bot.Get.LogError("Parsing Error",ex, packet);
+				throw ex;
+      }
 		}
 		/// <summary>
 		/// Analyze client packets.
@@ -223,7 +250,9 @@ namespace xBot.Network
 					{
 						Info.Get.Charname = packet.ReadAscii();
 						Window w = Window.Get;
-						w.EnableControl(w.Login_btnStart, false);
+						w.Login_btnStart.InvokeIfRequired(() => {
+							w.Login_btnStart.Enabled = false;
+						});
 					}
 					break;
 				case Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN:
@@ -243,12 +272,7 @@ namespace xBot.Network
 						else if (t == Types.Chat.All)
 						{
 							string message = packet.ReadAscii();
-							if(message == "PING")
-							{
-								Info i = Info.Get;
-								i.Ping = new System.Diagnostics.Stopwatch();
-								i.Ping.Start();
-							}
+							return Bot.Get._OnChatSending(message);
 						}
 					}
 					break;
@@ -367,6 +391,9 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_GROUPSPAWN_END:
 					PacketParser.EntityGroupSpawnEnd(packet);
 					break;
+				case Opcode.SERVER_ENTITY_SELECTION:
+					PacketParser.EntitySelection(packet);
+					break;
 				case Opcode.SERVER_ENTITY_LEVEL_UP:
 					PacketParser.EntityLevelUp(packet);
 					break;
@@ -394,11 +421,14 @@ namespace xBot.Network
 				case Opcode.SERVER_ENTITY_STALL_DESTROY:
 					PacketParser.EntityStallDestroy(packet);
 					break;
-				case Opcode.SERVER_ENTITY_SKILL_USE:
-					PacketParser.EntitySkillUse(packet);
+				case Opcode.SERVER_ENTITY_STALL_TITLE_UPDATE:
+					PacketParser.EntityStallTitleUpdate(packet);
 					break;
-				case Opcode.SERVER_ENTITY_SKILL_DATA:
-					PacketParser.EntitySkillData(packet);
+				case Opcode.SERVER_ENTITY_SKILL_START:
+					PacketParser.EntitySkillStart(packet);
+					break;
+				case Opcode.SERVER_ENTITY_SKILL_END:
+					PacketParser.EntitySkillEnd(packet);
 					break;
 				case Opcode.SERVER_ENTITY_SKILL_BUFF_ADDED:
 					PacketParser.EntitySkillBuffAdded(packet);
@@ -424,6 +454,36 @@ namespace xBot.Network
 				case Opcode.SERVER_PLAYER_PETITION_REQUEST:
 					PacketParser.PlayerPetitionRequest(packet);
 					break;
+				case Opcode.SERVER_EXCHANGE_STARTED:
+					PacketParser.ExchangeStarted(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_PLAYER_CONFIRMED:
+					PacketParser.ExchangePlayerConfirmed(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_COMPLETED:
+					PacketParser.ExchangeCompleted(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_CANCELED:
+					PacketParser.ExchangeCanceled(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_ITEMS_UPDATE:
+					PacketParser.ExchangeItemsUpdate(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_GOLD_UPDATE:
+					PacketParser.ExchangeGoldUpdate(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_INVITATION_RESPONSE:
+					PacketParser.ExchangeInvitationResponse(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_CONFIRM_RESPONSE:
+					PacketParser.ExchangeConfirmResponse(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_APPROVE_RESPONSE:
+					PacketParser.ExchangeApproveResponse(packet);
+					break;
+				case Opcode.SERVER_EXCHANGE_EXIT_RESPONSE:
+					PacketParser.ExchangeExitResponse(packet);
+					break;
 				case Opcode.SERVER_PARTY_DATA:
 					PacketParser.PartyData(packet);
 					break;
@@ -433,17 +493,17 @@ namespace xBot.Network
 				case Opcode.SERVER_PARTY_MATCH_LIST_RESPONSE:
 					PacketParser.PartyMatchListResponse(packet);
 					break;
-				case Opcode.SERVER_PARTY_MATCH_CREATION_RESPONSE:
-					PacketParser.PartyMatchCreationResponse(packet);
-					break;
 				case Opcode.SERVER_PARTY_MATCH_DELETE_RESPONSE:
 					PacketParser.PartyMatchDeleteResponse(packet);
 					break;
 				case Opcode.SERVER_PARTY_MATCH_JOIN_REQUEST:
 					PacketParser.PartyMatchJoinRequest(packet);
 					break;
-				case Opcode.SERVER_ENTITY_SELECTION:
-					PacketParser.EntitySelection(packet);
+				case Opcode.SERVER_GUILD_DATA:
+					PacketParser.GuildData(packet);
+					break;
+				case Opcode.SERVER_ACADEMY_DATA:
+					PacketParser.AcademyData(packet);
 					break;
 				case Opcode.SERVER_CHARACTER_ADD_INT_RESPONSE:
 					PacketParser.CharacterAddStatPointResponse(packet);
@@ -459,8 +519,8 @@ namespace xBot.Network
 				case Opcode.SERVER_INVENTORY_ITEM_DURABILITY_UPDATE:
 					PacketParser.InventoryItemDurabilityUpdate(packet);
 					break;
-				case Opcode.SERVER_INVENTORY_ITEM_STATE_UPDATE:
-					PacketParser.InventoryItemStateUpdate(packet);
+				case Opcode.SERVER_INVENTORY_ITEM_UPDATE:
+					PacketParser.InventoryItemUpdate(packet);
 					break;
 				case Opcode.SERVER_STORAGE_DATA_BEGIN:
 					PacketParser.StorageDataBegin(packet);
@@ -486,8 +546,17 @@ namespace xBot.Network
 				case Opcode.SERVER_STALL_TALK_RESPONSE:
 					PacketParser.StallTalkResponse(packet);
 					break;
+				case Opcode.SERVER_STALL_BUY_RESPONSE:
+					PacketParser.StallBuyResponse(packet);
+					break;
 				case Opcode.SERVER_STALL_LEAVE_RESPONSE:
 					PacketParser.StallLeaveResponse(packet);
+					break;
+				case Opcode.SERVER_STALL_UPDATE_RESPONSE:
+					PacketParser.StallUpdateResponse(packet);
+					break;
+				case Opcode.SERVER_STALL_ENTITY_ACTION:
+					PacketParser.StalleEntityAction(packet);
 					break;
 				case Opcode.SERVER_PET_DATA:
 					PacketParser.PetData(packet);

@@ -17,10 +17,13 @@ namespace xBot.Network
 				CLIENT_PATCH_REQUEST = 0x6100,
 				CLIENT_SHARD_LIST_REQUEST = 0x6101,
 				CLIENT_LOGIN_REQUEST = 0x6102,
+				CLIENT_CAPTCHA_SOLVED_REQUEST = 0x6323,
 
 				SERVER_PATCH_RESPONSE = 0xA100,
 				SERVER_SHARD_LIST_RESPONSE = 0xA101,
 				SERVER_LOGIN_RESPONSE = 0xA102,
+				SERVER_CAPTCHA_DATA = 0x2322,
+				SERVER_CAPTCHA_SOLVED_RESPONSE = 0xA323,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -130,47 +133,67 @@ namespace xBot.Network
 		/// <returns>True if the packet will be ignored by the client</returns>
 		private bool Remote_PacketHandler(Packet packet)
 		{
-			if (packet.Opcode == Opcode.GLOBAL_IDENTIFICATION && ClientlessMode)
+			switch(packet.Opcode)
 			{
-				string service = packet.ReadAscii();
-				if (service == "GatewayServer")
-				{
-					Info i = Info.Get;
+				case Opcode.GLOBAL_IDENTIFICATION:
+					if(ClientlessMode){
+						string service = packet.ReadAscii();
+						if (service == "GatewayServer")
+						{
+							Info i = Info.Get;
 
-					Packet p = new Packet(Opcode.CLIENT_PATCH_REQUEST, true);
-					p.WriteByte(i.Locale);
-					p.WriteAscii(i.SR_Client);
-					p.WriteUInt(i.Version);
-					this.InjectToServer(p);
-				}
-			}
-			else if (packet.Opcode == Opcode.SERVER_PATCH_RESPONSE && ClientlessMode)
-			{
-				switch (packet.ReadByte()) {
-					case 1:
-						Packet p = new Packet(Opcode.CLIENT_SHARD_LIST_REQUEST, true);
-						this.InjectToServer(p);
-						break;
-					case 2:
-						byte errorCode = packet.ReadByte();
-						if (errorCode == 2)
-						{
-							string DownloadServerIP = packet.ReadAscii();
-							ushort DownloadServerPort = packet.ReadUShort();
-							uint DownloadServerCurVersion = packet.ReadUInt();
-							Window.Get.Log("Version outdate. Please, verify that client and database (v" + Info.Get.Version + ") are up to date (v" + DownloadServerCurVersion + ")");
+							Packet p = new Packet(Opcode.CLIENT_PATCH_REQUEST, true);
+							p.WriteByte(i.Locale);
+							p.WriteAscii(i.SR_Client);
+							p.WriteUInt(i.Version);
+							this.InjectToServer(p);
 						}
-						else
-						{
-							Window.Get.Log("Patch error: [" + errorCode + "]");
-						}
-						Bot.Get.Proxy.Stop();
-						break;
-				}
-			}
-			else if (packet.Opcode == Opcode.SERVER_SHARD_LIST_RESPONSE)
-			{
-				PacketParser.ShardListResponse(packet);
+					}
+					break;
+				case Opcode.SERVER_PATCH_RESPONSE:
+					if(ClientlessMode){
+						switch (packet.ReadByte()) {
+							case 1:
+								Packet p = new Packet(Opcode.CLIENT_SHARD_LIST_REQUEST, true);
+								this.InjectToServer(p);
+								break;
+							case 2:
+								byte errorCode = packet.ReadByte();
+								if (errorCode == 2)
+								{
+									string DownloadServerIP = packet.ReadAscii();
+									ushort DownloadServerPort = packet.ReadUShort();
+									uint DownloadServerCurVersion = packet.ReadUInt();
+									Window.Get.Log("Version outdate. Please, verify that client and database (v" + Info.Get.Version + ") are up to date (v" + DownloadServerCurVersion + ")");
+								}
+								else
+								{
+									Window.Get.Log("Patch error: [" + errorCode + "]");
+								}
+								Bot.Get.Proxy.Stop();
+								break;
+							}
+					}
+					break;
+				case Opcode.SERVER_SHARD_LIST_RESPONSE:
+					PacketParser.ShardListResponse(packet);
+					break;
+				case Opcode.SERVER_CAPTCHA_DATA:
+					PacketParser.CaptchaData(packet);
+					break;
+				case Opcode.SERVER_CAPTCHA_SOLVED_RESPONSE:
+					// success
+					if(packet.ReadBool())
+					{
+						Window.Get.Log("Captcha entered successfully!");
+					}
+					else
+					{
+						uint maxAttempts = packet.ReadUInt();
+						uint attempts = packet.ReadUInt();
+						Window.Get.Log("Captcha entry has failed (" + attempts + " / " + maxAttempts + " attempts)");
+					}
+					break;
 			}
 			return false;
 		}

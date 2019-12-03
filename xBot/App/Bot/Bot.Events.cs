@@ -142,14 +142,14 @@ namespace xBot.App
 				// 10s is enough to leave the client totally loaded
 				System.Timers.Timer check = new System.Timers.Timer(10000);
 				check.AutoReset = false;
-        check.Elapsed += this.CheckLoginOptions;
+				check.Elapsed += this.CheckLoginOptions;
 				check.Start();
 			}
 			else
 			{
 				CheckLoginOptions(null,null);
 			}
-    }
+		}
 		/// <summary>
 		/// Called right before all character data is saved & spawn packet is detected from client.
 		/// </summary>
@@ -187,7 +187,7 @@ namespace xBot.App
 		{
 			Info i = Info.Get;
 			if(i.Character == null){
-				// Avoid crash on disconnect
+				// Avoid app crash on disconnect
 				return;
 			}
 			// Check if character is alive
@@ -214,16 +214,16 @@ namespace xBot.App
 						break;
 				}
 			}
-			else
+		}
+		private void OnCharacterDead()
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxAcceptRess.Checked)
 			{
-				Window w = Window.Get;
-				if(w.Character_cbxAcceptRess.Checked){
-					// Character dead.
-					if((byte)i.Character[SRProperty.Level] <= 10){
-						PacketBuilder.ResurrectAtPresentPoint();
-					}
+				if ((byte)Info.Get.Character[SRProperty.Level] <= 10)
+				{
+					PacketBuilder.ResurrectAtPresentPoint();
 				}
-				
 			}
 		}
 		/// <summary>
@@ -264,7 +264,7 @@ namespace xBot.App
 		/// <summary>
 		/// Called when a message is received.
 		/// </summary>
-		private void OnChat(Types.Chat type, string playerName, string message)
+		private void OnChatReceived(Types.Chat type, string playerName, string message)
 		{
 			Window w = Window.Get;
 			if (w.Party_cbxActivateLeaderCommands.Checked && playerName != "")
@@ -338,12 +338,10 @@ namespace xBot.App
 									SRObject teleport = i.Teleports.Find(npc => npc.ID == sourceTeleportID);
 									if (teleport != null)
 									{
-										// Select teleport
-										PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
-										// Wait 2.5segs and use it
-										PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID],destinationID, 2500);
+										UseTeleportAsync(teleport, destinationID);
 									}
-									else{
+									else
+									{
 										PacketBuilder.SendChatPrivate(playerName,"Teleport link is not near");
 									}
 								}
@@ -360,12 +358,10 @@ namespace xBot.App
 								sourceTeleportID = uint.Parse(teleportLinkData["id"]);
 								// Check if the teleport source is near
 								SRObject teleport = i.Teleports.Find(npc => npc.ID == sourceTeleportID);
-                				if (teleport != null)
+                if (teleport != null)
 								{
-									// Select teleport
-									PacketBuilder.SelectEntity((uint)teleport[SRProperty.UniqueID]);
-									// Wait 2.5segs and use it
-									PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], uint.Parse(teleportLinkData["destinationid"]), 2500);
+									// Try to select teleport 
+									UseTeleportAsync(teleport, uint.Parse(teleportLinkData["destinationid"]));
 								}
 								else
 								{
@@ -418,6 +414,50 @@ namespace xBot.App
 			}
 		}
 		/// <summary>
+		/// Called everytime a exchange invitation is detected.
+		/// </summary>
+		public void OnExchangeRequest(uint uniqueID)
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxRefuseExchange.Checked)
+			{
+				PacketBuilder.PlayerPetitionResponse(false, Types.PlayerPetition.ExchangeRequest);
+			}
+			else	if (w.Character_cbxAcceptExchange.Checked)
+			{
+				SRObject player = Info.Get.GetEntity(uniqueID);
+				if (w.Character_cbxAcceptExchangeLeaderOnly.Checked)
+				{
+					bool found = false;
+					w.Party_lstvLeaderList.InvokeIfRequired(()=> {
+						found = w.Party_lstvLeaderList.Items.ContainsKey(player.Name.ToUpper());
+          });
+					if (found)
+						PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.ExchangeRequest);
+				}
+				else
+				{
+					PacketBuilder.PlayerPetitionResponse(true, Types.PlayerPetition.ExchangeRequest);
+				}
+			}
+		}
+		private void OnExchangePlayerConfirmed()
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxAcceptExchange.Checked && w.Character_cbxConfirmExchange.Checked)
+			{
+				PacketBuilder.ConfirmExchange();
+			}
+		}
+		private void OnExchangeConfirmed()
+		{
+			Window w = Window.Get;
+			if (w.Character_cbxAcceptExchange.Checked && w.Character_cbxApproveExchange.Checked)
+			{
+				PacketBuilder.ApproveExchange();
+			}
+		}
+		/// <summary>
 		/// Called everytime a party invitation is detected.
 		/// </summary>
 		private void OnPartyInvitation(string playerName, Types.PartySetup PartySetup)
@@ -448,14 +488,7 @@ namespace xBot.App
 			{
 				bool found = false;
 				WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
-					for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
-					{
-						if (w.Party_lstvPartyList.Items[j].Text.Equals(playerName, StringComparison.OrdinalIgnoreCase))
-						{
-							found = true;
-							break;
-						}
-					}
+					found = w.Party_lstvPartyList.Items.ContainsKey(playerName.ToUpper());
 				});
 				if (found)
 				{
@@ -479,14 +512,9 @@ namespace xBot.App
 			{
 				bool found = false;
 				WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
-					for (int j = 0; j < w.Party_lstvLeaderList.Items.Count; j++)
-					{
-						if (w.Party_lstvLeaderList.Items[j].Text.Equals(playerName, StringComparison.OrdinalIgnoreCase))
-						{
-							found = true;
-							break;
-						}
-					}
+					w.Party_lstvLeaderList.InvokeIfRequired(() => {
+						found = w.Party_lstvLeaderList.Items.ContainsKey(playerName.ToUpper());
+					});
 				});
 				if (found)
 				{
@@ -548,8 +576,7 @@ namespace xBot.App
 				if (w.Party_cbxMatchAcceptPartyList.Checked)
 				{
 					bool found = false;
-					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, delegate
-					{
+					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
 						found = w.Party_lstvPartyList.Items.ContainsKey(playerName.ToUpper());
 					});
 					if (found)
@@ -561,8 +588,7 @@ namespace xBot.App
 				if (w.Party_cbxMatchAcceptLeaderList.Checked)
 				{
 					bool found = false;
-					WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, delegate
-					{
+					WinAPI.InvokeIfRequired(w.Party_lstvLeaderList, () => {
 						found = w.Party_lstvLeaderList.Items.ContainsKey(playerName.ToUpper());
 					});
 					if (found)

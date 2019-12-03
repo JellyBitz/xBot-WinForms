@@ -167,6 +167,13 @@ namespace xBot.Game
 			return entity;
 		}
 		/// <summary>
+		/// Check if entity is near.
+		/// </summary>
+		public bool isNear(uint uniqueID)
+		{
+			return SpawnList[uniqueID] != null;
+		}
+		/// <summary>
 		/// Server time generated with the SROTimeStamp.
 		/// </summary>
 		public string GetServerTime()

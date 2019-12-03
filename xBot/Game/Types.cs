@@ -144,7 +144,7 @@ namespace xBot.Game
 			ReturnScroll = 1,
 			BanditReturnScroll = 2
 		}
-		public enum PlayerMode : byte
+		public enum InteractMode : byte
 		{
 			None = 0,
 			OnExchangeProbably = 2,
@@ -231,12 +231,13 @@ namespace xBot.Game
 		/// </summary>
 		public enum PlayerPetition : byte
 		{
+			ExchangeRequest = 1,
 			PartyCreation = 2,
 			PartyInvitation = 3,
 			Resurrection = 4,
 			GuildInvitation = 5,
 			UnionInvitation = 6, // Not confirmed
-			AcademyInvitation = 9, // Not confirmed
+			AcademyInvitation = 9 // Not confirmed
 		}
 		/// <summary>
 		/// Character inventory item movement.
@@ -247,6 +248,9 @@ namespace xBot.Game
 			StorageToStorage = 1,
 			InventoryToStorage = 2,
 			StorageToInventory = 3,
+			
+			InventoryToExchange = 4,
+			ExchangeToInventory = 5,
 
 			GroundToInventory = 6,
 			InventoryToGround = 7,
@@ -255,8 +259,10 @@ namespace xBot.Game
 			InventoryToShop = 9,
 
 			PetToPet = 10,
-			PetToInventory = 11,
-			InventoryToPet = 12,
+
+			StorageGoldToInventory = 11,
+			InventoryGoldToStorage = 12,
+			InventoryGoldToExchange = 13,
 
 			QuestToInventory = 14,
 			InventoryToQuest = 15,
@@ -265,7 +271,10 @@ namespace xBot.Game
 			GroundToTransport = 17,
 			ShopToTransport = 19,
 			TransportToShop = 20,
-			
+
+			InventoryToPet = 26,
+			PetToInventory = 27,
+
 			ShopBuyBack = 34,
 
 			AvatarToInventory = 35,
@@ -332,6 +341,31 @@ namespace xBot.Game
 			SkillRemove = 5
 		}
 		/// <summary>
+		/// States found on damage skill.
+		/// <para>Flags</para>
+		/// </summary>
+		[Flags]
+		public enum DamageEffect : byte
+		{
+			None = 0,
+			KnockBack = 1,
+			Block = 2,
+			Position = 4,
+			Cancel = 8
+		}
+		/// <summary>
+		/// States found on damage skill.
+		/// <para>Flags</para>
+		/// </summary>
+		[Flags]
+		public enum Damage : byte
+		{
+			None = 0,
+			Normal = 1,
+			Critical = 2,
+			Status = 4
+		}
+		/// <summary>
 		/// All weapons types handled.
 		/// </summary>
 		public enum Weapon : byte
@@ -351,6 +385,20 @@ namespace xBot.Game
 			Daggers = 13,
 			Harp = 14,
 			Cleric = 15
+		}
+		public enum StallUpdate
+		{
+			ItemUpdate = 1,
+			ItemAdded = 2,
+			ItemRemoved = 3,
+			FleaMarketMode = 4, // ?
+			State = 5,
+			Note = 6,
+			Title = 7
+		}
+		public static bool HasFlags(ulong flags, ulong desiredFlags)
+		{
+			return (flags & desiredFlags) != 0;
 		}
 	}
 }
