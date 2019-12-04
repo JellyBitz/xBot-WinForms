@@ -258,8 +258,7 @@ namespace xBot.Game
 			ShopToInventory = 8,
 			InventoryToShop = 9,
 
-			PetToPet = 10,
-
+			InventoryGoldToGround = 10,
 			StorageGoldToInventory = 11,
 			InventoryGoldToStorage = 12,
 			InventoryGoldToExchange = 13,
@@ -272,8 +271,9 @@ namespace xBot.Game
 			ShopToTransport = 19,
 			TransportToShop = 20,
 
-			InventoryToPet = 26,
-			PetToInventory = 27,
+			PetToPet = 25, // NOT CONFIRMED
+			PetToInventory = 26,
+			InventoryToPet = 27,
 
 			ShopBuyBack = 34,
 

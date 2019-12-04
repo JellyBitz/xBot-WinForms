@@ -269,6 +269,35 @@ namespace xBot.App
 			this.Party_tbxPlayer = new System.Windows.Forms.TextBox();
 			this.TabPageV_Control01_Guild_Panel = new System.Windows.Forms.Panel();
 			this.pnlWindow = new System.Windows.Forms.Panel();
+			this.TabPageV_Control01_Players_Panel = new System.Windows.Forms.Panel();
+			this.TabPageH_Players = new System.Windows.Forms.Panel();
+			this.TabPageH_Players_Option02 = new System.Windows.Forms.Button();
+			this.TabPageH_Players_Option01 = new System.Windows.Forms.Button();
+			this.TabPageH_Players_Option01_Panel = new System.Windows.Forms.Panel();
+			this.Players_lblPlayerCount = new System.Windows.Forms.Label();
+			this.Players_btnRefreshPlayers = new System.Windows.Forms.Button();
+			this.Players_tvwPlayers = new System.Windows.Forms.TreeView();
+			this.TabPageH_Players_Option02_Panel = new System.Windows.Forms.Panel();
+			this.Players_btnExchangingGoldEdit = new System.Windows.Forms.Button();
+			this.Players_btnCancelExchange = new System.Windows.Forms.Button();
+			this.Players_lstvExchangingItems = new System.Windows.Forms.ListView();
+			this.columnHeader49 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvExchangingItems = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvExchangingItems_Remove = new System.Windows.Forms.ToolStripMenuItem();
+			this.Players_lstvExchangerItems = new System.Windows.Forms.ListView();
+			this.columnHeader48 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Players_lblExchangeStatus = new System.Windows.Forms.Label();
+			this.Players_btnExchange = new System.Windows.Forms.Button();
+			this.Players_tbxGoldRemain = new System.Windows.Forms.TextBox();
+			this.Players_lblExchangerMyName = new System.Windows.Forms.Label();
+			this.Players_lstvInventoryExchange = new System.Windows.Forms.ListView();
+			this.columnHeader50 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.Menu_lstvInventoryExchange = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.Menu_lstvInventoryExchange_Add = new System.Windows.Forms.ToolStripMenuItem();
+			this.Players_lblExchangerName = new System.Windows.Forms.Label();
+			this.Players_tbxExchangingGold = new System.Windows.Forms.TextBox();
+			this.Players_tbxExchangerGold = new System.Windows.Forms.TextBox();
+			this.Players_lblInventoryExchange = new System.Windows.Forms.Label();
 			this.TabPageV_Control01_Stall_Panel = new System.Windows.Forms.Panel();
 			this.TabPageH_Stall = new System.Windows.Forms.Panel();
 			this.TabPageH_Stall_Option02 = new System.Windows.Forms.Button();
@@ -296,35 +325,6 @@ namespace xBot.App
 			this.Stall_tbxStallNote = new System.Windows.Forms.TextBox();
 			this.Stall_lblStallTitle = new System.Windows.Forms.Label();
 			this.Stall_tbxStallTitle = new System.Windows.Forms.TextBox();
-			this.TabPageV_Control01_Players_Panel = new System.Windows.Forms.Panel();
-			this.TabPageH_Players = new System.Windows.Forms.Panel();
-			this.TabPageH_Players_Option02 = new System.Windows.Forms.Button();
-			this.TabPageH_Players_Option01 = new System.Windows.Forms.Button();
-			this.TabPageH_Players_Option02_Panel = new System.Windows.Forms.Panel();
-			this.Players_btnExchangingGoldEdit = new System.Windows.Forms.Button();
-			this.Players_btnCancelExchange = new System.Windows.Forms.Button();
-			this.Players_lstvExchangingItems = new System.Windows.Forms.ListView();
-			this.columnHeader49 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Menu_lstvExchangingItems = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_lstvExchangingItems_Remove = new System.Windows.Forms.ToolStripMenuItem();
-			this.Players_lstvExchangerItems = new System.Windows.Forms.ListView();
-			this.columnHeader48 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Players_lblExchangeStatus = new System.Windows.Forms.Label();
-			this.Players_btnExchange = new System.Windows.Forms.Button();
-			this.Players_tbxGoldRemain = new System.Windows.Forms.TextBox();
-			this.Players_lblExchangerMyName = new System.Windows.Forms.Label();
-			this.Players_lstvInventoryExchange = new System.Windows.Forms.ListView();
-			this.columnHeader50 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.Menu_lstvInventoryExchange = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.Menu_lstvInventoryExchange_Add = new System.Windows.Forms.ToolStripMenuItem();
-			this.Players_lblExchangerName = new System.Windows.Forms.Label();
-			this.Players_tbxExchangingGold = new System.Windows.Forms.TextBox();
-			this.Players_tbxExchangerGold = new System.Windows.Forms.TextBox();
-			this.Players_lblInventoryExchange = new System.Windows.Forms.Label();
-			this.TabPageH_Players_Option01_Panel = new System.Windows.Forms.Panel();
-			this.Players_lblPlayerCount = new System.Windows.Forms.Label();
-			this.Players_btnRefreshPlayers = new System.Windows.Forms.Button();
-			this.Players_tvwPlayers = new System.Windows.Forms.TreeView();
 			this.TabPageV_Control01_Minimap_Panel = new System.Windows.Forms.Panel();
 			this.Minimap_panelCoords = new System.Windows.Forms.Panel();
 			this.Minimap_tbxRegion = new System.Windows.Forms.TextBox();
@@ -577,13 +577,13 @@ namespace xBot.App
 			this.Menu_tvwPlayers_InviteToParty = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_tvwPlayers_InviteToGuild = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_tvwPlayers_InviteToAcademy = new System.Windows.Forms.ToolStripMenuItem();
+			this.Menu_tvwPlayers_Separator01 = new System.Windows.Forms.ToolStripSeparator();
+			this.Menu_tvwPlayers_Stall = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_lstvStall_Buying = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.Menu_lstvStall_Buying_Buy = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_lstvStall_Selling = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.Menu_lstvStall_Selling_Remove = new System.Windows.Forms.ToolStripMenuItem();
 			this.Menu_lstvStall_Selling_Edit = new System.Windows.Forms.ToolStripMenuItem();
-			this.Menu_tvwPlayers_Separator01 = new System.Windows.Forms.ToolStripSeparator();
-			this.Menu_tvwPlayers_Stall = new System.Windows.Forms.ToolStripMenuItem();
 			this.TabPageV_Control01.SuspendLayout();
 			this.pnlHeader.SuspendLayout();
 			this.TabPageV_Control01_Settings_Panel.SuspendLayout();
@@ -623,16 +623,16 @@ namespace xBot.App
 			this.Party_gbxAcceptInvite.SuspendLayout();
 			this.Party_gbxPlayerList.SuspendLayout();
 			this.pnlWindow.SuspendLayout();
+			this.TabPageV_Control01_Players_Panel.SuspendLayout();
+			this.TabPageH_Players.SuspendLayout();
+			this.TabPageH_Players_Option01_Panel.SuspendLayout();
+			this.TabPageH_Players_Option02_Panel.SuspendLayout();
+			this.Menu_lstvExchangingItems.SuspendLayout();
+			this.Menu_lstvInventoryExchange.SuspendLayout();
 			this.TabPageV_Control01_Stall_Panel.SuspendLayout();
 			this.TabPageH_Stall.SuspendLayout();
 			this.TabPageH_Stall_Option01_Panel.SuspendLayout();
 			this.TabPageH_Stall_Option02_Panel.SuspendLayout();
-			this.TabPageV_Control01_Players_Panel.SuspendLayout();
-			this.TabPageH_Players.SuspendLayout();
-			this.TabPageH_Players_Option02_Panel.SuspendLayout();
-			this.Menu_lstvExchangingItems.SuspendLayout();
-			this.Menu_lstvInventoryExchange.SuspendLayout();
-			this.TabPageH_Players_Option01_Panel.SuspendLayout();
 			this.TabPageV_Control01_Minimap_Panel.SuspendLayout();
 			this.Minimap_panelCoords.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Minimap_tbrZoom)).BeginInit();
@@ -4094,8 +4094,8 @@ namespace xBot.App
 			// 
 			this.pnlWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.pnlWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Players_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Stall_Panel);
+			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Players_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Settings_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Minimap_Panel);
 			this.pnlWindow.Controls.Add(this.TabPageV_Control01_Chat_Panel);
@@ -4120,449 +4120,6 @@ namespace xBot.App
 			this.pnlWindow.Name = "pnlWindow";
 			this.pnlWindow.Size = new System.Drawing.Size(798, 501);
 			this.pnlWindow.TabIndex = 1;
-			// 
-			// TabPageV_Control01_Stall_Panel
-			// 
-			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall);
-			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall_Option01_Panel);
-			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall_Option02_Panel);
-			this.TabPageV_Control01_Stall_Panel.Location = new System.Drawing.Point(135, 45);
-			this.TabPageV_Control01_Stall_Panel.Name = "TabPageV_Control01_Stall_Panel";
-			this.TabPageV_Control01_Stall_Panel.Size = new System.Drawing.Size(657, 372);
-			this.TabPageV_Control01_Stall_Panel.TabIndex = 18;
-			this.TabPageV_Control01_Stall_Panel.Visible = false;
-			// 
-			// TabPageH_Stall
-			// 
-			this.TabPageH_Stall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Stall.Controls.Add(this.TabPageH_Stall_Option02);
-			this.TabPageH_Stall.Controls.Add(this.TabPageH_Stall_Option01);
-			this.TabPageH_Stall.Location = new System.Drawing.Point(0, 0);
-			this.TabPageH_Stall.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Stall.Name = "TabPageH_Stall";
-			this.TabPageH_Stall.Size = new System.Drawing.Size(657, 28);
-			this.TabPageH_Stall.TabIndex = 10;
-			// 
-			// TabPageH_Stall_Option02
-			// 
-			this.TabPageH_Stall_Option02.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Stall_Option02.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Stall_Option02.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Stall_Option02.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Stall_Option02.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Stall_Option02.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Stall_Option02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Stall_Option02.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Stall_Option02.Location = new System.Drawing.Point(329, 0);
-			this.TabPageH_Stall_Option02.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Stall_Option02.Name = "TabPageH_Stall_Option02";
-			this.TabPageH_Stall_Option02.Size = new System.Drawing.Size(328, 26);
-			this.TabPageH_Stall_Option02.TabIndex = 13;
-			this.TabPageH_Stall_Option02.Tag = "Source Sans Pro";
-			this.TabPageH_Stall_Option02.Text = "Options";
-			this.TabPageH_Stall_Option02.UseVisualStyleBackColor = false;
-			this.TabPageH_Stall_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Stall_Option01
-			// 
-			this.TabPageH_Stall_Option01.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.TabPageH_Stall_Option01.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.TabPageH_Stall_Option01.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Stall_Option01.FlatAppearance.BorderSize = 0;
-			this.TabPageH_Stall_Option01.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.TabPageH_Stall_Option01.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
-			this.TabPageH_Stall_Option01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.TabPageH_Stall_Option01.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.TabPageH_Stall_Option01.Location = new System.Drawing.Point(0, 0);
-			this.TabPageH_Stall_Option01.Margin = new System.Windows.Forms.Padding(0);
-			this.TabPageH_Stall_Option01.Name = "TabPageH_Stall_Option01";
-			this.TabPageH_Stall_Option01.Size = new System.Drawing.Size(329, 26);
-			this.TabPageH_Stall_Option01.TabIndex = 12;
-			this.TabPageH_Stall_Option01.Tag = "Source Sans Pro";
-			this.TabPageH_Stall_Option01.Text = "Info";
-			this.TabPageH_Stall_Option01.UseVisualStyleBackColor = false;
-			this.TabPageH_Stall_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
-			// 
-			// TabPageH_Stall_Option01_Panel
-			// 
-			this.TabPageH_Stall_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxQuantity);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lblState);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnIGCreateModify);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnClose);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnAddItem);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxPrice);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnTitleEdit);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnNoteEdit);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxNote);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxTitle);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lstvStall);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lblInventoryStall);
-			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lstvInventoryStall);
-			this.TabPageH_Stall_Option01_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Stall_Option01_Panel.Name = "TabPageH_Stall_Option01_Panel";
-			this.TabPageH_Stall_Option01_Panel.Size = new System.Drawing.Size(657, 345);
-			this.TabPageH_Stall_Option01_Panel.TabIndex = 14;
-			this.TabPageH_Stall_Option01_Panel.Visible = false;
-			// 
-			// Stall_tbxQuantity
-			// 
-			this.Stall_tbxQuantity.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_tbxQuantity.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxQuantity.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxQuantity.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxQuantity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxQuantity.Location = new System.Drawing.Point(205, 282);
-			this.Stall_tbxQuantity.Name = "Stall_tbxQuantity";
-			this.Stall_tbxQuantity.ReadOnly = true;
-			this.Stall_tbxQuantity.Size = new System.Drawing.Size(53, 28);
-			this.Stall_tbxQuantity.TabIndex = 12;
-			this.Stall_tbxQuantity.Tag = "Source Sans Pro";
-			this.Stall_tbxQuantity.Text = "- - -";
-			this.Stall_tbxQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ToolTips.SetToolTip(this.Stall_tbxQuantity, "Price");
-			// 
-			// Stall_lblState
-			// 
-			this.Stall_lblState.AutoEllipsis = true;
-			this.Stall_lblState.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_lblState.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lblState.Location = new System.Drawing.Point(144, 315);
-			this.Stall_lblState.Name = "Stall_lblState";
-			this.Stall_lblState.Size = new System.Drawing.Size(141, 22);
-			this.Stall_lblState.TabIndex = 11;
-			this.Stall_lblState.Tag = "Source Sans Pro";
-			this.Stall_lblState.Text = "- - -";
-			this.Stall_lblState.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// Stall_btnIGCreateModify
-			// 
-			this.Stall_btnIGCreateModify.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Stall_btnIGCreateModify.Enabled = false;
-			this.Stall_btnIGCreateModify.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnIGCreateModify.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Stall_btnIGCreateModify.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnIGCreateModify.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Stall_btnIGCreateModify.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_btnIGCreateModify.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_btnIGCreateModify.Location = new System.Drawing.Point(6, 315);
-			this.Stall_btnIGCreateModify.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_btnIGCreateModify.Name = "Stall_btnIGCreateModify";
-			this.Stall_btnIGCreateModify.Size = new System.Drawing.Size(132, 22);
-			this.Stall_btnIGCreateModify.TabIndex = 3;
-			this.Stall_btnIGCreateModify.Tag = "Source Sans Pro";
-			this.Stall_btnIGCreateModify.Text = "Create";
-			this.Stall_btnIGCreateModify.UseCompatibleTextRendering = true;
-			this.Stall_btnIGCreateModify.UseVisualStyleBackColor = false;
-			this.Stall_btnIGCreateModify.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Stall_btnClose
-			// 
-			this.Stall_btnClose.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Stall_btnClose.Enabled = false;
-			this.Stall_btnClose.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-			this.Stall_btnClose.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Stall_btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Stall_btnClose.Font = new System.Drawing.Font("Font Awesome 5 Pro Solid", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_btnClose.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_btnClose.Location = new System.Drawing.Point(621, 7);
-			this.Stall_btnClose.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_btnClose.Name = "Stall_btnClose";
-			this.Stall_btnClose.Size = new System.Drawing.Size(28, 28);
-			this.Stall_btnClose.TabIndex = 2;
-			this.Stall_btnClose.Tag = "Font Awesome 5 Pro Solid";
-			this.Stall_btnClose.Text = "";
-			this.ToolTips.SetToolTip(this.Stall_btnClose, "Close stall");
-			this.Stall_btnClose.UseCompatibleTextRendering = true;
-			this.Stall_btnClose.UseVisualStyleBackColor = false;
-			this.Stall_btnClose.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Stall_btnAddItem
-			// 
-			this.Stall_btnAddItem.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Stall_btnAddItem.Enabled = false;
-			this.Stall_btnAddItem.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-			this.Stall_btnAddItem.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Stall_btnAddItem.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnAddItem.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Stall_btnAddItem.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_btnAddItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_btnAddItem.Location = new System.Drawing.Point(257, 282);
-			this.Stall_btnAddItem.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_btnAddItem.Name = "Stall_btnAddItem";
-			this.Stall_btnAddItem.Size = new System.Drawing.Size(28, 28);
-			this.Stall_btnAddItem.TabIndex = 10;
-			this.Stall_btnAddItem.Tag = "Font Awesome 5 Pro Light";
-			this.Stall_btnAddItem.Text = "";
-			this.ToolTips.SetToolTip(this.Stall_btnAddItem, "Add to Stall");
-			this.Stall_btnAddItem.UseCompatibleTextRendering = true;
-			this.Stall_btnAddItem.UseVisualStyleBackColor = false;
-			this.Stall_btnAddItem.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Stall_tbxPrice
-			// 
-			this.Stall_tbxPrice.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_tbxPrice.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxPrice.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxPrice.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxPrice.Location = new System.Drawing.Point(6, 282);
-			this.Stall_tbxPrice.Name = "Stall_tbxPrice";
-			this.Stall_tbxPrice.ReadOnly = true;
-			this.Stall_tbxPrice.Size = new System.Drawing.Size(200, 28);
-			this.Stall_tbxPrice.TabIndex = 9;
-			this.Stall_tbxPrice.Tag = "Source Sans Pro";
-			this.Stall_tbxPrice.Text = "- - -";
-			this.Stall_tbxPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ToolTips.SetToolTip(this.Stall_tbxPrice, "Price");
-			this.Stall_tbxPrice.TextChanged += new System.EventHandler(this.Control_TextChanged);
-			// 
-			// Stall_btnTitleEdit
-			// 
-			this.Stall_btnTitleEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Stall_btnTitleEdit.Enabled = false;
-			this.Stall_btnTitleEdit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-			this.Stall_btnTitleEdit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Stall_btnTitleEdit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnTitleEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Stall_btnTitleEdit.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_btnTitleEdit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_btnTitleEdit.Location = new System.Drawing.Point(593, 7);
-			this.Stall_btnTitleEdit.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_btnTitleEdit.Name = "Stall_btnTitleEdit";
-			this.Stall_btnTitleEdit.Size = new System.Drawing.Size(29, 28);
-			this.Stall_btnTitleEdit.TabIndex = 1;
-			this.Stall_btnTitleEdit.Tag = "Font Awesome 5 Pro Regular";
-			this.Stall_btnTitleEdit.Text = "";
-			this.ToolTips.SetToolTip(this.Stall_btnTitleEdit, "Edit title");
-			this.Stall_btnTitleEdit.UseCompatibleTextRendering = true;
-			this.Stall_btnTitleEdit.UseVisualStyleBackColor = false;
-			this.Stall_btnTitleEdit.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Stall_btnNoteEdit
-			// 
-			this.Stall_btnNoteEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Stall_btnNoteEdit.Enabled = false;
-			this.Stall_btnNoteEdit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
-			this.Stall_btnNoteEdit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Stall_btnNoteEdit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Stall_btnNoteEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Stall_btnNoteEdit.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_btnNoteEdit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_btnNoteEdit.Location = new System.Drawing.Point(621, 309);
-			this.Stall_btnNoteEdit.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_btnNoteEdit.Name = "Stall_btnNoteEdit";
-			this.Stall_btnNoteEdit.Size = new System.Drawing.Size(28, 28);
-			this.Stall_btnNoteEdit.TabIndex = 6;
-			this.Stall_btnNoteEdit.Tag = "Font Awesome 5 Pro Light";
-			this.Stall_btnNoteEdit.Text = "";
-			this.ToolTips.SetToolTip(this.Stall_btnNoteEdit, "Edit note");
-			this.Stall_btnNoteEdit.UseCompatibleTextRendering = true;
-			this.Stall_btnNoteEdit.UseVisualStyleBackColor = false;
-			this.Stall_btnNoteEdit.Click += new System.EventHandler(this.Control_Click);
-			// 
-			// Stall_tbxNote
-			// 
-			this.Stall_tbxNote.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_tbxNote.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxNote.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxNote.Location = new System.Drawing.Point(291, 309);
-			this.Stall_tbxNote.MaxLength = 63;
-			this.Stall_tbxNote.Name = "Stall_tbxNote";
-			this.Stall_tbxNote.ReadOnly = true;
-			this.Stall_tbxNote.Size = new System.Drawing.Size(331, 28);
-			this.Stall_tbxNote.TabIndex = 5;
-			this.Stall_tbxNote.Tag = "Source Sans Pro";
-			this.Stall_tbxNote.Text = "- - -";
-			this.Stall_tbxNote.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ToolTips.SetToolTip(this.Stall_tbxNote, "Note");
-			// 
-			// Stall_tbxTitle
-			// 
-			this.Stall_tbxTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_tbxTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxTitle.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxTitle.Location = new System.Drawing.Point(291, 7);
-			this.Stall_tbxTitle.MaxLength = 63;
-			this.Stall_tbxTitle.Name = "Stall_tbxTitle";
-			this.Stall_tbxTitle.ReadOnly = true;
-			this.Stall_tbxTitle.Size = new System.Drawing.Size(303, 28);
-			this.Stall_tbxTitle.TabIndex = 0;
-			this.Stall_tbxTitle.Tag = "Source Sans Pro";
-			this.Stall_tbxTitle.Text = "- - -";
-			this.Stall_tbxTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.ToolTips.SetToolTip(this.Stall_tbxTitle, "Title");
-			// 
-			// Stall_lstvStall
-			// 
-			this.Stall_lstvStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_lstvStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_lstvStall.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader52,
-            this.columnHeader53,
-            this.columnHeader54});
-			this.Stall_lstvStall.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lstvStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_lstvStall.FullRowSelect = true;
-			this.Stall_lstvStall.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-			this.Stall_lstvStall.HideSelection = false;
-			this.Stall_lstvStall.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.Stall_lstvStall.Location = new System.Drawing.Point(291, 34);
-			this.Stall_lstvStall.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_lstvStall.MultiSelect = false;
-			this.Stall_lstvStall.Name = "Stall_lstvStall";
-			this.Stall_lstvStall.ShowGroups = false;
-			this.Stall_lstvStall.ShowItemToolTips = true;
-			this.Stall_lstvStall.Size = new System.Drawing.Size(358, 276);
-			this.Stall_lstvStall.SmallImageList = this.lstimgIcons;
-			this.Stall_lstvStall.TabIndex = 4;
-			this.Stall_lstvStall.Tag = "Source Sans Pro";
-			this.Stall_lstvStall.TileSize = new System.Drawing.Size(201, 50);
-			this.Stall_lstvStall.UseCompatibleStateImageBehavior = false;
-			this.Stall_lstvStall.View = System.Windows.Forms.View.Details;
-			this.Stall_lstvStall.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.ListView_ColumnWidthChanging_Cancel);
-			// 
-			// columnHeader52
-			// 
-			this.columnHeader52.Text = "Item";
-			this.columnHeader52.Width = 173;
-			// 
-			// columnHeader53
-			// 
-			this.columnHeader53.Text = "Quantity";
-			this.columnHeader53.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader53.Width = 74;
-			// 
-			// columnHeader54
-			// 
-			this.columnHeader54.Text = "Price";
-			this.columnHeader54.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.columnHeader54.Width = 110;
-			// 
-			// Stall_lblInventoryStall
-			// 
-			this.Stall_lblInventoryStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_lblInventoryStall.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lblInventoryStall.Location = new System.Drawing.Point(6, 7);
-			this.Stall_lblInventoryStall.Name = "Stall_lblInventoryStall";
-			this.Stall_lblInventoryStall.Size = new System.Drawing.Size(279, 28);
-			this.Stall_lblInventoryStall.TabIndex = 7;
-			this.Stall_lblInventoryStall.Tag = "Source Sans Pro";
-			this.Stall_lblInventoryStall.Text = "Your inventory";
-			this.Stall_lblInventoryStall.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// Stall_lstvInventoryStall
-			// 
-			this.Stall_lstvInventoryStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Stall_lstvInventoryStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_lstvInventoryStall.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader31});
-			this.Stall_lstvInventoryStall.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lstvInventoryStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_lstvInventoryStall.FullRowSelect = true;
-			this.Stall_lstvInventoryStall.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.Stall_lstvInventoryStall.HideSelection = false;
-			this.Stall_lstvInventoryStall.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.Stall_lstvInventoryStall.Location = new System.Drawing.Point(6, 33);
-			this.Stall_lstvInventoryStall.Margin = new System.Windows.Forms.Padding(0);
-			this.Stall_lstvInventoryStall.MultiSelect = false;
-			this.Stall_lstvInventoryStall.Name = "Stall_lstvInventoryStall";
-			this.Stall_lstvInventoryStall.ShowGroups = false;
-			this.Stall_lstvInventoryStall.ShowItemToolTips = true;
-			this.Stall_lstvInventoryStall.Size = new System.Drawing.Size(279, 250);
-			this.Stall_lstvInventoryStall.SmallImageList = this.lstimgIcons;
-			this.Stall_lstvInventoryStall.TabIndex = 8;
-			this.Stall_lstvInventoryStall.Tag = "Source Sans Pro";
-			this.Stall_lstvInventoryStall.TileSize = new System.Drawing.Size(201, 50);
-			this.Stall_lstvInventoryStall.UseCompatibleStateImageBehavior = false;
-			this.Stall_lstvInventoryStall.View = System.Windows.Forms.View.Details;
-			this.Stall_lstvInventoryStall.SelectedIndexChanged += new System.EventHandler(this.ListView_SelectedIndexChanged);
-			this.Stall_lstvInventoryStall.Enter += new System.EventHandler(this.Control_Focus_Enter);
-			this.Stall_lstvInventoryStall.Leave += new System.EventHandler(this.Control_Focus_Leave);
-			// 
-			// columnHeader31
-			// 
-			this.columnHeader31.Text = "";
-			this.columnHeader31.Width = 262;
-			// 
-			// TabPageH_Stall_Option02_Panel
-			// 
-			this.TabPageH_Stall_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_lblStallNote);
-			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_tbxStallNote);
-			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_lblStallTitle);
-			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_tbxStallTitle);
-			this.TabPageH_Stall_Option02_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Stall_Option02_Panel.Name = "TabPageH_Stall_Option02_Panel";
-			this.TabPageH_Stall_Option02_Panel.Size = new System.Drawing.Size(657, 345);
-			this.TabPageH_Stall_Option02_Panel.TabIndex = 15;
-			this.TabPageH_Stall_Option02_Panel.Visible = false;
-			// 
-			// Stall_lblStallNote
-			// 
-			this.Stall_lblStallNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lblStallNote.Location = new System.Drawing.Point(330, 7);
-			this.Stall_lblStallNote.Name = "Stall_lblStallNote";
-			this.Stall_lblStallNote.Size = new System.Drawing.Size(45, 28);
-			this.Stall_lblStallNote.TabIndex = 45;
-			this.Stall_lblStallNote.Tag = "Source Sans Pro";
-			this.Stall_lblStallNote.Text = "Note";
-			this.Stall_lblStallNote.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Stall_tbxStallNote
-			// 
-			this.Stall_tbxStallNote.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Stall_tbxStallNote.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxStallNote.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxStallNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxStallNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxStallNote.Location = new System.Drawing.Point(375, 7);
-			this.Stall_tbxStallNote.MaxLength = 63;
-			this.Stall_tbxStallNote.Name = "Stall_tbxStallNote";
-			this.Stall_tbxStallNote.Size = new System.Drawing.Size(275, 28);
-			this.Stall_tbxStallNote.TabIndex = 44;
-			this.Stall_tbxStallNote.Tag = "Source Sans Pro";
-			this.Stall_tbxStallNote.Text = "[xBot] Fear cuts deeper than swords..";
-			this.Stall_tbxStallNote.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Stall_tbxStallNote.Enter += new System.EventHandler(this.Control_Focus_Enter);
-			this.Stall_tbxStallNote.Leave += new System.EventHandler(this.Control_Focus_Leave);
-			this.Stall_tbxStallNote.Validating += new System.ComponentModel.CancelEventHandler(this.Control_Validating);
-			// 
-			// Stall_lblStallTitle
-			// 
-			this.Stall_lblStallTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_lblStallTitle.Location = new System.Drawing.Point(6, 7);
-			this.Stall_lblStallTitle.Name = "Stall_lblStallTitle";
-			this.Stall_lblStallTitle.Size = new System.Drawing.Size(45, 28);
-			this.Stall_lblStallTitle.TabIndex = 43;
-			this.Stall_lblStallTitle.Tag = "Source Sans Pro";
-			this.Stall_lblStallTitle.Text = "Title";
-			this.Stall_lblStallTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// Stall_tbxStallTitle
-			// 
-			this.Stall_tbxStallTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.Stall_tbxStallTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Stall_tbxStallTitle.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.Stall_tbxStallTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Stall_tbxStallTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Stall_tbxStallTitle.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.Stall_tbxStallTitle.Location = new System.Drawing.Point(51, 7);
-			this.Stall_tbxStallTitle.MaxLength = 63;
-			this.Stall_tbxStallTitle.Name = "Stall_tbxStallTitle";
-			this.Stall_tbxStallTitle.Size = new System.Drawing.Size(275, 28);
-			this.Stall_tbxStallTitle.TabIndex = 42;
-			this.Stall_tbxStallTitle.Tag = "Source Sans Pro";
-			this.Stall_tbxStallTitle.Text = "[xBot] The things I do for love..";
-			this.Stall_tbxStallTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.Stall_tbxStallTitle.Enter += new System.EventHandler(this.Control_Focus_Enter);
-			this.Stall_tbxStallTitle.Leave += new System.EventHandler(this.Control_Focus_Leave);
-			this.Stall_tbxStallTitle.Validating += new System.ComponentModel.CancelEventHandler(this.Control_Validating);
 			// 
 			// TabPageV_Control01_Players_Panel
 			// 
@@ -4625,6 +4182,72 @@ namespace xBot.App
 			this.TabPageH_Players_Option01.Text = "Info";
 			this.TabPageH_Players_Option01.UseVisualStyleBackColor = false;
 			this.TabPageH_Players_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Players_Option01_Panel
+			// 
+			this.TabPageH_Players_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_lblPlayerCount);
+			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_btnRefreshPlayers);
+			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_tvwPlayers);
+			this.TabPageH_Players_Option01_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Players_Option01_Panel.Name = "TabPageH_Players_Option01_Panel";
+			this.TabPageH_Players_Option01_Panel.Size = new System.Drawing.Size(657, 345);
+			this.TabPageH_Players_Option01_Panel.TabIndex = 7;
+			this.TabPageH_Players_Option01_Panel.Visible = false;
+			// 
+			// Players_lblPlayerCount
+			// 
+			this.Players_lblPlayerCount.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Players_lblPlayerCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Players_lblPlayerCount.Location = new System.Drawing.Point(6, 311);
+			this.Players_lblPlayerCount.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
+			this.Players_lblPlayerCount.Name = "Players_lblPlayerCount";
+			this.Players_lblPlayerCount.Size = new System.Drawing.Size(144, 28);
+			this.Players_lblPlayerCount.TabIndex = 17;
+			this.Players_lblPlayerCount.Tag = "Source Sans Pro";
+			this.Players_lblPlayerCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Players_btnRefreshPlayers
+			// 
+			this.Players_btnRefreshPlayers.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Players_btnRefreshPlayers.FlatAppearance.BorderSize = 0;
+			this.Players_btnRefreshPlayers.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Players_btnRefreshPlayers.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Players_btnRefreshPlayers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Players_btnRefreshPlayers.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.Players_btnRefreshPlayers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Players_btnRefreshPlayers.Location = new System.Drawing.Point(621, 311);
+			this.Players_btnRefreshPlayers.Margin = new System.Windows.Forms.Padding(0);
+			this.Players_btnRefreshPlayers.Name = "Players_btnRefreshPlayers";
+			this.Players_btnRefreshPlayers.Size = new System.Drawing.Size(28, 28);
+			this.Players_btnRefreshPlayers.TabIndex = 16;
+			this.Players_btnRefreshPlayers.Tag = "Font Awesome 5 Pro Light";
+			this.Players_btnRefreshPlayers.Text = "";
+			this.Players_btnRefreshPlayers.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.ToolTips.SetToolTip(this.Players_btnRefreshPlayers, "Refresh");
+			this.Players_btnRefreshPlayers.UseCompatibleTextRendering = true;
+			this.Players_btnRefreshPlayers.UseVisualStyleBackColor = false;
+			this.Players_btnRefreshPlayers.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Players_tvwPlayers
+			// 
+			this.Players_tvwPlayers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Players_tvwPlayers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Players_tvwPlayers.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Players_tvwPlayers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Players_tvwPlayers.ImageKey = "None";
+			this.Players_tvwPlayers.ImageList = this.lstimgIcons;
+			this.Players_tvwPlayers.Indent = 5;
+			this.Players_tvwPlayers.ItemHeight = 20;
+			this.Players_tvwPlayers.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Players_tvwPlayers.Location = new System.Drawing.Point(6, 7);
+			this.Players_tvwPlayers.Name = "Players_tvwPlayers";
+			this.Players_tvwPlayers.SelectedImageKey = "None";
+			this.Players_tvwPlayers.ShowNodeToolTips = true;
+			this.Players_tvwPlayers.Size = new System.Drawing.Size(643, 300);
+			this.Players_tvwPlayers.TabIndex = 1;
+			this.Players_tvwPlayers.Tag = "Source Sans Pro";
+			this.Players_tvwPlayers.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
 			// 
 			// TabPageH_Players_Option02_Panel
 			// 
@@ -4937,71 +4560,448 @@ namespace xBot.App
 			this.Players_lblInventoryExchange.Text = "Your inventory";
 			this.Players_lblInventoryExchange.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// TabPageH_Players_Option01_Panel
+			// TabPageV_Control01_Stall_Panel
 			// 
-			this.TabPageH_Players_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_lblPlayerCount);
-			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_btnRefreshPlayers);
-			this.TabPageH_Players_Option01_Panel.Controls.Add(this.Players_tvwPlayers);
-			this.TabPageH_Players_Option01_Panel.Location = new System.Drawing.Point(0, 27);
-			this.TabPageH_Players_Option01_Panel.Name = "TabPageH_Players_Option01_Panel";
-			this.TabPageH_Players_Option01_Panel.Size = new System.Drawing.Size(657, 345);
-			this.TabPageH_Players_Option01_Panel.TabIndex = 7;
-			this.TabPageH_Players_Option01_Panel.Visible = false;
+			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall);
+			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall_Option01_Panel);
+			this.TabPageV_Control01_Stall_Panel.Controls.Add(this.TabPageH_Stall_Option02_Panel);
+			this.TabPageV_Control01_Stall_Panel.Location = new System.Drawing.Point(135, 45);
+			this.TabPageV_Control01_Stall_Panel.Name = "TabPageV_Control01_Stall_Panel";
+			this.TabPageV_Control01_Stall_Panel.Size = new System.Drawing.Size(657, 372);
+			this.TabPageV_Control01_Stall_Panel.TabIndex = 18;
+			this.TabPageV_Control01_Stall_Panel.Visible = false;
 			// 
-			// Players_lblPlayerCount
+			// TabPageH_Stall
 			// 
-			this.Players_lblPlayerCount.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Players_lblPlayerCount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Players_lblPlayerCount.Location = new System.Drawing.Point(6, 311);
-			this.Players_lblPlayerCount.Margin = new System.Windows.Forms.Padding(3, 3, 0, 0);
-			this.Players_lblPlayerCount.Name = "Players_lblPlayerCount";
-			this.Players_lblPlayerCount.Size = new System.Drawing.Size(144, 28);
-			this.Players_lblPlayerCount.TabIndex = 17;
-			this.Players_lblPlayerCount.Tag = "Source Sans Pro";
-			this.Players_lblPlayerCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.TabPageH_Stall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Stall.Controls.Add(this.TabPageH_Stall_Option02);
+			this.TabPageH_Stall.Controls.Add(this.TabPageH_Stall_Option01);
+			this.TabPageH_Stall.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Stall.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Stall.Name = "TabPageH_Stall";
+			this.TabPageH_Stall.Size = new System.Drawing.Size(657, 28);
+			this.TabPageH_Stall.TabIndex = 10;
 			// 
-			// Players_btnRefreshPlayers
+			// TabPageH_Stall_Option02
 			// 
-			this.Players_btnRefreshPlayers.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.Players_btnRefreshPlayers.FlatAppearance.BorderSize = 0;
-			this.Players_btnRefreshPlayers.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Players_btnRefreshPlayers.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
-			this.Players_btnRefreshPlayers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.Players_btnRefreshPlayers.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
-			this.Players_btnRefreshPlayers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Players_btnRefreshPlayers.Location = new System.Drawing.Point(621, 311);
-			this.Players_btnRefreshPlayers.Margin = new System.Windows.Forms.Padding(0);
-			this.Players_btnRefreshPlayers.Name = "Players_btnRefreshPlayers";
-			this.Players_btnRefreshPlayers.Size = new System.Drawing.Size(28, 28);
-			this.Players_btnRefreshPlayers.TabIndex = 16;
-			this.Players_btnRefreshPlayers.Tag = "Font Awesome 5 Pro Light";
-			this.Players_btnRefreshPlayers.Text = "";
-			this.Players_btnRefreshPlayers.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.ToolTips.SetToolTip(this.Players_btnRefreshPlayers, "Refresh");
-			this.Players_btnRefreshPlayers.UseCompatibleTextRendering = true;
-			this.Players_btnRefreshPlayers.UseVisualStyleBackColor = false;
-			this.Players_btnRefreshPlayers.Click += new System.EventHandler(this.Control_Click);
+			this.TabPageH_Stall_Option02.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Stall_Option02.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Stall_Option02.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Stall_Option02.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Stall_Option02.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Stall_Option02.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Stall_Option02.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Stall_Option02.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Stall_Option02.Location = new System.Drawing.Point(329, 0);
+			this.TabPageH_Stall_Option02.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Stall_Option02.Name = "TabPageH_Stall_Option02";
+			this.TabPageH_Stall_Option02.Size = new System.Drawing.Size(328, 26);
+			this.TabPageH_Stall_Option02.TabIndex = 13;
+			this.TabPageH_Stall_Option02.Tag = "Source Sans Pro";
+			this.TabPageH_Stall_Option02.Text = "Options";
+			this.TabPageH_Stall_Option02.UseVisualStyleBackColor = false;
+			this.TabPageH_Stall_Option02.Click += new System.EventHandler(this.TabPageH_Option_Click);
 			// 
-			// Players_tvwPlayers
+			// TabPageH_Stall_Option01
 			// 
-			this.Players_tvwPlayers.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
-			this.Players_tvwPlayers.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.Players_tvwPlayers.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.Players_tvwPlayers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
-			this.Players_tvwPlayers.ImageKey = "None";
-			this.Players_tvwPlayers.ImageList = this.lstimgIcons;
-			this.Players_tvwPlayers.Indent = 5;
-			this.Players_tvwPlayers.ItemHeight = 20;
-			this.Players_tvwPlayers.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-			this.Players_tvwPlayers.Location = new System.Drawing.Point(6, 7);
-			this.Players_tvwPlayers.Name = "Players_tvwPlayers";
-			this.Players_tvwPlayers.SelectedImageKey = "None";
-			this.Players_tvwPlayers.ShowNodeToolTips = true;
-			this.Players_tvwPlayers.Size = new System.Drawing.Size(643, 300);
-			this.Players_tvwPlayers.TabIndex = 1;
-			this.Players_tvwPlayers.Tag = "Source Sans Pro";
-			this.Players_tvwPlayers.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView_NodeMouseClick);
+			this.TabPageH_Stall_Option01.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.TabPageH_Stall_Option01.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.TabPageH_Stall_Option01.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Stall_Option01.FlatAppearance.BorderSize = 0;
+			this.TabPageH_Stall_Option01.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.TabPageH_Stall_Option01.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(151)))), ((int)(((byte)(234)))));
+			this.TabPageH_Stall_Option01.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.TabPageH_Stall_Option01.Font = new System.Drawing.Font("Source Sans Pro", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+			this.TabPageH_Stall_Option01.Location = new System.Drawing.Point(0, 0);
+			this.TabPageH_Stall_Option01.Margin = new System.Windows.Forms.Padding(0);
+			this.TabPageH_Stall_Option01.Name = "TabPageH_Stall_Option01";
+			this.TabPageH_Stall_Option01.Size = new System.Drawing.Size(329, 26);
+			this.TabPageH_Stall_Option01.TabIndex = 12;
+			this.TabPageH_Stall_Option01.Tag = "Source Sans Pro";
+			this.TabPageH_Stall_Option01.Text = "Info";
+			this.TabPageH_Stall_Option01.UseVisualStyleBackColor = false;
+			this.TabPageH_Stall_Option01.Click += new System.EventHandler(this.TabPageH_Option_Click);
+			// 
+			// TabPageH_Stall_Option01_Panel
+			// 
+			this.TabPageH_Stall_Option01_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxQuantity);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lblState);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnIGCreateModify);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnClose);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnAddItem);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxPrice);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnTitleEdit);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_btnNoteEdit);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxNote);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_tbxTitle);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lstvStall);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lblInventoryStall);
+			this.TabPageH_Stall_Option01_Panel.Controls.Add(this.Stall_lstvInventoryStall);
+			this.TabPageH_Stall_Option01_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Stall_Option01_Panel.Name = "TabPageH_Stall_Option01_Panel";
+			this.TabPageH_Stall_Option01_Panel.Size = new System.Drawing.Size(657, 345);
+			this.TabPageH_Stall_Option01_Panel.TabIndex = 14;
+			this.TabPageH_Stall_Option01_Panel.Visible = false;
+			// 
+			// Stall_tbxQuantity
+			// 
+			this.Stall_tbxQuantity.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_tbxQuantity.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxQuantity.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxQuantity.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxQuantity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxQuantity.Location = new System.Drawing.Point(185, 282);
+			this.Stall_tbxQuantity.Name = "Stall_tbxQuantity";
+			this.Stall_tbxQuantity.ReadOnly = true;
+			this.Stall_tbxQuantity.Size = new System.Drawing.Size(53, 28);
+			this.Stall_tbxQuantity.TabIndex = 12;
+			this.Stall_tbxQuantity.Tag = "Source Sans Pro";
+			this.Stall_tbxQuantity.Text = "- - -";
+			this.Stall_tbxQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ToolTips.SetToolTip(this.Stall_tbxQuantity, "Quantity");
+			// 
+			// Stall_lblState
+			// 
+			this.Stall_lblState.AutoEllipsis = true;
+			this.Stall_lblState.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_lblState.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lblState.Location = new System.Drawing.Point(124, 315);
+			this.Stall_lblState.Name = "Stall_lblState";
+			this.Stall_lblState.Size = new System.Drawing.Size(141, 22);
+			this.Stall_lblState.TabIndex = 11;
+			this.Stall_lblState.Tag = "Source Sans Pro";
+			this.Stall_lblState.Text = "- - -";
+			this.Stall_lblState.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// Stall_btnIGCreateModify
+			// 
+			this.Stall_btnIGCreateModify.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Stall_btnIGCreateModify.Enabled = false;
+			this.Stall_btnIGCreateModify.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnIGCreateModify.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Stall_btnIGCreateModify.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnIGCreateModify.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Stall_btnIGCreateModify.Font = new System.Drawing.Font("Source Sans Pro", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_btnIGCreateModify.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_btnIGCreateModify.Location = new System.Drawing.Point(6, 315);
+			this.Stall_btnIGCreateModify.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_btnIGCreateModify.Name = "Stall_btnIGCreateModify";
+			this.Stall_btnIGCreateModify.Size = new System.Drawing.Size(112, 22);
+			this.Stall_btnIGCreateModify.TabIndex = 3;
+			this.Stall_btnIGCreateModify.Tag = "Source Sans Pro";
+			this.Stall_btnIGCreateModify.Text = "Create";
+			this.Stall_btnIGCreateModify.UseCompatibleTextRendering = true;
+			this.Stall_btnIGCreateModify.UseVisualStyleBackColor = false;
+			this.Stall_btnIGCreateModify.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Stall_btnClose
+			// 
+			this.Stall_btnClose.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Stall_btnClose.Enabled = false;
+			this.Stall_btnClose.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+			this.Stall_btnClose.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Stall_btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Stall_btnClose.Font = new System.Drawing.Font("Font Awesome 5 Pro Solid", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_btnClose.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_btnClose.Location = new System.Drawing.Point(621, 7);
+			this.Stall_btnClose.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_btnClose.Name = "Stall_btnClose";
+			this.Stall_btnClose.Size = new System.Drawing.Size(28, 28);
+			this.Stall_btnClose.TabIndex = 2;
+			this.Stall_btnClose.Tag = "Font Awesome 5 Pro Solid";
+			this.Stall_btnClose.Text = "";
+			this.ToolTips.SetToolTip(this.Stall_btnClose, "Close stall");
+			this.Stall_btnClose.UseCompatibleTextRendering = true;
+			this.Stall_btnClose.UseVisualStyleBackColor = false;
+			this.Stall_btnClose.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Stall_btnAddItem
+			// 
+			this.Stall_btnAddItem.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Stall_btnAddItem.Enabled = false;
+			this.Stall_btnAddItem.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+			this.Stall_btnAddItem.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Stall_btnAddItem.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnAddItem.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Stall_btnAddItem.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_btnAddItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_btnAddItem.Location = new System.Drawing.Point(237, 282);
+			this.Stall_btnAddItem.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_btnAddItem.Name = "Stall_btnAddItem";
+			this.Stall_btnAddItem.Size = new System.Drawing.Size(28, 28);
+			this.Stall_btnAddItem.TabIndex = 10;
+			this.Stall_btnAddItem.Tag = "Font Awesome 5 Pro Light";
+			this.Stall_btnAddItem.Text = "";
+			this.ToolTips.SetToolTip(this.Stall_btnAddItem, "Add to Stall");
+			this.Stall_btnAddItem.UseCompatibleTextRendering = true;
+			this.Stall_btnAddItem.UseVisualStyleBackColor = false;
+			this.Stall_btnAddItem.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Stall_tbxPrice
+			// 
+			this.Stall_tbxPrice.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_tbxPrice.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxPrice.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxPrice.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxPrice.Location = new System.Drawing.Point(6, 282);
+			this.Stall_tbxPrice.Name = "Stall_tbxPrice";
+			this.Stall_tbxPrice.ReadOnly = true;
+			this.Stall_tbxPrice.Size = new System.Drawing.Size(180, 28);
+			this.Stall_tbxPrice.TabIndex = 9;
+			this.Stall_tbxPrice.Tag = "Source Sans Pro";
+			this.Stall_tbxPrice.Text = "- - -";
+			this.Stall_tbxPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ToolTips.SetToolTip(this.Stall_tbxPrice, "Price");
+			this.Stall_tbxPrice.TextChanged += new System.EventHandler(this.Control_TextChanged);
+			// 
+			// Stall_btnTitleEdit
+			// 
+			this.Stall_btnTitleEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Stall_btnTitleEdit.Enabled = false;
+			this.Stall_btnTitleEdit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+			this.Stall_btnTitleEdit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Stall_btnTitleEdit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnTitleEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Stall_btnTitleEdit.Font = new System.Drawing.Font("Font Awesome 5 Pro Regular", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_btnTitleEdit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_btnTitleEdit.Location = new System.Drawing.Point(593, 7);
+			this.Stall_btnTitleEdit.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_btnTitleEdit.Name = "Stall_btnTitleEdit";
+			this.Stall_btnTitleEdit.Size = new System.Drawing.Size(29, 28);
+			this.Stall_btnTitleEdit.TabIndex = 1;
+			this.Stall_btnTitleEdit.Tag = "Font Awesome 5 Pro Regular";
+			this.Stall_btnTitleEdit.Text = "";
+			this.ToolTips.SetToolTip(this.Stall_btnTitleEdit, "Edit title");
+			this.Stall_btnTitleEdit.UseCompatibleTextRendering = true;
+			this.Stall_btnTitleEdit.UseVisualStyleBackColor = false;
+			this.Stall_btnTitleEdit.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Stall_btnNoteEdit
+			// 
+			this.Stall_btnNoteEdit.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Stall_btnNoteEdit.Enabled = false;
+			this.Stall_btnNoteEdit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+			this.Stall_btnNoteEdit.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+			this.Stall_btnNoteEdit.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(64)))));
+			this.Stall_btnNoteEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.Stall_btnNoteEdit.Font = new System.Drawing.Font("Font Awesome 5 Pro Light", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_btnNoteEdit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_btnNoteEdit.Location = new System.Drawing.Point(621, 309);
+			this.Stall_btnNoteEdit.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_btnNoteEdit.Name = "Stall_btnNoteEdit";
+			this.Stall_btnNoteEdit.Size = new System.Drawing.Size(28, 28);
+			this.Stall_btnNoteEdit.TabIndex = 6;
+			this.Stall_btnNoteEdit.Tag = "Font Awesome 5 Pro Light";
+			this.Stall_btnNoteEdit.Text = "";
+			this.ToolTips.SetToolTip(this.Stall_btnNoteEdit, "Edit note");
+			this.Stall_btnNoteEdit.UseCompatibleTextRendering = true;
+			this.Stall_btnNoteEdit.UseVisualStyleBackColor = false;
+			this.Stall_btnNoteEdit.Click += new System.EventHandler(this.Control_Click);
+			// 
+			// Stall_tbxNote
+			// 
+			this.Stall_tbxNote.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_tbxNote.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxNote.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxNote.Location = new System.Drawing.Point(271, 309);
+			this.Stall_tbxNote.MaxLength = 63;
+			this.Stall_tbxNote.Name = "Stall_tbxNote";
+			this.Stall_tbxNote.ReadOnly = true;
+			this.Stall_tbxNote.Size = new System.Drawing.Size(351, 28);
+			this.Stall_tbxNote.TabIndex = 5;
+			this.Stall_tbxNote.Tag = "Source Sans Pro";
+			this.Stall_tbxNote.Text = "- - -";
+			this.Stall_tbxNote.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ToolTips.SetToolTip(this.Stall_tbxNote, "Note");
+			// 
+			// Stall_tbxTitle
+			// 
+			this.Stall_tbxTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_tbxTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxTitle.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxTitle.Location = new System.Drawing.Point(271, 7);
+			this.Stall_tbxTitle.MaxLength = 63;
+			this.Stall_tbxTitle.Name = "Stall_tbxTitle";
+			this.Stall_tbxTitle.ReadOnly = true;
+			this.Stall_tbxTitle.Size = new System.Drawing.Size(323, 28);
+			this.Stall_tbxTitle.TabIndex = 0;
+			this.Stall_tbxTitle.Tag = "Source Sans Pro";
+			this.Stall_tbxTitle.Text = "- - -";
+			this.Stall_tbxTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.ToolTips.SetToolTip(this.Stall_tbxTitle, "Title");
+			// 
+			// Stall_lstvStall
+			// 
+			this.Stall_lstvStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_lstvStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_lstvStall.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader52,
+            this.columnHeader53,
+            this.columnHeader54});
+			this.Stall_lstvStall.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lstvStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_lstvStall.FullRowSelect = true;
+			this.Stall_lstvStall.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.Stall_lstvStall.HideSelection = false;
+			this.Stall_lstvStall.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Stall_lstvStall.Location = new System.Drawing.Point(271, 34);
+			this.Stall_lstvStall.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_lstvStall.MultiSelect = false;
+			this.Stall_lstvStall.Name = "Stall_lstvStall";
+			this.Stall_lstvStall.ShowGroups = false;
+			this.Stall_lstvStall.ShowItemToolTips = true;
+			this.Stall_lstvStall.Size = new System.Drawing.Size(378, 276);
+			this.Stall_lstvStall.SmallImageList = this.lstimgIcons;
+			this.Stall_lstvStall.TabIndex = 4;
+			this.Stall_lstvStall.Tag = "Source Sans Pro";
+			this.Stall_lstvStall.TileSize = new System.Drawing.Size(201, 50);
+			this.Stall_lstvStall.UseCompatibleStateImageBehavior = false;
+			this.Stall_lstvStall.View = System.Windows.Forms.View.Details;
+			this.Stall_lstvStall.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.ListView_ColumnWidthChanging_Cancel);
+			// 
+			// columnHeader52
+			// 
+			this.columnHeader52.Text = "Item";
+			this.columnHeader52.Width = 193;
+			// 
+			// columnHeader53
+			// 
+			this.columnHeader53.Text = "Quantity";
+			this.columnHeader53.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader53.Width = 74;
+			// 
+			// columnHeader54
+			// 
+			this.columnHeader54.Text = "Price";
+			this.columnHeader54.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.columnHeader54.Width = 110;
+			// 
+			// Stall_lblInventoryStall
+			// 
+			this.Stall_lblInventoryStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_lblInventoryStall.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lblInventoryStall.Location = new System.Drawing.Point(6, 7);
+			this.Stall_lblInventoryStall.Name = "Stall_lblInventoryStall";
+			this.Stall_lblInventoryStall.Size = new System.Drawing.Size(259, 28);
+			this.Stall_lblInventoryStall.TabIndex = 7;
+			this.Stall_lblInventoryStall.Tag = "Source Sans Pro";
+			this.Stall_lblInventoryStall.Text = "Your inventory";
+			this.Stall_lblInventoryStall.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// Stall_lstvInventoryStall
+			// 
+			this.Stall_lstvInventoryStall.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(38)))));
+			this.Stall_lstvInventoryStall.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_lstvInventoryStall.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader31});
+			this.Stall_lstvInventoryStall.Font = new System.Drawing.Font("Source Sans Pro", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lstvInventoryStall.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_lstvInventoryStall.FullRowSelect = true;
+			this.Stall_lstvInventoryStall.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.Stall_lstvInventoryStall.HideSelection = false;
+			this.Stall_lstvInventoryStall.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Stall_lstvInventoryStall.Location = new System.Drawing.Point(6, 33);
+			this.Stall_lstvInventoryStall.Margin = new System.Windows.Forms.Padding(0);
+			this.Stall_lstvInventoryStall.MultiSelect = false;
+			this.Stall_lstvInventoryStall.Name = "Stall_lstvInventoryStall";
+			this.Stall_lstvInventoryStall.ShowGroups = false;
+			this.Stall_lstvInventoryStall.ShowItemToolTips = true;
+			this.Stall_lstvInventoryStall.Size = new System.Drawing.Size(259, 250);
+			this.Stall_lstvInventoryStall.SmallImageList = this.lstimgIcons;
+			this.Stall_lstvInventoryStall.TabIndex = 8;
+			this.Stall_lstvInventoryStall.Tag = "Source Sans Pro";
+			this.Stall_lstvInventoryStall.TileSize = new System.Drawing.Size(201, 50);
+			this.Stall_lstvInventoryStall.UseCompatibleStateImageBehavior = false;
+			this.Stall_lstvInventoryStall.View = System.Windows.Forms.View.Details;
+			this.Stall_lstvInventoryStall.SelectedIndexChanged += new System.EventHandler(this.ListView_SelectedIndexChanged);
+			this.Stall_lstvInventoryStall.Enter += new System.EventHandler(this.Control_Focus_Enter);
+			this.Stall_lstvInventoryStall.Leave += new System.EventHandler(this.Control_Focus_Leave);
+			// 
+			// columnHeader31
+			// 
+			this.columnHeader31.Text = "";
+			this.columnHeader31.Width = 242;
+			// 
+			// TabPageH_Stall_Option02_Panel
+			// 
+			this.TabPageH_Stall_Option02_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_lblStallNote);
+			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_tbxStallNote);
+			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_lblStallTitle);
+			this.TabPageH_Stall_Option02_Panel.Controls.Add(this.Stall_tbxStallTitle);
+			this.TabPageH_Stall_Option02_Panel.Location = new System.Drawing.Point(0, 27);
+			this.TabPageH_Stall_Option02_Panel.Name = "TabPageH_Stall_Option02_Panel";
+			this.TabPageH_Stall_Option02_Panel.Size = new System.Drawing.Size(657, 345);
+			this.TabPageH_Stall_Option02_Panel.TabIndex = 15;
+			this.TabPageH_Stall_Option02_Panel.Visible = false;
+			// 
+			// Stall_lblStallNote
+			// 
+			this.Stall_lblStallNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lblStallNote.Location = new System.Drawing.Point(330, 7);
+			this.Stall_lblStallNote.Name = "Stall_lblStallNote";
+			this.Stall_lblStallNote.Size = new System.Drawing.Size(45, 28);
+			this.Stall_lblStallNote.TabIndex = 45;
+			this.Stall_lblStallNote.Tag = "Source Sans Pro";
+			this.Stall_lblStallNote.Text = "Note";
+			this.Stall_lblStallNote.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Stall_tbxStallNote
+			// 
+			this.Stall_tbxStallNote.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Stall_tbxStallNote.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxStallNote.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxStallNote.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxStallNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxStallNote.Location = new System.Drawing.Point(375, 7);
+			this.Stall_tbxStallNote.MaxLength = 63;
+			this.Stall_tbxStallNote.Name = "Stall_tbxStallNote";
+			this.Stall_tbxStallNote.Size = new System.Drawing.Size(275, 28);
+			this.Stall_tbxStallNote.TabIndex = 44;
+			this.Stall_tbxStallNote.Tag = "Source Sans Pro";
+			this.Stall_tbxStallNote.Text = "[xBot] Fear cuts deeper than swords..";
+			this.Stall_tbxStallNote.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Stall_tbxStallNote.Enter += new System.EventHandler(this.Control_Focus_Enter);
+			this.Stall_tbxStallNote.Leave += new System.EventHandler(this.Control_Focus_Leave);
+			this.Stall_tbxStallNote.Validating += new System.ComponentModel.CancelEventHandler(this.Control_Validating);
+			// 
+			// Stall_lblStallTitle
+			// 
+			this.Stall_lblStallTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_lblStallTitle.Location = new System.Drawing.Point(6, 7);
+			this.Stall_lblStallTitle.Name = "Stall_lblStallTitle";
+			this.Stall_lblStallTitle.Size = new System.Drawing.Size(45, 28);
+			this.Stall_lblStallTitle.TabIndex = 43;
+			this.Stall_lblStallTitle.Tag = "Source Sans Pro";
+			this.Stall_lblStallTitle.Text = "Title";
+			this.Stall_lblStallTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Stall_tbxStallTitle
+			// 
+			this.Stall_tbxStallTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.Stall_tbxStallTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Stall_tbxStallTitle.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.Stall_tbxStallTitle.Font = new System.Drawing.Font("Source Sans Pro", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+			this.Stall_tbxStallTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(241)))), ((int)(((byte)(241)))));
+			this.Stall_tbxStallTitle.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.Stall_tbxStallTitle.Location = new System.Drawing.Point(51, 7);
+			this.Stall_tbxStallTitle.MaxLength = 63;
+			this.Stall_tbxStallTitle.Name = "Stall_tbxStallTitle";
+			this.Stall_tbxStallTitle.Size = new System.Drawing.Size(275, 28);
+			this.Stall_tbxStallTitle.TabIndex = 42;
+			this.Stall_tbxStallTitle.Tag = "Source Sans Pro";
+			this.Stall_tbxStallTitle.Text = "[xBot] The things I do for love..";
+			this.Stall_tbxStallTitle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.Stall_tbxStallTitle.Enter += new System.EventHandler(this.Control_Focus_Enter);
+			this.Stall_tbxStallTitle.Leave += new System.EventHandler(this.Control_Focus_Leave);
+			this.Stall_tbxStallTitle.Validating += new System.ComponentModel.CancelEventHandler(this.Control_Validating);
 			// 
 			// TabPageV_Control01_Minimap_Panel
 			// 
@@ -8768,26 +8768,26 @@ namespace xBot.App
             this.Menu_tvwPlayers_Separator01,
             this.Menu_tvwPlayers_Stall});
 			this.Menu_tvwPlayers.Name = "Menu_lstvHost";
-			this.Menu_tvwPlayers.Size = new System.Drawing.Size(153, 142);
+			this.Menu_tvwPlayers.Size = new System.Drawing.Size(128, 120);
 			// 
 			// Menu_tvwPlayers_Trace
 			// 
 			this.Menu_tvwPlayers_Trace.Name = "Menu_tvwPlayers_Trace";
-			this.Menu_tvwPlayers_Trace.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_Trace.Size = new System.Drawing.Size(127, 22);
 			this.Menu_tvwPlayers_Trace.Text = "Trace";
 			this.Menu_tvwPlayers_Trace.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Menu_tvwPlayers_Whisper
 			// 
 			this.Menu_tvwPlayers_Whisper.Name = "Menu_tvwPlayers_Whisper";
-			this.Menu_tvwPlayers_Whisper.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_Whisper.Size = new System.Drawing.Size(127, 22);
 			this.Menu_tvwPlayers_Whisper.Text = "Whisper";
 			this.Menu_tvwPlayers_Whisper.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Menu_tvwPlayers_Exchange
 			// 
 			this.Menu_tvwPlayers_Exchange.Name = "Menu_tvwPlayers_Exchange";
-			this.Menu_tvwPlayers_Exchange.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_Exchange.Size = new System.Drawing.Size(127, 22);
 			this.Menu_tvwPlayers_Exchange.Text = "Exchange";
 			this.Menu_tvwPlayers_Exchange.Click += new System.EventHandler(this.Menu_Click);
 			// 
@@ -8798,21 +8798,20 @@ namespace xBot.App
             this.Menu_tvwPlayers_InviteToGuild,
             this.Menu_tvwPlayers_InviteToAcademy});
 			this.Menu_tvwPlayers_InviteTo.Name = "Menu_tvwPlayers_InviteTo";
-			this.Menu_tvwPlayers_InviteTo.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_InviteTo.Size = new System.Drawing.Size(127, 22);
 			this.Menu_tvwPlayers_InviteTo.Text = "Invite to";
 			// 
 			// Menu_tvwPlayers_InviteToParty
 			// 
 			this.Menu_tvwPlayers_InviteToParty.Name = "Menu_tvwPlayers_InviteToParty";
-			this.Menu_tvwPlayers_InviteToParty.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_InviteToParty.Size = new System.Drawing.Size(124, 22);
 			this.Menu_tvwPlayers_InviteToParty.Text = "Party";
 			this.Menu_tvwPlayers_InviteToParty.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Menu_tvwPlayers_InviteToGuild
 			// 
-			this.Menu_tvwPlayers_InviteToGuild.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Strikeout);
 			this.Menu_tvwPlayers_InviteToGuild.Name = "Menu_tvwPlayers_InviteToGuild";
-			this.Menu_tvwPlayers_InviteToGuild.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_InviteToGuild.Size = new System.Drawing.Size(124, 22);
 			this.Menu_tvwPlayers_InviteToGuild.Text = "Guild";
 			this.Menu_tvwPlayers_InviteToGuild.Click += new System.EventHandler(this.Menu_Click);
 			// 
@@ -8820,9 +8819,21 @@ namespace xBot.App
 			// 
 			this.Menu_tvwPlayers_InviteToAcademy.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Strikeout);
 			this.Menu_tvwPlayers_InviteToAcademy.Name = "Menu_tvwPlayers_InviteToAcademy";
-			this.Menu_tvwPlayers_InviteToAcademy.Size = new System.Drawing.Size(152, 22);
+			this.Menu_tvwPlayers_InviteToAcademy.Size = new System.Drawing.Size(124, 22);
 			this.Menu_tvwPlayers_InviteToAcademy.Text = "Academy";
 			this.Menu_tvwPlayers_InviteToAcademy.Click += new System.EventHandler(this.Menu_Click);
+			// 
+			// Menu_tvwPlayers_Separator01
+			// 
+			this.Menu_tvwPlayers_Separator01.Name = "Menu_tvwPlayers_Separator01";
+			this.Menu_tvwPlayers_Separator01.Size = new System.Drawing.Size(124, 6);
+			// 
+			// Menu_tvwPlayers_Stall
+			// 
+			this.Menu_tvwPlayers_Stall.Name = "Menu_tvwPlayers_Stall";
+			this.Menu_tvwPlayers_Stall.Size = new System.Drawing.Size(127, 22);
+			this.Menu_tvwPlayers_Stall.Text = "Open stall";
+			this.Menu_tvwPlayers_Stall.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Menu_lstvStall_Buying
 			// 
@@ -8859,18 +8870,6 @@ namespace xBot.App
 			this.Menu_lstvStall_Selling_Edit.Size = new System.Drawing.Size(123, 22);
 			this.Menu_lstvStall_Selling_Edit.Text = "Edit Price";
 			this.Menu_lstvStall_Selling_Edit.Click += new System.EventHandler(this.Menu_Click);
-			// 
-			// Menu_tvwPlayers_Separator01
-			// 
-			this.Menu_tvwPlayers_Separator01.Name = "Menu_tvwPlayers_Separator01";
-			this.Menu_tvwPlayers_Separator01.Size = new System.Drawing.Size(149, 6);
-			// 
-			// Menu_tvwPlayers_Stall
-			// 
-			this.Menu_tvwPlayers_Stall.Name = "Menu_tvwPlayers_Stall";
-			this.Menu_tvwPlayers_Stall.Size = new System.Drawing.Size(152, 22);
-			this.Menu_tvwPlayers_Stall.Text = "Open stall";
-			this.Menu_tvwPlayers_Stall.Click += new System.EventHandler(this.Menu_Click);
 			// 
 			// Window
 			// 
@@ -8939,19 +8938,19 @@ namespace xBot.App
 			this.Party_gbxPlayerList.ResumeLayout(false);
 			this.Party_gbxPlayerList.PerformLayout();
 			this.pnlWindow.ResumeLayout(false);
+			this.TabPageV_Control01_Players_Panel.ResumeLayout(false);
+			this.TabPageH_Players.ResumeLayout(false);
+			this.TabPageH_Players_Option01_Panel.ResumeLayout(false);
+			this.TabPageH_Players_Option02_Panel.ResumeLayout(false);
+			this.TabPageH_Players_Option02_Panel.PerformLayout();
+			this.Menu_lstvExchangingItems.ResumeLayout(false);
+			this.Menu_lstvInventoryExchange.ResumeLayout(false);
 			this.TabPageV_Control01_Stall_Panel.ResumeLayout(false);
 			this.TabPageH_Stall.ResumeLayout(false);
 			this.TabPageH_Stall_Option01_Panel.ResumeLayout(false);
 			this.TabPageH_Stall_Option01_Panel.PerformLayout();
 			this.TabPageH_Stall_Option02_Panel.ResumeLayout(false);
 			this.TabPageH_Stall_Option02_Panel.PerformLayout();
-			this.TabPageV_Control01_Players_Panel.ResumeLayout(false);
-			this.TabPageH_Players.ResumeLayout(false);
-			this.TabPageH_Players_Option02_Panel.ResumeLayout(false);
-			this.TabPageH_Players_Option02_Panel.PerformLayout();
-			this.Menu_lstvExchangingItems.ResumeLayout(false);
-			this.Menu_lstvInventoryExchange.ResumeLayout(false);
-			this.TabPageH_Players_Option01_Panel.ResumeLayout(false);
 			this.TabPageV_Control01_Minimap_Panel.ResumeLayout(false);
 			this.Minimap_panelCoords.ResumeLayout(false);
 			this.Minimap_panelCoords.PerformLayout();

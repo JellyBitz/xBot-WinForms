@@ -149,32 +149,38 @@ namespace xBot.App
 			Timer.Start();
 		}
 		/// <summary>
+		/// Try to delete a file, return success.
+		/// </summary>
+		public static bool FileTryDelete(string Path)
+		{
+			try
+			{
+				File.SetAttributes(Path, FileAttributes.Normal);
+				File.Delete(Path);
+				return true;
+			}
+			catch { return false; }
+		}
+		/// <summary>
 		/// Try to delete a directory with all his files recursively.
 		/// </summary>
-		public static void DirectoryDelete(string Path)
+		public static void DirectoryTryDelete(string Path)
 		{
 			// Delete every file
 			string[] temp = Directory.GetFiles(Path);
 			foreach (string file in temp)
 			{
-				try
-				{
-					File.SetAttributes(file, FileAttributes.Normal);
-					File.Delete(file);
-				}
-				catch { }
-			}
-
+				FileTryDelete(file);
+      }
 			// Check every folder inside Path recursively
 			temp = Directory.GetDirectories(Path);
 			foreach (string directory in temp)
-				DirectoryDelete(directory);
+				DirectoryTryDelete(directory);
 
 			// Delete Path folder
 			try {
 				Directory.Delete(Path, false);
-			}
-			catch { }
+			}catch { }
 		}
 		#endregion
 	}

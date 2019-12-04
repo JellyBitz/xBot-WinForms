@@ -1090,17 +1090,17 @@ namespace xBot.App
 		public void _OnPartyMatchDeleted(uint number)
 		{
 			Window w = Window.Get;
-      if (w.Party_cbxMatchAutoReform.Checked)
+			if (w.Party_cbxMatchAutoReform.Checked)
 			{
 				w.Party_lstvPartyMatch.InvokeIfRequired(()=> {
 					w.Party_lstvPartyMatch.Items.RemoveByKey(number.ToString());
-        });
+				});
 				PacketBuilder.RequestPartyMatch();
 			}
 		}
 		public void _OnGuildInfo()
 		{
-
+			inGuild = true;
 		}
 		public void _OnAcademyInfo()
 		{
@@ -1194,15 +1194,14 @@ namespace xBot.App
 				});
 				w.Stall_lstvStall.InvokeIfRequired(()=> {
 					w.Stall_lstvStall.ContextMenuStrip = w.Menu_lstvStall_Buying;
-        });
-
+				});
 			}
 			w.Stall_btnClose.InvokeIfRequired(() => {
 				w.Stall_btnClose.Enabled = true;
 			});
 			// Create stall
 			w.Stall_Create(inventoryStall);
-    }
+		}
 		public void _OnStallClosed()
 		{
 			inStall = false;
@@ -1248,15 +1247,16 @@ namespace xBot.App
 			if(StallerEntitiy == null)
 			{
 				byte slotInventory = (byte)item[SRProperty.Slot];
-        SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
+				SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
 				inventory[slotInventory] = null;
 				// Visuals
 				w.Stall_lstvInventoryStall.Items.RemoveByKey(slotInventory.ToString());
 				m_stallEarnings += (ulong)item[SRProperty.Gold];
-        w.InvokeIfRequired(() => {
+				w.InvokeIfRequired(() => {
 					w.ToolTips.SetToolTip(w.Stall_lblState, "Earnings : " + m_stallEarnings.ToString("#,0"));
 				});
-				w.LogChatMessage(w.Chat_rtbxStall, "Notice", player + " bought [" + item.Name + "]");
+				w.LogChatMessage(w.Chat_rtbxStall, "(Notice)", "["+player+"] bought you [" + item.GetItemText()+item.GetItemQuantity() + "]");
+				w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option07);
 			}
 			else
 			{
@@ -1264,7 +1264,7 @@ namespace xBot.App
 				{
 					SRObjectCollection inventory = (SRObjectCollection)i.Character[SRProperty.Inventory];
 					byte emptySlot = (byte)inventory.FindIndex(temp => temp == null, 13);
-          inventory[emptySlot] = item;
+					inventory[emptySlot] = item;
 					item.RemoveKey(SRProperty.Slot);
 					item.RemoveKey(SRProperty.Gold);
 					// Visuals
@@ -1275,11 +1275,13 @@ namespace xBot.App
 					w.Stall_lstvInventoryStall.InvokeIfRequired(() => {
 						w.Stall_lstvInventoryStall.Items.Add(listViewItem);
 					});
-					w.LogChatMessage(w.Chat_rtbxStall, "Notice","You bought [" + item.Name + "]");
+					w.LogChatMessage(w.Chat_rtbxStall, "(Notice)","You bought [" + item.GetItemText()+item.GetItemQuantity() + "]");
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option07);
 				}
 				else
 				{
-					w.LogChatMessage(w.Chat_rtbxStall, "Notice", player + " bought [" + item.Name + "]");
+					w.LogChatMessage(w.Chat_rtbxStall, "(Notice)", "["+player+"] bought [" + item.GetItemText()+item.GetItemQuantity() + "]");
+					w.TabPageH_ChatOption_Notify(w.TabPageH_Chat_Option07);
 				}
 			}
 		}

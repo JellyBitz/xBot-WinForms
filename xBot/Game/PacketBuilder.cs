@@ -361,6 +361,15 @@ namespace xBot.Game
 			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void PickUpItem(uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
+			p.WriteByte(1);
+			p.WriteByte(Types.CharacterAction.ItemPickUp);
+			p.WriteByte(1);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void CreateStall(string title,string note)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_CREATE_REQUEST);
@@ -415,7 +424,7 @@ namespace xBot.Game
 		}
 		public static void EditItemStall(byte slotStall,ushort quantity,ulong price)
 		{
-      Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
+			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
 			p.WriteByte(Types.StallUpdate.ItemUpdate);
 			p.WriteByte(slotStall);
 			p.WriteUShort(quantity);
@@ -530,6 +539,13 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_GUILD_INVITATION_REQUEST);
 			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
+		public static void EditGuildNotice(string title, string message)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_GUILD_NOTICE_EDIT_REQUEST);
+			p.WriteAscii(title);
+			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void AddItemExchange(byte slot)

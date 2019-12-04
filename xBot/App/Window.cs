@@ -1226,7 +1226,7 @@ namespace xBot.App
 		/// </summary>
 		public void TabPageH_ChatOption_Notify(Control c)
 		{
-			WinAPI.InvokeIfRequired(c.Parent, () => {
+			c.Parent.InvokeIfRequired(() => {
 				if (c.Parent.Tag != c && !c.Font.Bold)
 					c.Font = new Font(c.Font, FontStyle.Bold);
 			});
@@ -1565,7 +1565,7 @@ namespace xBot.App
 						}
 					}
 					break;
-				case "Players_btnGoldExchangeEdit":
+				case "Players_btnExchangingGoldEdit":
 					{
 						if (Players_btnExchange.Text == "Confirm")
 						{
@@ -2455,7 +2455,7 @@ namespace xBot.App
 							SRObject item = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory])[index];
 							if (item != null)
 							{
-								if (MessageBox.Show(this, "Are you sure you want to drop \"" + item.Name + "\"?", "xBot - Inventory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+								if (MessageBox.Show(this, "Are you sure you want to drop \"" + item.GetItemText()+item.GetItemQuantity() + "\"?", "xBot - Inventory", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 								{
 									PacketBuilder.DropItem(index);
 								}
@@ -2743,7 +2743,7 @@ namespace xBot.App
 					}
 					break;
 				case "Menu_lstvOpcodes_Sort":
-					if(this.Settings_lstvOpcodes.Sorting == SortOrder.None || this.Settings_lstvOpcodes.Sorting == SortOrder.Descending)
+					if(this.Settings_lstvOpcodes.Sorting == SortOrder.Descending || this.Settings_lstvOpcodes.Sorting == SortOrder.None)
 						this.Settings_lstvOpcodes.Sorting = SortOrder.Ascending;
 					else
 						this.Settings_lstvOpcodes.Sorting = SortOrder.Descending;
@@ -2809,15 +2809,15 @@ namespace xBot.App
 					break;
 				case "Menu_tvwPlayers_InviteToGuild":
 					{
-					//	Bot b = Bot.Get;
-					//	if (b.inGuild)
-					//	{
-					//		SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
-					//		if (Info.Get.isNear((uint)player[SRProperty.UniqueID]))
-					//		{
-					//			PacketBuilder.InviteToGuild((uint)player[SRProperty.UniqueID]);
-					//		}
-					//	}
+						Bot b = Bot.Get;
+						if (b.inGuild)
+						{
+							SRObject player = (SRObject)Players_tvwPlayers.SelectedNode.Tag;
+							if (Info.Get.isNear((uint)player[SRProperty.UniqueID]))
+							{
+								PacketBuilder.InviteToGuild((uint)player[SRProperty.UniqueID]);
+							}
+						}
 					}
 					break;
 				case "Menu_tvwPlayers_InviteToAcademy":
@@ -2842,7 +2842,7 @@ namespace xBot.App
 							if ((Types.InteractMode)player[SRProperty.InteractMode] == Types.InteractMode.OnStall)
 							{
 								SRCoord playerPosition = player.GetPosition();
-                if (Info.Get.Character.GetPosition().DistanceTo(playerPosition) > 9.0)
+								if (Info.Get.Character.GetPosition().DistanceTo(playerPosition) > 9.0)
 								{
 									if (MessageBox.Show(this, "The player is too far away. Do you want to get closer?", "xBot - Players", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes)
 										Bot.Get.MoveTo(playerPosition);

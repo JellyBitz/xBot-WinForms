@@ -2,6 +2,8 @@
 using System.Collections.Specialized;
 using System.Data.SQLite;
 using System.IO;
+using System.Threading.Tasks;
+
 namespace xBot.App
 {
 	public class SQLDatabase
@@ -35,7 +37,7 @@ namespace xBot.App
 				db = new SQLiteConnection("Data Source=" + Path + ";Version=3;");
 				q = new SQLiteCommand(db);
 				q.CommandTimeout = 1000; // Wait for queue to execute query
-        db.Open();
+				db.Open();
 				return true;
 			}
 			catch
@@ -92,30 +94,24 @@ namespace xBot.App
 		public List<NameValueCollection> GetResult()
 		{
 			List<NameValueCollection> result = new List<NameValueCollection>();
-			using (SQLiteDataReader reader = q.ExecuteReader())
-			{
-				while (reader.Read()){
-					result.Add(reader.GetValues());
-				}
-			}
-			return result;
+			SQLiteDataReader reader = q.ExecuteReader();
+      while (reader.Read())
+				result.Add(reader.GetValues());
+			reader.Close();
+      return result;
 		}
 		public List<NameValueCollection> GetResultFromQuery(string sql)
 		{
 			List<NameValueCollection> result = new List<NameValueCollection>();
 			if (db != null)
 			{
-				using (SQLiteCommand q = new SQLiteCommand(sql, db))
-				{
-					q.ExecuteNonQuery();
-					using (SQLiteDataReader reader = q.ExecuteReader())
-					{
-						while (reader.Read())
-						{
-							result.Add(reader.GetValues());
-						}
-					}
-				}
+				SQLiteCommand q = new SQLiteCommand(sql,db);
+				q.ExecuteNonQuery();
+				SQLiteDataReader reader = q.ExecuteReader();
+				while (reader.Read())
+					result.Add(reader.GetValues());
+				reader.Close();
+        q.Dispose();
 			}
 			return result;
 		}
@@ -135,20 +131,6 @@ namespace xBot.App
 				db.Close();
 				db = null;
 			}
-		}
-		public static bool Exists(string Path)
-		{
-			return File.Exists(Path);
-		}
-		public static bool TryDelete(string Path)
-		{
-			try
-			{
-				if (Exists(Path))
-					File.Delete(Path);
-				return true;
-			}
-			catch { return false; }
 		}
 	}
 }

@@ -113,7 +113,7 @@ namespace xBot.App.PK2Extractor
 		{
 			string dir = GetDirectory(SilkroadName);
       if (Directory.Exists(dir))
-				WinAPI.DirectoryDelete(dir);
+				WinAPI.DirectoryTryDelete(dir);
 		}
 		/// <summary>
 		/// Try to generate the database.
@@ -130,8 +130,8 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Error opening Pk2 file. Possibly wrong blowfish key");
 				LogState("Error");
-				WinAPI.InvokeIfRequired(btnStart, () => {
-					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				btnStart.InvokeIfRequired(() => {
+					btnStart.Enabled = true;
 				});
 				return;
 			}
@@ -159,8 +159,8 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Extracting error, the version cannot be readed. "+ ex.Message);
 				LogState("Error");
-				WinAPI.InvokeIfRequired(btnStart, () => {
-					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				btnStart.InvokeIfRequired(() => {
+					btnStart.Enabled = true;
 				});
 				return;
 			}
@@ -194,8 +194,8 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Extracting error, gateways cannot be readed. " + ex.Message);
 				LogState("Error");
-				WinAPI.InvokeIfRequired(btnStart, () => {
-					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				btnStart.InvokeIfRequired(() => {
+					btnStart.Enabled = true;
 				});
 				return;
 			}
@@ -215,8 +215,8 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Extracting error, the gateport cannot be readed. " + ex.Message);
 				LogState("Error");
-				WinAPI.InvokeIfRequired(btnStart, () => {
-					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
+				btnStart.InvokeIfRequired(() => {
+					btnStart.Enabled = true;
 				});
 				return;
 			}
@@ -224,15 +224,15 @@ namespace xBot.App.PK2Extractor
 			// Updating database
 			Log("Creating Database...");
 			string dbPath = GetDatabasePath(SilkroadName);
-			if (SQLDatabase.Exists(dbPath))
+			if (File.Exists(dbPath))
 			{
 				LogState("Deleting old database");
-				if (!SQLDatabase.TryDelete(dbPath))
+				if (!WinAPI.FileTryDelete(dbPath))
 				{
 					// Deleting issues
 					Log("The database from \"" + SilkroadName + "\" is being used by another program. Please, close all the bots and try again!");
 					LogState("Error");
-					WinAPI.InvokeIfRequired(btnStart, () => {
+					btnStart.InvokeIfRequired(() => {
 						btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
 					});
 					return;
@@ -245,7 +245,7 @@ namespace xBot.App.PK2Extractor
 			{
 				Log("Error creating the database. Please, close all the bots and try again!");
 				LogState("Error");
-				WinAPI.InvokeIfRequired(btnStart, () => {
+				btnStart.InvokeIfRequired(() => {
 					btnStart.Font = new Font(btnStart.Font, FontStyle.Regular);
 				});
 				return;
@@ -316,11 +316,6 @@ namespace xBot.App.PK2Extractor
 		private void Control_Click(object sender, EventArgs e)
 		{
 			Control c = (Control)sender;
-			if (c.Font.Strikeout)
-			{
-				// Control is disabled
-				return;
-			}
 			switch (c.Name)
 			{
 				case "btnWinExit":
@@ -343,7 +338,7 @@ namespace xBot.App.PK2Extractor
 					this.Close();
 					break;
 				case "btnStart":
-					btnStart.Font = new Font(btnStart.Font, FontStyle.Strikeout);
+					btnStart.Enabled = false;
 					tGenerateData = new Thread(ThreadGenerateData);
 					tGenerateData.Priority = ThreadPriority.Highest;
 					tGenerateData.Start();

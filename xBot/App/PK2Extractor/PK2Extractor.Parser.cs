@@ -303,6 +303,7 @@ namespace xBot.App.PK2Extractor
 			sql += "tid2 INTEGER,";
 			sql += "tid3 INTEGER,";
 			sql += "tid4 INTEGER,";
+			sql += "level INTEGER,";
 			sql += "icon VARCHAR(64)";
 			sql += ");";
 			db.ExecuteQuery(sql);
@@ -344,13 +345,13 @@ namespace xBot.App.PK2Extractor
 							if (db.GetResult().Count == 0)
 							{
 								// New
-								db.Prepare("INSERT INTO items (id,servername,name,stack,tid2,tid3,tid4,icon) VALUES (?,?,?,?,?,?,?,?);");
+								db.Prepare("INSERT INTO items (id,servername,name,stack,tid2,tid3,tid4,level,icon) VALUES (?,?,?,?,?,?,?,?,?);");
 								db.Bind("id", data[1]);
 							}
 							else
 							{
 								// Override
-								db.Prepare("UPDATE items SET servername=?,name=?,stack=?,tid2=?,tid3=?,tid4=?,icon=? WHERE id=" + data[1]);
+								db.Prepare("UPDATE items SET servername=?,name=?,stack=?,tid2=?,tid3=?,tid4=?,level=?,icon=? WHERE id=" + data[1]);
 							}
 							db.Bind("servername", data[2]);
 							db.Bind("name", name);
@@ -358,10 +359,10 @@ namespace xBot.App.PK2Extractor
 							db.Bind("tid2", data[10]);
 							db.Bind("tid3", data[11]);
 							db.Bind("tid4", data[12]);
+							db.Bind("level", data[33]);
 							// Normal data has 160 positions approx. 
 							db.Bind("icon", (data.Length > 150 ? data[54] : data[50]).ToLower() );
 							db.ExecuteQuery();
-							
 						}
 					}
 					db.End();

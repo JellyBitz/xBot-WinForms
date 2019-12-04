@@ -128,19 +128,17 @@ namespace xBot.Game
 						Bot b = Bot.Get;
 						Info i = Info.Get;
 						// Reset values
-						WinAPI.InvokeIfRequired(w.Login_lstvCharacters, () =>
-						{
+						w.Login_lstvCharacters.InvokeIfRequired(() =>{
 							w.Login_lstvCharacters.Items.Clear();
 						});
-						WinAPI.InvokeIfRequired(w.Login_cmbxCharacter, () =>
-						{
+						w.Login_cmbxCharacter.InvokeIfRequired(() =>{
 							w.Login_cmbxCharacter.Items.Clear();
 						});
 						// Get character selection
 						List<SRObject> CharacterList = new List<SRObject>(packet.ReadByte());
 						for (byte n = 0; n < CharacterList.Capacity; n++)
 						{
-							SRObject character = new SRObject(packet.ReadUInt(),SRType.Model);
+							SRObject character = new SRObject(packet.ReadUInt(), SRType.Model);
 							character.Name = packet.ReadAscii();
 							character[SRProperty.Scale] = packet.ReadByte();
 							character[SRProperty.Level] = packet.ReadByte();
@@ -1651,8 +1649,11 @@ namespace xBot.Game
 					case Types.InventoryItemMovement.InventoryToShop:
 						InventoryItemMovement_InventoryToShop(packet);
 						break;
-					case Types.InventoryItemMovement.PetToPet:
-						InventoryItemMovement_PetToPet(packet);
+					case Types.InventoryItemMovement.InventoryGoldToGround:
+						InventoryItemMovement_InventoryGoldToGround(packet);
+						break;
+					case Types.InventoryItemMovement.StorageGoldToInventory:
+						InventoryItemMovement_StorageGoldToInventory(packet);
 						break;
 					case Types.InventoryItemMovement.InventoryGoldToStorage:
 						InventoryItemMovement_InventoryGoldToStorage(packet);
@@ -1678,6 +1679,9 @@ namespace xBot.Game
 						return true;
 					case Types.InventoryItemMovement.TransportToShop:
 						InventoryItemMovement_TransportToShop(packet);
+						break;
+					case Types.InventoryItemMovement.PetToPet:
+						InventoryItemMovement_PetToPet(packet);
 						break;
 					case Types.InventoryItemMovement.PetToInventory:
 						InventoryItemMovement_PetToInventory(packet);
@@ -2054,6 +2058,10 @@ namespace xBot.Game
 
 			petInventory[slotPetInventory] = myInventory[slotMyInventory];
 			myInventory[slotMyInventory] = null;
+		}
+		private static void InventoryItemMovement_InventoryGoldToGround(Packet p)
+		{
+			// ulong gold =  p.ReadULong();
 		}
 		private static void InventoryItemMovement_StorageGoldToInventory(Packet p)
 		{

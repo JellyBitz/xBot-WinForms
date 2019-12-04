@@ -230,6 +230,7 @@ namespace xBot.Game.Objects
 					this[SRProperty.Icon] = data["icon"];
 					this[SRProperty.QuantityMax] = ushort.Parse(data["stack"]);
 					this[SRProperty.Quantity] = this[SRProperty.QuantityMax];
+					this[SRProperty.Level] = byte.Parse(data["level"]);
 					break;
 				case SRType.Teleport:
 					this.ID = uint.Parse(data["id"]);
@@ -550,7 +551,7 @@ namespace xBot.Game.Objects
 				if (this.ServerName.Contains("_B_"))
 					return " [SOM]";
 				if (this.ServerName.Contains("_C_"))
-					return " [SUN]";
+					return " [SUN]";	
 			}
 			return "";
 		}
@@ -560,7 +561,7 @@ namespace xBot.Game.Objects
 		public string GetItemQuantity()
 		{
 			return hasStack() ? " (" + this[SRProperty.Quantity] + "/" + this[SRProperty.QuantityMax] + ")":"";
-    }
+		}
 		public bool isAttackingSkill()
 		{
 			if ((uint)this[SRProperty.MP] > 0 && (uint)this[SRProperty.DurationMax] == 0)
