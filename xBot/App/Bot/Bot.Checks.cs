@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Timers;
 using xBot.Game;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Entity;
+using xBot.Game.Objects.Common;
 
 namespace xBot.App
 {
@@ -62,8 +64,7 @@ namespace xBot.App
 		}
 		private void CheckUsingHP(object sender, ElapsedEventArgs e)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
+			if (InfoManager.Character.LifeStateType == SRModel.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUseHP.Checked || w.Character_cbxUseHPGrain.Checked)
@@ -72,13 +73,13 @@ namespace xBot.App
 					w.Character_tbxUseHP.InvokeIfRequired(() => {
 						useHP = byte.Parse(w.Character_tbxUseHP.Text);
 					});
-					if (i.Character.GetHPPercent() <= useHP)
+					if (InfoManager.Character.GetHPPercent() <= useHP)
 					{
 						byte slot = 0;
 						if (w.Character_cbxUseHPGrain.Checked && FindItem(3, 1, 1, ref slot, "_SPOTION_")
 							|| w.Character_cbxUseHP.Checked && FindItem(3, 1, 1, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 							tUsingHP.Start();
 						}
 					}
@@ -92,25 +93,22 @@ namespace xBot.App
 		}
 		private void CheckUsingMP(object sender, ElapsedEventArgs e)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
+			if (InfoManager.Character.LifeStateType == SRModel.LifeState.Alive)
 			{
-
 				Window w = Window.Get;
 				if (w.Character_cbxUseMP.Checked || w.Character_cbxUseMPGrain.Checked)
 				{
 					byte useMP = 0; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseMP, () =>
-					{
+					WinAPI.InvokeIfRequired(w.Character_tbxUseMP, () => {
 						useMP = byte.Parse(w.Character_tbxUseMP.Text);
 					});
-					if (i.Character.GetMPPercent() <= useMP)
+					if (InfoManager.Character.GetMPPercent() <= useMP)
 					{
 						byte slot = 0;
 						if (w.Character_cbxUseMPGrain.Checked && FindItem(3, 1, 2, ref slot, "_SPOTION_")
 							|| w.Character_cbxUseMP.Checked && FindItem(3, 1, 2, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 							tUsingMP.Start();
 						}
 					}
@@ -124,10 +122,8 @@ namespace xBot.App
 		}
 		private void CheckUsingVigor(object sender, ElapsedEventArgs e)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
+			if (InfoManager.Character.LifeStateType == SRModel.LifeState.Alive)
 			{
-
 				Window w = Window.Get;
 				if (w.Character_cbxUseHPVigor.Checked || w.Character_cbxUseMPVigor.Checked)
 				{
@@ -136,12 +132,12 @@ namespace xBot.App
 						usePercent = byte.Parse(w.Character_tbxUseHPVigor.Text);
 					});
 					// Check hp %
-					if (i.Character.GetHPPercent() <= usePercent)
+					if (InfoManager.Character.GetHPPercent() <= usePercent)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 3, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 							tUsingVigor.Start();
 						}
 					}
@@ -151,12 +147,12 @@ namespace xBot.App
 						WinAPI.InvokeIfRequired(w.Character_tbxUseMPVigor, () => {
 							usePercent = byte.Parse(w.Character_tbxUseMPVigor.Text);
 						});
-						if (i.Character.GetMPPercent() <= usePercent)
+						if (InfoManager.Character.GetMPPercent() <= usePercent)
 						{
 							byte slot = 0;
 							if (FindItem(3, 1, 3, ref slot))
 							{
-								PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+								PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 								tUsingVigor.Start();
 							}
 						}
@@ -171,23 +167,22 @@ namespace xBot.App
 		}
 		public void CheckUsingUniversal(object sender, ElapsedEventArgs e)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
+			if (InfoManager.Character.LifeStateType == SRModel.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillUniversal.Checked)
 				{
-					if (Types.HasFlags((uint)((Types.BadStatus)i.Character[SRProperty.BadStatusFlags]),
-						(uint)(Types.BadStatus.Freezing
-						| Types.BadStatus.ElectricShock 
-						| Types.BadStatus.Burn 
-						| Types.BadStatus.Poisoning 
-						| Types.BadStatus.Zombie)))
+					if (((uint)InfoManager.Character.BadStatusFlags).HasFlags
+						((uint)(SRModel.BadStatus.Freezing
+						| SRModel.BadStatus.ElectricShock 
+						| SRModel.BadStatus.Burn 
+						| SRModel.BadStatus.Poisoning 
+						| SRModel.BadStatus.Zombie)))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 6, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 							tUsingUniversal.Start();
 						}
 					}
@@ -201,32 +196,31 @@ namespace xBot.App
 		}
 		private void CheckUsingPurification(object sender, ElapsedEventArgs e)
 		{
-			Info i = Info.Get;
-			if ((Types.LifeState)i.Character[SRProperty.LifeState] == Types.LifeState.Alive)
+			if (InfoManager.Character.LifeStateType == SRModel.LifeState.Alive)
 			{
 				Window w = Window.Get;
 				if (w.Character_cbxUsePillPurification.Checked)
 				{
-					if (Types.HasFlags((uint)((Types.BadStatus)i.Character[SRProperty.BadStatusFlags]),
-						(uint)(Types.BadStatus.Dull 
-						| Types.BadStatus.Fear 
-						| Types.BadStatus.ShortSight
-						| Types.BadStatus.Bleed
-						| Types.BadStatus.Darkness
-						| Types.BadStatus.Disease
-						| Types.BadStatus.Confusion
-						| Types.BadStatus.Decay 
-						| Types.BadStatus.Weaken 
-						| Types.BadStatus.Impotent
-						| Types.BadStatus.Division
-						| Types.BadStatus.Panic
-						| Types.BadStatus.Combustion 
-						| Types.BadStatus.Hidden)))
+					if (((uint)InfoManager.Character.BadStatusFlags).HasFlags
+						((uint)(SRModel.BadStatus.Dull 
+						| SRModel.BadStatus.Fear
+						| SRModel.BadStatus.ShortSight
+						| SRModel.BadStatus.Bleed
+						| SRModel.BadStatus.Darkness
+						| SRModel.BadStatus.Disease
+						| SRModel.BadStatus.Confusion
+						| SRModel.BadStatus.Decay 
+						| SRModel.BadStatus.Weaken 
+						| SRModel.BadStatus.Impotent
+						| SRModel.BadStatus.Division
+						| SRModel.BadStatus.Panic
+						| SRModel.BadStatus.Combustion 
+						| SRModel.BadStatus.Hidden)))
 					{
 						byte slot = 0;
 						if (FindItem(3, 2, 1, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot);
 							tUsingPurification.Start();
 						}
 					}
@@ -241,20 +235,19 @@ namespace xBot.App
 		private void CheckAutoParty(object sender, ElapsedEventArgs e)
 		{
 			Window w = Window.Get;
-			Info i = Info.Get;
-
 			if (w.Party_cbxInviteAll.Checked)
 			{
-				if (i.Players.Count > 0)
+				// Check players around
+				if (InfoManager.Players.Count > 0)
 				{
-					if (inParty)
+					if (InfoManager.inParty)
 					{
-						SRObjectDictionary<string> PlayersNearWithNoParty = new SRObjectDictionary<string>(i.Players);
+						xDictionary<string, SRPlayer> PlayersNearWithNoParty = new xDictionary<string, SRPlayer>(InfoManager.Players);
 						// Remove players nears with party
-						for (byte j = 0; j < i.PartyMembers.Count; j++)
+						for (byte j = 0; j < InfoManager.Party.Members.Count; j++)
 						{
-							string PlayerName = i.PartyMembers.ElementAt(j).Name.ToUpper();
-							if (PlayersNearWithNoParty[PlayerName] != null){
+							string PlayerName = InfoManager.Party.Members.GetAt(j).Name.ToUpper();
+							if (PlayersNearWithNoParty.ContainsKey(PlayerName)){
 								PlayersNearWithNoParty.RemoveKey(PlayerName);
 							}
 						}
@@ -263,18 +256,18 @@ namespace xBot.App
 
 						// Check invitations setup
 						if (!w.Party_cbxInviteOnlyPartySetup.Checked
-							|| PartySetupFlags == GetPartySetup())
+							|| InfoManager.Party.SetupFlags == w.GetPartySetup())
 						{
-							if (i.PartyMembers.Count < GetPartyMaxMembers())
+							if (!InfoManager.Party.isFull)
 							{
-								PacketBuilder.InviteToParty((uint)PlayersNearWithNoParty.ElementAt(rand.Next(PlayersNearWithNoParty.Count))[SRProperty.UniqueID]);
+								PacketBuilder.InviteToParty(PlayersNearWithNoParty.GetAt(rand.Next(PlayersNearWithNoParty.Count)).UniqueID);
 								tCycleAutoParty.Start();
 							}
 						}
 					}
 					else
 					{
-						PacketBuilder.CreateParty((uint)i.Players.ElementAt(rand.Next(i.Players.Count))[SRProperty.UniqueID], GetPartySetup());
+						PacketBuilder.CreateParty(InfoManager.Players.GetAt(rand.Next(InfoManager.Players.Count)).UniqueID,InfoManager.Party.SetupFlags);
 						tCycleAutoParty.Start();
 					}
 				}
@@ -285,21 +278,19 @@ namespace xBot.App
 			}
 			else if(w.Party_cbxInvitePartyList.Checked)
 			{
-				if (i.Players.Count > 0)
+				if (InfoManager.Players.Count > 0)
 				{
 					List<string> PlayersToInvite = new List<string>();
-					WinAPI.InvokeIfRequired(w.Party_lstvPartyList, () => {
+					w.Party_lstvPartyList.InvokeIfRequired(() => {
 						for (int j = 0; j < w.Party_lstvPartyList.Items.Count; j++)
-						{
 							PlayersToInvite.Add(w.Party_lstvPartyList.Items[j].Name);
-						}
 					});
 					// Remove if are in party already
 					for (int j = 0; j < PlayersToInvite.Count; j++)
 					{
-						for (byte k = 0; k < i.PartyMembers.Count; k++)
+						for (byte k = 0; k < InfoManager.Party.Members.Count; k++)
 						{
-							if (PlayersToInvite[j].Equals(i.PartyMembers.ElementAt(k).Name, StringComparison.OrdinalIgnoreCase))
+							if (PlayersToInvite[j].Equals(InfoManager.Party.Members.GetAt(k).Name, StringComparison.OrdinalIgnoreCase))
 							{
 								PlayersToInvite.RemoveAt(j--);
 								break;
@@ -310,30 +301,29 @@ namespace xBot.App
 					{
 						// Shuffle and check the party list with near players
 						PlayersToInvite.Shuffle();
-						SRObject PlayerToInvite = null;
+						SRPlayer PlayerToInvite = null;
 						for (int j = 0; j < PlayersToInvite.Count; j++)
 						{
-							if ((PlayerToInvite = i.Players[PlayersToInvite[j]]) != null){
+							if ((PlayerToInvite = InfoManager.Players[PlayersToInvite[j]]) != null)
 								break;
-							}
 						}
 						if (PlayerToInvite != null)
 						{
-							if (inParty)
+							if (InfoManager.inParty)
 							{
 								if (!w.Party_cbxInviteOnlyPartySetup.Checked
-									|| PartySetupFlags == GetPartySetup())
+									|| InfoManager.Party.SetupFlags == w.GetPartySetup())
 								{
-									if (i.PartyMembers.Count < GetPartyMaxMembers())
+									if (!InfoManager.Party.isFull)
 									{
-										PacketBuilder.InviteToParty((uint)PlayerToInvite[SRProperty.UniqueID]);
+										PacketBuilder.InviteToParty(PlayerToInvite.UniqueID);
 										tCycleAutoParty.Start();
 									}
 								}
 							}
 							else
 							{
-								PacketBuilder.CreateParty((uint)PlayerToInvite[SRProperty.UniqueID], GetPartySetup());
+								PacketBuilder.CreateParty(PlayerToInvite.UniqueID,w.GetPartySetup());
 								tCycleAutoParty.Start();
 							}
 						}
@@ -356,12 +346,11 @@ namespace xBot.App
 			Window w = Window.Get;
 			if (w.Party_cbxLeavePartyNoneLeader.Checked)
 			{
-				Info i = Info.Get;
 				bool found = false;
 				w.Party_lstvLeaderList.InvokeIfRequired(() => {
-					for (byte j = 0; j < i.PartyMembers.Count; j++)
+					for (byte j = 0; j < InfoManager.Party.Members.Count; j++)
 					{
-						if (w.Party_lstvLeaderList.Items.ContainsKey(i.PartyMembers.ElementAt(j).Name.ToUpper()))
+						if (w.Party_lstvLeaderList.Items.ContainsKey(InfoManager.Party.Members.GetAt(j).Name.ToUpper()))
 						{
 							found = true;
 							break;
@@ -390,21 +379,17 @@ namespace xBot.App
 		}
 		private void CheckUsingRecoveryKit(object sender, ElapsedEventArgs e)
 		{
-			Window w = Window.Get;
-			Info i = Info.Get;
-
 			// Checking pet using recovery kit by priority
-			SRObject pet = null;
-
+			Window w = Window.Get;
 			// Vehicle or Transport
 			if (w.Character_cbxUseTransportHP.Checked)
 			{
-				pet = i.MyPets.Find(p => p.ID4 == 1 || p.ID4 == 2);
+				SRCoService pet = InfoManager.MyPets.Find(p => p.isHorse() || p.isTransport());
 				// Check % if there is at least one pet
 				if (pet != null)
 				{
 					byte useHP = 0; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUseTransportHP, () => {
+					w.Character_tbxUseTransportHP.InvokeIfRequired(() => {
 						useHP = byte.Parse(w.Character_tbxUseTransportHP.Text);
 					});
 					if (pet.GetHPPercent() <= useHP)
@@ -412,7 +397,7 @@ namespace xBot.App
 						byte slot = 0;
 						if (FindItem(3, 1, 4, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot,(uint)pet[SRProperty.UniqueID]);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot, pet.UniqueID);
 							tUsingRecoveryKit.Start();
 						}
 						return; // Avoid checking other pets
@@ -422,12 +407,12 @@ namespace xBot.App
 
 			// Attacking pet
 			if (w.Character_cbxUsePetHP.Checked){
-				pet = i.MyPets.Find(p => p.ID4 == 3);
+				SRCoService pet = InfoManager.MyPets.Find(p => p.isAttackPet());
 				// Check % if there is at least one pet
 				if(pet != null)
 				{
 					byte useHP = 0; // dummy
-					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHP, () => {
+					w.Character_tbxUsePetHP.InvokeIfRequired(() => {
 						useHP = byte.Parse(w.Character_tbxUsePetHP.Text);
 					});
 					if (pet.GetHPPercent() <= useHP)
@@ -435,7 +420,7 @@ namespace xBot.App
 						byte slot = 0;
 						if (FindItem(3, 1, 4, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot,(uint)pet[SRProperty.UniqueID]);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot, pet.UniqueID);
 							tUsingRecoveryKit.Start();
 						}
 						return; // Avoid checking other pets
@@ -451,33 +436,21 @@ namespace xBot.App
 		private void CheckUsingAbnormalPill(object sender, ElapsedEventArgs e)
 		{
 			Window w = Window.Get;
-			Info i = Info.Get;
-
 			if (w.Character_cbxUsePetsPill.Checked)
 			{
 				// Checking pet bad status for using abnormal
-				SRObject pet = null;
+				SRCoService pet = null;
 				// As priority pet transport
-				pet = i.MyPets.Find(p =>
-					(p.ID4 == 1 || p.ID4 == 2)
-					&& p.Contains(SRProperty.BadStatusFlags)
-					&& (Types.BadStatus)p[SRProperty.BadStatusFlags] != Types.BadStatus.None
-				);
+				pet = InfoManager.MyPets.Find(p => (p.isHorse() || p.isTransport())	&& p.BadStatusFlags != SRModel.BadStatus.None);
 				if (pet == null)
-				{
-					pet = i.MyPets.Find(p =>
-						p.ID4 == 3
-						&& p.Contains(SRProperty.BadStatusFlags)
-						&& (Types.BadStatus)p[SRProperty.BadStatusFlags] != Types.BadStatus.None
-					);
-				}
+					pet = InfoManager.MyPets.Find(p => p.isAttackPet() && p.BadStatusFlags != SRModel.BadStatus.None);
 				// At least one pet has bad status
 				if (pet != null)
 				{
 					byte slot = 0; // dummy
 					if (FindItem(3, 2, 7, ref slot))
 					{
-						PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot, (uint)pet[SRProperty.UniqueID]);
+						PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot, pet.UniqueID);
 						tUsingAbnormalPill.Start();
 					}
 				}
@@ -495,22 +468,23 @@ namespace xBot.App
 			Window w = Window.Get;
 			if (w.Character_cbxUsePetHGP.Checked)
 			{
-				Info i = Info.Get;
-				SRObject pet = i.MyPets.Find(p => p.ID4 == 3);
+				SRCoService pet = InfoManager.MyPets.Find(p => p.isAttackPet());
 				if(pet != null)
 				{
+					SRAttackPet atkPet = (SRAttackPet)pet;
+
 					byte usePercent = 0;
-					WinAPI.InvokeIfRequired(w.Character_tbxUsePetHGP, () => {
+					w.Character_tbxUsePetHGP.InvokeIfRequired(() => {
 						usePercent = byte.Parse(w.Character_tbxUsePetHGP.Text);
 					});
 					// Check hgp %
-					int HGPPercent = (int)(((ushort)pet[SRProperty.HGP])*0.01); // 10000 = 100%
+					int HGPPercent = (int)(atkPet.HGP*0.01); // 10000 = 100%
 					if (HGPPercent <= usePercent)
 					{
 						byte slot = 0;
 						if (FindItem(3, 1, 9, ref slot))
 						{
-							PacketBuilder.UseItem(((SRObjectCollection)i.Character[SRProperty.Inventory])[slot], slot, (uint)pet[SRProperty.UniqueID]);
+							PacketBuilder.UseItem(InfoManager.Character.Inventory[slot], slot, pet.UniqueID);
 							tUsingHGP.ResetTimer(1000);
 							return;
 						}

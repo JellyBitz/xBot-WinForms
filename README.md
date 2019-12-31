@@ -1,5 +1,5 @@
 # xBot
-[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.4.1") - A simple but elegant bot for Silkroad Online! (vsro1.188)
+[<img src="https://1.bp.blogspot.com/-C9g73Lled-8/XSbNNtzCyII/AAAAAAAAA8o/Ho6JXt8pdygdjGwEJ_YCXCQye8HngxrFQCLcBGAs/s500-c/icon.ic" width="18" height="18"> xBot](https://projexbot.blogspot.com/ "xBot v0.5.0") - A simple but elegant bot for Silkroad Online! (vsro1.188)
 
 ### Features
 - Client loader included
@@ -7,6 +7,7 @@
 - Auto Login from [command line](#Command-Line-Options)
 - Auto Potions (Pets & transport included)
 - Player viewer
+- Guild viewer
 - Exchange support
 - Auto Party (Party matching included)
 - Leader [commands](#Chat-Leader-Commands) control from chat
@@ -66,6 +67,7 @@ This commands will work only if you had **checked** the option from **Party > Se
 - Write "PING" at All chat to see your current ping
 - Rename character config to "Default.json" and all your new configs will be loaded using that one!
 - You can move your character through minimap!
+- Write "TIME" at All chat to see the current server time!
 
 ---
 > ### **Do you like this Project ?**

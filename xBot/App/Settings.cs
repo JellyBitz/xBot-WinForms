@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using xBot.Game;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Common;
 
 namespace xBot.App
 {
@@ -217,7 +218,7 @@ namespace xBot.App
 		/// </summary>
 		public static void SaveCharacterSettings()
 		{
-			if (!LoadingCharacterSettings && Bot.Get.inGame)
+			if (!LoadingCharacterSettings && InfoManager.inGame)
 			{
 				lock (CharacterSettingsLock)
 				{
@@ -396,8 +397,7 @@ namespace xBot.App
 					#endregion
 
 					// Saving
-					Info i = Info.Get;
-					File.WriteAllText("Config\\" + i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json", root.ToString());
+					File.WriteAllText("Config\\" + DataManager.SilkroadName + "_" + InfoManager.ServerName + "_" + InfoManager.CharName + ".json", root.ToString());
 				}
 			}
 		}
@@ -411,9 +411,8 @@ namespace xBot.App
 				Directory.CreateDirectory("Config");
 
 			Window w = Window.Get;
-			Info i = Info.Get;
 			// Check config path
-			string cfgPath = "Config\\"+i.Silkroad + "_" + i.Server + "_" + i.Charname + ".json";
+			string cfgPath = "Config\\"+DataManager.SilkroadName + "_" + InfoManager.ServerName + "_" + InfoManager.CharName + ".json";
 			try
 			{
 				if (File.Exists(cfgPath))
@@ -451,7 +450,6 @@ namespace xBot.App
 				root = path == "" ? new JObject() : JObject.Parse(File.ReadAllText(path));
 
 				Window w = Window.Get;
-				Info i = Info.Get;
 
 				#region (Character Tab)
 				JObject Character = root.ContainsKey("Character") ? (JObject)root["Character"] : new JObject();
@@ -548,7 +546,7 @@ namespace xBot.App
 				#region (Skills Tab)
 				JObject Skills = root.ContainsKey("Skills") ? (JObject)root["Skills"] : new JObject();
 				{
-					SRObjectDictionary<uint> charSkills = (SRObjectDictionary<uint>)i.Character[SRProperty.Skills];
+					xDictionary<uint, SRSkill> mySkills = InfoManager.Character.Skills;
 
 					JObject Attack = Skills.ContainsKey("Attack") ? (JObject)Skills["Attack"] : new JObject();
 					w.Skills_lstvAttackMobType_General.Items.Clear();
@@ -557,7 +555,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["General"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -573,7 +571,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["Champion"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -589,7 +587,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["Giant"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -605,7 +603,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["PartyGeneral"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -621,7 +619,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["PartyChampion"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -637,7 +635,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["PartyGiant"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -653,7 +651,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["Unique"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -669,7 +667,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["Elite"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);
@@ -685,7 +683,7 @@ namespace xBot.App
 						foreach (JToken token in (JArray)Attack["Event"])
 						{
 							string skillName = (string)token;
-							SRObject skill = charSkills.Find(s => s.Name == skillName);
+							SRSkill skill = mySkills.Find(s => s.Name == skillName);
 							if (skill != null)
 							{
 								ListViewItem item = new ListViewItem(skillName);

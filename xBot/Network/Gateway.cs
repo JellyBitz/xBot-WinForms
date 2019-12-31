@@ -91,37 +91,32 @@ namespace xBot.Network
 				string service = packet.ReadAscii();
 				if (service == "GatewayServer")
 				{
-					Info i = Info.Get;
-
 					byte locale = packet.ReadByte();
-					i.SR_Client = packet.ReadAscii(); // SR_CLIENT
+					DataManager.SR_Client = packet.ReadAscii(); // SR_CLIENT
 				  uint version = packet.ReadUInt();
-					
-					
-					if (i.Version != version)
+
+					if (DataManager.Version != version)
 					{
+						DataManager.Version = version;
 						Window.Get.Log("Warning: The bot database is outdate, try to update it at first to avoid parsing errors");
 					}
-					else if (i.Locale != locale)
+					else if (DataManager.Locale != locale)
 					{
+						DataManager.Locale = locale;
 						Window.Get.Log("A new Locale has been found [" + locale + "]");
 					}
-					i.Locale = locale;
-					i.Version = version;
 				}
 			}
 			else if (packet.Opcode == Opcode.CLIENT_LOGIN_REQUEST)
 			{
-				Info i = Info.Get;
-
 				packet.ReadByte(); // locale
 				packet.ReadAscii(); // id
 				packet.ReadAscii(); // psw
-				i.ServerID = packet.ReadUShort().ToString();
+				InfoManager.ServerID = packet.ReadUShort().ToString();
 
 				Window w = Window.Get;
-				WinAPI.InvokeIfRequired(w.Login_lstvServers, ()=> {
-					i.Server = w.Login_lstvServers.Items[i.ServerID].Text;
+				w.Login_lstvServers.InvokeIfRequired(() => {
+					InfoManager.ServerName = w.Login_lstvServers.Items[InfoManager.ServerID].Text;
 				});
 			}
 			return false;
@@ -140,13 +135,11 @@ namespace xBot.Network
 						string service = packet.ReadAscii();
 						if (service == "GatewayServer")
 						{
-							Info i = Info.Get;
-
 							Packet p = new Packet(Opcode.CLIENT_PATCH_REQUEST, true);
-							p.WriteByte(i.Locale);
-							p.WriteAscii(i.SR_Client);
-							p.WriteUInt(i.Version);
-							this.InjectToServer(p);
+							p.WriteByte(DataManager.Locale);
+							p.WriteAscii(DataManager.SR_Client);
+							p.WriteUInt(DataManager.Version);
+							InjectToServer(p);
 						}
 					}
 					break;
@@ -164,7 +157,7 @@ namespace xBot.Network
 									string DownloadServerIP = packet.ReadAscii();
 									ushort DownloadServerPort = packet.ReadUShort();
 									uint DownloadServerCurVersion = packet.ReadUInt();
-									Window.Get.Log("Version outdate. Please, verify that client and database (v" + Info.Get.Version + ") are up to date (v" + DownloadServerCurVersion + ")");
+									Window.Get.Log("Version outdate. Please, verify that client and database (v" + DataManager.Version + ") are up to date (v" + DownloadServerCurVersion + ")");
 								}
 								else
 								{

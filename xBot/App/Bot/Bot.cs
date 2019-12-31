@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using xBot.Game;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Party;
+using xBot.Game.Objects.Common;
+using System.Threading;
+using xBot.Game.Objects.Entity;
+using xBot.Game.Objects.Item;
 
 namespace xBot.App
 {
@@ -37,65 +42,16 @@ namespace xBot.App
 		private string CreatingCharacterName;
 		private bool CreatingCharacterMale;
 		/// <summary>
-		/// Check if the character is in game.
-		/// </summary>
-		public bool inGame { get; private set; }
-		/// <summary>
-		/// Check if the character is in game.
-		/// </summary>
-		public bool inTeleport { get;  private set; }
-		/// <summary>
-		/// Check if the character is in guild.
-		/// </summary>
-		public bool inGuild { get; private set; }
-		/// <summary>
-		/// Check if the character is in academy.
-		/// </summary>
-		public bool inAcademy { get; private set; }
-		/// <summary>
-		/// Check if the character is in party.
-		/// </summary>
-		public bool inParty { get; private set; }
-		/// <summary>
-		/// Keep the current party setup. 
-		/// </summary>
-		private Types.PartySetup PartySetupFlags;
-		/// <summary>
-		/// Keep the current party purpose type. 
-		/// </summary>
-		private Types.PartyPurpose PartyPurposeType;
-		/// <summary>
-		/// Get the last entity selected by the character.
-		/// </summary>
-		public uint SelectedEntityUID { get; private set; }
-		/// <summary>
 		/// Check if the character is in trace mode.
 		/// </summary>
 		public bool inTrace { get; private set; }
 		private string TracePlayerName;
 		/// <summary>
-		/// Check if the character is inside of stall, including his own.
+		/// Check if is sorting any inventory.
 		/// </summary>
-		public bool inStall { get; private set; }
-		/// <summary>
-		/// Get the owner from stall or null.
-		/// </summary>
-		public SRObject StallerEntitiy { get; private set; }
-		/// <summary>
-		/// Check if the character is exchanging with another player.
-		/// </summary>
-		public bool inExchange { get { return ExchangerEntity != null; } }
-		/// <summary>
-		/// Get the entity from exchange or null.
-		/// </summary>
-		public SRObject ExchangerEntity { get; private set; }
-		/// <summary>
-		/// Check if the exchanger has confirmed.
-		/// </summary>
-		public bool isExchangerConfirmed { get; private set; }
-		/// <summary>
-		/// Constructor.
-		/// </summary>
+		public bool isSorting { get { return tSorting != null; } }
+		private Thread tSorting;
+		private System.Diagnostics.Stopwatch m_Ping;
 		private Bot()
 		{
 			InitializeTimers();
@@ -271,74 +227,14 @@ namespace xBot.App
 			}
 		}
 		/// <summary>
-		/// Get's the last uniqueID selected.
-		/// </summary>
-		public uint GetEntitySelected() {
-			return SelectedEntityUID;
-		}
-		/// <summary>
-		/// Returns the current party setup used by the GUI.
-		/// </summary>
-		public Types.PartySetup GetPartySetup()
-		{
-			Window w = Window.Get;
-			return ((w.Party_rbnSetupExpShared.Checked ? Types.PartySetup.ExpShared : 0)
-				| (w.Party_rbnSetupItemShared.Checked ? Types.PartySetup.ItemShared : 0)
-				| (w.Party_cbxSetupMasterInvite.Checked ? 0 : Types.PartySetup.AnyoneCanInvite));
-		}
-		/// <summary>
 		/// Returns the max. member count from the current party.
 		/// </summary>
-		public byte GetPartyMaxMembers()
+		public SRTypes.Weapon GetWeaponUsed()
 		{
-			return (byte)(!PartySetupFlags.HasFlag(Types.PartySetup.ExpShared) ? 4 : 8);
-		}
-		/// <summary>
-		/// Returns the current party match setup used by the GUI.
-		/// </summary>
-		public SRPartyMatch GetPartyMatchSetup()
-		{
-			Window w = Window.Get;
-			SRPartyMatch match = new SRPartyMatch(0);
-
-			WinAPI.InvokeIfRequired(w.Party_tbxMatchTitle, ()=>{
-				match.Title = w.Party_tbxMatchTitle.Text;
-			});
-			WinAPI.InvokeIfRequired(w.Party_tbxMatchFrom, () => {
-				match.LevelMin = byte.Parse(w.Party_tbxMatchFrom.Text);
-			});
-			WinAPI.InvokeIfRequired(w.Party_tbxMatchTo, () => {
-				match.LevelMax = byte.Parse(w.Party_tbxMatchTo.Text);
-			});
-
-			if (inParty)
-				match.Setup = PartySetupFlags;
-			else
-				match.Setup = GetPartySetup();
-
-			Info i = Info.Get;
-			if (i.Character.hasJobMode())
-			{
-				if ((Types.Job)i.Character[SRProperty.JobType] == Types.Job.Thief)
-					match.Purpose = Types.PartyPurpose.Thief;
-				else
-					match.Purpose = Types.PartyPurpose.Trader;
-			}
-			else
-			{
-				match.Purpose = Types.PartyPurpose.Hunting;
-			}
-			return match;
-		}
-		/// <summary>
-		/// Returns the max. member count from the current party.
-		/// </summary>
-		public Types.Weapon GetWeaponUsed()
-		{
-			SRObject weapon = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory])[6];
+			SRItem weapon = InfoManager.Character.Inventory[6];
 			if(weapon == null)
-				return Types.Weapon.None;
-			return (Types.Weapon)weapon.ID4;
+				return SRTypes.Weapon.None;
+			return (SRTypes.Weapon)weapon.ID4;
 		}
 		/// <summary>
 		/// Search for specific type ID's item in the inventory. Return success.
@@ -350,12 +246,9 @@ namespace xBot.App
 		/// <param name="servername">Rule the search to contains string specified</param>
 		public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
 		{
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
-			int index = inventory.FindIndex(item => item != null  && item.isType(3, ID2, ID3, ID4) && item.ServerName.Contains(servername), 13);
+			int index = InfoManager.Character.Inventory.FindIndex(i => i != null  && i.isType(ID2, ID3, ID4) && i.ServerName.Contains(servername),13);
 			if(index == -1)
-			{
 				return false;
-			}
 			else
 			{
 				slot = (byte)index;
@@ -397,10 +290,10 @@ namespace xBot.App
 		/// </summary>
 		public bool UseReturnScroll()
 		{
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			xList<SRItem> inventory = InfoManager.Character.Inventory;
 			for (byte j = 13; j < inventory.Capacity; j++)
 			{
-				if (inventory[j] != null && inventory[j].isType(3, 3, 3, 1))
+				if (inventory[j] != null && inventory[j].isType(3, 3, 1))
 				{
 					switch (inventory[j].ServerName)
 					{
@@ -423,7 +316,7 @@ namespace xBot.App
 		/// </summary>
 		public bool StartTrace(string PlayerName)
 		{
-			if (inGame)
+			if (InfoManager.inGame)
 			{
 				inTrace = true;
 				SetTraceName(PlayerName);
@@ -442,9 +335,9 @@ namespace xBot.App
 			if (inTrace)
 			{
 				// Check if player is around and move it
-				SRObject player = Info.Get.Players[TracePlayerName];
+				SRPlayer player = InfoManager.Players[TracePlayerName];
 				if (player != null){
-					MoveTo(player.GetPosition());
+					MoveTo(player.GetRealtimePosition());
 				}
 			}
 		}
@@ -469,9 +362,8 @@ namespace xBot.App
 		/// </summary>
 		public void MoveTo(SRCoord position)
 		{
-			Info i = Info.Get;
-			if ((bool)i.Character[SRProperty.isRiding])
-				PacketBuilder.MoveTo(position, (uint)i.Character[SRProperty.RidingUniqueID]);
+			if (InfoManager.Character.isRiding)
+				PacketBuilder.MoveTo(position,InfoManager.Character.RidingUniqueID);
 			else
 				PacketBuilder.MoveTo(position);
 		}
@@ -480,7 +372,7 @@ namespace xBot.App
 		/// </summary>
 		public bool UseItem(byte slotInventory)
 		{
-			SRObjectCollection inventory = (SRObjectCollection)Info.Get.Character[SRProperty.Inventory];
+			xList<SRItem> inventory = InfoManager.Character.Inventory;
 			if (slotInventory >= 13 && slotInventory < inventory.Capacity)
 			{
 				if (inventory[slotInventory] != null)
@@ -545,123 +437,215 @@ namespace xBot.App
 		/// </summary>
 		public bool EquipItem(byte slotInventory,bool useInventoryAvatar = false)
 		{
-			SRObjectCollection inventory = ((SRObjectCollection)Info.Get.Character[SRProperty.Inventory]);
-			SRObject item = inventory[slotInventory];
-			if(item != null && item.ID2 == 1)
+			SRItem item = InfoManager.Character.Inventory[slotInventory];
+			if(item != null && item.isEquipable())
 			{
-				// EQUIPABLES
 				if (slotInventory < 13)
 				{
 					// UnEquip
+
 					// Find an empty slot
-					int newSlot = inventory.FindIndex(i => i == null,13);
+					int newSlot = InfoManager.Character.Inventory.FindIndex(i => i == null,13);
 					if (newSlot != -1){
-						PacketBuilder.MoveItem(slotInventory, (byte)newSlot, useInventoryAvatar ? Types.InventoryItemMovement.AvatarToInventory : Types.InventoryItemMovement.InventoryToInventory);
+						PacketBuilder.MoveItem(slotInventory, (byte)newSlot, useInventoryAvatar ? SRTypes.InventoryItemMovement.AvatarToInventory : SRTypes.InventoryItemMovement.InventoryToInventory);
 						return true;
 					}
 				}
 				else
 				{
 					// Equip
-					switch (item.ID3)
+					switch ((SRTypes.Equipable)item.ID3)
 					{
-						case 1: // GARMENT
-						case 2: // PROTECTOR
-						case 3: // ARMOR
-						case 9: // ROBE
-						case 10: // LIGHT ARMOR
-						case 11: // HEAVY ARMOR
-							switch (item.ID4)
+						case SRTypes.Equipable.Garment: // GARMENT
+						case SRTypes.Equipable.Protector: // PROTECTOR
+						case SRTypes.Equipable.Armor: // ARMOR
+						case SRTypes.Equipable.Robe: // ROBE
+						case SRTypes.Equipable.LightArmor: // LIGHT ARMOR
+						case SRTypes.Equipable.HeavyArmor: // HEAVY ARMOR
+							switch ((SRTypes.SetPart)item.ID4)
 							{
-								case 1: // HEAD
-									PacketBuilder.MoveItem(slotInventory, 0, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Head: // HEAD
+									PacketBuilder.MoveItem(slotInventory, 0, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 2: // SHOULDERS
-									PacketBuilder.MoveItem(slotInventory, 2, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Shoulders: // SHOULDERS
+									PacketBuilder.MoveItem(slotInventory, 2, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 3: // CHEST
-									PacketBuilder.MoveItem(slotInventory, 1, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Chest: // CHEST
+									PacketBuilder.MoveItem(slotInventory, 1, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 4: // PANTS
-									PacketBuilder.MoveItem(slotInventory, 4, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Pants: // PANTS
+									PacketBuilder.MoveItem(slotInventory, 4, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 5: // GLOVES
-									PacketBuilder.MoveItem(slotInventory, 3, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Gloves: // GLOVES
+									PacketBuilder.MoveItem(slotInventory, 3, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 6: // BOOTS
-									PacketBuilder.MoveItem(slotInventory, 5, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.SetPart.Boots: // BOOTS
+									PacketBuilder.MoveItem(slotInventory, 5, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
 							}
 							break;
-						case 4: // SHIELD (CH & EU)
-							PacketBuilder.MoveItem(slotInventory, 7, Types.InventoryItemMovement.InventoryToInventory);
+						case SRTypes.Equipable.Shield:
+							PacketBuilder.MoveItem(slotInventory, 7, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case 5: // ACCESSORIES (CH)
-						case 12: // ACCESSORIES (EU)
-							switch (item.ID4)
+						case SRTypes.Equipable.AccesoriesCH: // ACCESSORIES (CH)
+						case SRTypes.Equipable.AccesoriesEU: // ACCESSORIES (EU)
+							switch ((SRTypes.AccesoriesPart)item.ID4)
 							{
-								case 1: // Earring
-									PacketBuilder.MoveItem(slotInventory, 9, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.AccesoriesPart.Earring: // Earring
+									PacketBuilder.MoveItem(slotInventory, 9, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 2: // Necklace
-									PacketBuilder.MoveItem(slotInventory, 10, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.AccesoriesPart.Necklace: // Necklace
+									PacketBuilder.MoveItem(slotInventory, 10, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
-								case 3: // Ring
-									if(inventory[12] == null)
-										PacketBuilder.MoveItem(slotInventory, 12, Types.InventoryItemMovement.InventoryToInventory);
+								case SRTypes.AccesoriesPart.Ring: // Ring
+									if(InfoManager.Character.Inventory[12] == null)
+										PacketBuilder.MoveItem(slotInventory, 12, SRTypes.InventoryItemMovement.InventoryToInventory);
 									else
-										PacketBuilder.MoveItem(slotInventory, 11, Types.InventoryItemMovement.InventoryToInventory);
+										PacketBuilder.MoveItem(slotInventory, 11, SRTypes.InventoryItemMovement.InventoryToInventory);
 									return true;
 							}
 							break;
-						case 6: // WEAPONS (CH & EU)
-							PacketBuilder.MoveItem(slotInventory, 6, Types.InventoryItemMovement.InventoryToInventory);
+						case SRTypes.Equipable.Weapon: // WEAPONS (CH & EU)
+							PacketBuilder.MoveItem(slotInventory, 6, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case 7: // JOB SUIT
-							PacketBuilder.MoveItem(slotInventory, 8, Types.InventoryItemMovement.InventoryToInventory);
+						case SRTypes.Equipable.Job: // JOB SUIT
+							PacketBuilder.MoveItem(slotInventory, 8, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case 13: // Avatar
-							switch (item.ID4)
+						case SRTypes.Equipable.Avatar: // Avatar
+							switch ((SRTypes.AvatarPart)item.ID4)
 							{
-								case 1: // Hat
-									PacketBuilder.MoveItem(slotInventory, 0, Types.InventoryItemMovement.InventoryToAvatar);
+								case SRTypes.AvatarPart.Hat: // Hat
+									PacketBuilder.MoveItem(slotInventory, 0, SRTypes.InventoryItemMovement.InventoryToAvatar);
 									return true;
-								case 2: // Dress
-									PacketBuilder.MoveItem(slotInventory, 1, Types.InventoryItemMovement.InventoryToAvatar);
+								case SRTypes.AvatarPart.Dress: // Dress
+									PacketBuilder.MoveItem(slotInventory, 1, SRTypes.InventoryItemMovement.InventoryToAvatar);
 									return true;
-								case 3: // Accessory
-									PacketBuilder.MoveItem(slotInventory, 2, Types.InventoryItemMovement.InventoryToAvatar);
+								case SRTypes.AvatarPart.Accessory: // Accessory
+									PacketBuilder.MoveItem(slotInventory, 2, SRTypes.InventoryItemMovement.InventoryToAvatar);
 									return true;
-								case 4: // Flag
-									PacketBuilder.MoveItem(slotInventory, 3, Types.InventoryItemMovement.InventoryToAvatar);
+								case SRTypes.AvatarPart.Flag: // Flag
+									PacketBuilder.MoveItem(slotInventory, 3, SRTypes.InventoryItemMovement.InventoryToAvatar);
 									return true;
 							}
 							break;
-						case 14: // Devil Spirit
-							PacketBuilder.MoveItem(slotInventory, 4, Types.InventoryItemMovement.InventoryToAvatar);
+						case SRTypes.Equipable.DevilSpirit: // Devil Spirit
+							PacketBuilder.MoveItem(slotInventory, 4, SRTypes.InventoryItemMovement.InventoryToAvatar);
 							return true;
 					}
 				}
 			}
 			return false;
 		}
-		public async void UseTeleportAsync(SRObject teleport, uint destinationID)
+		public void UseTeleportAsync(SRTeleport teleport, uint destinationID)
 		{
 			if (Proxy.ClientlessMode)
 			{
-				bool isSelected = await System.Threading.Tasks.Task.Run(() => WaitSelectEntity((uint)teleport[SRProperty.UniqueID], 8, 250, "Selecting teleport " + teleport[SRProperty.TeleportName] + "..."));
-				if (isSelected)
-					PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], destinationID);
+				if (InfoManager.isEntityNear(teleport.UniqueID))
+					PacketBuilder.UseTeleport(teleport.UniqueID, destinationID);
 				else
-					Window.Get.LogProcess(teleport[SRProperty.TeleportName] + " cannot be selected!");
+					Window.Get.LogProcess(teleport.Name + " cannot be selected!");
 			}
 			else
 			{
-				if (Info.Get.SpawnList.ContainsKey((uint)teleport[SRProperty.UniqueID]))
-					PacketBuilder.UseTeleport((uint)teleport[SRProperty.UniqueID], destinationID);
-				else
-					Window.Get.LogProcess(teleport[SRProperty.TeleportName] + " cannot be selected!");
+			  (new Thread( ()=> {
+					if (WaitSelectEntity(teleport.UniqueID, 8, 250, "Selecting teleport " + teleport.TeleportName + "..."))
+						PacketBuilder.UseTeleport(teleport.UniqueID, destinationID);
+					else
+						Window.Get.LogProcess(teleport.Name + " cannot be selected!");
+				})).Start();
 			}
+		}
+
+		public bool StartInventorySort()
+		{
+			if (InfoManager.inGame && !isSorting)
+			{
+				tSorting = new Thread(InventorySort);
+				tSorting.Priority = ThreadPriority.AboveNormal;
+				tSorting.Start();
+
+				Window w = Window.Get;
+				w.Inventory_btnItemsSort.InvokeIfRequired(() => {
+					w.Inventory_btnItemsSort.Tag = w.Inventory_btnItemsSort.ForeColor;
+					w.Inventory_btnItemsSort.ForeColor = System.Drawing.Color.FromArgb(0, 180, 255);
+				});
+				return true;
+			}
+			return false;
+		}
+		public void InventorySort()
+		{
+			Window w = Window.Get;
+
+			bool sort = true;
+			while (InfoManager.inGame && sort)
+			{
+				sort = false;
+				xList<SRItem> inventory =InfoManager.Character.Inventory;
+				for (byte j = (byte)(inventory.Capacity - 1); j >= 13; j--)
+				{
+					if (inventory[j] != null && inventory[j].QuantityMax != 1)
+					{
+						ushort quantityInitial = inventory[j].Quantity;
+						ushort quantityMax = inventory[j].QuantityMax;
+						if (quantityInitial < quantityMax)
+						{
+							for (byte k = 13; k < j; k++)
+							{
+								// Just in case
+								if (inventory[j] == null)
+									break;
+
+								if (inventory[k] != null)
+								{
+									if (inventory[k].ID == inventory[j].ID)
+									{
+										ushort quantityFinal = inventory[k].Quantity;
+										if (quantityFinal < quantityMax)
+										{
+											w.LogProcess("Sorting (" + j + ") -> (" + k + ") ...");
+
+											ushort quantityMaxMoved = (ushort)(quantityMax - quantityFinal);
+											if (quantityInitial <= quantityMaxMoved)
+												PacketBuilder.MoveItem(j, k, SRTypes.InventoryItemMovement.InventoryToInventory, quantityInitial);
+											else
+												PacketBuilder.MoveItem(j++, k, SRTypes.InventoryItemMovement.InventoryToInventory, quantityMaxMoved);
+											sort = true;
+											InfoManager.MonitorInventoryMovement.WaitOne(1000);
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			w.Inventory_btnItemsSort.InvokeIfRequired(() => {
+				w.Inventory_btnItemsSort.ForeColor = (System.Drawing.Color)w.Inventory_btnItemsSort.Tag;
+				w.Inventory_btnItemsSort.Tag = null;
+			});
+
+			w.LogProcess("Sorting completed");
+			tSorting = null;
+		}
+		public bool StopInventorySort()
+		{
+			if (isSorting)
+			{
+				tSorting.Abort();
+				tSorting = null;
+
+				Window w = Window.Get;
+				w.LogProcess("Sorting stopped");
+				w.Inventory_btnItemsSort.InvokeIfRequired(() => {
+					w.Inventory_btnItemsSort.ForeColor = (System.Drawing.Color)w.Inventory_btnItemsSort.Tag;
+					w.Inventory_btnItemsSort.Tag = null;
+				});
+				return true;
+			}
+			return false;
 		}
 		#endregion
 	}

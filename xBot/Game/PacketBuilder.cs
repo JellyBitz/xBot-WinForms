@@ -1,7 +1,10 @@
 ﻿using SecurityAPI;
-using System;
 using xBot.App;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Common;
+using xBot.Game.Objects.Entity;
+using xBot.Game.Objects.Item;
+using xBot.Game.Objects.Party;
 using xBot.Network;
 
 namespace xBot.Game
@@ -11,7 +14,7 @@ namespace xBot.Game
 		public static void Login(string username, string password, ushort serverID)
 		{
 			Packet p = new Packet(Gateway.Opcode.CLIENT_LOGIN_REQUEST, true);
-			p.WriteByte(Info.Get.Locale);
+			p.WriteByte(DataManager.Locale);
 			p.WriteAscii(username);
 			p.WriteAscii(password);
 			p.WriteUShort(serverID);
@@ -47,43 +50,42 @@ namespace xBot.Game
 		{
 			uint model, chest, legs, shoes, weapon;
 			try {
-				Info i = Info.Get;
 				if (type == "CH")
 				{
 					if (male)
 					{
-						model = uint.Parse(i.GetModel("CHAR_CH_MAN_ADVENTURER")["id"]);
-						chest = uint.Parse(i.GetItem("ITEM_CH_M_LIGHT_01_BA_A_DEF")["id"]);
-						legs = uint.Parse(i.GetItem("ITEM_CH_M_LIGHT_01_LA_A_DEF")["id"]);
-						shoes = uint.Parse(i.GetItem("ITEM_CH_M_LIGHT_01_FA_A_DEF")["id"]);
-						weapon = uint.Parse(i.GetItem("ITEM_CH_SWORD_01_A_DEF")["id"]);
+						model = uint.Parse(DataManager.GetModelData("CHAR_CH_MAN_ADVENTURER")["id"]);
+						chest = uint.Parse(DataManager.GetItemData("ITEM_CH_M_LIGHT_01_BA_A_DEF")["id"]);
+						legs = uint.Parse(DataManager.GetItemData("ITEM_CH_M_LIGHT_01_LA_A_DEF")["id"]);
+						shoes = uint.Parse(DataManager.GetItemData("ITEM_CH_M_LIGHT_01_FA_A_DEF")["id"]);
+						weapon = uint.Parse(DataManager.GetItemData("ITEM_CH_SWORD_01_A_DEF")["id"]);
 					}
 					else
 					{
-						model = uint.Parse(i.GetModel("CHAR_CH_WOMAN_ADVENTURER")["id"]);
-						chest = uint.Parse(i.GetItem("ITEM_CH_W_LIGHT_01_BA_A_DEF")["id"]);
-						legs = uint.Parse(i.GetItem("ITEM_CH_W_LIGHT_01_LA_A_DEF")["id"]);
-						shoes = uint.Parse(i.GetItem("ITEM_CH_W_LIGHT_01_FA_A_DEF")["id"]);
-						weapon = uint.Parse(i.GetItem("ITEM_CH_SWORD_01_A_DEF")["id"]);
+						model = uint.Parse(DataManager.GetModelData("CHAR_CH_WOMAN_ADVENTURER")["id"]);
+						chest = uint.Parse(DataManager.GetItemData("ITEM_CH_W_LIGHT_01_BA_A_DEF")["id"]);
+						legs = uint.Parse(DataManager.GetItemData("ITEM_CH_W_LIGHT_01_LA_A_DEF")["id"]);
+						shoes = uint.Parse(DataManager.GetItemData("ITEM_CH_W_LIGHT_01_FA_A_DEF")["id"]);
+						weapon = uint.Parse(DataManager.GetItemData("ITEM_CH_SWORD_01_A_DEF")["id"]);
 					}
 				}
 				else
 				{
 					if (male)
 					{
-						model = uint.Parse(i.GetModel("CHAR_EU_MAN_NOBLE")["id"]);
-						chest = uint.Parse(i.GetItem("ITEM_EU_M_LIGHT_01_BA_A_DEF")["id"]);
-						legs = uint.Parse(i.GetItem("ITEM_EU_M_LIGHT_01_LA_A_DEF")["id"]);
-						shoes = uint.Parse(i.GetItem("ITEM_EU_M_LIGHT_01_FA_A_DEF")["id"]);
-						weapon = uint.Parse(i.GetItem("ITEM_EU_SWORD_01_A_DEF")["id"]);
+						model = uint.Parse(DataManager.GetModelData("CHAR_EU_MAN_NOBLE")["id"]);
+						chest = uint.Parse(DataManager.GetItemData("ITEM_EU_M_LIGHT_01_BA_A_DEF")["id"]);
+						legs = uint.Parse(DataManager.GetItemData("ITEM_EU_M_LIGHT_01_LA_A_DEF")["id"]);
+						shoes = uint.Parse(DataManager.GetItemData("ITEM_EU_M_LIGHT_01_FA_A_DEF")["id"]);
+						weapon = uint.Parse(DataManager.GetItemData("ITEM_EU_SWORD_01_A_DEF")["id"]);
 					}
 					else
 					{
-						model = uint.Parse(i.GetModel("CHAR_EU_WOMAN_NOBLE")["id"]);
-						chest = uint.Parse(i.GetItem("ITEM_EU_W_LIGHT_01_BA_A_DEF")["id"]);
-						legs = uint.Parse(i.GetItem("ITEM_EU_W_LIGHT_01_LA_A_DEF")["id"]);
-						shoes = uint.Parse(i.GetItem("ITEM_EU_W_LIGHT_01_FA_A_DEF")["id"]);
-						weapon = uint.Parse(i.GetItem("ITEM_EU_SWORD_01_A_DEF")["id"]);
+						model = uint.Parse(DataManager.GetModelData("CHAR_EU_WOMAN_NOBLE")["id"]);
+						chest = uint.Parse(DataManager.GetItemData("ITEM_EU_W_LIGHT_01_BA_A_DEF")["id"]);
+						legs = uint.Parse(DataManager.GetItemData("ITEM_EU_W_LIGHT_01_LA_A_DEF")["id"]);
+						shoes = uint.Parse(DataManager.GetItemData("ITEM_EU_W_LIGHT_01_FA_A_DEF")["id"]);
+						weapon = uint.Parse(DataManager.GetItemData("ITEM_EU_SWORD_01_A_DEF")["id"]);
 					}
 				}
 			}
@@ -161,6 +163,14 @@ namespace xBot.Game
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void SendChatGlobal(byte slotGlobal,SRItem item,string message)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_USE,true);
+			p.WriteByte(slotGlobal);
+			p.WriteUShort(item.GetUsageType());
+			p.WriteAscii(message);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void SendMail(string title, string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_MAIL_SEND_REQUEST);
@@ -177,9 +187,9 @@ namespace xBot.Game
 			}
 			else
 			{
-				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_TRANSPORT_MOVEMENT);
+				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_PET_ACTION);
 				p.WriteUInt(petUniqueID);
-				p.WriteByte(1); // Unknkown
+				p.WriteByte(SRCoService.Action.Movement); // Action
 			}
 			p.WriteByte(1); // Movement Type
 			p.WriteUShort(region);
@@ -211,7 +221,7 @@ namespace xBot.Game
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ADD_STR_REQUEST);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void PlayerPetitionResponse(bool accept, Types.PlayerPetition type)
+		public static void PlayerPetitionResponse(bool accept, SRTypes.PlayerPetition type)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_PLAYER_INVITATION_RESPONSE);
 			if (accept)
@@ -223,8 +233,8 @@ namespace xBot.Game
 			{
 				switch (type)
 				{
-					case Types.PlayerPetition.PartyInvitation:
-					case Types.PlayerPetition.PartyCreation:
+					case SRTypes.PlayerPetition.PartyInvitation:
+					case SRTypes.PlayerPetition.PartyCreation:
 						p.WriteByte(2);
 						p.WriteByte(0xC);
 						p.WriteByte(0x2C);
@@ -243,11 +253,11 @@ namespace xBot.Game
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void CreateParty(uint uniqueID, Types.PartySetup setup)
+		public static void CreateParty(uint uniqueID, SRParty.Setup setup)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_PARTY_CREATION_REQUEST);
 			p.WriteUInt(uniqueID);
-			p.WriteByte((byte)setup);
+			p.WriteByte(setup);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void InviteToParty(uint uniqueID)
@@ -258,7 +268,7 @@ namespace xBot.Game
 		}
 		public static void BanFromParty(uint joinID)
 		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_PARTY_BANISH_REQUEST);
+			Packet p = new Packet(Agent.Opcode.CLIENT_PARTY_KICK_REQUEST);
 			p.WriteUInt(joinID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -311,11 +321,11 @@ namespace xBot.Game
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void OpenNPC(uint uniqueID)
+		public static void TalkNPC(uint uniqueID,byte talkID)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_ENTITY_TALK_REQUEST);
 			p.WriteUInt(uniqueID);
-			p.WriteByte(1);
+			p.WriteByte(talkID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void BuyNPC(uint uniqueID,byte tab,byte slot,ushort quantity)
@@ -334,18 +344,16 @@ namespace xBot.Game
 			p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void UseItem(SRObject item,byte slot,uint uniqueID = 0)
+		public static void UseItem(SRItem item,byte slot,uint uniqueID = 0)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_USE,true);
 			p.WriteByte(slot);
-			ushort usageType = (ushort)((ushort)((uint)item[SRProperty.RentType])
-				| (item.ID1 << 2) | (item.ID2 << 5) | (item.ID3 << 7) | (item.ID4 << 11));
-			p.WriteUShort(usageType);
+			p.WriteUShort(item.GetUsageType());
 			if (uniqueID != 0)
 				p.WriteUInt(uniqueID);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void MoveItem(byte slotInitial,byte slotFinal,Types.InventoryItemMovement type,ushort quantity = 0)
+		public static void MoveItem(byte slotInitial,byte slotFinal, SRTypes.InventoryItemMovement type,ushort quantity = 0)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
 			p.WriteByte(type);
@@ -354,20 +362,40 @@ namespace xBot.Game
 			p.WriteUShort(quantity);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
+		public static void MoveItem(byte slotInitial,byte slotFinal, SRTypes.InventoryItemMovement type,uint uniqueID)
+		{
+			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
+			p.WriteByte(type);
+			p.WriteByte(slotInitial);
+			p.WriteByte(slotFinal);
+			p.WriteUInt(uniqueID);
+			Bot.Get.Proxy.Agent.InjectToServer(p);
+		}
 		public static void DropItem(byte slot)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
-			p.WriteByte(Types.InventoryItemMovement.InventoryToGround);
+			p.WriteByte(SRTypes.InventoryItemMovement.InventoryToGround);
 			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
-		public static void PickUpItem(uint uniqueID)
+		public static void PickUpItem(uint itemUniqueID,uint petPickUniqueID = 0)
 		{
-			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
-			p.WriteByte(1);
-			p.WriteByte(Types.CharacterAction.ItemPickUp);
-			p.WriteByte(1);
-			p.WriteUInt(uniqueID);
+			Packet p;
+      if (petPickUniqueID == 0)
+			{
+				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
+				p.WriteByte(1);
+				p.WriteByte(SRTypes.CharacterAction.ItemPickUp);
+				p.WriteByte(1);
+				p.WriteUInt(itemUniqueID);
+			}
+			else
+			{
+				p = new Packet(Agent.Opcode.CLIENT_CHARACTER_PET_ACTION);
+				p.WriteUInt(petPickUniqueID);
+				p.WriteByte(SRCoService.Action.ItemPickUp);
+				p.WriteUInt(itemUniqueID);
+			}
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void CreateStall(string title,string note)
@@ -477,7 +505,7 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
 			p.WriteByte(1);
-			p.WriteByte(Types.CharacterAction.SkillCast);
+			p.WriteByte(SRTypes.CharacterAction.SkillCast);
 			p.WriteUInt(skillID);
 			if (targetUniqueID != 0)
 			{
@@ -501,7 +529,7 @@ namespace xBot.Game
 			}
 			else
 			{
-				p.WriteByte(Types.CharacterAction.SkillCast);
+				p.WriteByte(SRTypes.CharacterAction.SkillCast);
 				p.WriteUInt(skillID);
 			}
 			p.WriteByte(1); // has target? always.
@@ -512,7 +540,7 @@ namespace xBot.Game
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_ACTION_REQUEST);
 			p.WriteByte(1);
-			p.WriteByte(Types.CharacterAction.SkillRemove);
+			p.WriteByte(SRTypes.CharacterAction.SkillRemove);
 			p.WriteUInt(skillID);
 			if (targetUniqueID != 0)
 			{
@@ -551,21 +579,21 @@ namespace xBot.Game
 		public static void AddItemExchange(byte slot)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
-			p.WriteByte(Types.InventoryItemMovement.InventoryToExchange);
+			p.WriteByte(SRTypes.InventoryItemMovement.InventoryToExchange);
 			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void RemoveItemExchange(byte slot)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
-			p.WriteByte(Types.InventoryItemMovement.ExchangeToInventory);
+			p.WriteByte(SRTypes.InventoryItemMovement.ExchangeToInventory);
 			p.WriteByte(slot);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void EditGoldExchange(ulong newGold)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_INVENTORY_ITEM_MOVEMENT);
-			p.WriteByte(Types.InventoryItemMovement.InventoryGoldToExchange);
+			p.WriteByte(SRTypes.InventoryItemMovement.InventoryGoldToExchange);
 			p.WriteULong(newGold);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -585,179 +613,138 @@ namespace xBot.Game
 		}
 		internal class Client
 		{
-			public static void CreatePickUpPacket(SRObject item, byte inventorySlot)
+			public static void CreatePickUpPacket(SRItem item, byte inventorySlot)
 			{
 				Packet p = new Packet(Agent.Opcode.SERVER_INVENTORY_ITEM_MOVEMENT);
 				p.WriteByte(1); // Success
-				p.WriteByte((byte)Types.InventoryItemMovement.GroundToInventory);
+				p.WriteByte(SRTypes.InventoryItemMovement.GroundToInventory);
 				p.WriteByte(inventorySlot);
-
-				// Temporaly (probably) since it only will be used to buy town stuffs only
-				if (!item.Contains(SRProperty.RentType))
-					item[SRProperty.RentType] = (uint)(0);
-				p.WriteUInt((uint)item[SRProperty.RentType]);
-				if ((uint)item[SRProperty.RentType] == 1)
+				p.WriteUInt(item.Rentable.ID);
+				if (item.Rentable.RentableType == SRRentable.Type.LimitedTime)
 				{
-					p.WriteUShort((ushort)item[SRProperty.RentCanDelete]);
-					p.WriteUInt((uint)item[SRProperty.RentPeriodBeginTime]);
-					p.WriteUInt((uint)item[SRProperty.RentPeriodEndTime]);
+					p.WriteUShort(item.Rentable.CanDelete);
+					p.WriteUInt(item.Rentable.PeriodBeginTime);
+					p.WriteUInt(item.Rentable.PeriodEndTime);
 				}
-				else if ((uint)item[SRProperty.RentType] == 2)
+				else if (item.Rentable.RentableType == SRRentable.Type.LimitedDistance)
 				{
-					p.WriteUShort((ushort)item[SRProperty.RentCanDelete]);
-					p.WriteUShort((ushort)item[SRProperty.RentCanRecharge]);
-					p.WriteUInt((uint)item[SRProperty.RentMeterRateTime]);
+					p.WriteUShort(item.Rentable.CanDelete);
+					p.WriteUShort(item.Rentable.CanRecharge);
+					p.WriteUInt(item.Rentable.MeterRateTime);
 				}
-				else if ((uint)item[SRProperty.RentType] == 3)
+				else if (item.Rentable.RentableType == SRRentable.Type.Package)
 				{
-					p.WriteUShort((ushort)item[SRProperty.RentCanDelete]);
-					p.WriteUShort((ushort)item[SRProperty.RentCanRecharge]);
-					p.WriteUInt((uint)item[SRProperty.RentPeriodBeginTime]);
-					p.WriteUInt((uint)item[SRProperty.RentPeriodEndTime]);
-					p.WriteUInt((uint)item[SRProperty.RentPackingTime]);
+					p.WriteUShort(item.Rentable.CanDelete);
+					p.WriteUShort(item.Rentable.CanRecharge);
+					p.WriteUInt(item.Rentable.PeriodBeginTime);
+					p.WriteUInt(item.Rentable.PeriodEndTime);
+					p.WriteUInt(item.Rentable.PackingTime);
 				}
-				p.WriteUInt((uint)item.ID);
-				if (item.ID1 == 3)
+				p.WriteUInt(item.ID);
+				if (item.isEquipable())
 				{
-					// ITEM_
-					if (item.ID2 == 1)
+					SREquipable equip = (SREquipable)item;
+					p.WriteByte(equip.Plus);
+					p.WriteULong(equip.Variance);
+					p.WriteUInt(equip.Durability);
+					p.WriteByte(equip.MagicOptions.Count);
+					for (byte j = 0; j < equip.MagicOptions.Count; j++)
 					{
-						// ITEM_CH_
-						// ITEM_EU_
-						// ITEM_AVATAR_
-						if (!item.Contains(SRProperty.Plus)) // Temporaly
-							item[SRProperty.Plus] = (byte)(0);
-						p.WriteByte((byte)item[SRProperty.Plus]);
-						if (!item.Contains(SRProperty.Variance)) // Temporaly
-							item[SRProperty.Variance] = 0ul;
-						p.WriteULong((ulong)item[SRProperty.Variance]);
-						if (!item.Contains(SRProperty.Durability)) // Temporaly
-							item[SRProperty.Durability] = 64u;
-						p.WriteUInt((uint)item[SRProperty.Durability]);
-
-						if (!item.Contains(SRProperty.MagicParams)) // Temporaly
-							item[SRProperty.MagicParams] = new SRObjectCollection();
-						SRObjectCollection MagicParams = (SRObjectCollection)item[SRProperty.MagicParams];
-						p.WriteByte((byte)MagicParams.Count);
-						for (byte j = 0; j < MagicParams.Count; j++)
+						p.WriteUInt(equip.MagicOptions[j].ID);
+						p.WriteUInt(equip.MagicOptions[j].Value);
+					}
+					// 1 = Socket
+					p.WriteByte(1);
+					if (equip.Sockets != null)
+					{
+						p.WriteByte(equip.Sockets.Count);
+						for (byte j = 0; j < equip.Sockets.Count; j++)
 						{
-							SRObject param = MagicParams[j];
-							p.WriteUInt(param.ID);
-							p.WriteUInt((uint)param[SRProperty.Value]);
-						}
-
-						// 1 = Socket
-						p.WriteByte(1);
-						if (!item.Contains(SRProperty.SocketParams)) // Temporaly
-							item[SRProperty.SocketParams] = new SRObjectCollection();
-						SRObjectCollection SocketParams = (SRObjectCollection)item[SRProperty.SocketParams];
-						p.WriteByte((byte)SocketParams.Count);
-						for (byte j = 0; j < SocketParams.Capacity; j++)
-						{
-							SRObject param = SocketParams[j];
-							p.WriteByte((byte)param[SRProperty.Slot]);
-							p.WriteUInt(param.ID);
-							p.WriteUInt((uint)param[SRProperty.Value]);
-						}
-
-						// 2 = Advanced elixir
-						p.WriteByte(2);
-						if (!item.Contains(SRProperty.AdvanceElixirParams)) // Temporaly
-							item[SRProperty.AdvanceElixirParams] = new SRObjectCollection();
-						SRObjectCollection AdvanceElixirParams = (SRObjectCollection)item[SRProperty.AdvanceElixirParams];
-						p.WriteByte((byte)AdvanceElixirParams.Count);
-						for (byte j = 0; j < AdvanceElixirParams.Capacity; j++)
-						{
-							SRObject param = AdvanceElixirParams[j];
-							p.WriteByte((byte)param[SRProperty.Slot]);
-							p.WriteUInt(param.ID);
-							p.WriteUInt((uint)param[SRProperty.Plus]);
+							p.WriteByte(equip.Sockets[j].Slot);
+							p.WriteUInt(equip.Sockets[j].ID);
+							p.WriteUInt(equip.Sockets[j].Value);
 						}
 					}
-					else if (item.ID2 == 2)
+					else
 					{
-						// ITEM_COS
-						if (item.ID3 == 1)
+						p.WriteByte(0);
+					}
+					// 2 = Advanced elixir
+					p.WriteByte(2);
+					if (equip.AdvancedElixirs != null)
+					{
+						p.WriteByte(equip.AdvancedElixirs.Count);
+						for (byte j = 0; j < equip.AdvancedElixirs.Count; j++)
 						{
-							// ITEM_COS_P
-							if (!item.Contains(SRProperty.PetState)) // Temporaly
-								item[SRProperty.PetState] = (byte)Types.PetState.NeverSummoned;
-							p.WriteByte((byte)((Types.PetState)item[SRProperty.PetState]));
-							switch ((Types.PetState)item[SRProperty.PetState])
-							{
-								case Types.PetState.Summoned:
-								case Types.PetState.Unsummoned:
-								case Types.PetState.Dead:
-									p.WriteUInt((uint)item[SRProperty.PetModelID]);
-									p.WriteAscii((string)item[SRProperty.PetName]);
-									if (item.ID4 == 2)
-									{
-										// ITEM_COS_P (Ability)
-										p.WriteUInt((uint)item[SRProperty.RentPeriodEndTime]);
-									}
-									p.WriteByte((byte)item[SRProperty.unkByte01]);
-									break;
-							}
-						}
-						else if (item.ID3 == 2)
-						{
-							// ITEM_ETC_TRANS_MONSTER
-							if (!item.Contains(SRProperty.PetModelID)) // Temporaly
-								item[SRProperty.PetModelID] = (new SRObject("MOB_CH_MANGNYANG", SRType.Model)).ID;
-							p.WriteUInt((uint)item[SRProperty.PetModelID]);
-						}
-						else if (item.ID3 == 3)
-						{
-							// MAGIC_CUBE
-							if (!item.Contains(SRProperty.Amount)) // Temporaly
-								item[SRProperty.Amount] = (uint)(0);
-							p.WriteUInt((uint)item[SRProperty.Amount]);
+							p.WriteByte(equip.AdvancedElixirs[j].Slot);
+							p.WriteUInt(equip.AdvancedElixirs[j].ID);
+							p.WriteUInt(equip.AdvancedElixirs[j].Value);
 						}
 					}
-					else if (item.ID2 == 3)
+					else
 					{
-						// ITEM_ETC
-						p.WriteUShort((ushort)item[SRProperty.Quantity]);
-						if (item.ID3 == 11)
+						p.WriteByte(0);
+					}
+				}
+				else if (item.isCoS())
+				{
+					SRCoS cos = (SRCoS)item;
+					if (cos.isPet())
+					{
+						// ITEM_COS_P
+						p.WriteByte(cos.StateType);
+						if (cos.StateType != SRCoS.State.NeverSummoned)
 						{
-							if (item.ID4 == 1 || item.ID4 == 2)
-							{
-								// MAGIC/ATRIBUTTE STONE
-								if (!item.Contains(SRProperty.AssimilationProbability)) // Temporaly
-									item[SRProperty.AssimilationProbability] = (byte)(0);
-								p.WriteByte((byte)item[SRProperty.AssimilationProbability]);
-							}
+							p.WriteUInt(cos.ModelID);
+							p.WriteAscii(cos.ModelName);
+							if (cos.ID4 == 2)
+								p.WriteUInt(cos.Rentable.PeriodEndTime);
+							p.WriteByte(cos.unkByte01);
 						}
-						else if (item.ID3 == 14 && item.ID4 == 2)
+					}
+					else if (cos.isTransform())
+					{
+						if (cos.ModelID == 0)
+							cos.ModelID = new SRModel("MOB_CH_MANGNYANG").ID;
+						p.WriteUInt(cos.ModelID);
+					}
+					else if (cos.isCube())
+					{
+						p.WriteUInt(cos.Quantity);
+					}
+				}
+				else if (item.isEtc())
+				{
+					SREtc etc = (SREtc)item;
+					p.WriteUShort(etc.Quantity);
+					if (etc.isAlchemy())
+					{
+						if (item.ID4 == 1 || item.ID4 == 2)
 						{
-							// ITEM_MALL_GACHA_CARD_WIN
-							// ITEM_MALL_GACHA_CARD_LOSE
-							if (!item.Contains(SRProperty.MagicParams)) // Temporaly
-								item[SRProperty.MagicParams] = new SRObjectCollection();
-							SRObjectCollection MagicParams = (SRObjectCollection)item[SRProperty.MagicParams];
-							p.WriteByte((byte)MagicParams.Count);
-							for (byte j = 0; j < MagicParams.Count; j++)
-							{
-								SRObject param = MagicParams[j];
-								p.WriteUInt(param.ID);
-								p.WriteUInt((uint)param[SRProperty.Value]);
-							}
+							// MAGIC/ATRIBUTTE STONE
+							p.WriteByte(etc.AssimilationProbability);
 						}
+					}
+					else if (item.ID3 == 14 && item.ID4 == 2)
+					{
+						// ITEM_MALL_GACHA_CARD_WIN
+						// ITEM_MALL_GACHA_CARD_LOSE
+						p.WriteByte(0); // paramCount
 					}
 				}
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
-			public static void CreatePickUpSpecialtyGoodsPacket(SRObject item, byte inventorySlot, uint transportUniqueID)
+			public static void CreatePickUpSpecialtyGoodsPacket(SRItem item, byte inventorySlot, uint transportUniqueID,string OwnerName, uint unkUInt01)
 			{
 				Packet p = new Packet(Agent.Opcode.SERVER_INVENTORY_ITEM_MOVEMENT);
 				p.WriteByte(1); // Success
-				p.WriteByte((byte)Types.InventoryItemMovement.GroundToTransport);
+				p.WriteByte(SRTypes.InventoryItemMovement.GroundToPet);
 				p.WriteUInt(transportUniqueID);
 				p.WriteByte(inventorySlot);
-				p.WriteUInt((uint)item[SRProperty.unkUInt01]);
+				p.WriteUInt(unkUInt01);
 				p.WriteUInt(item.ID);
-				p.WriteUShort((ushort)item[SRProperty.Quantity]);
-				p.WriteAscii((string)item[SRProperty.OwnerName]);
+				p.WriteUShort(item.Quantity);
+				p.WriteAscii(OwnerName);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
 			public static void SendNotice(string message)
@@ -767,7 +754,7 @@ namespace xBot.Game
 				p.WriteAscii(message);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
-			public static void CreateAgentLogin(byte flag,uint loginID, string host,ushort port)
+			public static void CreateAgentLogin(byte flag, uint loginID, string host, ushort port)
 			{
 				Packet p = new Packet(Gateway.Opcode.SERVER_LOGIN_RESPONSE, true);
 				p.WriteByte(flag);

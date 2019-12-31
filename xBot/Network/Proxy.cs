@@ -124,9 +124,9 @@ namespace xBot.Network
 				{
 					// Loader setup
 					w.LogProcess("Executing EdxLoader...");
-					EdxLoader loader = new EdxLoader(Info.Get.ClientPath);
+					EdxLoader loader = new EdxLoader(DataManager.ClientPath);
 					loader.SetPatches(true, true, false);
-					sro_client = loader.StartClient(false, Info.Get.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
+					sro_client = loader.StartClient(false, DataManager.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
 					if (sro_client == null)
 						Stop();
 					else
@@ -353,7 +353,7 @@ namespace xBot.Network
 		{
 			try
 			{
-				if (Bot.Get.inGame)
+				if (InfoManager.inGame)
 					Window.Get.Log("Switched to clientless mode");
 			}
 			catch { /* Window closed probably.. */ }
@@ -479,8 +479,7 @@ namespace xBot.Network
 									if (context == Agent.Remote && w.Settings_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>
-										{
+										w.Settings_lstvOpcodes.InvokeIfRequired(() => {
 											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
@@ -696,49 +695,49 @@ namespace xBot.Network
 				w.Login_gbxServers.Visible = true;
 			});
 
-			if (Bot.Get.inGame)
-			{
-				Bot.Get._OnDisconnected();
-			}
-			Info.Get.Database.Close();
+			if (InfoManager.inGame)
+				InfoManager.OnDisconnected();
+			DataManager.DisconnectDatabase();
 			w.Log("Disconnected");
 			w.LogProcess("Disconnected");
 			// Relogin
 			if (w.Login_cbxRelogin.Checked)
 			{
-				w.Login_cbxRelogin.InvokeIfRequired(() => {
-					w.Login_cbxRelogin.Tag = (byte)10; // Countdown
-				});
-
-				System.Timers.Timer Relogin = new System.Timers.Timer(1000);
+				System.Timers.Timer Relogin = new System.Timers.Timer(50);
 				Relogin.AutoReset = false;
 				Relogin.Elapsed += ReloginOnDisconnect;
-				Relogin.Start();
+				ReloginIntervalCounter = 0;
+				ReloginCountdown = 15;
+        Relogin.Start();
+				w.LogProcess("Relogin at " + ReloginCountdown + " seconds...");
 			}
 		}
+
+		private int ReloginIntervalCounter;
+		private int ReloginCountdown;
 		private void ReloginOnDisconnect(object sender, System.Timers.ElapsedEventArgs e){
 			try
 			{
+				System.Timers.Timer timer = (System.Timers.Timer)sender;
+				ReloginIntervalCounter += (int)timer.Interval;
+
 				Window w = Window.Get;
 				if (w.Login_cbxRelogin.Checked && !Bot.Get.Proxy.isRunning)
 				{
-					byte countdown = 0;
-					w.Login_cbxRelogin.InvokeIfRequired(() => {
-						countdown = (byte)w.Login_cbxRelogin.Tag;
-					});
 					// Check Countdown
-					if (countdown > 0)
+					if (ReloginIntervalCounter % 1000 == 0)
+						ReloginCountdown--;
+					if(ReloginCountdown == 0)
 					{
-						w.LogProcess("Relogin at " + countdown + " seconds...");
-						w.Login_cbxRelogin.InvokeIfRequired(() => {
-							w.Login_cbxRelogin.Tag = (byte)(countdown - 1);
+						w.LogProcess("Relogin...");
+						w.InvokeIfRequired(() => {
+							w.Control_Click(w.Login_btnStart, null);
 						});
-						((System.Timers.Timer)sender).Start();
 					}
 					else
 					{
-						w.LogProcess("Relogin...");
-						Bot.Get.Proxy.Start();
+						w.LogProcess("Relogin at " + ReloginCountdown + " seconds...");
+						timer.Start();
 					}
 				}
 				else

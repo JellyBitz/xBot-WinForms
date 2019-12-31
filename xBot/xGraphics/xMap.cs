@@ -4,7 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using xBot.App;
+using xBot.Game;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Common;
+using xBot.Game.Objects.Entity;
 
 namespace xGraphics
 {
@@ -17,7 +20,7 @@ namespace xGraphics
 		private byte m_Zoom;
 		private Size m_TileSize;
 		private int m_TileCount;
-		private Dictionary<uint, xMapControl> m_Markers = new Dictionary<uint, xMapControl>();
+		private xDictionary<uint, xMapControl> m_Markers = new xDictionary<uint, xMapControl>();
 		#endregion
 
 		public xMap()
@@ -351,20 +354,20 @@ namespace xGraphics
 		}
 		public void RemoveMarker(uint UniqueID)
 		{
-			xMapControl Marker;
-			if (this.m_Markers.TryGetValue(UniqueID, out Marker))
+			xMapControl Marker = m_Markers[UniqueID];
+			if (Marker != null)
 			{
 				this.InvokeIfRequired(() => {
 					this.Controls.RemoveByKey(Marker.Name);
 				});
-				this.m_Markers.Remove(UniqueID);
+				this.m_Markers.RemoveKey(UniqueID);
 			}
 		}
 		public void ClearMarkers()
 		{
 			this.InvokeIfRequired(() => {
-				foreach (xMapControl Marker in this.m_Markers.Values)
-					this.Controls.RemoveByKey(Marker.Name);
+				for (int i = 0; i < m_Markers.Count; i++)
+					this.Controls.RemoveByKey(m_Markers.GetAt(i).Name);
 			});
 			this.m_Markers.Clear();
 		}
@@ -377,10 +380,11 @@ namespace xGraphics
 			double b_y = (192.0 / m_TileSize.Height);
 			// Update all markers
 			this.InvokeIfRequired(()=> {
-				foreach (xMapControl Marker in m_Markers.Values)
+				for (int i = 0; i < m_Markers.Count; i++)
 				{
+					xMapControl Marker = m_Markers.GetAt(i);
 					// Convertion SRCoord -> Point
-					SRCoord coords = ((SRObject)Marker.Tag).GetPosition();
+					SRCoord coords = ((SREntity)Marker.Tag).GetRealtimePosition();
 					Point location = new Point((int)Math.Round((coords.PosX - ViewPoint.PosX) / b_x + a_x), (int)Math.Round((coords.PosY - ViewPoint.PosY) / b_y * (-1) + a_y));
 					// Fix center
 					location.X -= Marker.Image.Size.Width / 2;
@@ -400,12 +404,8 @@ namespace xGraphics
 			if (e.Button == MouseButtons.Left)
 			{
 				xMapTile t = (xMapTile)sender;
-
-				Bot b = Bot.Get;
-				if (b.inGame)
-				{
-					b.MoveTo(GetCoord(new Point(t.Location.X + e.Location.X, t.Location.Y + e.Location.Y)));
-				}
+				if (InfoManager.inGame)
+					Bot.Get.MoveTo(GetCoord(new Point(t.Location.X + e.Location.X, t.Location.Y + e.Location.Y)));
 			}
 		}
 		#endregion

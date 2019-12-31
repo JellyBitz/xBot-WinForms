@@ -118,20 +118,40 @@
     </Compile>
     <Compile Include="App\Bot\Bot.Events.cs" />
     <Compile Include="App\Bot\Bot.IA.cs" />
-    <Compile Include="App\Bot\Bot.System.cs" />
     <Compile Include="App\Bot\Bot.Checks.cs" />
-    <Compile Include="App\PK2Extractor\DDSReader.cs" />
-    <Compile Include="App\PK2Extractor\Pk2Extractor.cs">
+    <Compile Include="Game\Objects\Common\SRCollectionBook.cs" />
+    <Compile Include="Game\Objects\Common\SRMastery.cs" />
+    <Compile Include="Game\Objects\Common\SRQuest.cs" />
+    <Compile Include="Game\Objects\Common\SRQuestObjective.cs" />
+    <Compile Include="Game\Objects\Common\SRTimeStamp.cs" />
+    <Compile Include="Game\Objects\Common\SRTypes.cs" />
+    <Compile Include="Game\Objects\Entity\SRAttackPet.cs" />
+    <Compile Include="Game\Objects\Entity\SRCharacter.cs" />
+    <Compile Include="Game\Objects\Common\SRCharSelection.cs" />
+    <Compile Include="Game\Objects\Entity\SRGuide.cs" />
+    <Compile Include="Game\Objects\Entity\SRPickPet.cs" />
+    <Compile Include="Game\Objects\Entity\SRTeleportOption.cs" />
+    <Compile Include="Game\Objects\Item\SRItemExchange.cs" />
+    <Compile Include="Game\Objects\Item\SRAdvancedElixir.cs" />
+    <Compile Include="Game\Objects\Item\SRCoS.cs" />
+    <Compile Include="Game\Objects\Item\SREquipable.cs" />
+    <Compile Include="Game\Objects\Item\SREtc.cs" />
+    <Compile Include="Game\Objects\Item\SRItemStall.cs" />
+    <Compile Include="Game\Objects\Item\SRRentable.cs" />
+    <Compile Include="Game\Objects\Item\SRMagicOption.cs" />
+    <Compile Include="Game\Objects\Item\SRSocket.cs" />
+    <Compile Include="PK2Extractor\DDSReader.cs" />
+    <Compile Include="PK2Extractor\Pk2Extractor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App\PK2Extractor\PK2Extractor.Parser.cs">
+    <Compile Include="PK2Extractor\PK2Extractor.Parser.cs">
       <DependentUpon>Pk2Extractor.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="App\PK2Extractor\Pk2Extractor.Designer.cs">
+    <Compile Include="PK2Extractor\Pk2Extractor.Designer.cs">
       <DependentUpon>Pk2Extractor.cs</DependentUpon>
     </Compile>
-    <Compile Include="App\PK2Extractor\Pk2Extractor.Media.cs">
+    <Compile Include="PK2Extractor\Pk2Extractor.Media.cs">
       <DependentUpon>Pk2Extractor.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
@@ -139,14 +159,33 @@
     <Compile Include="App\Settings.cs" />
     <Compile Include="App\EdxLoader.cs" />
     <Compile Include="App\SQLDatabase.cs" />
-    <Compile Include="Game\Info.cs" />
-    <Compile Include="Game\Objects\SRCoord.cs" />
-    <Compile Include="Game\Objects\SRObject.cs" />
-    <Compile Include="Game\Objects\SRObjectCollection.cs" />
-    <Compile Include="Game\Objects\SRObjectDictionary.cs" />
-    <Compile Include="Game\Objects\SRPartyMatch.cs" />
-    <Compile Include="Game\Objects\SRProperty.cs" />
+    <Compile Include="Game\DataManager.cs" />
+    <Compile Include="Game\Objects\Item\SRItem.cs" />
+    <Compile Include="Game\Objects\Common\SRSkill.cs" />
+    <Compile Include="Game\Objects\Common\SRBuff.cs" />
+    <Compile Include="Game\Objects\Common\SRStall.cs" />
+    <Compile Include="Game\Objects\Entity\SRCoService.cs" />
+    <Compile Include="Game\Objects\Entity\SRDrop.cs" />
+    <Compile Include="Game\Objects\Entity\SRFortressCos.cs" />
+    <Compile Include="Game\Objects\Entity\SRFortressStruct.cs" />
+    <Compile Include="Game\Objects\Entity\SRMask.cs" />
+    <Compile Include="Game\Objects\Entity\SRMob.cs" />
+    <Compile Include="Game\Objects\Entity\SRModel.cs" />
+    <Compile Include="Game\Objects\Entity\SRNpc.cs" />
+    <Compile Include="Game\Objects\Entity\SREntity.cs" />
+    <Compile Include="Game\Objects\Entity\SRPlayer.cs" />
+    <Compile Include="Game\Objects\Entity\SRSkillZone.cs" />
+    <Compile Include="Game\Objects\Entity\SRTeleport.cs" />
+    <Compile Include="Game\Objects\Guild\SRGuildMember.cs" />
+    <Compile Include="Game\Objects\Party\SRParty.cs" />
+    <Compile Include="Game\Objects\Party\SRPartyMember.cs" />
+    <Compile Include="Game\Objects\Common\SRCoord.cs" />
+    <Compile Include="Game\Objects\Guild\SRGuild.cs" />
+    <Compile Include="Game\Objects\xList.cs" />
+    <Compile Include="Game\Objects\xDictionary.cs" />
+    <Compile Include="Game\Objects\Party\SRPartyMatch.cs" />
     <Compile Include="Game\Params.cs" />
+    <Compile Include="Game\InfoManager.cs" />
     <Compile Include="Network\Agent.cs" />
     <Compile Include="Network\Context.cs" />
     <Compile Include="Network\Gateway.cs" />
@@ -157,9 +196,9 @@
     <Compile Include="App\Bot\Bot.cs" />
     <Compile Include="App\WinAPI.cs" />
     <Compile Include="App\Fonts.cs" />
-    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2File.cs" />
-    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Folder.cs" />
-    <Compile Include="App\PK2Extractor\PK2ReaderAPI\Pk2Reader.cs" />
+    <Compile Include="PK2Extractor\PK2ReaderAPI\Pk2File.cs" />
+    <Compile Include="PK2Extractor\PK2ReaderAPI\Pk2Folder.cs" />
+    <Compile Include="PK2Extractor\PK2ReaderAPI\Pk2Reader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityAPI\Blowfish.cs" />
     <Compile Include="SecurityAPI\Packet.cs" />
@@ -199,7 +238,7 @@
     <EmbeddedResource Include="App\Ads.resx">
       <DependentUpon>Ads.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="App\PK2Extractor\Pk2Extractor.resx">
+    <EmbeddedResource Include="PK2Extractor\Pk2Extractor.resx">
       <DependentUpon>Pk2Extractor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="App\Window.resx">
@@ -252,6 +291,7 @@
     <None Include="Resources\About.png" />
     <None Include="Resources\ProjexNET_40x40.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

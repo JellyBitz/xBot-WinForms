@@ -95,8 +95,6 @@ namespace xBot.App
 		/// <summary>
 		/// StreamReader support for using differents limiters.
 		/// </summary>
-		/// <param name="StreamReader">StreamReader loaded</param>
-		/// <param name="SplitString">Delemiters</param>
 		public static string ReadLine(this StreamReader StreamReader, string delimiter)
 		{
 			char nextChar;

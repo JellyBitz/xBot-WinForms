@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using xBot.Game.Objects;
+using xBot.Game.Objects.Common;
 
 namespace xBot.App
 {

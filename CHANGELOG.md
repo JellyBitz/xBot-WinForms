@@ -1,5 +1,22 @@
 # Changelog
 
+### v0.5.0
+- Restructured all game classes and system
+- Added item stats information as tooltip icon
+- Added global usage through chat
+- Added inventory sort (fastest possible)
+- Added storage viewer (shows the items from the last time opened)
+- Added option to open/close storage
+- Added pet pick inventory viewer
+- Added guild viewer
+- Added guild storage support & viewer (shows the items from the last time opened)
+- Added TIME bot command on all chat to check servertime
+- Added ISEEDEADPEOPLE bot command on all chat to reveal hidden players around
+- Fixed teleport&buildings not extracted correctly
+- Fixed inventory capacity on increasing
+- Fixed pet picking directly items to inventory
+- Game info viewer has been disabled (Re-Work in progress)
+
 ### v0.4.1
 - Enabled guild invitation
 - Fixed gold edit on exchange

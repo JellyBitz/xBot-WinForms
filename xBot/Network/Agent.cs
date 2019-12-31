@@ -23,7 +23,7 @@ namespace xBot.Network
 				CLIENT_CHARACTER_CONFIRM_SPAWN = 0x3012,
 				CLIENT_CHARACTER_MOVEMENT = 0x7021,
 				CLIENT_CHARACTER_MOVEMENT_ANGLE = 0x7024,
-				CLIENT_CHARACTER_TRANSPORT_MOVEMENT = 0x70C5,
+				CLIENT_CHARACTER_PET_ACTION = 0x70C5,
 				CLIENT_CHARACTER_ADD_STR_REQUEST = 0x7050,
 				CLIENT_CHARACTER_ADD_INT_REQUEST = 0x7051,
 				CLIENT_CHARACTER_EMOTE_USE = 0x3091,
@@ -41,7 +41,7 @@ namespace xBot.Network
 				CLIENT_PARTY_CREATION_REQUEST = 0x7060,
 				CLIENT_PARTY_LEAVE = 0x7061,
 				CLIENT_PARTY_INVITATION_REQUEST = 0x7062,
-				CLIENT_PARTY_BANISH_REQUEST = 0x7063,
+				CLIENT_PARTY_KICK_REQUEST = 0x7063,
 				CLIENT_PARTY_MATCH_CREATION_REQUEST = 0x7069,
 				CLIENT_PARTY_MATCH_EDITED_REQUEST = 0x706A,
 				CLIENT_PARTY_MATCH_DELETE_REQUEST = 0x706B,
@@ -50,7 +50,6 @@ namespace xBot.Network
 				CLIENT_PARTY_MATCH_JOIN_RESPONSE = 0x306E,
 				CLIENT_GUILD_INVITATION_REQUEST = 0x70F3,
 				CLIENT_GUILD_NOTICE_EDIT_REQUEST = 0x70F9,
-
 				CLIENT_ACADEMY_INVITATION_REQUEST = 0x7472,
 				CLIENT_ACADEMY_MATCH_LIST_REQUEST = 0x747D,
 				CLIENT_ACADEMY_NOTICE_EDIT_REQUEST = 0x7477,
@@ -95,6 +94,7 @@ namespace xBot.Network
 				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
 				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
 				SERVER_INVENTORY_ITEM_UPDATE = 0x3040,
+				SERVER_INVENTORY_CAPACITY_UPDATE = 0x3092,
 				SERVER_STORAGE_DATA_BEGIN = 0x3047,
 				SERVER_STORAGE_DATA = 0x3049,
 				SERVER_STORAGE_DATA_END = 0x3048,
@@ -111,6 +111,7 @@ namespace xBot.Network
 				SERVER_ENTITY_MOVEMENT = 0xB021,
 				SERVER_ENTITY_MOVEMENT_STUCK = 0xB023,
 				SERVER_ENTITY_MOVEMENT_ANGLE = 0xB024,
+				SERVER_ENTITY_TALK_RESPONSE = 0xB046,
 				SERVER_ENTITY_LEVEL_UP = 0x3054,
 				SERVER_ENTITY_STATUS_UPDATE = 0x3057,
 				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
@@ -157,12 +158,15 @@ namespace xBot.Network
 				SERVER_TELEPORT_READY_REQUEST = 0x34B5,
 				SERVER_CONSIGNMENT_REGISTER_RESPONSE = 0xB508,
 				SERVER_CONSIGNMENT_UNREGISTER_RESPONSE = 0xB509,
+				SERVER_GUILD_CREATED_DATA = 0xB0F0,
 				SERVER_GUILD_DATA_BEGIN = 0x34B3,
 				SERVER_GUILD_DATA = 0x3101,
 				SERVER_GUILD_DATA_END = 0x34B4,
 				SERVER_GUILD_UPDATE = 0x38F5,
-				SERVER_GUILD_PLAYER_ONLINE = 0x30FF,
-
+				SERVER_GUILD_PLAYER_LOG = 0x30FF,
+				SERVER_GUILD_STORAGE_DATA_BEGIN = 0x3253,
+				SERVER_GUILD_STORAGE_DATA = 0x3255,
+				SERVER_GUILD_STORAGE_DATA_END = 0x3254,
 				SERVER_ACADEMY_DATA = 0x3C81,
 				SERVER_ACADEMY_MATCH_LIST_RESPONSE = 0xB47D,
 				SERVER_EXCHANGE_STARTED = 0x3085,
@@ -175,6 +179,8 @@ namespace xBot.Network
 				SERVER_EXCHANGE_CONFIRM_RESPONSE = 0xB082,
 				SERVER_EXCHANGE_APPROVE_RESPONSE = 0xB083,
 				SERVER_EXCHANGE_EXIT_RESPONSE = 0xB084,
+				SERVER_DROP_UNLOCKED = 0x304D,
+				SERVER_NPC_CLOSE_RESPONSE = 0xB04B,
 
 				GLOBAL_HANDSHAKE = 0x5000,
 				GLOBAL_HANDSHAKE_OK = 0x9000,
@@ -255,16 +261,12 @@ namespace xBot.Network
 					break;
 				case Opcode.CLIENT_CHARACTER_SELECTION_JOIN_REQUEST:
 					{
-						Info.Get.Charname = packet.ReadAscii();
-						Window w = Window.Get;
-						w.Login_btnStart.InvokeIfRequired(() => {
-							w.Login_btnStart.Enabled = false;
-						});
+						InfoManager.SetCharacter(packet.ReadAscii());
 					}
-					break;
+					return true;
 				case Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN:
-					if(!ClientlessMode)
-						Bot.Get._OnTeleported();
+					if (!ClientlessMode)
+						InfoManager.OnTeleported();
 					break;
 				case Opcode.CLIENT_CHAT_REQUEST:
 					{
@@ -279,7 +281,7 @@ namespace xBot.Network
 						else if (t == Types.Chat.All)
 						{
 							string message = packet.ReadAscii();
-							return Bot.Get._OnChatSending(message);
+							return Bot.Get.OnChatSending(message);
 						}
 					}
 					break;
@@ -306,7 +308,7 @@ namespace xBot.Network
 							protocol.WriteUInt(id);
 							protocol.WriteAscii(Window.Get.Login_tbxUsername.Text);
 							protocol.WriteAscii(Window.Get.Login_tbxPassword.Text);
-							protocol.WriteUShort(Info.Get.Locale);
+							protocol.WriteUShort(DataManager.Locale);
 							// "MAC"
 							protocol.WriteUInt(0u);
 							protocol.WriteUShort(0);
@@ -323,8 +325,7 @@ namespace xBot.Network
 							if (ClientlessMode)
 								PacketBuilder.RequestCharacterList();
 
-							// Generating Bot Event to keep this method clean
-							Bot.Get._OnConnected();
+							InfoManager.OnConnected();
 						}
 						else
 						{
@@ -346,7 +347,7 @@ namespace xBot.Network
 					PacketParser.CharacterData(packet);
 					break;
 				case Opcode.SERVER_CHARACTER_DATA_END:
-					PacketParser.CharacterDataEnd(packet);
+					PacketParser.CharacterDataEnd();
 					if (ClientlessMode)
 					{
 						// Confirm spawn after loading with some delay
@@ -354,7 +355,7 @@ namespace xBot.Network
 						InjectToServer(protocol);
 
 						// Generating Bot Events to keep methods clean
-						Bot.Get._OnTeleported();
+						InfoManager.OnTeleported();
 
 						protocol = new Packet(Opcode.CLIENT_CONSIGNMENT_LIST_REQUEST);
 						InjectToServer(protocol);
@@ -506,8 +507,29 @@ namespace xBot.Network
 				case Opcode.SERVER_PARTY_MATCH_JOIN_REQUEST:
 					PacketParser.PartyMatchJoinRequest(packet);
 					break;
+				case Opcode.SERVER_GUILD_CREATED_DATA:
+					PacketParser.GuildCreatedData(packet);
+					break;	
+				case Opcode.SERVER_GUILD_DATA_BEGIN:
+					PacketParser.GuildDataBegin();
+					break;
 				case Opcode.SERVER_GUILD_DATA:
 					PacketParser.GuildData(packet);
+					break;
+				case Opcode.SERVER_GUILD_DATA_END:
+					PacketParser.GuildDataEnd();
+					break;
+				case Opcode.SERVER_GUILD_UPDATE:
+					PacketParser.GuildUpdate(packet);
+					break;
+				case Opcode.SERVER_GUILD_STORAGE_DATA_BEGIN:
+					PacketParser.GuildStorageDataBegin(packet);
+					break;
+				case Opcode.SERVER_GUILD_STORAGE_DATA:
+					PacketParser.GuildStorageData(packet);
+					break;
+				case Opcode.SERVER_GUILD_STORAGE_DATA_END:
+					PacketParser.GuildStorageDataEnd(packet);
 					break;
 				case Opcode.SERVER_ACADEMY_DATA:
 					PacketParser.AcademyData(packet);
@@ -528,6 +550,9 @@ namespace xBot.Network
 					break;
 				case Opcode.SERVER_INVENTORY_ITEM_UPDATE:
 					PacketParser.InventoryItemUpdate(packet);
+					break;
+				case Opcode.SERVER_INVENTORY_CAPACITY_UPDATE:
+					PacketParser.InventoryCapacityUpdate(packet);
 					break;
 				case Opcode.SERVER_STORAGE_DATA_BEGIN:
 					PacketParser.StorageDataBegin(packet);
@@ -595,6 +620,12 @@ namespace xBot.Network
 						Packet protocol = new Packet(Opcode.CLIENT_TELEPORT_READY_RESPONSE);
 						this.InjectToServer(protocol);
 					}
+					break;
+				case Opcode.SERVER_ENTITY_TALK_RESPONSE:
+					PacketParser.EntityTalkResponse(packet);
+					break;
+				case Opcode.SERVER_NPC_CLOSE_RESPONSE:
+					PacketParser.NpcCloseResponse(packet);
 					break;
 			}
 			return false;

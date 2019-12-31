@@ -106,6 +106,7 @@ namespace xBot.App
 			if (db != null)
 			{
 				SQLiteCommand q = new SQLiteCommand(sql,db);
+				q.CommandTimeout = 1000;
 				q.ExecuteNonQuery();
 				SQLiteDataReader reader = q.ExecuteReader();
 				while (reader.Read())

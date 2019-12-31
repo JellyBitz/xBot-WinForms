@@ -124,33 +124,7 @@ namespace xBot.Game
 			CheckName = 4,
 			Restore = 5
 		}
-		public enum Mob : byte
-		{
-			General = 0,
-			Champion = 1,
-			Giant = 4,
-			Titan = 5,
-			Strong = 6,
-			Elite = 7,
-			Unique = 8,
-			PartyGeneral = 0x10,
-			PartyChampion = 0x11,
-			PartyGiant = 0x14,
-			Event = 0xFF // unknown actually
-		}
-		public enum ScrollMode
-		{
-			None = 0,
-			ReturnScroll = 1,
-			BanditReturnScroll = 2
-		}
-		public enum InteractMode : byte
-		{
-			None = 0,
-			OnExchangeProbably = 2,
-			OnStall = 4,
-			OnShop = 6
-		}
+	
 		public enum GuildMemberAuthority
 		{
 			None = 0xFF
@@ -165,145 +139,22 @@ namespace xBot.Game
 			Snow = 3
 		}
 		/// <summary>
-		/// Party basic setup.
-		/// <para>Flags</para>
-		/// </summary>
-		[Flags]
-		public enum PartySetup : byte
-		{
-			ExpShared = 1,
-			ItemShared = 2,
-			AnyoneCanInvite = 4
-		}
-		/// <summary>
-		/// Party purpose.
-		/// </summary>
-		public enum PartyPurpose : byte
-		{
-			Hunting = 0,
-			Quest = 1,
-			Trader = 2,
-			Thief = 3
-		}
-		/// <summary>
 		/// All possible bad status types.
 		/// <para>Flags</para>
 		/// </summary>
-		[Flags]
-		public enum BadStatus : uint
-		{
-			None = 0,
-			Freezing = 0x1, // Universal
-			Frostbite = 0x2, // None
-			ElectricShock = 0x4, // Universal
-			Burn = 0x8, // Universal
-			Poisoning = 0x10, // Universal
-			Zombie = 0x20, // Universal
-			Sleep = 0x40, // None
-			Bind = 0x80, // None
-			Dull = 0x100, // Purification
-			Fear = 0x200, // Purification
-			ShortSight = 0x400, // Purification
-			Bleed = 0x800, // Purification
-			Petrify = 0x1000, // None
-			Darkness = 0x2000, // Purification
-			Stun = 0x4000, // None
-			Disease = 0x8000, // Purification
-			Confusion = 0x10000, // Purification
-			Decay = 0x20000, // Purification
-			Weaken = 0x40000, // Purification
-			Impotent = 0x80000, // Purification
-			Division = 0x100000, // Purification
-			Panic = 0x200000, // Purification
-			Combustion = 0x400000, // Purification
-			Unk01 = 0x800000,
-			Hidden = 0x1000000, // Purification
-			Unk02 = 0x2000000,
-			Unk03 = 0x4000000,
-			Unk04 = 0x8000000,
-			Unk05 = 0x10000000,
-			Unk06 = 0x20000000,
-			Unk07 = 0x40000000,
-			Unk08 = 0x80000000
-		}
-		/// <summary>
-		/// Players interacting petitions.
-		/// </summary>
-		public enum PlayerPetition : byte
-		{
-			ExchangeRequest = 1,
-			PartyCreation = 2,
-			PartyInvitation = 3,
-			Resurrection = 4,
-			GuildInvitation = 5,
-			UnionInvitation = 6, // Not confirmed
-			AcademyInvitation = 9 // Not confirmed
-		}
-		/// <summary>
-		/// Character inventory item movement.
-		/// </summary>
-		public enum InventoryItemMovement : byte
-		{
-			InventoryToInventory = 0,
-			StorageToStorage = 1,
-			InventoryToStorage = 2,
-			StorageToInventory = 3,
-			
-			InventoryToExchange = 4,
-			ExchangeToInventory = 5,
+		
 
-			GroundToInventory = 6,
-			InventoryToGround = 7,
-
-			ShopToInventory = 8,
-			InventoryToShop = 9,
-
-			InventoryGoldToGround = 10,
-			StorageGoldToInventory = 11,
-			InventoryGoldToStorage = 12,
-			InventoryGoldToExchange = 13,
-
-			QuestToInventory = 14,
-			InventoryToQuest = 15,
-
-			TransportToTransport = 16,
-			GroundToTransport = 17,
-			ShopToTransport = 19,
-			TransportToShop = 20,
-
-			PetToPet = 25, // NOT CONFIRMED
-			PetToInventory = 26,
-			InventoryToPet = 27,
-
-			ShopBuyBack = 34,
-
-			AvatarToInventory = 35,
-			InventoryToAvatar = 36
-		}
+		
 		/// <summary>
 		/// All possible pet pick settings (handled by the client).
 		/// <para>Flags</para>
 		/// </summary>
-		[Flags]
-		public enum PetPickSettings : uint
-		{
-			Disabled = 0,
-			Gold = 1,
-			Equipment = 2,
-			OtherItems = 4,
-			GrabAllItems = 64,
-			Enabled = 128
-		}
+		
 		/// <summary>
 		/// All possible pet attack settings (handled by the client).
 		/// <para>Flags</para>
 		/// </summary>
-		[Flags]
-		public enum PetAttackSettings : uint
-		{
-			Disabled = 0,
-			Offensive = 1
-		}
+		
 		/// <summary>
 		/// Game consola commands.
 		/// </summary>
@@ -331,61 +182,19 @@ namespace xBot.Game
 			SpawnUniqueLocation = 42
 		}
 		/// <summary>
-		/// All basic actions that character can do.
+		/// States found on damage skill.
+		/// <para>Flags</para>
 		/// </summary>
-		public enum CharacterAction : byte
-		{
-			CommonAttack = 1,
-			ItemPickUp = 2,
-			SkillCast = 4,
-			SkillRemove = 5
-		}
+
 		/// <summary>
 		/// States found on damage skill.
 		/// <para>Flags</para>
 		/// </summary>
-		[Flags]
-		public enum DamageEffect : byte
-		{
-			None = 0,
-			KnockBack = 1,
-			Block = 2,
-			Position = 4,
-			Cancel = 8
-		}
-		/// <summary>
-		/// States found on damage skill.
-		/// <para>Flags</para>
-		/// </summary>
-		[Flags]
-		public enum Damage : byte
-		{
-			None = 0,
-			Normal = 1,
-			Critical = 2,
-			Status = 4
-		}
+
 		/// <summary>
 		/// All weapons types handled.
 		/// </summary>
-		public enum Weapon : byte
-		{
-			None = byte.MaxValue,
-			Sword = 2,
-			Blade = 3,
-			Spear = 4,
-			Glaive = 5,
-			Bow = 6,
-			OneHandSword = 7,
-			TwoHandSword = 8,
-			DualAxes = 9,
-			Warlock = 10,
-			TwoHandStaff = 11,
-			Crossbow = 12,
-			Daggers = 13,
-			Harp = 14,
-			Cleric = 15
-		}
+	
 		public enum StallUpdate
 		{
 			ItemUpdate = 1,
@@ -395,10 +204,6 @@ namespace xBot.Game
 			State = 5,
 			Note = 6,
 			Title = 7
-		}
-		public static bool HasFlags(ulong flags, ulong desiredFlags)
-		{
-			return (flags & desiredFlags) != 0;
 		}
 	}
 }
