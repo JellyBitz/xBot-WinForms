@@ -14,7 +14,9 @@ namespace xBot.Game.Objects.Item
 		public xList<SRAdvancedElixir> AdvancedElixirs { get; internal set; }
 
 		#region (Constructor)
-		public SREquipable(SRItem value) : base(value) { }
+		public SREquipable(SRItem value) : base(value) {
+			Quantity = 1;
+		}
     public SREquipable(SREquipable value) : base(value) {
 			Plus = value.Plus;
 			Variance = value.Variance;

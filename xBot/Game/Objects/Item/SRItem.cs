@@ -42,6 +42,7 @@ namespace xBot.Game.Objects.Item
 			ID4 = byte.Parse(data["tid4"]);
 
 			Icon = data["icon"];
+			Quantity = 1;
 			QuantityMax = ushort.Parse(data["stack"]);
 			LevelRequired = byte.Parse(data["level"]);
 		}
@@ -58,7 +59,7 @@ namespace xBot.Game.Objects.Item
 			ID4 = byte.Parse(data["tid4"]);
 
 			Icon = data["icon"];
-			QuantityMax = ushort.Parse(data["stack"]);
+      QuantityMax = ushort.Parse(data["stack"]);
 			LevelRequired = byte.Parse(data["level"]);
 		}
 		protected SRItem(SRItem value)

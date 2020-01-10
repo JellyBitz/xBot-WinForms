@@ -168,7 +168,7 @@ namespace xBot.App
 				}
 				myPosition = InfoManager.Character.GetRealtimePosition();
 				trainingRadius = w.TrainingArea_GetRadius();
-				
+
 				// Check movement
 				if (doMovement)
 				{
@@ -185,7 +185,7 @@ namespace xBot.App
 								// Move and wait
 								timeTraveling = myPosition.TimeTo(trainingPosition, InfoManager.Character.GetMovementSpeed());
 								MoveTo(trainingPosition);
-								w.LogProcess("Walking to center ("+ timeTraveling + "ms)...");
+								w.LogProcess("Walking to center (" + timeTraveling + "ms)...");
 								WaitHandle.WaitAny(new WaitHandle[] { InfoManager.MonitorMobSpawnChanged, InfoManager.MonitorBuffRemoved }, timeTraveling);
 							}
 						}
@@ -214,128 +214,128 @@ namespace xBot.App
 						w.LogProcess("Far away from training area");
 						return;
 					}
+				}
 
-					// Check buffs
-					BuffLoop();
+				// Check buffs
+				BuffLoop();
 
-					if (trainingRadius > 0)
+				if (trainingRadius > 0)
+				{
+					// Attacking
+					List<SRMob> mobs = InfoManager.Mobs.FindAll(m => trainingPosition.DistanceTo(m.GetRealtimePosition()) <= trainingRadius);
+					SRMob mob = GetMobFiltered(mobs);
+					if (mob == null)
 					{
-						// Attacking
-						List<SRMob> mobs = InfoManager.Mobs.FindAll(m => trainingPosition.DistanceTo(m.GetRealtimePosition()) <= trainingRadius);
-						SRMob mob = GetMobFiltered(mobs);
-						if (mob == null)
+						// No mob to attack
+						w.LogProcess("No mobs around to attack");
+						doMovement = true;
+						continue;
+					}
+					else
+					{
+						// Load skills and iterate it
+						SRSkill[] skillshots = w.Skills_GetSkillShots(mob.MobType);
+						if (skillshots != null && skillshots.Length != 0)
 						{
-							// No mob to attack
-							w.LogProcess("No mobs around to attack");
-							doMovement = true;
-							continue;
-						}
-						else
-						{
-							// Load skills and iterate it
-							SRSkill[] skillshots = w.Skills_GetSkillShots(mob.MobType);
-							if (skillshots != null && skillshots.Length != 0)
+							// Try to select mob
+							if (WaitSelectEntity(mob.UniqueID, 2, 250, "Selecting " + mob.Name + " (" + mob.MobType + ")..."))
 							{
-								// Try to select mob
-								if (WaitSelectEntity(mob.UniqueID, 2,250,"Selecting " + mob.Name + " (" + mob.MobType + ")..."))
+								// Iterate skills
+								for (int k = 0; k <= skillshots.Length; k++)
 								{
-									// Iterate skills
-									for (int k = 0;k <= skillshots.Length;k++)
+									// loop control
+									if (k == skillshots.Length)
+										k = 0;
+									SRSkill skillshot = skillshots[k];
+
+									// Check if skill is enabled
+									if (!skillshot.isCastingEnabled)
+										continue;
+
+									// Check and fix the weapon used for this skillshot
+									SRTypes.Weapon myWeapon = GetWeaponUsed();
+									if (skillshot.ID == 1)
 									{
-										// loop control
-										if (k == skillshots.Length)
-											k = 0;
-										SRSkill skillshot = skillshots[k];
-
-										// Check if skill is enabled
-										if (!skillshot.isCastingEnabled)
-											continue;
-
-										// Check and fix the weapon used for this skillshot
-										SRTypes.Weapon myWeapon = GetWeaponUsed();
-										if (skillshot.ID == 1)
+										// Common attack, fix the basic skill
+										if (myWeapon != SRTypes.Weapon.None)
 										{
-											// Common attack, fix the basic skill
-											if (myWeapon != SRTypes.Weapon.None)
-											{
-												skillshot = new SRSkill(DataManager.GetCommonAttack(myWeapon));
-												skillshot.Name = "Common Attack";
-											}
+											skillshot = new SRSkill(DataManager.GetCommonAttack(myWeapon));
+											skillshot.Name = "Common Attack";
 										}
-										else
+									}
+									else
+									{
+										// Check the required weapon
+										SRTypes.Weapon weaponRequired = skillshot.RequiredWeaponPrimary;
+										w.LogProcess("Checking weapon required (" + weaponRequired + ")...");
+										while (myWeapon != weaponRequired)
 										{
-											// Check the required weapon
-											SRTypes.Weapon weaponRequired = skillshot.RequiredWeaponPrimary;
-											w.LogProcess("Checking weapon required (" + weaponRequired + ")...");
-											if (myWeapon != weaponRequired)
+											// Check the first 4 slots from inventory
+											int slotInventory = InfoManager.Character.Inventory.FindIndex(item => item.ID2 == 1 && item.ID3 == 6 && item.ID3 == (byte)weaponRequired, 13, 16);
+											if (slotInventory != -1)
 											{
-												// Check the first 4 slots from inventory
-												int slotInventory = InfoManager.Character.Inventory.FindIndex(item => item.ID2 == 1 && item.ID3 == 6 && item.ID3 == (byte)weaponRequired, 13, 16);
-												if (slotInventory != -1)
+												w.LogProcess("Changing weapon (" + myWeapon + ")...");
+												// Try to change it
+												byte maxWeaponChangeAttempts = 5; // Check max. 4 times to skip the mob (max. 1 seconds actually)
+												while (myWeapon != weaponRequired && maxWeaponChangeAttempts > 0)
 												{
-													w.LogProcess("Changing weapon (" + myWeapon + ")...");
-													// Try to change it
-													byte maxWeaponChangeAttempts = 5; // Check max. 4 times to skip the mob (max. 1 seconds actually)
-													while (myWeapon != weaponRequired && maxWeaponChangeAttempts > 0)
-													{
-														PacketBuilder.MoveItem((byte)slotInventory, 6, SRTypes.InventoryItemMovement.InventoryToInventory);
-														maxWeaponChangeAttempts--;
-														InfoManager.MonitorWeaponChanged.WaitOne(250);
-														myWeapon = GetWeaponUsed();
-													}
-													if (maxWeaponChangeAttempts == 0)
-													{
-														w.LogProcess("Weapon changing failed!");
-														continue;
-													}
+													PacketBuilder.MoveItem((byte)slotInventory, 6, SRTypes.InventoryItemMovement.InventoryToInventory);
+													maxWeaponChangeAttempts--;
+													InfoManager.MonitorWeaponChanged.WaitOne(250);
+													myWeapon = GetWeaponUsed();
 												}
-												else
+												if (maxWeaponChangeAttempts == 0)
 												{
-													w.LogProcess("Weapon required not found (" + myWeapon + ")...");
+													w.LogProcess("Weapon changing failed!");
 													continue;
 												}
+											}
+											else
+											{
+												w.LogProcess("Weapon required not found (" + myWeapon + ")...");
+												continue;
 											}
 											InfoManager.MonitorWeaponChanged.WaitOne(250);
 											myWeapon = GetWeaponUsed();
 										}
-										// Check if mob is alive
-										if (InfoManager.Mobs.ContainsKey(mob.UniqueID))
+									}
+									// Check if mob is alive
+									if (InfoManager.Mobs.ContainsKey(mob.UniqueID))
+									{
+										w.LogProcess("Casting skill " + skillshot.Name + " (" + skillshot.CastingTime + "ms)...");
+										PacketBuilder.AttackTarget(mob.UniqueID, skillshot.ID);
+										if (InfoManager.MonitorSkillCast.WaitOne(500))
 										{
-											w.LogProcess("Casting skill " + skillshot.Name + " (" + skillshot.CastingTime + "ms)...");
-											PacketBuilder.AttackTarget(mob.UniqueID, skillshot.ID);
-											if (InfoManager.MonitorSkillCast.WaitOne(500))
-											{
-												// Skill casted, create character cooldown
-												Thread.Sleep(skillshot.CastingTime);
-											}
-											else
-											{
-												// Timeout: Skill not casted
-												if (!InfoManager.Mobs.ContainsKey(mob.UniqueID))
-												{
-													// Mob it's dead?
-													break;
-												}
-												else
-												{
-													// Recast skillshot
-													k--;
-													continue;
-												}
-											}
+											// Skill casted, create character cooldown
+											Thread.Sleep(skillshot.CastingTime);
 										}
 										else
 										{
-											// mob selection failed
-											break;
+											// Timeout: Skill not casted
+											if (!InfoManager.Mobs.ContainsKey(mob.UniqueID))
+											{
+												// Mob it's dead?
+												break;
+											}
+											else
+											{
+												// Recast skillshot
+												k--;
+												continue;
+											}
 										}
+									}
+									else
+									{
+										// mob selection failed
+										break;
 									}
 								}
 							}
-							else
-							{
-								w.LogProcess("Skillshots not found");
-							}
+						}
+						else
+						{
+							w.LogProcess("Skillshots not found");
 						}
 					}
 				}

@@ -84,6 +84,10 @@ namespace xBot.Game.Objects.Entity
 		{
 			return (int)Math.Round(MP * 100f / MPMax);
 		}
+		public override bool hasJobMode()
+		{
+			return Inventory.FindIndex(item => item != null && item.isEquipable() && ((SREquipable)item).isJob(),0,13) != -1;
+		}
 		#endregion
 	}
 }

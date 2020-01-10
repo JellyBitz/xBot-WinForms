@@ -1,5 +1,12 @@
 # Changelog
 
+### v0.5.2
+- Fixed auto attacking stuff
+
+### v0.5.1
+- Fixed quantity on items equipables
+- Fixed party auto reform
+
 ### v0.5.0
 - Restructured all game classes and system
 - Added item stats information as tooltip icon

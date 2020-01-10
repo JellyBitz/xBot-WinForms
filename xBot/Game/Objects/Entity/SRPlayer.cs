@@ -46,7 +46,7 @@ namespace xBot.Game.Objects.Entity
 		public SRPlayer(SRModel value) : base(value) { }
 
 		#region (Methods)
-		public bool hasJobMode()
+		public virtual bool hasJobMode()
 		{
 			if(m_LoadSuccess)
 				return GuildInfo == null;
