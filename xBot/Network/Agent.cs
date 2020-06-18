@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using xBot.App;
 using xBot.Game;
+using xBot.Game.Objects.Common;
 
 namespace xBot.Network
 {
@@ -50,6 +51,7 @@ namespace xBot.Network
 				CLIENT_PARTY_MATCH_JOIN_RESPONSE = 0x306E,
 				CLIENT_GUILD_INVITATION_REQUEST = 0x70F3,
 				CLIENT_GUILD_NOTICE_EDIT_REQUEST = 0x70F9,
+				CLIENT_GUILD_STORAGE_REQUEST = 0x7250,
 				CLIENT_ACADEMY_INVITATION_REQUEST = 0x7472,
 				CLIENT_ACADEMY_MATCH_LIST_REQUEST = 0x747D,
 				CLIENT_ACADEMY_NOTICE_EDIT_REQUEST = 0x7477,
@@ -125,7 +127,7 @@ namespace xBot.Network
 				SERVER_CHAT_UPDATE = 0x3026,
 				SERVER_PLAYER_PETITION_REQUEST = 0x3080,
 				SERVER_MAIL_SEND_RESPONSE = 0xB309,
-				SERVER_NOTICE_UNIQUE_UPDATE = 0x300C,
+				SERVER_NOTICE_UPDATE = 0x300C,
 				SERVER_ENVIROMENT_CELESTIAL_POSITION = 0x3020,
 				SERVER_ENVIROMENT_CELESTIAL_UPDATE = 0x3027,
 				SERVER_ENVIROMENT_WHEATER_UPDATE = 0x3809,
@@ -164,6 +166,7 @@ namespace xBot.Network
 				SERVER_GUILD_DATA_END = 0x34B4,
 				SERVER_GUILD_UPDATE = 0x38F5,
 				SERVER_GUILD_PLAYER_LOG = 0x30FF,
+				SERVER_GUILD_STORAGE_RESPONSE = 0xB250,
 				SERVER_GUILD_STORAGE_DATA_BEGIN = 0x3253,
 				SERVER_GUILD_STORAGE_DATA = 0x3255,
 				SERVER_GUILD_STORAGE_DATA_END = 0x3254,
@@ -260,28 +263,32 @@ namespace xBot.Network
 						return true;
 					break;
 				case Opcode.CLIENT_CHARACTER_SELECTION_JOIN_REQUEST:
-					{
 						InfoManager.SetCharacter(packet.ReadAscii());
-					}
 					return true;
 				case Opcode.CLIENT_CHARACTER_CONFIRM_SPAWN:
 					if (!ClientlessMode)
 						InfoManager.OnTeleported();
 					break;
+				case Opcode.CLIENT_CHARACTER_MOVEMENT:
+
+					break;
+				case Opcode.CLIENT_CHARACTER_MOVEMENT_ANGLE:
+
+					break;
 				case Opcode.CLIENT_CHAT_REQUEST:
 					{
 						// Keep on track all private messages sent
-						Types.Chat t = (Types.Chat)packet.ReadByte();
+						SRTypes.Chat t = (SRTypes.Chat)packet.ReadByte();
 						byte chatIndex = packet.ReadByte();
-						if (t == Types.Chat.Private)
-						{
-							Window w = Window.Get;
-							w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
-						}
-						else if (t == Types.Chat.All)
+						if (t == SRTypes.Chat.All)
 						{
 							string message = packet.ReadAscii();
 							return Bot.Get.OnChatSending(message);
+						}
+						else if (t == SRTypes.Chat.Private)
+						{
+							Window w = Window.Get;
+							w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
 						}
 					}
 					break;
@@ -456,7 +463,7 @@ namespace xBot.Network
 				case Opcode.SERVER_CHAT_UPDATE:
 					PacketParser.ChatUpdate(packet);
 					break;
-				case Opcode.SERVER_NOTICE_UNIQUE_UPDATE:
+				case Opcode.SERVER_NOTICE_UPDATE:
 					PacketParser.NoticeUniqueUpdate(packet);
 					break;
 				case Opcode.SERVER_PLAYER_PETITION_REQUEST:

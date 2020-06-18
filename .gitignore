@@ -1,19 +1,26 @@
-# Debug DLL/files can be generated and added to the releases
-xBot/bin/Debug/*.config
-xBot/bin/Debug/*.manifest
-xBot/bin/Debug/*.json
-xBot/bin/Debug/*.xml
+# Visual Studio cache
+.vs/
 
-xBot/obj/Debug/
+# Files generated
+xBot/bin/
+xBot/obj/
 
-# Bot data generated
-xBot/bin/Debug/Data/
-xBot/bin/Debug/Config/
-xBot/bin/Debug/Minimap/
+# Loader
+xBotLoader/
+!bin/Release/xBotLoader.dll
+!bin/Release/xBotLoader.exe
 
-# Packages can be restored via NuGet
-packages/
+# Dependencies / DLL References
 
-# Release version will be zipped apart with only required files
-xBot/bin/Release/
-xBot/obj/Release/
+!bin/Release/DevIL.dll
+!bin/Release/DevIL.NET2.dll
+
+!bin/Release/x86/SQLite.Interop.dll
+!bin/Release/x64/SQLite.Interop.dll
+!bin/Release/System.Data.SQLite.dll
+
+!bin/Release/Newtonsoft.Json.dll
+
+!bin/Release/AutoUpdater.NET.dll
+
+!bin/Release/clipper_library.dll # It's not used probably, I cannot remember.

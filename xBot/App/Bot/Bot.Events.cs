@@ -28,6 +28,9 @@ namespace xBot.App
 		/// </summary>
 		public void OnDisconnected()
 		{
+			// Stop recording
+			isRecording = false;
+
 			// Login hack
 			LoggedFromBot = false;
 

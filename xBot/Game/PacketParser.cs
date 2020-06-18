@@ -107,9 +107,9 @@ namespace xBot.Game
 			byte action = packet.ReadByte();
 			byte result = packet.ReadByte();
 
-			switch ((Types.CharacterSelectionAction)action)
+			switch ((SRTypes.CharacterSelectionAction)action)
 			{
-				case Types.CharacterSelectionAction.Create:
+				case SRTypes.CharacterSelectionAction.Create:
 					if (result == 1)
 						Window.Get.Log("Character created successfully");
 					else
@@ -117,13 +117,13 @@ namespace xBot.Game
 					if (Bot.Get.Proxy.ClientlessMode)
 						PacketBuilder.RequestCharacterList();
 					break;
-				case Types.CharacterSelectionAction.CheckName:
+				case SRTypes.CharacterSelectionAction.CheckName:
 					Bot.Get.OnNicknameChecked(result == 1);
 					break;
-				case Types.CharacterSelectionAction.Delete:
+				case SRTypes.CharacterSelectionAction.Delete:
 					// Not necessary at the moment..
 					break;
-				case Types.CharacterSelectionAction.List:
+				case SRTypes.CharacterSelectionAction.List:
 					if (result == 1)
 					{
 						Window w = Window.Get;
@@ -210,7 +210,7 @@ namespace xBot.Game
 		public static void CharacterDataBegin(Packet packet)
 		{
 			characterDataPacket = new Packet(Agent.Opcode.SERVER_CHARACTER_DATA);
-			InfoManager.OnTeleporting();
+			//InfoManager.OnTeleporting();
 		}
 		public static void CharacterData(Packet packet)
 		{
@@ -1126,6 +1126,9 @@ namespace xBot.Game
 					}
 					break;
 			}
+			// 3100 
+			// 01
+			// ASCII UIIT_MSG_..
 		}
 		public static void PlayerPetitionRequest(Packet packet)
 		{
@@ -1140,7 +1143,7 @@ namespace xBot.Game
 				case SRTypes.PlayerPetition.PartyInvitation:
 					{
 						SRParty.Setup setup = (SRParty.Setup)packet.ReadByte();
-            Bot.Get.OnPartyInvitation(uniqueID, setup);
+						Bot.Get.OnPartyInvitation(uniqueID, setup);
 					}
 					break;
 				case SRTypes.PlayerPetition.Resurrection:
@@ -1190,7 +1193,7 @@ namespace xBot.Game
 			{
 				SRItemExchange item = new SRItemExchange();
 				byte slotInventory = packet.ReadByte();
-        if (player == InfoManager.Character)
+				if (player == InfoManager.Character)
 				{
 					byte slotExchange = packet.ReadByte();
 				}
@@ -1291,7 +1294,7 @@ namespace xBot.Game
 					break;
 				case 2: // Member joined
 					{
-						SRPartyMember newMember =	PartyDataMemberParsing(packet);
+						SRPartyMember newMember = PartyDataMemberParsing(packet);
 						InfoManager.OnPartyMemberJoined(newMember);
 					}
 					break;
@@ -1358,7 +1361,7 @@ namespace xBot.Game
 				{
 					SRPartyMatch Party = new SRPartyMatch();
 					Party.Number = packet.ReadUInt();
-          Party.MasterJoinID = packet.ReadUInt();
+					Party.MasterJoinID = packet.ReadUInt();
 					Party.MasterName = packet.ReadAscii();
 					byte RaceType = packet.ReadByte();
 					Party.MemberCount = packet.ReadByte();

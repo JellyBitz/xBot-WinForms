@@ -23,7 +23,7 @@ namespace xBot.Game
 		public static void RequestCharacterList()
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_SELECTION_ACTION_REQUEST, true);
-			p.WriteByte(Types.CharacterSelectionAction.List);
+			p.WriteByte(SRTypes.CharacterSelectionAction.List);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void SelectCharacter(string charname)
@@ -35,14 +35,14 @@ namespace xBot.Game
 		public static void DeleteCharacter(string charname)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_SELECTION_ACTION_REQUEST);
-			p.WriteSByte(Types.CharacterSelectionAction.Delete);
+			p.WriteSByte(SRTypes.CharacterSelectionAction.Delete);
 			p.WriteAscii(charname);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void CheckCharacterName(string charname)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_SELECTION_ACTION_REQUEST);
-			p.WriteSByte(Types.CharacterSelectionAction.CheckName);
+			p.WriteSByte(SRTypes.CharacterSelectionAction.CheckName);
 			p.WriteAscii(charname);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
@@ -95,7 +95,7 @@ namespace xBot.Game
 				return false;
 			}
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHARACTER_SELECTION_ACTION_REQUEST);
-			p.WriteByte(Types.CharacterSelectionAction.Create);
+			p.WriteByte(SRTypes.CharacterSelectionAction.Create);
 			p.WriteAscii(charname);
 			p.WriteUInt(model);
 			p.WriteByte(0); // Scale
@@ -109,7 +109,7 @@ namespace xBot.Game
 		public static void SendChatAll(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.All);
+			p.WriteByte(SRTypes.Chat.All);
 			p.WriteByte(Window.Get.Chat_rtbxAll.Lines.Length); // Client chat current index
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -117,7 +117,7 @@ namespace xBot.Game
 		public static void SendChatPrivate(string player, string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Private);
+			p.WriteByte(SRTypes.Chat.Private);
 			p.WriteByte(Window.Get.Chat_rtbxPrivate.Lines.Length);
 			p.WriteAscii(player);
 			p.WriteAscii(message);
@@ -126,7 +126,7 @@ namespace xBot.Game
 		public static void SendChatParty(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Party);
+			p.WriteByte(SRTypes.Chat.Party);
 			p.WriteByte(Window.Get.Chat_rtbxParty.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -134,7 +134,7 @@ namespace xBot.Game
 		public static void SendChatGuild(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Guild);
+			p.WriteByte(SRTypes.Chat.Guild);
 			p.WriteByte(Window.Get.Chat_rtbxGuild.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -142,7 +142,7 @@ namespace xBot.Game
 		public static void SendChatUnion(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Union);
+			p.WriteByte(SRTypes.Chat.Union);
 			p.WriteByte(Window.Get.Chat_rtbxUnion.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -150,7 +150,7 @@ namespace xBot.Game
 		public static void SendChatAcademy(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Academy);
+			p.WriteByte(SRTypes.Chat.Academy);
 			p.WriteByte(Window.Get.Chat_rtbxAcademy.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -158,7 +158,7 @@ namespace xBot.Game
 		public static void SendChatStall(string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_CHAT_REQUEST);
-			p.WriteByte(Types.Chat.Stall);
+			p.WriteByte(SRTypes.Chat.Stall);
 			p.WriteByte(Window.Get.Chat_rtbxStall.Lines.Length);
 			p.WriteAscii(message);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -404,28 +404,28 @@ namespace xBot.Game
 			p.WriteAscii(title); // title.LengthMax = 63
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 			p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.Note);
+			p.WriteByte(SRTypes.StallUpdate.Note);
 			p.WriteAscii(note);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void EditStallTitle(string title)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.Title);
+			p.WriteByte(SRTypes.StallUpdate.Title);
 			p.WriteAscii(title);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void EditStallNote(string note)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.Note);
+			p.WriteByte(SRTypes.StallUpdate.Note);
 			p.WriteAscii(note);
 			Bot.Get.Proxy.Agent.InjectToServer(p);
 		}
 		public static void EditStallState(bool open)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.State);
+			p.WriteByte(SRTypes.StallUpdate.State);
 			p.WriteByte(open ? 1 : 0);
 			p.WriteShort(0); // unknown
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -433,7 +433,7 @@ namespace xBot.Game
 		public static void AddItemStall(byte slotStall,byte slotInventory,ushort quantity,ulong price)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.ItemAdded);
+			p.WriteByte(SRTypes.StallUpdate.ItemAdded);
 			p.WriteByte(slotStall);
 			p.WriteByte(slotInventory);
 			p.WriteUShort(quantity);
@@ -445,7 +445,7 @@ namespace xBot.Game
 		public static void RemoveItemStall(byte slotStall)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.ItemRemoved);
+			p.WriteByte(SRTypes.StallUpdate.ItemRemoved);
 			p.WriteByte(slotStall);
 			p.WriteUShort(0); // unknown
 			Bot.Get.Proxy.Agent.InjectToServer(p);
@@ -453,7 +453,7 @@ namespace xBot.Game
 		public static void EditItemStall(byte slotStall,ushort quantity,ulong price)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_STALL_UPDATE_REQUEST);
-			p.WriteByte(Types.StallUpdate.ItemUpdate);
+			p.WriteByte(SRTypes.StallUpdate.ItemUpdate);
 			p.WriteByte(slotStall);
 			p.WriteUShort(quantity);
 			p.WriteULong(price);
@@ -750,7 +750,7 @@ namespace xBot.Game
 			public static void SendNotice(string message)
 			{
 				Packet p = new Packet(Agent.Opcode.SERVER_CHAT_UPDATE);
-				p.WriteByte((byte)Types.Chat.Notice);
+				p.WriteByte(SRTypes.Chat.Notice);
 				p.WriteAscii(message);
 				Bot.Get.Proxy.Agent.InjectToClient(p);
 			}
@@ -764,7 +764,7 @@ namespace xBot.Game
 				Bot.Get.Proxy.Gateway.InjectToClient(p);
 			}
 		}
-		public static void SendGMCommand(Types.GMCommandAction action, string message)
+		public static void SendGMCommand(SRTypes.GMCommandAction action, string message)
 		{
 			Packet p = new Packet(Agent.Opcode.CLIENT_GAMEMASTER_COMMAND_REQUEST);
 			p.WriteUShort(action);

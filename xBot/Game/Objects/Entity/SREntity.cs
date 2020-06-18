@@ -120,7 +120,7 @@ namespace xBot.Game.Objects.Entity
 							obj = pet;
 						}
 					}
-					else if (npc.isFortressStruct())
+					else if (npc.isFortressCos())
 					{
 						SRFortressCos fCos = new SRFortressCos(npc);
 						obj = fCos;
@@ -178,18 +178,18 @@ namespace xBot.Game.Objects.Entity
 		public virtual SRCoord GetRealtimePosition()
 		{
 			return Position;
-    }
+		}
 		public virtual TreeNode ToTreeNode()
 		{
 			TreeNode root = new TreeNode();
 			root.Text = "UID: " + UniqueID + " - Name: " + Name;
-      root.Nodes.Add("ServerName: " + ServerName);
+			root.Nodes.Add("ServerName: " + ServerName);
 			root.Nodes.Add("ID: " + ID);
 			root.Nodes.Add("ID's [" + ID1 + "][" + ID2 + "][" + ID3 + "][" + ID4 + "]");
 			root.Nodes.Add("Angle: " + Math.Round(GetDegreeAngle(), 2) + "°");
 			root.Nodes.Add("Position: " + Position);
 			return root;
-    }
+		}
 		#endregion
 	}
 }

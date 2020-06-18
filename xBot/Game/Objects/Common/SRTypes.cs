@@ -8,6 +8,14 @@ namespace xBot.Game.Objects.Common
 {
 	public static class SRTypes
 	{
+		public enum CharacterSelectionAction : byte
+		{
+			Create = 1,
+			List = 2,
+			Delete = 3,
+			CheckName = 4,
+			Restore = 5
+		}
 		/// <summary>
 		/// All basic actions that character can do.
 		/// </summary>
@@ -46,9 +54,9 @@ namespace xBot.Game.Objects.Common
 			Global = 6,
 			Notice = 7,
 			Stall = 9,
-			Union = 0xB,
-			NPC = 0xD,
-			Academy = 0x10
+			Union = 11,
+			NPC = 13,
+			Academy = 16
 		}
 		public enum EntityStateUpdate : byte
 		{
@@ -188,6 +196,33 @@ namespace xBot.Game.Objects.Common
 			Normal = 1,
 			Critical = 2,
 			Status = 4
+		}
+
+		/// <summary>
+		/// Game consola commands.
+		/// </summary>
+		public enum GMCommandAction : ushort
+		{
+			FindUser = 1,
+			GoTown = 2,
+			ToTown = 3,
+			WorldStatus = 4,
+			CreateMob = 6,
+			MakeItem = 7,
+			MoveToUser = 8,
+			Warp = 10,
+			Zoe = 12,
+			Ban = 13,
+			Invisible = 14,
+			Invincible = 15,
+			RecallUser = 17,
+			RecallGuild = 18,
+			LieName = 19,
+			KillMob = 20,
+			ResetQ = 28,
+			MoveToNPC = 31,
+			MakeRentItem = 38,
+			SpawnUniqueLocation = 42
 		}
 
 		#region (Extensions)

@@ -17,15 +17,15 @@ namespace xBot.Game.Objects.Common
 			this.PosY = PosY;
 
 			this.X = (int)(Math.Abs(PosX) % 192.0 * 10.0);
-			if (PosX < 0)
-				this.X = 1920 - X;
+			if (PosX < 0.0)
+				this.X = 1920 - this.X;
 			this.Y = (int)(Math.Abs(PosY) % 192.0 * 10.0);
-			if (PosY < 0)
-				this.Y = 1920 - Y;
-			this.Z = 0;
+			if (PosY < 0.0)
+				this.Y = 1920 - this.Y;
 
 			this.xSector = (byte)Math.Round((PosX - X / 10.0) / 192.0 + 135);
 			this.ySector = (byte)Math.Round((PosY - Y / 10.0) / 192.0 + 92);
+
 			this.Region = (ushort)((ySector << 8) | xSector);
 		}
 		public SRCoord(ushort Region, int X, int Z, int Y)
@@ -60,20 +60,20 @@ namespace xBot.Game.Objects.Common
 			{
 				this.xSector = (byte)(((128.0 * 192.0 + this.PosX) / 192.0) - 128);
 				this.ySector = (byte)(((128.0 * 192.0 + this.PosY) / 192.0) - 128);
-				X = (int)Math.Round((this.PosX - 128.0 * 192.0) * 10.0);
-				Y = (int)Math.Round((this.PosY - 128.0 * 192.0) * 10.0);
+				this.X = (int)Math.Round((this.PosX - 128.0 * 192.0) * 10.0);
+				this.Y = (int)Math.Round((this.PosY - 128.0 * 192.0) * 10.0);
 			}
 			else
 			{
+				this.X = (int)(Math.Abs(PosX) % 192.0 * 10.0);
+				if (PosX < 0.0)
+					this.X = 1920 - this.X;
+				this.Y = (int)(Math.Abs(PosY) % 192.0 * 10.0);
+				if (PosY < 0.0)
+					this.Y = 1920 - this.Y;
+
 				this.xSector = (byte)Math.Round((PosX - X / 10.0) / 192.0 + 135);
 				this.ySector = (byte)Math.Round((PosY - Y / 10.0) / 192.0 + 92);
-
-				this.X = (int)(Math.Abs(PosX) % 192.0 * 10.0);
-				if (PosX < 0)
-					this.X = 1920 - X;
-				this.Y = (int)(Math.Abs(PosY) % 192.0 * 10.0);
-				if (PosY < 0)
-					this.Y = 1920 - Y;
 			}
 
 			this.Z = Z;

@@ -191,7 +191,6 @@
     <Compile Include="Network\Gateway.cs" />
     <Compile Include="Game\PacketBuilder.cs" />
     <Compile Include="Game\PacketParser.cs" />
-    <Compile Include="Game\Types.cs" />
     <Compile Include="Network\Proxy.cs" />
     <Compile Include="App\Bot\Bot.cs" />
     <Compile Include="App\WinAPI.cs" />

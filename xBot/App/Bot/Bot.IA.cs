@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -341,6 +342,7 @@ namespace xBot.App
 				}
 			}
 		}
+
 		private SRMob GetMobFiltered(List<SRMob> mobs)
 		{
 			SRMob mob = null;

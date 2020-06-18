@@ -40,7 +40,7 @@ namespace xBot.App
 		private bool isUpdateAvailable;
 		private Window()
 		{
-			InitializeComponent();
+            InitializeComponent();
 			InitializeFonts(this);
 			InitializePerformance(this);
 			InitializeValues();
@@ -101,7 +101,7 @@ namespace xBot.App
 			TabPageH_Option_Click(this.TabPageH_Party_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Guild_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Skills_Option01, null);
-			Skills_cmbxAttackMobType.SelectedIndex = 0;
+			Skills_cmbxAttackMobType.SelectedIndex = Skills_cmbxBuffMobType.SelectedIndex = 0;
 			TabPageH_Option_Click(this.TabPageH_Training_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Stall_Option01, null);
 			TabPageH_Option_Click(this.TabPageH_Chat_Option01, null);
@@ -2419,8 +2419,9 @@ namespace xBot.App
 							InfoManager.ServerID = server.Name;
 					break;
 				case "Skills_cmbxAttackMobType":
+				case "Skills_cmbxBuffMobType":
 					// Get the control selected and show it
-					string lstvName = "Skills_lstvAttackMobType_" + Skills_cmbxAttackMobType.Text;
+					string lstvName = c.Name.Replace("_cmbx","_lstv") + Skills_cmbxAttackMobType.Text;
 					Control lstvControl = Skills_cmbxAttackMobType.Parent.Controls[lstvName];
 					lstvControl.Visible = true;
 					// Check if exists an active control 

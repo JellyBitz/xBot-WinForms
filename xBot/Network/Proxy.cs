@@ -203,7 +203,7 @@ namespace xBot.Network
 								if (context == Gateway.Remote && w.Settings_cbxShowPacketServer.Checked)
 								{
 									bool opcodeFound = false;
-									WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () => {
+									w.Settings_lstvOpcodes.InvokeIfRequired(() => {
 										opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 									});
 									if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked
@@ -307,7 +307,7 @@ namespace xBot.Network
 									if (context == Gateway.Remote && w.Settings_cbxShowPacketClient.Checked)
 									{
 										bool opcodeFound = false;
-										WinAPI.InvokeIfRequired(w.Settings_lstvOpcodes, () =>{
+										w.Settings_lstvOpcodes.InvokeIfRequired(() =>{
 											opcodeFound = w.Settings_lstvOpcodes.Items.ContainsKey(packet.Opcode.ToString());
 										});
 										if (opcodeFound && w.Settings_rbnPacketOnlyShow.Checked

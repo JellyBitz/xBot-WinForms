@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using xBot.Game;
 using xBot.Game.Objects;
-using xBot.Game.Objects.Party;
 using xBot.Game.Objects.Common;
 using System.Threading;
 using xBot.Game.Objects.Entity;
@@ -51,7 +50,15 @@ namespace xBot.App
 		/// </summary>
 		public bool isSorting { get { return tSorting != null; } }
 		private Thread tSorting;
+		/// <summary>
+		/// Ping check by command
+		/// </summary>
 		private System.Diagnostics.Stopwatch m_Ping;
+		/// <summary>
+		/// Check if bot is recording a walking script.
+		/// </summary>
+		public bool isRecording { get; private set; }
+
 		private Bot()
 		{
 			InitializeTimers();
