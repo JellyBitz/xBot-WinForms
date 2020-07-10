@@ -2,25 +2,32 @@
 .vs/
 
 # Files generated
-xBot/bin/
 xBot/obj/
+xBot/bin/Debug
+xBot/bin/Release/*
 
 # Loader
-xBotLoader/
-!bin/Release/xBotLoader.dll
-!bin/Release/xBotLoader.exe
+xBotLoader/*
+!xBotLoader/edxSilkroadLoader5
+xBotLoader/edxSilkroadLoader5/*
+!xBotLoader/edxSilkroadLoader5/edxSilkroadLoader5.cpp
+
 
 # Dependencies / DLL References
 
-!bin/Release/DevIL.dll
-!bin/Release/DevIL.NET2.dll
+!xBot/bin/Release/xBotLoader.dll
+!xBot/bin/Release/xBotLoader.exe
 
-!bin/Release/x86/SQLite.Interop.dll
-!bin/Release/x64/SQLite.Interop.dll
-!bin/Release/System.Data.SQLite.dll
+!xBot/bin/Release/DevIL.dll
+!xBot/bin/Release/DevIL.NET2.dll
 
-!bin/Release/Newtonsoft.Json.dll
+!xBot/bin/Release/x86/SQLite.Interop.dll
+!xBot/bin/Release/x64/SQLite.Interop.dll
+!xBot/bin/Release/System.Data.SQLite.dll
 
-!bin/Release/AutoUpdater.NET.dll
+!xBot/bin/Release/Newtonsoft.Json.dll
 
-!bin/Release/clipper_library.dll # It's not used probably, I cannot remember.
+!xBot/bin/Release/AutoUpdater.NET.dll
+
+# It's not used probably, I do not remember.
+!xBot/bin/Release/clipper_library.dll
