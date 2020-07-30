@@ -2414,32 +2414,31 @@ namespace xBot.App
 			switch (c.Name)
 			{
 				case "Login_cmbxServer":
-					foreach (ListViewItem server in Login_lstvServers.Items)
+                    // Keep updated the last server selection made
+                    foreach (ListViewItem server in Login_lstvServers.Items)
 						if (Login_cmbxServer.Text == server.Text)
 							InfoManager.ServerID = server.Name;
 					break;
 				case "Skills_cmbxAttackMobType":
 				case "Skills_cmbxBuffMobType":
-					// Get the control selected and show it
-					string lstvName = c.Name.Replace("_cmbx","_lstv") + Skills_cmbxAttackMobType.Text;
-					Control lstvControl = Skills_cmbxAttackMobType.Parent.Controls[lstvName];
+					// Get the listview control related to the selection of this combobox and show it
+					string lstvName = c.Name.Replace("_cmbx","_lstv") + "_"+ c.Text;
+					Control lstvControl = c.Parent.Controls[lstvName];
 					lstvControl.Visible = true;
-					// Check if exists an active control 
-					if (Skills_cmbxAttackMobType.Tag != null)
+					// Check if exists a visible listview control already to hide it
+					if (c.Tag != null)
 					{
-						Control listview = (Control)Skills_cmbxAttackMobType.Tag;
+						Control listview = (Control)c.Tag;
 						if (listview.Name == lstvName)
 							return;
 						listview.Visible = false;
 					}
-					// Save the new control activated
-					Skills_cmbxAttackMobType.Tag = lstvControl;
+					// Save the new listview control activated
+					c.Tag = lstvControl;
 					break;
 				case "Chat_cmbxMsgType":
-					if (Chat_cmbxMsgType.Text == "Private")
-						Chat_tbxMsgPlayer.Enabled = true;
-					else
-						Chat_tbxMsgPlayer.Enabled = false;
+                    // Activate the Private box on Private chat only
+                    Chat_tbxMsgPlayer.Enabled = Chat_cmbxMsgType.Text == "Private";
 					break;
 			}
 		}
