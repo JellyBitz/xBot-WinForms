@@ -237,7 +237,7 @@ namespace xBot.Network
 
 										// Bind socket available
 										string agentHost = ((IPEndPoint)SocketBinded.LocalEndPoint).Address.ToString();
-										int agentPort = ((IPEndPoint)SocketBinded.LocalEndPoint).Port + 1;
+										int agentPort = GetAvailablePort();
 										
 										Thread agThread = new Thread(() => {
 											ThreadAgent(agentHost, agentPort);

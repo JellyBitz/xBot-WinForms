@@ -119,7 +119,7 @@ namespace xBot.App
 			cfg.AppendLine("Gateway_Ip=" + RedirectingHost);
 			cfg.AppendLine("Gateway_Port=" + RedirectingPort);
 			cfg.AppendLine("Agent_Ip=127.0.0.1");
-			cfg.AppendLine("Agent_Port=20191");
+			cfg.AppendLine("Agent_Port=0");
 			cfg.AppendLine("Hook_Input=no");
 			cfg.AppendLine("Patch_Seed=no");
 			cfg.AppendLine("Auto_Parse=no");
