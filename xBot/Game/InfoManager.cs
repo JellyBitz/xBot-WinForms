@@ -535,7 +535,7 @@ namespace xBot.Game
 				}
 				Bot.Get.OnLevelUp(Character.Level);
 				// Continue recursivity
-				OnExpReceived((Exp + ExpReceived) - ExpMax, 0L, (long)Character.Exp, Character.Level);
+				OnExpReceived((Exp + ExpReceived) - ExpMax, 0L, (long)Character.ExpMax, Character.Level);
 			}
 			else if (ExpReceived + Exp < 0)
 			{

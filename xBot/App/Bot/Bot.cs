@@ -236,22 +236,25 @@ namespace xBot.App
 		/// <summary>
 		/// Returns the max. member count from the current party.
 		/// </summary>
-		public SRTypes.Weapon GetWeaponUsed()
+		public SRTypes.Weapon GetMyWeaponType()
 		{
-			SRItem weapon = InfoManager.Character.Inventory[6];
-			if(weapon == null)
-				return SRTypes.Weapon.None;
-			return (SRTypes.Weapon)weapon.ID4;
+			return InfoManager.Character.Inventory[6] == null ? SRTypes.Weapon.None : (SRTypes.Weapon)InfoManager.Character.Inventory[6].ID4;
+        }
+        public SREquipable.Equipable GetMySecondaryEquipableType()
+        {
+			if (InfoManager.Character.Inventory[7] == null || !InfoManager.Character.Inventory[7].isEquipable())
+				return SREquipable.Equipable.Unknown;
+			return ((SREquipable)InfoManager.Character.Inventory[7]).ItemType;
 		}
-		/// <summary>
-		/// Search for specific type ID's item in the inventory. Return success.
-		/// </summary>
-		/// <param name="ID2">type id #2</param>
-		/// <param name="ID3">type id #3</param>
-		/// <param name="ID4">type id #4</param>
-		/// <param name="slot">Inventory slot found</param>
-		/// <param name="servername">Rule the search to contains string specified</param>
-		public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
+        /// <summary>
+        /// Search for specific type ID's item in the inventory. Return success.
+        /// </summary>
+        /// <param name="ID2">type id #2</param>
+        /// <param name="ID3">type id #3</param>
+        /// <param name="ID4">type id #4</param>
+        /// <param name="slot">Inventory slot found</param>
+        /// <param name="servername">Rule the search to contains string specified</param>
+        public bool FindItem(byte ID2, byte ID3, byte ID4, ref byte slot, string servername = "")
 		{
 			int index = InfoManager.Character.Inventory.FindIndex(i => i != null  && i.isType(ID2, ID3, ID4) && i.ServerName.Contains(servername),13);
 			if(index == -1)
@@ -461,14 +464,14 @@ namespace xBot.App
 				else
 				{
 					// Equip
-					switch ((SRTypes.Equipable)item.ID3)
+					switch ((SREquipable.Equipable)item.ID3)
 					{
-						case SRTypes.Equipable.Garment: // GARMENT
-						case SRTypes.Equipable.Protector: // PROTECTOR
-						case SRTypes.Equipable.Armor: // ARMOR
-						case SRTypes.Equipable.Robe: // ROBE
-						case SRTypes.Equipable.LightArmor: // LIGHT ARMOR
-						case SRTypes.Equipable.HeavyArmor: // HEAVY ARMOR
+						case SREquipable.Equipable.Garment: // GARMENT
+						case SREquipable.Equipable.Protector: // PROTECTOR
+						case SREquipable.Equipable.Armor: // ARMOR
+						case SREquipable.Equipable.Robe: // ROBE
+						case SREquipable.Equipable.LightArmor: // LIGHT ARMOR
+						case SREquipable.Equipable.HeavyArmor: // HEAVY ARMOR
 							switch ((SRTypes.SetPart)item.ID4)
 							{
 								case SRTypes.SetPart.Head: // HEAD
@@ -491,11 +494,11 @@ namespace xBot.App
 									return true;
 							}
 							break;
-						case SRTypes.Equipable.Shield:
+						case SREquipable.Equipable.Shield:
 							PacketBuilder.MoveItem(slotInventory, 7, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case SRTypes.Equipable.AccesoriesCH: // ACCESSORIES (CH)
-						case SRTypes.Equipable.AccesoriesEU: // ACCESSORIES (EU)
+						case SREquipable.Equipable.AccesoriesCH: // ACCESSORIES (CH)
+						case SREquipable.Equipable.AccesoriesEU: // ACCESSORIES (EU)
 							switch ((SRTypes.AccesoriesPart)item.ID4)
 							{
 								case SRTypes.AccesoriesPart.Earring: // Earring
@@ -512,13 +515,13 @@ namespace xBot.App
 									return true;
 							}
 							break;
-						case SRTypes.Equipable.Weapon: // WEAPONS (CH & EU)
+						case SREquipable.Equipable.Weapon: // WEAPONS (CH & EU)
 							PacketBuilder.MoveItem(slotInventory, 6, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case SRTypes.Equipable.Job: // JOB SUIT
+						case SREquipable.Equipable.Job: // JOB SUIT
 							PacketBuilder.MoveItem(slotInventory, 8, SRTypes.InventoryItemMovement.InventoryToInventory);
 							return true;
-						case SRTypes.Equipable.Avatar: // Avatar
+						case SREquipable.Equipable.Avatar: // Avatar
 							switch ((SRTypes.AvatarPart)item.ID4)
 							{
 								case SRTypes.AvatarPart.Hat: // Hat
@@ -535,7 +538,7 @@ namespace xBot.App
 									return true;
 							}
 							break;
-						case SRTypes.Equipable.DevilSpirit: // Devil Spirit
+						case SREquipable.Equipable.DevilSpirit: // Devil Spirit
 							PacketBuilder.MoveItem(slotInventory, 4, SRTypes.InventoryItemMovement.InventoryToAvatar);
 							return true;
 					}
@@ -654,6 +657,7 @@ namespace xBot.App
 			}
 			return false;
 		}
+
 		#endregion
 	}
 }

@@ -666,7 +666,7 @@ namespace xBot.PK2Extractor
 
 			// vars constantly used
 			string name, desc, duration;
-			string[] skillparams = new string[30];
+			string[] skillparams = new string[49];
 
 			// short file, load all lines to memory
 			string[] files = pk2.GetFileText("server_dep\\silkroad\\textdata\\SkillDataEnc.txt").Split(new string[] { pk2_lineSplit }, StringSplitOptions.RemoveEmptyEntries);
@@ -1079,6 +1079,7 @@ namespace xBot.PK2Extractor
 									item.Durability = _refScrapOfPackageItem[2];
 									item.MagicParams = _refScrapOfPackageItem[3];
 									tab.Items.Add(item);
+									tab.Items.Sort((l,r) => int.Parse(l.Slot).CompareTo(int.Parse(r.Slot)));
 								}
 							}
 						}
@@ -1112,8 +1113,8 @@ namespace xBot.PK2Extractor
 						{
 							Shop.Group.Tab.Item item = shop.Groups[g].Tabs[t].Items[i];
 
-							// INSERT OR UPDATE
-							db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab=" + tabCount + " AND slot=" + i);
+                            // INSERT OR UPDATE
+                            db.ExecuteQuery("SELECT * FROM shops WHERE model_servername='" + shop.NPCName + "' AND tab=" + tabCount + " AND slot=" + i);
 							if (db.GetResult().Count == 0)
 							{
 								// New

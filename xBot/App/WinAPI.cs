@@ -46,7 +46,7 @@ namespace xBot.App
 		/// </summary>
 		public static string GetDate()
 		{
-			return "[" + DateTime.Now.ToString("hh:mm:ss")+"]";
+			return "[" + DateTime.Now.ToString("hh:mm:ss.fff")+"]";
 		}
 		/// <summary>
 		/// Invoque the control if is required, then do the action specified.

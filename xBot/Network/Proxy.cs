@@ -111,12 +111,23 @@ namespace xBot.Network
 				lastPortIndexSelected = 0;
 			return GatewayPorts[lastPortIndexSelected];
 		}
-		private void ThreadGateway()
+        /// <summary>
+        /// Find an available port to bind
+        /// </summary>
+        public static int GetAvailablePort(AddressFamily addressFamily = AddressFamily.InterNetwork, SocketType socketType = SocketType.Stream, ProtocolType protocolType = ProtocolType.Tcp)
+        {
+            using (var socket = new Socket(addressFamily, socketType, protocolType))
+            {
+                socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+                return ((IPEndPoint)socket.LocalEndPoint).Port;
+            }
+        }
+        private void ThreadGateway()
 		{
 			Gateway = new Gateway(this.SelectHost(), this.SelectPort());
 
 			Window w = Window.Get;
-			Socket SocketBinded = BindGatewaySocket("127.0.0.1", 20190);
+			Socket SocketBinded = BindGatewaySocket("127.0.0.1");
 			if (!LoginClientlessMode)
 			{
 				Gateway.Local.Socket = SocketBinded;
@@ -129,8 +140,8 @@ namespace xBot.Network
 					sro_client = loader.StartClient(false, DataManager.Locale, 0, lastHostIndexSelected, ((IPEndPoint)Gateway.Local.Socket.LocalEndPoint).Port);
 					if (sro_client == null)
 						Stop();
-					else
-						sro_client.PriorityClass = ProcessPriorityClass.AboveNormal;
+					//else
+					//	sro_client.PriorityClass = ProcessPriorityClass.AboveNormal;
 
 					int dummy = 0;
 					w.Log("Waiting for client connection [" + Gateway.Local.Socket.LocalEndPoint.ToString() + "]");
@@ -145,8 +156,9 @@ namespace xBot.Network
 					sro_client.EnableRaisingEvents = true;
 					sro_client.Exited += new EventHandler(this.Client_Closed);
 				}
-				catch{
-					w.LogProcess();
+				catch (Exception ex)
+				{
+					w.LogProcess(ex.ToString());
 					return;
 				}
 			}
@@ -522,36 +534,21 @@ namespace xBot.Network
 				Stop();
 			}
 		}
-		private Socket BindGatewaySocket(string ip, int port)
-		{
-			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-			for (int i = port; i < ushort.MaxValue; i += 2)
-			{
-				if (availableSocket(i+1))
-				{
-					try
-					{
-						s.Bind(new IPEndPoint(IPAddress.Parse(ip), i));
-						s.Listen(1);
-						return s;
-					}
-					catch (SocketException) { /* ignore and continue */ }
-				}
-			}
-			return null;
-		}
-		private bool availableSocket(int port)
-		{
-			TcpConnectionInformation[] tcpConnInfoArray = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections();
-			foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
-			{
-				if (tcpi.LocalEndPoint.Port == port)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
+		private Socket BindGatewaySocket(string ip)
+        {
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                s.Bind(new IPEndPoint(IPAddress.Parse(ip), 0));
+                s.Listen(1);
+                return s;
+            }
+            catch (SocketException)
+            {
+                /* ignore and continue */
+            }
+            return null;
+        }
 		private Socket BindSocket(string ip, int port)
 		{
 			Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);

@@ -267,11 +267,11 @@ namespace xBot.App
 						Misc["AcceptExchangePartyOnly"] = w.Character_cbxAcceptExchangeLeaderOnly.Checked;
 						Misc["ConfirmExchange"] = w.Character_cbxConfirmExchange.Checked;
 						Misc["ApproveExchange"] = w.Character_cbxApproveExchange.Checked;
-					}
-					#endregion
+                    }
+                    #endregion
 
-					#region (Party Tab)
-					JObject Party = new JObject();
+                    #region (Party Tab)
+                    JObject Party = new JObject();
 					root["Party"] = Party;
 					{
 						JObject Options = new JObject();
@@ -487,8 +487,7 @@ namespace xBot.App
 					w.Character_cbxAcceptExchangeLeaderOnly.Checked = Misc.ContainsKey("AcceptExchangePartyOnly") ? (bool)Misc["AcceptExchangePartyOnly"] : false;
 					w.Character_cbxConfirmExchange.Checked = Misc.ContainsKey("ConfirmExchange") ? (bool)Misc["ConfirmExchange"] : false;
 					w.Character_cbxApproveExchange.Checked = Misc.ContainsKey("ApproveExchange") ? (bool)Misc["ApproveExchange"] : false;
-
-				}
+                }
 				#endregion
 
 				#region (Party Tab)

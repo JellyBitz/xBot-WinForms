@@ -39,9 +39,10 @@ namespace xBot.Game.Objects.Entity
 		}
 		public byte unkByte03 { get; set; }
 		public xList<SRItemExchange> InventoryExchange { get; set; }
-		#endregion
 
-		public SRPlayer(uint ID) : base(ID) { }
+        #endregion
+
+        public SRPlayer(uint ID) : base(ID) { }
 		public SRPlayer(string ServerName) : base(ServerName) { }
 		public SRPlayer(SRModel value) : base(value) { }
 
@@ -170,9 +171,17 @@ namespace xBot.Game.Objects.Entity
 			root.Nodes.Add("unkByte03: " + unkByte03);
 			return root;
 		}
-		#endregion
+        public SRTypes.Race GetRace()
+        {
+            if (ServerName.Contains("_CH_"))
+                return SRTypes.Race.Chinese;
+            else if (ServerName.Contains("_EU_"))
+                return SRTypes.Race.European;
+            return SRTypes.Race.Unknown;
+        }
+        #endregion
 
-		public enum PVPCape : byte
+        public enum PVPCape : byte
 		{
 			None = 0,
 			Red = 1,

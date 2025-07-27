@@ -39,10 +39,10 @@ namespace xBot.Game.Objects.Entity
 			}
 		}
 		public Stopwatch PositionUpdateTimer { get; set; }
-		#endregion
+        #endregion
 
-		#region (Constructor)
-		public SRModel(uint ID)
+        #region (Constructor)
+        public SRModel(uint ID)
 		{
 			m_data = DataManager.GetModelData(ID);
 
@@ -53,6 +53,7 @@ namespace xBot.Game.Objects.Entity
 			ID2 = byte.Parse(m_data["tid2"]);
 			ID3 = byte.Parse(m_data["tid3"]);
 			ID4 = byte.Parse(m_data["tid4"]);
+			
 
 			HPMax = uint.Parse(m_data["hp"]);
 			HP = HPMax;

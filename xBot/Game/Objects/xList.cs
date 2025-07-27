@@ -99,8 +99,10 @@ namespace xBot.Game.Objects
 		public int FindIndex(Predicate<T> match, int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i <= endIndex; i++)
-				if (match(m_list[i]))
-					return i;
+            {
+                if (match(m_list[i]))
+                    return i;
+            }
 			return -1;
 		}
 	}

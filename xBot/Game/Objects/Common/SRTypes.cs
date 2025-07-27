@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace xBot.Game.Objects.Common
 {
 	public static class SRTypes
 	{
+		public enum Race : byte
+		{
+			Chinese = 0,
+			European = 1,
+			Unknown = 0xFF,
+		}
+
 		public enum CharacterSelectionAction : byte
 		{
 			Create = 1,
@@ -79,22 +82,7 @@ namespace xBot.Game.Objects.Common
 			UnionInvitation = 6, // Not confirmed
 			AcademyInvitation = 9 // Not confirmed
 		}
-		public enum Equipable : byte
-		{
-			Garment = 1,
-			Protector = 2,
-			Armor = 3,
-			Shield = 4,
-			AccesoriesCH = 5,
-			Weapon = 6,
-			Job = 7,
-			Robe = 9,
-			LightArmor = 10,
-			HeavyArmor = 11,
-			AccesoriesEU = 12,
-			Avatar = 13,
-			DevilSpirit = 14
-		}
+		
 		public enum SetPart : byte
 		{
 			Head = 1,
@@ -187,8 +175,9 @@ namespace xBot.Game.Objects.Common
 			KnockBack = 1,
 			Block = 2,
 			Position = 4,
-			Cancel = 8
-		}
+			Cancel = 8,
+            Dead = 128
+        }
 		[Flags]
 		public enum Damage : byte
 		{

@@ -145,16 +145,26 @@ namespace xBot.PK2Extractor
 			{
 				Log("Extracting Silkroad Version");
 				LogState("Extracting...");
-				// Reading
-				Packet p = new Packet(0,false,false,pk2.GetFileBytes("SV.T"));
-				p.Lock();
-				int dataLength = p.ReadInt();
-				byte[] dataBuffer = p.ReadByteArray(dataLength);
-				// Decoding
-				Blowfish bf = new Blowfish();
-				bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, dataLength);
-				byte[] dataDecoded = bf.Decode(dataBuffer);
-				this.Version = uint.Parse(Encoding.ASCII.GetString(dataDecoded, 0, 4));
+                // Reading
+                // Localize the file and prepare to read it
+                using (var ms = new MemoryStream(pk2.GetFileBytes("SV.T")))
+                using (var br = new BinaryReader(ms))
+                {
+                    // Reading the encrypted file
+                    int versionLength = br.ReadInt32();
+                    byte[] versionBuffer = br.ReadBytes(versionLength);
+
+                    // Initialize the blowfish to decrypt the file
+                    Blowfish bf = new Blowfish();
+                    bf.Initialize(Encoding.ASCII.GetBytes("SILKROADVERSION"), 0, 8);
+
+                    // Decrypting
+                    versionBuffer = bf.Decode(versionBuffer);
+
+                    // Only four starting bytes contains the numbers
+                    this.Version = uint.Parse(Encoding.ASCII.GetString(versionBuffer, 0, 4));
+
+                };
 			}
 			catch (Exception ex)
 			{

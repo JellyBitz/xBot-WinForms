@@ -103,7 +103,7 @@ namespace xBot.Game
 		public static NameValueCollection GetModelData(uint id)
 		{
 			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM models WHERE id=" + id);
-      if (result.Count > 0)
+			if (result.Count > 0)
 				return result[0];
 			return null;
 		}

@@ -33,7 +33,9 @@
 			/// <summary>
 			/// <para>0. Weapon param (Ignore defense)</para> 
 			/// </summary>
-			WEAPON_ITEM_REQUIRED = 1685418593
+			WEAPON_ITEM_REQUIRED = 1685418593,
+
+			ITEM_REQUIRED = 1919250793,
 		}
 		public static bool Exists(string[] Params, Effect Effect)
 		{

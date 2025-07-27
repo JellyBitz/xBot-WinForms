@@ -87,15 +87,16 @@ namespace xBot.Network
 				SERVER_CHARACTER_DATA = 0x3013,
 				SERVER_CHARACTER_DATA_END = 0x34A6,
 				SERVER_CHARACTER_STATS_UPDATE = 0x303D,
-				SERVER_CHARACTER_EXPERIENCE_UPDATE = 0x3056,
+                SERVER_CHARACTER_EXPERIENCE_UPDATE = 0x3056,
 				SERVER_CHARACTER_ADD_STR_RESPONSE = 0xB050,
 				SERVER_CHARACTER_ADD_INT_RESPONSE = 0xB051,
 				SERVER_CHARACTER_INFO_UPDATE = 0x304E,
 				SERVER_CHARACTER_DIED = 0x3011,
-				SERVER_INVENTORY_ITEM_USE = 0xB04C,
+                SERVER_CHARACTER_ACTION_RESPONSE = 0xB074,
+                SERVER_INVENTORY_ITEM_USE = 0xB04C,
 				SERVER_INVENTORY_ITEM_MOVEMENT = 0xB034,
 				SERVER_INVENTORY_ITEM_DURABILITY_UPDATE = 0x3052,
-				SERVER_INVENTORY_ITEM_UPDATE = 0x3040,
+                SERVER_INVENTORY_ITEM_UPDATE = 0x3040,
 				SERVER_INVENTORY_CAPACITY_UPDATE = 0x3092,
 				SERVER_STORAGE_DATA_BEGIN = 0x3047,
 				SERVER_STORAGE_DATA = 0x3049,
@@ -118,7 +119,8 @@ namespace xBot.Network
 				SERVER_ENTITY_STATUS_UPDATE = 0x3057,
 				SERVER_ENTITY_DISPLAY_EFFECT = 0x305C,
 				SERVER_ENTITY_SPEED_UPDATE = 0x30D0,
-				SERVER_ENTITY_STATE_UPDATE = 0x30BF,
+                SERVET_ENTITY_INVENTORY_EQUIP = 0x3038,
+                SERVER_ENTITY_STATE_UPDATE = 0x30BF,
 				SERVER_ENTITY_STALL_CREATE = 0x30B8,
 				SERVER_ENTITY_STALL_DESTROY = 0x30B9,
 				SERVER_ENTITY_STALL_TITLE_UPDATE = 0x30BB,
@@ -246,7 +248,7 @@ namespace xBot.Network
 			{
 				Bot.Get.LogError("Parsing Error",ex, packet);
 				throw ex;
-      }
+			}
 		}
 		/// <summary>
 		/// Analyze client packets.
@@ -269,12 +271,6 @@ namespace xBot.Network
 					if (!ClientlessMode)
 						InfoManager.OnTeleported();
 					break;
-				case Opcode.CLIENT_CHARACTER_MOVEMENT:
-
-					break;
-				case Opcode.CLIENT_CHARACTER_MOVEMENT_ANGLE:
-
-					break;
 				case Opcode.CLIENT_CHAT_REQUEST:
 					{
 						// Keep on track all private messages sent
@@ -291,6 +287,22 @@ namespace xBot.Network
 							w.LogChatMessage(w.Chat_rtbxPrivate, packet.ReadAscii() + "(To)", packet.ReadAscii());
 						}
 					}
+					break;
+				case Opcode.CLIENT_CHARACTER_ACTION_REQUEST:
+					bool isPVPMode = false;
+					Window.Get.Character_cbxPVPMode.InvokeIfRequired(() =>
+					{
+						isPVPMode = Window.Get.Character_cbxPVPMode.Checked;
+					});
+					if (!isPVPMode)
+						break;
+					// execute?
+					if (packet.ReadByte() != 1)
+						break;
+					// check is casting skill
+					if ((SRTypes.CharacterAction)packet.ReadByte() != SRTypes.CharacterAction.SkillCast)
+						break;
+					Bot.Get.CheckWeaponSwitch(new SRSkill(packet.ReadUInt()));
 					break;
 			}
 			return false;
@@ -634,7 +646,9 @@ namespace xBot.Network
 				case Opcode.SERVER_NPC_CLOSE_RESPONSE:
 					PacketParser.NpcCloseResponse(packet);
 					break;
-			}
+				case Opcode.SERVER_CHARACTER_ACTION_RESPONSE:
+					break;
+            }
 			return false;
 		}
 		/// <summary>

@@ -17,7 +17,8 @@ namespace xBot.Game
 	// and filling the GUI with the necessary
 	public static class PacketParser
 	{
-		public static void ShardListResponse(Packet packet)
+		private static Timer tSwitchWeapon = new Timer();
+        public static void ShardListResponse(Packet packet)
 		{
 			Window w = Window.Get;
 			WinAPI.InvokeIfRequired(w.Login_lstvServers, () => {
@@ -233,8 +234,8 @@ namespace xBot.Game
 			character.StatPoints = p.ReadUShort();
 			character.BerserkPoints = p.ReadByte();
 			character.GatheredExpPoint = p.ReadUInt();
-			character.HPMax = p.ReadUInt();
-			character.MPMax = p.ReadUInt();
+			character.HPMax = character.HP = p.ReadUInt();
+			character.MPMax = character.MP = p.ReadUInt();
 			character.ExpIconType = (SRPlayer.ExpIcon)p.ReadByte();
 			character.PKDaily = p.ReadByte();
 			character.PKTotal = p.ReadUShort();
@@ -1536,8 +1537,9 @@ namespace xBot.Game
 		}
 		public static bool InventoryItemMovement(Packet packet)
 		{
+			var result = packet.ReadByte();
 			// success
-			if (packet.ReadBool())
+            if (result == 1)
 			{
 				SRTypes.InventoryItemMovement type = (SRTypes.InventoryItemMovement)packet.ReadByte();
 				switch (type)
@@ -1641,121 +1643,97 @@ namespace xBot.Game
 						InventoryItemMovement_InventoryToAvatar(packet);
 						break;
 				}
-			}
-			return false;
-		}
-		private static void InventoryItemMovement_InventoryToInventory(Packet p)
+            }
+
+            //if (Bot.Get.TimerSwitchingWeapon == null && Bot.Get.IsSwitchingWeapon)
+            //{
+            //	Bot.Get.TimerSwitchingWeapon = new System.Timers.Timer()
+            //	{
+            //		AutoReset = false,
+            //		Interval = 1
+            //	};
+            //	Bot.Get.TimerSwitchingWeapon.Elapsed += (s, e) =>
+            //	{
+            //		Bot.Get.IsSwitchingWeapon = false;
+            //		Bot.Get.TimerSwitchingWeapon = null;
+            //  };
+            //             Bot.Get.TimerSwitchingWeapon.Start();
+            //}
+            Bot.Get.IsSwitchingWeapon = false;
+
+            return false;
+        }
+		private static void InventoryItemMovement_FromSameInventory(xList<SRItem> inventory, byte slotSrc, byte slotDst, ushort quantity)
 		{
-			byte slotInitial = p.ReadByte();
-			byte slotFinal = p.ReadByte();
-			ushort quantityMoved = p.ReadUShort();
-			bool isDoubleMovement = p.ReadBool();
-			// End of Packet
+            /// Empty destination
+            if (inventory[slotDst] == null)
+            {
+                if (quantity == 0 || inventory[slotSrc].Quantity == quantity)
+                {
+                    // switch
+                    (inventory[slotSrc], inventory[slotDst]) = (inventory[slotDst], inventory[slotSrc]);
+                }
+                else
+                {
+                    // stack (partition)
+                    inventory[slotDst] = inventory[slotSrc].Clone();
+                    inventory[slotDst].Quantity = quantity;
+                    inventory[slotSrc].Quantity = (ushort)(inventory[slotSrc].Quantity - quantity);
+                }
+            }
+            /// Different items
+            else if (inventory[slotSrc].ID != inventory[slotDst].ID)
+            {
+                // switch
+                (inventory[slotSrc], inventory[slotDst]) = (inventory[slotDst], inventory[slotSrc]);
+            }
+            /// Same items
+            else
+            {
+                if (inventory[slotDst].Quantity == inventory[slotDst].QuantityMax)
+                {
+                    // switch
+                    (inventory[slotSrc], inventory[slotDst]) = (inventory[slotDst], inventory[slotSrc]);
+                }
+                else
+                {
+                    // fix stack
+                    inventory[slotDst].Quantity += quantity;
+                    inventory[slotSrc].Quantity -= quantity;
+                    if (inventory[slotSrc].Quantity == 0)
+                        inventory[slotSrc] = null;
+                }
+            }
+        }
+        private static void InventoryItemMovement_InventoryToInventory(Packet p)
+        {
+            byte slotSrc = p.ReadByte();
+            byte slotDst = p.ReadByte();
+            ushort quantityMoved = p.ReadUShort();
 
-			xList<SRItem> inventory = InfoManager.Character.Inventory;
+			// Make movement
+			InventoryItemMovement_FromSameInventory(InfoManager.Character.Inventory, slotSrc, slotDst, quantityMoved);
+            
+            // Raise event
+            InfoManager.OnInventoryMovement(slotSrc, slotDst);
 
-			// Check if is stack or just switch.. and update it.
-			if (inventory[slotFinal] == null)
-			{
-				if (inventory[slotInitial].QuantityMax == 1
-					|| inventory[slotInitial].Quantity == quantityMoved)
-				{
-					// switch (empty)
-					SRItem temp = inventory[slotFinal];
-					inventory[slotFinal] = inventory[slotInitial];
-					inventory[slotInitial] = temp;
-				}
-				else
-				{
-					// stack (partition)
-					inventory[slotFinal] = inventory[slotInitial].Clone();
-					inventory[slotFinal].Quantity = quantityMoved;
-					inventory[slotInitial].Quantity = (ushort)(inventory[slotInitial].Quantity - quantityMoved);
-				}
-			}
-			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
-				|| inventory[slotFinal].Quantity == inventory[slotFinal].QuantityMax
-				|| quantityMoved == inventory[slotFinal].QuantityMax)
-			{
-				// switch
-				SRItem temp = inventory[slotFinal];
-				inventory[slotFinal] = inventory[slotInitial];
-				inventory[slotInitial] = temp;
-			}
-			else
-			{
-				// stacking
-				if (inventory[slotInitial].Quantity == quantityMoved)
-				{
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial] = null;
-				}
-				else
-				{
-					// fixing
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial].Quantity -= quantityMoved;
-				}
-			}
+            // Doble movement
+            if (p.RemainingRead() != 0 && p.ReadBool())
+            {
+            	p.SeekRead(1, System.IO.SeekOrigin.Current);
+                InventoryItemMovement_InventoryToInventory(p);
+            }
+        }
+        private static void InventoryItemMovement_StorageToStorage(Packet p)
+        {
+            byte slotSrc = p.ReadByte();
+            byte slotDst = p.ReadByte();
+            ushort quantityMoved = p.ReadUShort();
+            // End of Packet
 
-			InfoManager.OnInventoryMovement(slotInitial, slotFinal);
-
-			if (isDoubleMovement)
-				InventoryItemMovement_InventoryToInventory(p);
-		}
-		private static void InventoryItemMovement_StorageToStorage(Packet p)
-		{
-			byte slotInitial = p.ReadByte();
-			byte slotFinal = p.ReadByte();
-			ushort quantityMoved = p.ReadUShort();
-			// End of Packet
-
-			xList<SRItem> inventory = InfoManager.Character.Storage;
-
-			// Check if is stack or just switch.. and update it.
-			if (inventory[slotFinal] == null)
-			{
-				if (inventory[slotInitial].QuantityMax == 1
-					|| inventory[slotInitial].Quantity == quantityMoved)
-				{
-					// switch (empty)
-					SRItem temp = inventory[slotFinal];
-					inventory[slotFinal] = inventory[slotInitial];
-					inventory[slotInitial] = temp;
-				}
-				else
-				{
-					// stack (partition)
-					inventory[slotFinal] = inventory[slotInitial].Clone();
-					inventory[slotFinal].Quantity = quantityMoved;
-					inventory[slotInitial].Quantity = (ushort)(inventory[slotInitial].Quantity - quantityMoved);
-				}
-			}
-			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
-				|| inventory[slotFinal].Quantity == inventory[slotFinal].QuantityMax
-				|| quantityMoved == inventory[slotFinal].QuantityMax)
-			{
-				// switch
-				SRItem temp = inventory[slotFinal];
-				inventory[slotFinal] = inventory[slotInitial];
-				inventory[slotInitial] = temp;
-			}
-			else
-			{
-				// stacking
-				if (inventory[slotInitial].Quantity == quantityMoved)
-				{
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial] = null;
-				}
-				else
-				{
-					// fixing
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial].Quantity -= quantityMoved;
-				}
-			}
-		}
+            // Make movement
+            InventoryItemMovement_FromSameInventory(InfoManager.Character.Storage, slotSrc, slotDst, quantityMoved);
+        }
 		private static void InventoryItemMovement_InventoryToStorage(Packet p)
 		{
 			byte slotInventory = p.ReadByte();
@@ -1799,6 +1777,13 @@ namespace xBot.Game
 		private static void InventoryItemMovement_GroundToInventory(Packet p)
 		{
 			byte slotInventory = p.ReadByte();
+
+			// Gold
+			if( slotInventory == 0xFE)
+			{
+				InfoManager.Character.Gold += p.ReadUInt();
+				return;
+            }
 			SRItem item = ItemParsing(p);
 			// End of Packet
 
@@ -1927,56 +1912,12 @@ namespace xBot.Game
 		private static void InventoryItemMovement_TransportToTransport(Packet p)
 		{
 			uint uniqueID = p.ReadUInt();
-			byte slotInitial = p.ReadByte();
-			byte slotFinal = p.ReadByte();
+			byte slotSrc = p.ReadByte();
+			byte slotDst = p.ReadByte();
 			ushort quantityMoved = p.ReadUShort();
 
-			SRCoService pet = InfoManager.MyPets[uniqueID];
-			xList<SRItem> inventory = pet.Inventory;
-
-			// Check if is stack or just switch.. and update it.
-			if (inventory[slotFinal] == null)
-			{
-				if (inventory[slotInitial].QuantityMax == 1
-					|| inventory[slotInitial].Quantity == quantityMoved)
-				{
-					// switch (empty)
-					SRItem temp = inventory[slotFinal];
-					inventory[slotFinal] = inventory[slotInitial];
-					inventory[slotInitial] = temp;
-				}
-				else
-				{
-					// stack (partition)
-					inventory[slotFinal] = inventory[slotInitial].Clone();
-					inventory[slotFinal].Quantity = quantityMoved;
-					inventory[slotInitial].Quantity = (ushort)(inventory[slotInitial].Quantity - quantityMoved);
-				}
-			}
-			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
-				|| inventory[slotFinal].Quantity == inventory[slotFinal].QuantityMax
-				|| quantityMoved == inventory[slotFinal].QuantityMax)
-			{
-				// switch
-				SRItem temp = inventory[slotFinal];
-				inventory[slotFinal] = inventory[slotInitial];
-				inventory[slotInitial] = temp;
-			}
-			else
-			{
-				// stacking
-				if (inventory[slotInitial].Quantity == quantityMoved)
-				{
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial] = null;
-				}
-				else
-				{
-					// fixing
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial].Quantity -= quantityMoved;
-				}
-			}
+            // Make movement
+            InventoryItemMovement_FromSameInventory(InfoManager.MyPets[uniqueID].Inventory, slotSrc, slotDst, quantityMoved);
 		}
 		private static void InventoryItemMovement_GroundToPet(Packet p)
 		{
@@ -2037,58 +1978,13 @@ namespace xBot.Game
 		private static void InventoryItemMovement_PetToPet(Packet p)
 		{
 			uint uniqueID = p.ReadUInt();
-			byte slotInitial = p.ReadByte();
-			byte slotFinal = p.ReadByte();
+			byte slotSrc = p.ReadByte();
+			byte slotDst = p.ReadByte();
 			ushort quantityMoved = p.ReadUShort();
-			// End of Packet
 
-			SRCoService pet = InfoManager.MyPets[uniqueID];
-			xList<SRItem> inventory = pet.Inventory;
-
-			// Check if is stack or just switch.. and update it.
-			if (inventory[slotFinal] == null)
-			{
-				if (inventory[slotInitial].QuantityMax == 1
-					|| inventory[slotInitial].Quantity == quantityMoved)
-				{
-					// switch (empty)
-					SRItem temp = inventory[slotFinal];
-					inventory[slotFinal] = inventory[slotInitial];
-					inventory[slotInitial] = temp;
-				}
-				else
-				{
-					// stack (partition)
-					inventory[slotFinal] = inventory[slotInitial].Clone();
-					inventory[slotFinal].Quantity = quantityMoved;
-					inventory[slotInitial].Quantity = (ushort)(inventory[slotInitial].Quantity - quantityMoved);
-				}
-			}
-			else if (inventory[slotFinal].ID != inventory[slotInitial].ID
-				|| inventory[slotFinal].Quantity == inventory[slotFinal].QuantityMax
-				|| quantityMoved == inventory[slotFinal].QuantityMax)
-			{
-				// switch
-				SRItem temp = inventory[slotFinal];
-				inventory[slotFinal] = inventory[slotInitial];
-				inventory[slotInitial] = temp;
-			}
-			else
-			{
-				// stacking
-				if (inventory[slotInitial].Quantity == quantityMoved)
-				{
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial] = null;
-				}
-				else
-				{
-					// fixing
-					inventory[slotFinal].Quantity += quantityMoved;
-					inventory[slotInitial].Quantity -= quantityMoved;
-				}
-			}
-		}
+            // Make movement
+            InventoryItemMovement_FromSameInventory(InfoManager.MyPets[uniqueID].Inventory, slotSrc, slotDst, quantityMoved);
+        }
 		private static void InventoryItemMovement_PetToInventory(Packet p)
 		{
 			uint uniqueID = p.ReadUInt();
@@ -2141,56 +2037,12 @@ namespace xBot.Game
 		}
 		private static void InventoryItemMovement_GuildToGuild(Packet p)
 		{
-			byte slotInitial = p.ReadByte();
-			byte slotFinal = p.ReadByte();
+			byte slotSrc = p.ReadByte();
+			byte slotDst = p.ReadByte();
 			ushort quantityMoved = p.ReadUShort();
-			// End of Packet
 
-			xList<SRItem> storage = InfoManager.Guild.Storage;
-
-			// Check if is stack or just switch.. and update it.
-			if (storage[slotFinal] == null)
-			{
-				if (storage[slotInitial].QuantityMax == 1
-					|| storage[slotInitial].Quantity == quantityMoved)
-				{
-					// switch (empty)
-					SRItem temp = storage[slotFinal];
-					storage[slotFinal] = storage[slotInitial];
-					storage[slotInitial] = temp;
-				}
-				else
-				{
-					// stack (partition)
-					storage[slotFinal] = storage[slotInitial].Clone();
-					storage[slotFinal].Quantity = quantityMoved;
-					storage[slotInitial].Quantity = (ushort)(storage[slotInitial].Quantity - quantityMoved);
-				}
-			}
-			else if (storage[slotFinal].ID != storage[slotInitial].ID
-				|| storage[slotFinal].Quantity == storage[slotFinal].QuantityMax
-				|| quantityMoved == storage[slotFinal].QuantityMax)
-			{
-				// switch
-				SRItem temp = storage[slotFinal];
-				storage[slotFinal] = storage[slotInitial];
-				storage[slotInitial] = temp;
-			}
-			else
-			{
-				// stacking
-				if (storage[slotInitial].Quantity == quantityMoved)
-				{
-					storage[slotFinal].Quantity += quantityMoved;
-					storage[slotInitial] = null;
-				}
-				else
-				{
-					// fixing
-					storage[slotFinal].Quantity += quantityMoved;
-					storage[slotInitial].Quantity -= quantityMoved;
-				}
-			}
+            // Make movement
+            InventoryItemMovement_FromSameInventory(InfoManager.Guild.Storage, slotSrc, slotDst, quantityMoved);
 		}
 		private static void InventoryItemMovement_InventoryToGuild(Packet p)
 		{
@@ -2673,55 +2525,50 @@ namespace xBot.Game
 			SRPlayer player = (SRPlayer)InfoManager.GetEntity(packet.ReadUInt());
 			player.Stall.Title = packet.ReadAscii();
 		}
-		public static void EntitySkillStart(Packet packet)
+		public static void EntitySkillStart(Packet p)
 		{
 			// success
-			if (packet.ReadBool())
+			if (p.ReadBool())
 			{
-				SRTypes.SkillCast type = (SRTypes.SkillCast)packet.ReadByte();
-				byte unkByte01 = packet.ReadByte();
-				uint skillID = packet.ReadUInt();
-				uint sourceUniqueID = packet.ReadUInt();
-				uint skillUniqueID = packet.ReadUInt();
-				uint targetUniqueID = packet.ReadUInt();
+				SRTypes.SkillCast type = (SRTypes.SkillCast)p.ReadByte();
+                p.SeekRead(1, System.IO.SeekOrigin.Current);
+                uint skillID = p.ReadUInt();
+				uint sourceUniqueID = p.ReadUInt();
+                p.SeekRead(4, System.IO.SeekOrigin.Current);
+                uint targetUniqueID = p.ReadUInt();
 				if(type == SRTypes.SkillCast.Attack)
-					SkillDamageParsing(packet);
+                    SkillDamageParsing(p);
 				// End of Packet
 				InfoManager.OnEntitySkillCast(type, skillID, sourceUniqueID, targetUniqueID);
 			}
 		}
-		public static void EntitySkillEnd(Packet packet)
+		public static void EntitySkillEnd(Packet p)
 		{
 			// success
-			if (packet.ReadBool())
+			if (p.ReadBool())
 			{
-				uint skillUniqueID = packet.ReadUInt();
-				uint targetUniqueID = packet.ReadUInt();
-				SkillDamageParsing(packet);
-			}
+                p.SeekRead(8, System.IO.SeekOrigin.Current);
+				SkillDamageParsing(p);
+            }
 		}
 		private static void SkillDamageParsing(Packet p){
 			bool hasDamage = p.ReadBool();
 			if (hasDamage)
 			{
-				byte hitCount = p.ReadByte();
-				byte targetCount = p.ReadByte();
+                p.SeekRead(1, System.IO.SeekOrigin.Current);
+                byte targetCount = p.ReadByte();
 				// AOE
 				for (byte j = 0; j < targetCount; j++)
 				{
 					uint targetUniqueID = p.ReadUInt();
 					byte dmgEffect = p.ReadByte();
 					// Since there it's not enough flags to check, then this way have to be used
-					if (dmgEffect == 128)
+					if (dmgEffect.HasFlags((byte)SRTypes.DamageEffect.Dead))
 						InfoManager.OnEntityDead(targetUniqueID);
 					else if (dmgEffect.HasFlags((byte)(SRTypes.DamageEffect.Block | SRTypes.DamageEffect.Cancel)))
 						continue;
-					SRTypes.Damage dmgState = (SRTypes.Damage)p.ReadByte();
-					uint dmgValue = p.ReadUInt();
-					byte unkByte01 = p.ReadByte();
-					byte unkByte02 = p.ReadByte();
-					byte unkByte03 = p.ReadByte();
-				}
+					p.SeekRead(8, System.IO.SeekOrigin.Current);
+                }
 			}
 		}
 		public static void EntitySkillBuffAdded(Packet packet)

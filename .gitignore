@@ -1,6 +1,9 @@
 # Visual Studio cache
 .vs/
 
+# Packages can be restored
+packages/*
+
 # Files generated
 xBot/obj/*
 xBot/bin/Debug/*
