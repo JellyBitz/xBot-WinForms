@@ -181,7 +181,23 @@ namespace xBot.PK2Extractor
 				Log("Extracting Locale & Gateway");
 				LogState("Extracting...");
 				// Reading
-				Packet p = new Packet(0, false, false, pk2.GetFileBytes("DivisionInfo.txt"));
+				byte[] divisionInfoBytes = null;
+				try
+				{
+					divisionInfoBytes = pk2.GetFileBytes("DIVISIONINFO.txt");
+				}
+				catch
+				{
+					try
+					{
+						divisionInfoBytes = pk2.GetFileBytes("DivisionInfo.txt");
+					}
+					catch
+					{
+						throw new Exception("DIVISIONINFO.txt or DivisionInfo.txt file not found");
+					}
+				}
+				Packet p = new Packet(0, false, false, divisionInfoBytes);
 				p.Lock();
 				this.Locale = p.ReadByte();
 				byte divisionCount = p.ReadByte();
