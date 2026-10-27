@@ -192,11 +192,11 @@ namespace xBot.PK2Extractor
 			foreach (string file in files)
 			{
 				// Keep memory safe
-				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\"+file)))
+				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\"+file), System.Text.Encoding.Unicode))
 				{
 					while (!reader.EndOfStream)
 					{
-						if ((line = reader.ReadLine()) == null)
+						if ((line = reader.ReadLine("\r\n")) == null)
 							continue;
 
 						// Data enabled in game
@@ -231,11 +231,11 @@ namespace xBot.PK2Extractor
 			int formatIndex, formatCount;
 
 			// Keep memory safe
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextUISystem.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextUISystem.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine(pk2_lineSplit)) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data enabled in game
@@ -321,14 +321,14 @@ namespace xBot.PK2Extractor
 			for (int i = 0; i < files.Length; i++)
 			{
 				// Keep memory safe
-				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\" + files[i])))
+				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\" + files[i]), System.Text.Encoding.Unicode))
 				{
 					// using faster sqlite performance
 					db.Begin();
 
 					while (!reader.EndOfStream)
 					{
-						if ((line = reader.ReadLine()) == null)
+						if ((line = reader.ReadLine("\r\n")) == null)
 							continue;
 
 						// Data is enabled in game
@@ -365,7 +365,7 @@ namespace xBot.PK2Extractor
 							db.Bind("tid4", data[12]);
 							db.Bind("level", data[33]);
 							// Normal data has 160 positions approx. 
-							db.Bind("icon", (data.Length > 150 ? data[54] : data[50]).ToLower() );
+							db.Bind("icon", (data.Length > 150 ? data[54] : data[50]).ToLowerInvariant() );
 							db.ExecuteQuery();
 						}
 					}
@@ -390,14 +390,14 @@ namespace xBot.PK2Extractor
 			string name;
 			List<string> items = new List<string>();
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\MagicOption.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\MagicOption.txt"), System.Text.Encoding.Unicode))
 			{
 				// using faster sqlite performance
 				db.Begin();
 
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled in game
@@ -519,14 +519,14 @@ namespace xBot.PK2Extractor
 			for (int i = 0; i < files.Length; i++)
 			{
 				// Keep memory safe
-				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\"+files[i])))
+				using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\"+files[i]), System.Text.Encoding.Unicode))
 				{
 					// using faster sqlite performance
 					db.Begin();
 
 					while (!reader.EndOfStream)
 					{
-						if ((line = reader.ReadLine()) == null)
+						if ((line = reader.ReadLine("\r\n")) == null)
 							continue;
 
 						// Data is enabled in game
@@ -587,13 +587,13 @@ namespace xBot.PK2Extractor
 			string name, desc, type;
 
 			// Keep memory safe
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\SkillMasteryData.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\SkillMasteryData.txt"), System.Text.Encoding.Unicode))
 			{
 				// using faster sqlite performance
 				db.Begin();
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					if (!line.StartsWith("//"))
@@ -764,7 +764,7 @@ namespace xBot.PK2Extractor
 							db.Bind("weapon_second", data[DSKILL.ReqCast_Weapon2]);
 							db.Bind("target_required", data[DSKILL.Target_Required]);
 							db.Bind("params", string.Join("|", skillparams));
-							db.Bind("icon", data[DSKILL.UI_IconFile].ToLower());
+							db.Bind("icon", data[DSKILL.UI_IconFile].ToLowerInvariant());
 							db.ExecuteQuery();
 						}
 					}
@@ -869,14 +869,14 @@ namespace xBot.PK2Extractor
 			sql += ");";
 			db.ExecuteQuery(sql);
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\LevelData.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\LevelData.txt"), System.Text.Encoding.Unicode))
 			{
 				// using faster sqlite performance
 				db.Begin();
 
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					if (!line.StartsWith("//"))
@@ -904,11 +904,11 @@ namespace xBot.PK2Extractor
 			List<Shop> shops = new List<Shop>();
 
 			LogState("Loading refShopGroup.txt");
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGroup.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGroup.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled in game
@@ -927,11 +927,11 @@ namespace xBot.PK2Extractor
 				}
 			}
 			LogState("Loading refMappingShopGroup.txt");
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopGroup.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopGroup.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -957,11 +957,11 @@ namespace xBot.PK2Extractor
 				}
 			}
 			LogState("Loading refMappingShopWithTab.txt");
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopWithTab.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refMappingShopWithTab.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -982,11 +982,11 @@ namespace xBot.PK2Extractor
 			}
 			LogState("Loading refShopTab.txt");
 			List<string[]> refShopTab = new List<string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopTab.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopTab.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1016,11 +1016,11 @@ namespace xBot.PK2Extractor
 			}
 			LogState("Loading refShopGoods.txt");
 			List<string[]> refShopGoods = new List<string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGoods.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refShopGoods.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled in game
@@ -1035,11 +1035,11 @@ namespace xBot.PK2Extractor
 			}
 			LogState("Loading refScrapOfPackageItem.txt");
       Dictionary<string, string[]> refScrapOfPackageItem = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refScrapOfPackageItem.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\refScrapOfPackageItem.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled in game
@@ -1182,11 +1182,11 @@ namespace xBot.PK2Extractor
 		{
 			TeleportData = new Dictionary<string, string[]>();
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportData.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportData.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1201,11 +1201,11 @@ namespace xBot.PK2Extractor
 				}
 			}
 			TeleportBuildings = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportBuilding.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportBuilding.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 					// Data is enabled in game
 					if (line.StartsWith(pk2_lineEnabled))
@@ -1237,14 +1237,14 @@ namespace xBot.PK2Extractor
 			string name;
 
 			TeleportBuildings = new Dictionary<string, string[]>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportBuilding.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportBuilding.txt"), System.Text.Encoding.Unicode))
 			{
 				// using faster sqlite performance
 				db.Begin();
 
 				while (!reader.EndOfStream)
 				{
-					if((line = reader.ReadLine()) == null)
+					if((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled in game
@@ -1307,14 +1307,14 @@ namespace xBot.PK2Extractor
 			// vars constantly used
 			string name, destination, tid1, tid2, tid3, tid4;
 
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportLink.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TeleportLink.txt"), System.Text.Encoding.Unicode))
 			{
 				// using faster sqlite performance
 				db.Begin();
 
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled on the game
@@ -1413,11 +1413,11 @@ namespace xBot.PK2Extractor
 		{
 			// Load Region names
 			Dictionary<string, string> RegionReferences = new Dictionary<string, string>();
-			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextZoneName.txt")))
+			using (StreamReader reader = new StreamReader(pk2.GetFileStream("server_dep\\silkroad\\textdata\\TextZoneName.txt"), System.Text.Encoding.Unicode))
 			{
 				while (!reader.EndOfStream)
 				{
-					if ((line = reader.ReadLine()) == null)
+					if ((line = reader.ReadLine("\r\n")) == null)
 						continue;
 
 					// Data is enabled on the game

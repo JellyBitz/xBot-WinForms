@@ -13,7 +13,6 @@ using xBot.Game.Objects;
 using SecurityAPI;
 using xBot.Network;
 using xGraphics;
-using AutoUpdaterDotNET;
 using System.Reflection;
 using xBot.Game.Objects.Party;
 using xBot.Game.Objects.Common;
@@ -32,12 +31,6 @@ namespace xBot.App
 		/// Unique instance of this class.
 		/// </summary>
 		private static Window _this = null;
-		/// <summary>
-		/// Advertising window.
-		/// </summary>
-		private Ads adsWindow;
-		private Thread tAdsWindow;
-		private bool isUpdateAvailable;
 		private Window()
 		{
             InitializeComponent();
@@ -89,7 +82,6 @@ namespace xBot.App
 			this.lblHeaderText01.Text = this.ProductName + " -";
 			this.lblHeaderText02.Location = new Point(this.lblHeaderText01.Location.X + this.lblHeaderText01.Size.Width, this.lblHeaderText01.Location.Y);
 			this.lblHeaderText02.Text = "v" + this.ProductVersion;
-			adsWindow = new Ads(this);
 
 			// Vertical tabs
 			// Login
@@ -119,7 +111,7 @@ namespace xBot.App
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 0; i < args.Length; i++)
 			{
-				string cmd = args[i].ToLower();
+				string cmd = args[i].ToLowerInvariant();
 				// Check data
 				if (cmd.StartsWith("-silkroad="))
 				{
@@ -172,31 +164,6 @@ namespace xBot.App
 				Bot.Get.hasAutoLoginMode = true;
 				Control_Click(Login_btnStart, null);
 			}
-		}
-		private void ShowAdvertising()
-		{
-			tAdsWindow = new Thread((ThreadStart)delegate{
-				try
-				{
-					if (!adsWindow.isLoaded() && adsWindow.TryLoad())
-					{
-						// Load the banner in background
-						Login_pbxAds.InvokeIfRequired(() => {
-							Login_pbxAds.LoadAsync(adsWindow.GetData(Ads.EXCEL.URL_MINIBANNER));
-							ToolTips.SetToolTip(Login_pbxAds, adsWindow.GetData(Ads.EXCEL.TITLE));
-						});
-					}
-					if (adsWindow.isLoaded())
-					{
-						// Show Advertising
-						this.InvokeIfRequired(() => {
-							adsWindow.ShowDialog(this);
-						});
-					}
-				}
-				catch { /*Window closed or something else..*/ }
-			});
-			tAdsWindow.Start();
 		}
 		public void LogProcess(string text = "Ready", ProcessState state = ProcessState.Default)
 		{
@@ -1620,11 +1587,6 @@ namespace xBot.App
 			// Force visible
 			Activate();
 			BringToFront();
-			// Check for updates
-			AutoUpdater.ReportErrors = true;
-			AutoUpdater.OpenDownloadPage = true;
-			AutoUpdater.CheckForUpdateEvent += new AutoUpdater.CheckForUpdateEventHandler(this.CheckUpdates_Completed);
-			AutoUpdater.Start("http://bit.ly/xBot-update-check");
 		}
 		/// <summary>
 		/// Close all necessary to not leaving any background process.
@@ -1633,19 +1595,6 @@ namespace xBot.App
 		{
 			if (Bot.Get.Proxy != null && Bot.Get.Proxy.isRunning)
 				Bot.Get.Proxy.Stop();
-			if(tAdsWindow != null && tAdsWindow.ThreadState == System.Threading.ThreadState.Running)
-				tAdsWindow.Abort();
-		}
-		/// <summary>
-		/// Updates checked.
-		/// </summary>
-		private void CheckUpdates_Completed(UpdateInfoEventArgs e)
-		{
-			// Try to load adverstising after checking updates
-			if(e != null){
-				this.isUpdateAvailable = e.IsUpdateAvailable;
-				ShowAdvertising();
-			}
 		}
 		/// <summary>
 		/// Control OnClick event.
@@ -1771,9 +1720,6 @@ namespace xBot.App
 							Process.Start((string)sro.SubItems[6].Tag);
 						}
 					}
-					break;
-				case "Login_pbxAds":
-					ShowAdvertising();
 					break;
 				case "Character_pgbHP":
 				case "Character_pgbMP":
@@ -2283,7 +2229,7 @@ namespace xBot.App
 					if (Settings_tbxFilterOpcode.Text != "")
 					{
 						ushort opcode;
-						string text = Settings_tbxFilterOpcode.Text.ToLower();
+						string text = Settings_tbxFilterOpcode.Text.ToLowerInvariant();
 						if (text.StartsWith("0x"))
 						{
 							if (!ushort.TryParse(text.Substring(2, text.Length-2), System.Globalization.NumberStyles.HexNumber,null,out opcode))
@@ -2314,7 +2260,7 @@ namespace xBot.App
 						{
 							// Check opcode
 							ushort opcode;
-							string text = Settings_tbxInjectOpcode.Text.ToLower();
+							string text = Settings_tbxInjectOpcode.Text.ToLowerInvariant();
 							if (text.StartsWith("0x"))
 							{
 								if (!ushort.TryParse(text.Substring(2, text.Length - 2), System.Globalization.NumberStyles.HexNumber, null, out opcode))
@@ -2781,12 +2727,6 @@ namespace xBot.App
 					using (About about = new About(this))
 						about.ShowDialog(this);
 					break;
-				case "Menu_NotifyIcon_Update":
-					if (isUpdateAvailable)
-						AutoUpdater.ShowUpdateForm();
-					else if(adsWindow.isLoaded())
-						MessageBox.Show(this,"Hey, You have the most recent version!", "xBot - Updates", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-					break;
 				case "Menu_NotifyIcon_HideShow":
 					if (this.Visible)
 					{
@@ -3075,13 +3015,6 @@ namespace xBot.App
 					break;
 				case "Menu_lstvSilkroads_Add":
 					{
-						// Create default name
-						int defaultKey = 1;
-						string defaultName;
-						while (Settings_lstvSilkroads.Items.ContainsKey(defaultName = "Silkroad #" + defaultKey))
-							defaultKey++;
-						ListViewItem newSro = new ListViewItem(defaultName);
-						newSro.Name = defaultName;
 						// Create FIRST TIME database
 						using (OpenFileDialog fileDialog = new OpenFileDialog())
 						{
@@ -3094,8 +3027,21 @@ namespace xBot.App
 							fileDialog.FilterIndex = 0;
 							if (fileDialog.ShowDialog() == DialogResult.OK)
 							{
-								// Keep memory clean
-								using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, newSro.Name))
+                                // Set folder name by default
+                                var newName = Path.GetFileName(Path.GetDirectoryName(fileDialog.FileName));
+								if (Settings_lstvSilkroads.Items.ContainsKey(newName))
+                                {
+									var i = 2;
+                                    while (Settings_lstvSilkroads.Items.ContainsKey(newName + $" ({i++})"))
+                                        i++;
+									newName = newName + $" ({i})";
+                                }
+                                ListViewItem newSro = new ListViewItem(newName)
+								{
+									Name = newName
+								};
+                                // Keep memory clean
+                                using (Pk2Extractor pk2 = new Pk2Extractor(fileDialog.FileName, newSro.Name))
 								{
 									if (pk2.ShowDialog(this) == DialogResult.OK)
 									{

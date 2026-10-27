@@ -47,11 +47,12 @@ namespace xBot.PK2Extractor
 				if (rand.Next(1, 1000) <= 200)
 					LogState("Creating " + iconPath);
 
-				// Convert DDJ to DDS to Bitmap
-				Bitmap img = DDSReader.FromDDJ(pk2.GetFileBytes(DDJFile));
+				// Convert DDJ to Bitmap
+				Bitmap img = DDJHelper.GetBitmap(pk2.GetFileStream(DDJFile));
 				// Save as png
-				img.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
-			}
+				if (img == null) img = DDJHelper.GetBitmap(pk2.GetFileStream("icon\\icon_default.ddj"));
+                img.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
+            }
 		}
 		private void AddSkillIcons()
 		{
@@ -81,9 +82,10 @@ namespace xBot.PK2Extractor
 				if (rand.Next(1, 1000) <= 200)
 					LogState("Creating " + iconPath);
 
-				// Convert DDJ to DDS to Bitmap
-				Bitmap img = DDSReader.FromDDJ(pk2.GetFileBytes(DDJFile));
+                // Convert DDJ to DDS to Bitmap
+                Bitmap img = DDJHelper.GetBitmap(pk2.GetFileStream(DDJFile));
 				// Save as png
+				if (img == null) img = DDJHelper.GetBitmap(pk2.GetFileStream("icon\\icon_default.ddj"));
 				img.Save(saveFilePath, System.Drawing.Imaging.ImageFormat.Png);
 			}
 		}
@@ -113,8 +115,8 @@ namespace xBot.PK2Extractor
 		}
 		private void ExtractAllImages(Pk2Folder folder, string OutPutPath, System.Drawing.Imaging.ImageFormat format)
 		{
-			string ext = format == System.Drawing.Imaging.ImageFormat.Jpeg?"jpg":format.ToString().ToLower();
-      foreach (Pk2File f in folder.Files)
+			string ext = format == System.Drawing.Imaging.ImageFormat.Jpeg?"jpg":format.ToString().ToLowerInvariant();
+			foreach (Pk2File f in folder.Files)
 			{
 				// Check path if the file already exists
 				string saveFilePath = Path.ChangeExtension(Path.GetFullPath(OutPutPath + f.Name), ext);
@@ -125,10 +127,10 @@ namespace xBot.PK2Extractor
 				if (rand.Next(1, 1000) <= 100)
 					LogState("Creating " + f.Name);
 
-				// Convert DDJ to DDS to Bitmap
-				Bitmap img = DDSReader.FromDDJ(pk2.GetFileBytes(f));
-				// Save as png
-				img.Save(saveFilePath,format);
+                // Convert DDJ to DDS to Bitmap
+                Bitmap img = DDJHelper.GetBitmap(pk2.GetFileStream(f));
+                // Save as png
+                img?.Save(saveFilePath, format);
 			}
 			foreach (Pk2Folder f in folder.SubFolders)
 			{

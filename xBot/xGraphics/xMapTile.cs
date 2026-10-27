@@ -14,12 +14,11 @@ namespace xGraphics
 			this.SectorX = SectorX;
 			this.SectorY = SectorY;
 		}
-		public async void LoadAsyncTile(string path,Size size)
+		public Task LoadAsyncTile(string path,Size size)
 		{
 			if (File.Exists(path))
-			{
-				this.Image = await Task.Run( () => GetTile(path, size));
-			}
+				this.Image = GetTile(path, size);
+			return Task.CompletedTask;
 		}
 		private Bitmap GetTile(string path, Size size)
 		{

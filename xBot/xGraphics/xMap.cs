@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using xBot.App;
 using xBot.Game;
@@ -183,6 +184,8 @@ namespace xGraphics
 			int marginY = (int)Math.Round(m_TileSize.Height / 2.0 - m_TileSize.Height * 2 + relativePosY);
 
 			this.InvokeIfRequired(()=> {
+
+				List<Task> tasks = new List<Task>();
 				// Locate/Resize all sectors involved
 				int i = 0;
 				for (int sectorY = tileAvg + m_ViewPoint.ySector; sectorY >= -tileAvg + m_ViewPoint.ySector; sectorY--)
@@ -212,17 +215,18 @@ namespace xGraphics
 							sector.Size = m_TileSize;
 							sector.Location = sectorLocation;
 							sector.MouseClick += new MouseEventHandler(this.xMapTile_MouseClick);
-							// Try to Load
-							sector.LoadAsyncTile(path, m_TileSize);
-							// Add
-							m_Sectors[path] = sector;
+                            // Try to Load
+                            tasks.Add(sector.LoadAsyncTile(path, m_TileSize));
+                            // Add
+                            m_Sectors[path] = sector;
 							this.Controls.Add(sector);
 							sector.SendToBack();
-						}
+                        }
 						j++;
 					}
 					i++;
 				}
+				Task.WaitAll(tasks.ToArray());
 			});
 		}
 		/// <summary>

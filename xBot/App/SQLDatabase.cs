@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SQLite;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace xBot.App
 {

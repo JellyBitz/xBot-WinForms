@@ -633,7 +633,6 @@ namespace xBot.App
             this.lblBotState = new System.Windows.Forms.Label();
             this.NotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.Menu_NotifyIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.Menu_NotifyIcon_Update = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_NotifyIcon_About = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_NotifyIcon_Separator01 = new System.Windows.Forms.ToolStripSeparator();
             this.Menu_NotifyIcon_HideShow = new System.Windows.Forms.ToolStripMenuItem();
@@ -4737,6 +4736,7 @@ namespace xBot.App
             this.pnlWindow.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.pnlWindow.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Character_Panel);
+            this.pnlWindow.Controls.Add(this.TabPageV_Control01_Minimap_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Training_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Skills_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Guild_Panel);
@@ -4746,7 +4746,6 @@ namespace xBot.App
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Players_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Stall_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Settings_Panel);
-            this.pnlWindow.Controls.Add(this.TabPageV_Control01_Minimap_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_GameInfo_Panel);
             this.pnlWindow.Controls.Add(this.TabPageV_Control01_Party_Panel);
             this.pnlWindow.Controls.Add(this.rtbxLogs);
@@ -8966,6 +8965,7 @@ namespace xBot.App
             this.Minimap_tbrZoom.AutoSize = false;
             this.Minimap_tbrZoom.LargeChange = 1;
             this.Minimap_tbrZoom.Location = new System.Drawing.Point(625, 35);
+            this.Minimap_tbrZoom.Maximum = 2;
             this.Minimap_tbrZoom.Name = "Minimap_tbrZoom";
             this.Minimap_tbrZoom.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.Minimap_tbrZoom.Size = new System.Drawing.Size(30, 150);
@@ -9861,44 +9861,36 @@ namespace xBot.App
             // Menu_NotifyIcon
             // 
             this.Menu_NotifyIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_NotifyIcon_Update,
             this.Menu_NotifyIcon_About,
             this.Menu_NotifyIcon_Separator01,
             this.Menu_NotifyIcon_HideShow,
             this.Menu_NotifyIcon_Exit});
             this.Menu_NotifyIcon.Name = "Menu_NotifyIcon";
-            this.Menu_NotifyIcon.Size = new System.Drawing.Size(113, 98);
-            // 
-            // Menu_NotifyIcon_Update
-            // 
-            this.Menu_NotifyIcon_Update.Name = "Menu_NotifyIcon_Update";
-            this.Menu_NotifyIcon_Update.Size = new System.Drawing.Size(112, 22);
-            this.Menu_NotifyIcon_Update.Text = "Update";
-            this.Menu_NotifyIcon_Update.Click += new System.EventHandler(this.Menu_Click);
+            this.Menu_NotifyIcon.Size = new System.Drawing.Size(108, 76);
             // 
             // Menu_NotifyIcon_About
             // 
             this.Menu_NotifyIcon_About.Name = "Menu_NotifyIcon_About";
-            this.Menu_NotifyIcon_About.Size = new System.Drawing.Size(112, 22);
+            this.Menu_NotifyIcon_About.Size = new System.Drawing.Size(107, 22);
             this.Menu_NotifyIcon_About.Text = "About";
             this.Menu_NotifyIcon_About.Click += new System.EventHandler(this.Menu_Click);
             // 
             // Menu_NotifyIcon_Separator01
             // 
             this.Menu_NotifyIcon_Separator01.Name = "Menu_NotifyIcon_Separator01";
-            this.Menu_NotifyIcon_Separator01.Size = new System.Drawing.Size(109, 6);
+            this.Menu_NotifyIcon_Separator01.Size = new System.Drawing.Size(104, 6);
             // 
             // Menu_NotifyIcon_HideShow
             // 
             this.Menu_NotifyIcon_HideShow.Name = "Menu_NotifyIcon_HideShow";
-            this.Menu_NotifyIcon_HideShow.Size = new System.Drawing.Size(112, 22);
+            this.Menu_NotifyIcon_HideShow.Size = new System.Drawing.Size(107, 22);
             this.Menu_NotifyIcon_HideShow.Text = "Hide";
             this.Menu_NotifyIcon_HideShow.Click += new System.EventHandler(this.Menu_Click);
             // 
             // Menu_NotifyIcon_Exit
             // 
             this.Menu_NotifyIcon_Exit.Name = "Menu_NotifyIcon_Exit";
-            this.Menu_NotifyIcon_Exit.Size = new System.Drawing.Size(112, 22);
+            this.Menu_NotifyIcon_Exit.Size = new System.Drawing.Size(107, 22);
             this.Menu_NotifyIcon_Exit.Text = "Exit";
             this.Menu_NotifyIcon_Exit.Click += new System.EventHandler(this.Menu_Click);
             // 
@@ -11003,7 +10995,6 @@ namespace xBot.App
 		private ContextMenuStrip Menu_lstvAvatarItems;
 		private ToolStripMenuItem Menu_lstvAvatarItems_UnEquip;
 		public Button Inventory_btnAvatarItemsRefresh;
-		private ToolStripMenuItem Menu_NotifyIcon_Update;
 		public ListView Settings_lstvSilkroads;
 		private ColumnHeader columnHeader33;
 		private ContextMenuStrip Menu_lstvSilkroads;

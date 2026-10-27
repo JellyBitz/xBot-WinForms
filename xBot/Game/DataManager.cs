@@ -94,7 +94,7 @@ namespace xBot.Game
 				return 0;
 			List<NameValueCollection> result = Database.GetResultFromQuery("SELECT * FROM leveldata WHERE level=" + level);
       if (result.Count > 0)
-				return uint.Parse(result[0][type.ToString().ToLower()]);
+				return uint.Parse(result[0][type.ToString().ToLowerInvariant()]);
 			return 0;
 		}
 		/// <summary>

@@ -16,5 +16,5 @@ using System.Runtime.InteropServices;
 // - If a lot of changes has been made, has to include new features
 // 3. Revision
 // - Any change done, bugfix or not
-[assembly: AssemblyVersion("0.6.1")]
-[assembly: AssemblyFileVersion("0.6.1")]
+[assembly: AssemblyVersion("0.6.2")]
+[assembly: AssemblyFileVersion("0.6.2")]
